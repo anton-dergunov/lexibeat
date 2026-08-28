@@ -1,0 +1,12 @@
+[project]
+name = "earworms-generator"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "kokoro>=0.9.4",
+    "librosa>=1.0.0",
+    "numpy>=2.5.2",
+    "pyloudnorm>=0.2.0",
+    "scipy>=1.18.1",
+    "soundfile>=0.14.0",
+]
