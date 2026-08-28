@@ -32,13 +32,15 @@ uv run generate.py --words 12 --out out/lesson.wav
 uv run generate.py --words 6 --dry-run              # show the plan only
 uv run generate.py --bed-only --bed-style lofi      # audition a bed in ~1 s
 uv run generate.py --download-samples               # fetch the piano (~88 MB)
-uv run generate.py --words 6 --backend chatterbox   # slower, much more expressive
+uv run generate.py --words 6                        # Chatterbox, expressive default
+uv run generate.py --words 6 --backend kokoro       # faster fallback
 uv run compare_voices.py --words 3                  # A/B the voice setups
 ```
 
 Flags worth knowing: `--bed-style yoga|nocturne|lofi|warm`, `--bed-seed`,
-`--bed-spec <file>`, `--instrument synth|piano`, `--mode words|phrases|mixed`,
-`--pattern retrieval|earworms`, `--backend kokoro|chatterbox`, `--ref-audio`,
+`--bed-spec <file>`, `--instrument`, `--pad-instrument`, `--meter`,
+`--chord-extension`, `--mode words|phrases|mixed`, `--pattern retrieval|earworms`,
+`--backend chatterbox|kokoro`, `--ref-audio-es`, `--ref-audio-en`,
 `--prosody-strength`, `--no-emotion`, `--duck-db`.
 
 Every run writes a `.txt` tracklist and a `.bed.json` with the resolved music
@@ -58,13 +60,12 @@ parameters, so a bed that sounds good can be replayed or hand-edited.
 
 ### Known limitations
 
-- Kokoro's Spanish voices are European-leaning. Chatterbox clones whatever
-  reference it is given, so `--ref-audio` with a macOS `say -v Paulina` clip is
-  the current route to Latin American Spanish (macOS only).
+- Kokoro's Spanish voices are European-leaning. Chatterbox defaults to macOS
+  Paulina (`es_MX`) for Latin American Spanish and Daniel (`en_GB`) for English.
 - Chatterbox needs Apple Silicon; `--backend kokoro` remains the portable path.
 - `mlx-community/chatterbox-multilingual-v3` ships without built-in voice
-  conditioning, so a reference clip is mandatory. One is generated
-  automatically and cached in `~/.cache/earworms/refs/`.
+  conditioning, so language-specific reference clips are generated and cached
+  automatically in `~/.cache/earworms/refs/`.
 - Only 40% of entries carry an example sentence, so `--mode phrases` falls back
   to the headword for the rest.
 - Multi-sense glosses are truncated to the first sense.
@@ -264,13 +265,22 @@ effectively pre-annotated. Faces and gestures map to a named delivery; object
 emoji fall through to a warm neutral. Resulting distribution: warm 76%,
 emphatic 7.5%, thoughtful 3.8%, sad 3.0%, angry 2.2%, the rest below 2%.
 
+### Bilingual references (iteration 3)
+
+Chatterbox now conditions Spanish and English independently. The defaults clone
+macOS Paulina (`es_MX`) for Spanish and Daniel (`en_GB`) for English, using a
+natural reference script in the matching language. This fixes the Spanish accent
+that resulted when the old Paulina clip was reused for English. Kokoro keeps its
+separate `ef_dora` and `af_heart` voices as the fast fallback.
+
 ### Music parameterisation
 
 `BedSpec` (`earworms/bedspec.py`) holds metre, harmony, four layers and space.
 Chords are derived from `root` + `scale` + scale degrees rather than a hard-coded
 table; the voicing formula `[r, r+7, r+12, r+12+third, r+19]` reproduces the v1
 progression **exactly**, which is how the refactor was verified as
-sound-preserving. Drum patterns are 16-step strings, so rhythm is data.
+sound-preserving. Drum patterns use one string step per sixteenth note, with
+their length derived from the selected meter, so rhythm remains data.
 
 Four styles — `yoga` (the original), `nocturne`, `lofi`, `warm` — define
 *ranges* that a seeded rng samples within, so the same style gives related but
@@ -283,6 +293,17 @@ Salamander Grand Piano (Yamaha C5, CC-BY 3.0, Alexander Holm): 30 root notes at
 of the 748 MB library) into `~/.cache/earworms/samples/`. Minor-third spacing
 means resampling never exceeds 1.5 semitones, so the timbre holds. Pure Python
 plus `soundfile`, so it works on Linux as well as macOS.
+
+Iteration 3 replaces filename inference with explicit sample manifests and adds
+curated CC0 VSCO 2 CE strings, marimba and glockenspiel. Strings can replace the
+synth pad without replacing the piano lead; marimba and glockenspiel are sparse
+lead alternatives. Downloads remain explicit and are grouped by
+`--download-samples vsco`.
+
+Beds can now be 3/4, 4/4 or 5/4; use unextended, seventh, add-nine or ninth
+voicings; and move the pad filter along seeded sine, triangle or smoothed-random
+curves. The renderer exposes pad, bass, drum and lead stems so speech can duck
+each layer by a different amount.
 
 
 ---
@@ -330,9 +351,10 @@ a separate venv.
 
 ## 7. Things to try next
 
-Done in iteration 2: Chatterbox for genuine intonation control; Latin American
-Spanish via Chatterbox cloning from a macOS Paulina reference; parameterised and
-randomisable music beds; recorded piano samples.
+Done in iterations 2–3: Chatterbox for genuine intonation control; separate
+native Paulina/Daniel references; parameterised and randomisable music beds;
+recorded piano, strings, marimba and glockenspiel; chord extensions; alternative
+meters; filter automation; and per-layer sidechain ducking.
 
 Still open:
 
@@ -347,9 +369,6 @@ Still open:
 - Expanding-interval spacing across the track rather than blocked repeats.
 - Sung rather than spoken delivery, to capture the actual song superiority effect.
 - A "test mode" track: Spanish only, with silence where the English would be.
-- More sample packs — VSCO 2 CE (CC0) for marimba, glockenspiel and strings.
-- More bed parameters: chord extensions, alternative time signatures, filter
-  automation curves, per-layer sidechain.
 
 ---
 

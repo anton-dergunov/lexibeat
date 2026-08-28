@@ -1,32 +1,36 @@
-"""Downloadable instrument sample packs.
+"""Downloadable, manifest-driven instrument sample packs.
 
-Packs are fetched once into a user cache directory and reused. Only the
-velocity layers actually needed are downloaded — the full Salamander library is
-748 MB, but two layers are ~93 MB and plenty for a sparse background part.
+Each pack describes the source URL and playback metadata for every sample. The
+manifest is intentionally explicit: Salamander and VSCO use unrelated filename
+schemes, and audio rendering should not have to reverse-engineer either one.
 """
 
 from __future__ import annotations
 
 import os
-import re
 import urllib.error
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
-# Salamander names sharps with '#', which has to be escaped in a URL.
-NOTE_FILE = re.compile(r"^(?P<name>[A-G]#?)(?P<octave>-?\d+)v(?P<velocity>\d+)\.flac$")
-SEMITONES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6,
-             "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
+SEMITONES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
+             "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
 
 
-def midi_of(filename: str) -> tuple[int, int] | None:
-    """Map 'D#3v7.flac' to (MIDI note, velocity layer)."""
-    m = NOTE_FILE.match(filename)
-    if not m:
-        return None
-    note = SEMITONES[m.group("name")] + (int(m.group("octave")) + 1) * 12
-    return note, int(m.group("velocity"))
+def midi(note: str) -> int:
+    """Convert a scientific-pitch name such as ``F#3`` to MIDI 54."""
+    name = note[:2] if len(note) > 2 and note[1] == "#" else note[:1]
+    octave = int(note[len(name):])
+    return SEMITONES[name] + (octave + 1) * 12
+
+
+@dataclass(frozen=True)
+class Sample:
+    filename: str
+    remote_path: str
+    midi_note: int
+    velocity: int = 1
+    articulation: str = "natural"
 
 
 @dataclass(frozen=True)
@@ -36,22 +40,31 @@ class SamplePack:
     attribution: str
     homepage: str
     base_url: str
-    roots: tuple[str, ...]  # note names present in the library
-    velocities: tuple[int, ...]  # which velocity layers to fetch by default
-    layer_count: int = 16  # how many the library actually contains
+    samples: tuple[Sample, ...]
+    layer_count: int = 1
+    default_velocities: tuple[int, ...] | None = None
+
+    def entries(self, velocities: tuple[int, ...] | None = None) -> list[Sample]:
+        wanted = velocities if velocities is not None else self.default_velocities
+        if wanted is None:
+            return list(self.samples)
+        return [sample for sample in self.samples if sample.velocity in wanted]
 
     def filenames(self, velocities: tuple[int, ...] | None = None) -> list[str]:
-        return [f"{root}v{v}.flac"
-                for v in (velocities or self.velocities) for root in self.roots]
+        return [sample.filename for sample in self.entries(velocities)]
 
 
-# Sampled in minor thirds from the lowest A, so any note is at most 1.5
-# semitones from a real recording.
 _SALAMANDER_ROOTS = tuple(
     f"{name}{octave}"
     for octave in range(0, 9)
     for name in ("A", "C", "D#", "F#")
     if not (octave == 0 and name != "A") and not (octave == 8 and name != "C")
+)
+_SALAMANDER_SAMPLES = tuple(
+    Sample(f"{root}v{velocity}.flac", f"{root}v{velocity}.flac",
+           midi(root), velocity, "piano")
+    for velocity in range(1, 17)
+    for root in _SALAMANDER_ROOTS
 )
 
 SALAMANDER = SamplePack(
@@ -61,11 +74,65 @@ SALAMANDER = SamplePack(
     homepage="https://archive.org/details/SalamanderGrandPianoV3",
     base_url="https://raw.githubusercontent.com/sfzinstruments/"
              "SalamanderGrandPiano/master/Samples/",
-    roots=_SALAMANDER_ROOTS,
-    velocities=(5, 11),  # one soft layer, one firmer
+    samples=_SALAMANDER_SAMPLES,
+    layer_count=16,
+    default_velocities=(5, 11),
 )
 
-PACKS = {p.name: p for p in (SALAMANDER,)}
+_VSCO_BASE = "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/"
+
+
+def _vsco_sample(path: str, note: str, velocity: int = 1,
+                 articulation: str = "natural") -> Sample:
+    return Sample(Path(path).name, path, midi(note), velocity, articulation)
+
+
+VSCO_MARIMBA = SamplePack(
+    name="vsco-marimba",
+    license="CC0-1.0",
+    attribution="VSCO 2 Community Edition by Versilian Studios",
+    homepage="https://github.com/sgossner/VSCO-2-CE",
+    base_url=_VSCO_BASE,
+    samples=tuple(
+        _vsco_sample(f"Percussion/Marimba/Marimba_hit_Outrigger_{note}_loud_01.wav",
+                     note, articulation="hit")
+        for note in ("F1", "B2", "C2", "F3", "B4", "C4", "C6")
+    ),
+)
+
+VSCO_GLOCKENSPIEL = SamplePack(
+    name="vsco-glockenspiel",
+    license="CC0-1.0",
+    attribution="VSCO 2 Community Edition by Versilian Studios",
+    homepage="https://github.com/sgossner/VSCO-2-CE",
+    base_url=_VSCO_BASE,
+    samples=tuple(
+        _vsco_sample(f"Percussion/Glock/glock_medium_{note}.wav", note,
+                     articulation="medium")
+        for note in ("G4", "C5", "G5", "C6", "G6", "C7")
+    ),
+)
+
+_STRING_NOTES = ("A2", "A3", "B2", "B4", "C4", "D3", "D5", "E4",
+                 "F#3", "G2", "G4")
+VSCO_STRINGS = SamplePack(
+    name="vsco-strings",
+    license="CC0-1.0",
+    attribution="VSCO 2 Community Edition by Versilian Studios",
+    homepage="https://github.com/sgossner/VSCO-2-CE",
+    base_url=_VSCO_BASE,
+    samples=tuple(
+        _vsco_sample(f"Strings/Violin Section/susVib/VlnEns_susVib_{note}_v{v}.wav",
+                     note, v, "sustain-vibrato")
+        for v in (1, 2) for note in _STRING_NOTES
+    ),
+    layer_count=2,
+)
+
+PACKS = {pack.name: pack for pack in (
+    SALAMANDER, VSCO_MARIMBA, VSCO_GLOCKENSPIEL, VSCO_STRINGS,
+)}
+PACK_GROUPS = {"vsco": ("vsco-marimba", "vsco-glockenspiel", "vsco-strings")}
 
 
 def cache_dir() -> Path:
@@ -78,14 +145,16 @@ def pack_dir(pack: SamplePack) -> Path:
     return cache_dir() / pack.name
 
 
-def missing(pack: SamplePack, velocities: tuple[int, ...] | None = None) -> list[str]:
+def missing(pack: SamplePack,
+            velocities: tuple[int, ...] | None = None) -> list[Sample]:
     target = pack_dir(pack)
-    return [f for f in pack.filenames(velocities) if not (target / f).exists()]
+    return [entry for entry in pack.entries(velocities)
+            if not (target / entry.filename).exists()]
 
 
 def download(pack: SamplePack, velocities: tuple[int, ...] | None = None,
              quiet: bool = False) -> Path:
-    """Fetch any samples not already cached. Safe to re-run; resumes by file."""
+    """Fetch uncached samples. Safe to re-run; partial files are discarded."""
     target = pack_dir(pack)
     target.mkdir(parents=True, exist_ok=True)
     todo = missing(pack, velocities)
@@ -95,22 +164,28 @@ def download(pack: SamplePack, velocities: tuple[int, ...] | None = None,
     if not quiet:
         print(f"Downloading {len(todo)} samples for '{pack.name}' "
               f"({pack.license} — {pack.attribution})")
-    for i, name in enumerate(todo, 1):
-        url = pack.base_url + urllib.request.quote(name)
-        tmp = target / (name + ".part")
+    for i, entry in enumerate(todo, 1):
+        url = pack.base_url + urllib.request.quote(entry.remote_path)
+        tmp = target / (entry.filename + ".part")
         try:
-            with urllib.request.urlopen(url, timeout=60) as r, tmp.open("wb") as f:
-                f.write(r.read())
-        except urllib.error.URLError as exc:
+            with urllib.request.urlopen(url, timeout=60) as response, tmp.open("wb") as f:
+                f.write(response.read())
+        except (urllib.error.URLError, OSError) as exc:
             tmp.unlink(missing_ok=True)
-            raise RuntimeError(f"Could not download {name}: {exc}") from exc
-        tmp.rename(target / name)  # rename last, so a partial file is never cached
+            raise RuntimeError(f"Could not download {entry.filename}: {exc}") from exc
+        tmp.rename(target / entry.filename)
         if not quiet:
-            print(f"\r  {i}/{len(todo)} {name:<14}", end="", flush=True)
+            print(f"\r  {i}/{len(todo)} {entry.filename:<40}", end="", flush=True)
     if not quiet:
         print(f"\r  {len(todo)} files into {target}" + " " * 20)
     return target
 
 
-def is_available(pack: SamplePack, velocities: tuple[int, ...] | None = None) -> bool:
+def download_target(name: str, quiet: bool = False) -> list[Path]:
+    names = PACK_GROUPS.get(name, (name,))
+    return [download(PACKS[pack_name], quiet=quiet) for pack_name in names]
+
+
+def is_available(pack: SamplePack,
+                 velocities: tuple[int, ...] | None = None) -> bool:
     return not missing(pack, velocities)

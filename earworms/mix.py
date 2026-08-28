@@ -27,6 +27,11 @@ def loudness_normalize(audio: np.ndarray, target_lufs: float, sr: int = SR) -> n
     return audio * 10 ** ((target_lufs - measured) / 20)
 
 
+def _loudness_gain(audio: np.ndarray, target_lufs: float, sr: int = SR) -> float:
+    measured = pyln.Meter(sr).integrated_loudness(audio)
+    return 1.0 if not np.isfinite(measured) else 10 ** ((target_lufs - measured) / 20)
+
+
 def _follower(env: np.ndarray, attack_ms: float, release_ms: float) -> np.ndarray:
     """Classic attack/release envelope follower, run at CONTROL_SR."""
     a_att = np.exp(-1.0 / (CONTROL_SR * attack_ms / 1000.0))
@@ -74,6 +79,34 @@ def mix(bed: np.ndarray, speech: np.ndarray, *, speech_lufs: float = -16.0,
     gain = duck_envelope(speech_mono, duck_db, sr=sr)[:, None]
     out = bed * gain + speech_st
     out = loudness_normalize(out, output_lufs, sr)
+    return limit(out, sr=sr).astype(np.float32)
+
+
+def mix_stems(stems: dict[str, np.ndarray], speech: np.ndarray,
+              duck_depths: dict[str, float], *, speech_lufs: float = -16.0,
+              music_lufs: float = -26.0, output_lufs: float = -16.0,
+              sr: int = SR) -> np.ndarray:
+    """Mix named music stems with a different speech-duck depth per layer."""
+    if not stems:
+        raise ValueError("At least one music stem is required.")
+    n = max([len(speech), *(len(stem) for stem in stems.values())])
+    padded = {
+        name: np.pad(_as_stereo(stem), ((0, n - len(stem)), (0, 0)))
+        for name, stem in stems.items()
+    }
+    speech_mono = np.pad(speech, (0, n - len(speech)))
+
+    unducked = sum(padded.values(), np.zeros((n, 2), dtype=np.float32))
+    music_gain = _loudness_gain(unducked, music_lufs, sr)
+    speech_st = loudness_normalize(_as_stereo(speech_mono), speech_lufs, sr)
+
+    bed = np.zeros((n, 2), dtype=np.float64)
+    for name, stem in padded.items():
+        depth = duck_depths.get(name, 5.0)
+        gain = duck_envelope(speech_mono, depth, sr=sr)[:, None]
+        bed += stem * music_gain * gain
+
+    out = loudness_normalize(bed + speech_st, output_lufs, sr)
     return limit(out, sr=sr).astype(np.float32)
 
 

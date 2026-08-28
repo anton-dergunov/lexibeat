@@ -18,9 +18,9 @@ import soundfile as sf
 
 from earworms.arrange import PATTERNS, arrange, render_speech
 from earworms.bedspec import STYLES, BedSpec
-from earworms.mix import mix
-from earworms.music import SR, Grid, render_bed
-from earworms.samples import PACKS, download
+from earworms.mix import mix_stems
+from earworms.music import SR, Grid, render_bed, render_stems
+from earworms.samples import PACKS, PACK_GROUPS, download_target
 from earworms.vocab import load
 from earworms.voice import DEFAULT_MLX_MODEL, DEFAULT_VOICES, Speaker
 
@@ -51,18 +51,32 @@ def parse_args() -> argparse.Namespace:
                        help="load a saved bed spec JSON instead of a style")
     music.add_argument("--bpm", type=float, default=None,
                        help="override the tempo the style chose")
-    music.add_argument("--instrument", default=None,
-                       help="lead instrument: 'synth', 'piano'")
+    music.add_argument("--meter", choices=["3/4", "4/4", "5/4"],
+                       help="override the style's time signature")
+    music.add_argument("--chord-extension",
+                       choices=["none", "seventh", "add9", "ninth"],
+                       help="override the style's chord colour")
+    music.add_argument("--instrument",
+                       choices=["synth", "piano", "marimba", "glockenspiel"],
+                       help="override the sparse melodic instrument")
+    music.add_argument("--pad-instrument", choices=["synth", "strings"],
+                       help="override the sustained background instrument")
     music.add_argument("--bed-only", action="store_true",
                        help="render just the music, with no speech")
     music.add_argument("--download-samples", nargs="?", const="salamander",
-                       choices=sorted(PACKS), help="fetch an instrument sample pack")
+                       choices=sorted(PACKS | PACK_GROUPS),
+                       help="fetch one sample pack, or 'vsco' for all VSCO packs")
 
     voice = p.add_argument_group("voice")
-    voice.add_argument("--backend", choices=["kokoro", "chatterbox"], default="kokoro",
-                       help="'chatterbox' is far better and far slower (Apple Silicon)")
+    voice.add_argument("--backend", choices=["kokoro", "chatterbox"],
+                       default="chatterbox",
+                       help="Chatterbox is the quality default; Kokoro is the fast fallback")
     voice.add_argument("--model", default=DEFAULT_MLX_MODEL)
     voice.add_argument("--ref-audio", help="voice to clone for the chatterbox backend")
+    voice.add_argument("--ref-audio-es",
+                       help="Spanish reference path or descriptor such as say:Paulina")
+    voice.add_argument("--ref-audio-en",
+                       help="English reference path or descriptor such as say:Daniel")
     voice.add_argument("--voice-es", default=DEFAULT_VOICES["es"])
     voice.add_argument("--voice-en", default=DEFAULT_VOICES["en"])
     voice.add_argument("--prosody-strength", type=float, default=1.0,
@@ -72,8 +86,8 @@ def parse_args() -> argparse.Namespace:
 
     out = p.add_argument_group("output")
     out.add_argument("--out", type=Path, default=Path("out/lesson.wav"))
-    out.add_argument("--duck-db", type=float, default=5.0,
-                     help="how far the music drops while someone is speaking")
+    out.add_argument("--duck-db", type=float, default=None,
+                     help="override every layer's configured speech-duck depth")
     out.add_argument("--speech-lufs", type=float, default=-16.0)
     out.add_argument("--music-lufs", type=float, default=-26.0)
     out.add_argument("--dry-run", action="store_true",
@@ -92,8 +106,16 @@ def build_spec(args: argparse.Namespace) -> tuple[BedSpec, str]:
         label = args.bed_style
     if args.bpm:
         spec.bpm = args.bpm
+    if args.meter:
+        numerator, denominator = args.meter.split("/")
+        spec.beats_per_bar = int(numerator)
+        spec.beat_unit = int(denominator)
+    if args.chord_extension:
+        spec.chord_extension = args.chord_extension
     if args.instrument:
         spec.lead.instrument = args.instrument
+    if args.pad_instrument:
+        spec.pad.instrument = args.pad_instrument
     return spec, label
 
 
@@ -101,7 +123,7 @@ def main() -> None:
     args = parse_args()
 
     if args.download_samples:
-        download(PACKS[args.download_samples])
+        download_target(args.download_samples)
         return
 
     spec, bed_label = build_spec(args)
@@ -113,8 +135,10 @@ def main() -> None:
         started = time.time()
         sf.write(args.out, render_bed(spec, bars), SR)
         spec.to_json(args.out.with_suffix(".bed.json"))
-        print(f"{bed_label} · {spec.bpm:g} BPM · {spec.scale} · "
-              f"lead {spec.lead.instrument} · {bars * grid.bar:.0f}s "
+        print(f"{bed_label} · {spec.bpm:g} BPM · "
+              f"{spec.beats_per_bar}/{spec.beat_unit} · {spec.scale} · "
+              f"pad {spec.pad.instrument} · lead {spec.lead.instrument} · "
+              f"{bars * grid.bar:.0f}s "
               f"in {time.time()-started:.1f}s -> {args.out}")
         return
 
@@ -140,17 +164,22 @@ def main() -> None:
     speaker = Speaker({"es": args.voice_es, "en": args.voice_en},
                       backend=args.backend, model=args.model,
                       ref_audio=args.ref_audio,
+                      ref_audios={"es": args.ref_audio_es,
+                                  "en": args.ref_audio_en},
                       prosody_strength=args.prosody_strength)
     events, total_bars = arrange(items, speaker, grid, pattern=args.pattern,
                                  emotions=not args.no_emotion)
     speech = render_speech(events, total_bars, grid)
 
     print("Rendering music bed…")
-    bed = render_bed(spec, total_bars)
+    stems = render_stems(spec, total_bars)
 
     print("Mixing…")
-    track = mix(bed, speech, duck_db=args.duck_db, speech_lufs=args.speech_lufs,
-                music_lufs=args.music_lufs)
+    depths = {name: getattr(spec, name).duck_db for name in stems}
+    if args.duck_db is not None:
+        depths = {name: args.duck_db for name in stems}
+    track = mix_stems(stems, speech, depths, speech_lufs=args.speech_lufs,
+                      music_lufs=args.music_lufs)
     sf.write(args.out, track, SR)
     spec.to_json(args.out.with_suffix(".bed.json"))
 

@@ -33,9 +33,17 @@ DEFAULT_VOICES = {"es": "ef_dora", "en": "af_heart"}
 CHATTERBOX_LANGS = {"es": "es", "en": "en"}
 DEFAULT_MLX_MODEL = "mlx-community/chatterbox-multilingual-v3"
 
-# Long enough for the model to characterise the voice, short enough to be quick.
-REFERENCE_TEXT = ("Buenos días. Hoy vamos a practicar algunas palabras nuevas "
-                  "en español, con calma y con buena pronunciación.")
+# Long enough for the model to characterise each speaker, with varied phrase
+# lengths so the cloned delivery is less monotone than a single flat sentence.
+REFERENCE_TEXTS = {
+    "es": ("Buenos días. Hoy vamos a practicar algunas palabras nuevas. "
+           "Escucha con calma: primero en español, después en inglés. "
+           "¿Preparado? Empezamos."),
+    "en": ("Good morning. Today we're going to practise a few new words. "
+           "Listen calmly: first in Spanish, then in English. "
+           "Ready? Let's begin."),
+}
+DEFAULT_REFERENCES = {"es": "say:Paulina", "en": "say:Daniel"}
 
 
 @dataclass(frozen=True)
@@ -128,7 +136,8 @@ class MlxAudioBackend:
     name = "mlx"
 
     def __init__(self, model: str = DEFAULT_MLX_MODEL,
-                 ref_audio: str | None = None) -> None:
+                 ref_audio: str | None = None,
+                 ref_audios: dict[str, str] | None = None) -> None:
         try:
             from mlx_audio.tts.utils import load_model
         except ImportError as exc:  # pragma: no cover - platform dependent
@@ -137,10 +146,24 @@ class MlxAudioBackend:
                 "Use --backend kokoro.") from exc
 
         self.model_id = model
-        # This checkpoint ships without built-in voice conditioning, so a
-        # reference clip is mandatory. One clip covers both languages, which
-        # also keeps a single voice across the whole track.
-        self.ref_audio = str(ref_audio or ensure_reference())
+        # This checkpoint ships without built-in voice conditioning. Keep a
+        # native reference per language so English never inherits a Spanish
+        # speaker's accent (and vice versa).
+        sources = dict(DEFAULT_REFERENCES)
+        if ref_audio:
+            warnings.warn(
+                "A shared ref_audio applies one speaker to both languages and "
+                "may reintroduce an accent mismatch; prefer ref_audios.",
+                stacklevel=2,
+            )
+            sources = {"es": ref_audio, "en": ref_audio}
+        if ref_audios:
+            sources.update({k: v for k, v in ref_audios.items() if v})
+        self.ref_audios = {
+            lang: str(ensure_reference(source, lang))
+            if source.startswith(("say:", "kokoro:")) else str(source)
+            for lang, source in sources.items()
+        }
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._model = load_model(model)
@@ -151,7 +174,7 @@ class MlxAudioBackend:
         kwargs = dict(
             text=text,
             lang_code=CHATTERBOX_LANGS.get(lang, lang),
-            ref_audio=self.ref_audio,
+            ref_audio=self.ref_audios[lang],
             exaggeration=float(np.clip(
                 emotion.exaggeration + prosody.exaggeration_bias, 0.05, 1.0)),
             cfg_weight=emotion.cfg_weight,
@@ -169,15 +192,18 @@ class MlxAudioBackend:
         return np.concatenate(pieces) if pieces else np.zeros(0, dtype=np.float32)
 
 
-def reference_path(name: str = "kokoro-ef_dora") -> "Path":
+def reference_path(name: str = "kokoro-ef_dora", lang: str | None = None) -> "Path":
     from pathlib import Path
 
     directory = Path(os.environ.get("EARWORMS_CACHE",
                                     Path.home() / ".cache" / "earworms")) / "refs"
-    return directory / f"{name.replace(':', '-')}.wav"
+    stem = name.replace(":", "-")
+    if lang:
+        stem += f"-{lang}"
+    return directory / f"{stem}.wav"
 
 
-def ensure_reference(source: str = "kokoro:ef_dora") -> "Path":
+def ensure_reference(source: str = "kokoro:ef_dora", lang: str = "es") -> "Path":
     """Get (or make) the voice-reference clip Chatterbox clones from.
 
     "kokoro:VOICE" synthesises one locally and works on any platform.
@@ -186,7 +212,9 @@ def ensure_reference(source: str = "kokoro:ef_dora") -> "Path":
     """
     import soundfile as sf
 
-    path = reference_path(source)
+    if lang not in REFERENCE_TEXTS:
+        raise ValueError(f"No reference script for language '{lang}'.")
+    path = reference_path(source, lang)
     if path.exists():
         return path
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -198,24 +226,27 @@ def ensure_reference(source: str = "kokoro:ef_dora") -> "Path":
 
         with tempfile.TemporaryDirectory() as tmp:
             aiff = f"{tmp}/ref.aiff"
-            subprocess.run(["say", "-v", voice or "Paulina", "-o", aiff,
-                            REFERENCE_TEXT], check=True)
+            fallback = "Paulina" if lang == "es" else "Daniel"
+            subprocess.run(["say", "-v", voice or fallback, "-o", aiff,
+                            REFERENCE_TEXTS[lang]], check=True)
             audio, rate = sf.read(aiff)
         sf.write(path, audio, rate)
     else:
-        backend = KokoroBackend({"es": voice or "ef_dora"})
-        audio = backend.synth(REFERENCE_TEXT, "es", Prosody(), NEUTRAL)
+        fallback = DEFAULT_VOICES[lang]
+        backend = KokoroBackend({lang: voice or fallback})
+        audio = backend.synth(REFERENCE_TEXTS[lang], lang, Prosody(), NEUTRAL)
         sf.write(path, audio, KOKORO_SR)
     return path
 
 
 def make_backend(name: str, *, voices: dict[str, str] | None = None,
                  model: str = DEFAULT_MLX_MODEL,
-                 ref_audio: str | None = None) -> Backend:
+                 ref_audio: str | None = None,
+                 ref_audios: dict[str, str] | None = None) -> Backend:
     if name == "kokoro":
         return KokoroBackend(voices)
     if name in ("mlx", "chatterbox"):
-        return MlxAudioBackend(model, ref_audio)
+        return MlxAudioBackend(model, ref_audio, ref_audios)
     raise ValueError(f"Unknown voice backend '{name}'. Try 'kokoro' or 'chatterbox'.")
 
 
@@ -223,11 +254,12 @@ class Speaker:
     """Renders utterances, caching repeats of identical requests."""
 
     def __init__(self, voices: dict[str, str] | None = None, *,
-                 backend: str = "kokoro", model: str = DEFAULT_MLX_MODEL,
+                 backend: str = "chatterbox", model: str = DEFAULT_MLX_MODEL,
                  ref_audio: str | None = None,
+                 ref_audios: dict[str, str] | None = None,
                  prosody_strength: float = 1.0) -> None:
         self.backend = make_backend(backend, voices=voices, model=model,
-                                    ref_audio=ref_audio)
+                                    ref_audio=ref_audio, ref_audios=ref_audios)
         self.prosody_strength = prosody_strength
         # Chatterbox already varies delivery natively; touching it afterwards
         # would only add the artifacts we are trying to remove.

@@ -20,7 +20,7 @@ import soundfile as sf
 from earworms.emotion import for_item
 from earworms.music import SR
 from earworms.vocab import load
-from earworms.voice import Prosody, Speaker, ensure_reference
+from earworms.voice import Prosody, Speaker
 
 VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 OUT = Path("out/compare")
@@ -30,15 +30,16 @@ CONFIGS: dict[str, dict] = {
     "kokoro-full": dict(backend="kokoro", prosody_strength=1.0),
     "kokoro-gentle": dict(backend="kokoro", prosody_strength=0.5),
     "kokoro-flat": dict(backend="kokoro", prosody_strength=0.0),
-    "chatterbox-kokoro-ref": dict(backend="chatterbox"),
-    "chatterbox-paulina-ref": dict(backend="chatterbox", ref_audio="say:Paulina"),
+    "chatterbox-bilingual": dict(
+        backend="chatterbox",
+        ref_audios={"es": "say:Paulina", "en": "say:Daniel"},
+    ),
+    "chatterbox-shared-paulina": dict(
+        backend="chatterbox", ref_audio="say:Paulina"),
 }
 
 
 def render(name: str, kwargs: dict, items, reps: int, emotions: bool) -> dict:
-    if kwargs.get("ref_audio", "").startswith("say:"):
-        kwargs = {**kwargs, "ref_audio": str(ensure_reference(kwargs["ref_audio"]))}
-
     started = time.time()
     speaker = Speaker(backend=kwargs.pop("backend"), **kwargs)
     load_time = time.time() - started

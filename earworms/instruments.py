@@ -70,12 +70,11 @@ class SampledInstrument:
         self.pack = pack
         directory = sample_packs.pack_dir(pack)
         self.layers: dict[int, list[tuple[int, str]]] = {}
-        for filename in pack.filenames(velocities):
-            parsed = sample_packs.midi_of(filename)
-            path = directory / filename
-            if parsed and path.exists():
-                note, layer = parsed
-                self.layers.setdefault(layer, []).append((note, str(path)))
+        for entry in pack.entries(velocities):
+            path = directory / entry.filename
+            if path.exists():
+                self.layers.setdefault(entry.velocity, []).append(
+                    (entry.midi_note, str(path)))
         if not self.layers:
             raise FileNotFoundError(
                 f"No samples cached for '{pack.name}'. "
@@ -127,10 +126,16 @@ def build(name: str, velocities: tuple[int, ...] | None = None) -> Instrument:
     """Resolve an instrument name from a BedSpec into a usable instrument."""
     if name == "synth":
         return SynthInstrument()
-    if name in sample_packs.PACKS:
-        return SampledInstrument(sample_packs.PACKS[name], velocities)
-    if name == "piano":
-        return SampledInstrument(sample_packs.SALAMANDER, velocities)
+    aliases = {
+        "piano": "salamander",
+        "marimba": "vsco-marimba",
+        "glockenspiel": "vsco-glockenspiel",
+        "strings": "vsco-strings",
+    }
+    pack_name = aliases.get(name, name)
+    if pack_name in sample_packs.PACKS:
+        return SampledInstrument(sample_packs.PACKS[pack_name], velocities)
     raise ValueError(f"Unknown instrument '{name}'. "
-                     f"Try 'synth', 'piano', or one of: "
+                     f"Try 'synth', 'piano', 'marimba', 'glockenspiel', "
+                     f"'strings', or one of: "
                      f"{', '.join(sample_packs.PACKS)}")

@@ -11,6 +11,15 @@ Downloaded on demand into ~/.cache/earworms/samples/salamander/ and used as the
 lead instrument in the generated music bed. Samples are not redistributed with
 this repository.
 
+VSCO 2 Community Edition
+------------------------
+Orchestral samples recorded by Sam Gossner and Simon Dalzell, with sample
+cutting by Elan Hickler/Soundemote. Dedicated to the public domain under CC0 1.0.
+https://github.com/sgossner/VSCO-2-CE
+
+Curated strings, marimba and glockenspiel samples are downloaded on demand into
+~/.cache/earworms/samples/. They are not redistributed with this repository.
+
 Models
 ------
 Kokoro-82M (hexgrad/Kokoro-82M) — Apache-2.0.

@@ -19,7 +19,6 @@ from .bedspec import BedSpec
 from .instruments import build as build_instrument
 
 SR = 44100
-STEPS_PER_BAR = 16
 
 
 @dataclass(frozen=True)
@@ -28,29 +27,38 @@ class Grid:
 
     bpm: float = 80.0
     beats_per_bar: int = 4
+    beat_unit: int = 4
     swing: float = 0.0
     sr: int = SR
 
     @classmethod
     def from_spec(cls, spec: BedSpec) -> "Grid":
-        return cls(bpm=spec.bpm, beats_per_bar=spec.beats_per_bar, swing=spec.swing)
+        return cls(bpm=spec.bpm, beats_per_bar=spec.beats_per_bar,
+                   beat_unit=spec.beat_unit, swing=spec.swing)
 
     @property
     def beat(self) -> float:
-        return 60.0 / self.bpm
+        return 60.0 / self.bpm * 4 / self.beat_unit
 
     @property
     def bar(self) -> float:
         return self.beat * self.beats_per_bar
+
+    @property
+    def steps_per_bar(self) -> int:
+        steps = self.beats_per_bar * 16 / self.beat_unit
+        if steps != int(steps):
+            raise ValueError("Meter must divide cleanly into sixteenth notes.")
+        return int(steps)
 
     def bar_start(self, index: int) -> float:
         return index * self.bar
 
     def step_time(self, bar: int, step: int) -> float:
         """Time of a 16th-note step, with swing applied to the off-eighths."""
-        offset = step / STEPS_PER_BAR * self.bar
+        offset = step / self.steps_per_bar * self.bar
         if self.swing and step % 4 == 2:
-            offset += self.swing * (self.bar / STEPS_PER_BAR)
+            offset += self.swing * (self.bar / self.steps_per_bar)
         return self.bar_start(bar) + offset
 
     def samples(self, seconds: float) -> int:
@@ -77,6 +85,50 @@ def _add(buf: np.ndarray, sig: np.ndarray, at: int) -> None:
 def _onepole_lp(x: np.ndarray, cutoff: float, sr: int = SR) -> np.ndarray:
     b, a = signal.butter(2, min(cutoff / (sr / 2), 0.99), btype="low")
     return signal.lfilter(b, a, x)
+
+
+def filter_curve(spec: BedSpec, n_bars: int, points: int,
+                 rng: np.random.Generator) -> np.ndarray:
+    """Return the pad cutoff automation curve at an arbitrary control rate."""
+    bars = np.linspace(0, n_bars, points, endpoint=False)
+    period = max(spec.pad.cutoff_period_bars, 0.25)
+    phase = 2 * np.pi * bars / period
+    if spec.pad.cutoff_curve == "sine":
+        shape = np.sin(phase)
+    elif spec.pad.cutoff_curve == "triangle":
+        shape = signal.sawtooth(phase, width=0.5)
+    elif spec.pad.cutoff_curve == "random_walk":
+        anchors = max(int(np.ceil(n_bars)) + 1, 2)
+        walk = np.cumsum(rng.normal(0, 0.45, anchors))
+        walk -= walk.mean()
+        peak = np.abs(walk).max()
+        if peak:
+            walk /= peak
+        shape = np.interp(bars, np.linspace(0, n_bars, anchors), walk)
+    else:
+        raise ValueError(f"Unknown filter curve '{spec.pad.cutoff_curve}'.")
+    cutoff = spec.pad.cutoff_base + spec.pad.cutoff_motion * shape
+    return np.clip(cutoff, 120.0, SR * 0.45)
+
+
+def _automated_lp(x: np.ndarray, spec: BedSpec, n_bars: int,
+                  rng: np.random.Generator, block: int = 2048) -> np.ndarray:
+    """Low-pass in short stateful blocks to avoid zippering between cutoffs."""
+    if not len(x):
+        return x
+    n_blocks = int(np.ceil(len(x) / block))
+    cutoffs = filter_curve(spec, n_bars, n_blocks, rng)
+    out = np.zeros_like(x)
+    state = None
+    for index, cutoff in enumerate(cutoffs):
+        start = index * block
+        end = min(len(x), start + block)
+        sos = signal.butter(2, min(cutoff / (SR / 2), 0.99),
+                            btype="low", output="sos")
+        if state is None:
+            state = signal.sosfilt_zi(sos) * x[start]
+        out[start:end], state = signal.sosfilt(sos, x[start:end], zi=state)
+    return out
 
 
 def _reverb(x: np.ndarray, seconds: float = 2.2, mix: float = 0.35, sr: int = SR,
@@ -108,21 +160,24 @@ def _pad(spec: BedSpec, grid: Grid, n_bars: int, rng: np.random.Generator) -> np
     # Slow swell in, slow fall away.
     env = np.sin(np.pi * np.clip(t / dur, 0, 1)) ** 1.5
 
+    instrument = build_instrument(spec.pad.instrument)
     for b in range(n_bars):
         chord = spec.chord(spec.progression[b % len(spec.progression)])
         voice = np.zeros(n)
-        for note in chord:
-            for detune in (-spec.pad.detune, 0.0, spec.pad.detune):
-                f = _midi_hz(note + detune)
-                phase = rng.uniform(0, 2 * np.pi)
-                voice += np.sin(2 * np.pi * f * t + phase) / (
-                    1 + 0.5 * (note - spec.root) / 12)
-        voice /= len(chord) * 3
-        # Gentle filter movement keeps a static chord from sounding synthetic.
-        cutoff = spec.pad.cutoff_base + spec.pad.cutoff_motion * np.sin(b * 0.7)
-        voice = _onepole_lp(voice, max(cutoff, 120.0))
+        if spec.pad.instrument == "synth":
+            for note in chord:
+                for detune in (-spec.pad.detune, 0.0, spec.pad.detune):
+                    f = _midi_hz(note + detune)
+                    phase = rng.uniform(0, 2 * np.pi)
+                    voice += np.sin(2 * np.pi * f * t + phase) / (
+                        1 + 0.5 * (note - spec.root) / 12)
+            voice /= len(chord) * 3
+        else:
+            for note in chord:
+                _add(voice, instrument.render(note, 0.55, dur), 0)
+            voice /= max(len(chord), 1)
         _add(out, voice * env, grid.samples(grid.bar_start(b)))
-    return out * spec.pad.level
+    return _automated_lp(out, spec, n_bars, rng) * spec.pad.level
 
 
 def _bass(spec: BedSpec, grid: Grid, n_bars: int) -> np.ndarray:
@@ -164,7 +219,7 @@ def _drums(spec: BedSpec, grid: Grid, n_bars: int,
     shaker = signal.lfilter(b2, a2, rng.standard_normal(sn)) * _env(sn, 0.001, 0.012)
 
     for bar in range(n_bars):
-        for step in range(STEPS_PER_BAR):
+        for step in range(grid.steps_per_bar):
             at = grid.samples(grid.step_time(bar, step))
             if spec.drums.kick[step % len(spec.drums.kick)] != ".":
                 _add(out, kick * spec.drums.kick_level, at)
@@ -191,7 +246,7 @@ def _lead(spec: BedSpec, grid: Grid, n_bars: int,
         if rng.random() > spec.lead.bar_probability:
             continue
         for _ in range(int(rng.integers(1, spec.lead.max_notes + 1))):
-            step = int(rng.integers(0, STEPS_PER_BAR // 2)) * 2
+            step = int(rng.integers(0, max(grid.steps_per_bar // 2, 1))) * 2
             note = notes[int(rng.integers(0, len(notes)))]
             velocity = float(rng.uniform(lo, hi))
             jitter = rng.uniform(-spec.lead.humanize, spec.lead.humanize) \
@@ -201,8 +256,15 @@ def _lead(spec: BedSpec, grid: Grid, n_bars: int,
     return out * spec.lead.level * 0.11
 
 
-def render_bed(spec: BedSpec, n_bars: int) -> np.ndarray:
-    """Render `n_bars` of backing music. Returns stereo float32, shape (n, 2)."""
+def _stereo(mono: np.ndarray, grid: Grid) -> np.ndarray:
+    """Widen one stem with a short Haas delay without smearing its beat."""
+    delay = grid.samples(0.012)
+    right = np.concatenate([np.zeros(delay), mono])[: len(mono)]
+    return np.stack([mono, 0.85 * right + 0.15 * mono], axis=1)
+
+
+def render_stems(spec: BedSpec, n_bars: int) -> dict[str, np.ndarray]:
+    """Render named stereo stems without bus peak normalisation."""
     grid = Grid.from_spec(spec)
     rng = np.random.default_rng(spec.seed)
     space = spec.space
@@ -212,17 +274,26 @@ def render_bed(spec: BedSpec, n_bars: int) -> np.ndarray:
     lead = _reverb(_lead(spec, grid, n_bars, rng),
                    seconds=space.reverb_seconds * 0.8,
                    mix=min(space.reverb_mix + 0.05, 0.7), rng=rng)
-    mono = pad + _bass(spec, grid, n_bars) + _drums(spec, grid, n_bars, rng) + lead
+    stems = {
+        "pad": pad,
+        "bass": _bass(spec, grid, n_bars),
+        "drums": _drums(spec, grid, n_bars, rng),
+        "lead": lead,
+    }
 
     # Fade the very start and end so the track does not click in or out.
-    fade = grid.samples(min(grid.bar * 2, len(mono) / grid.sr / 3))
-    mono[:fade] *= np.linspace(0, 1, fade)
-    mono[-fade:] *= np.linspace(1, 0, fade)
+    for mono in stems.values():
+        fade = grid.samples(min(grid.bar * 2, len(mono) / grid.sr / 3))
+        mono[:fade] *= np.linspace(0, 1, fade)
+        mono[-fade:] *= np.linspace(1, 0, fade)
+    return {name: _stereo(mono, grid).astype(np.float32)
+            for name, mono in stems.items()}
 
-    # A short Haas delay on one side widens the pad without smearing the beat.
-    delay = grid.samples(0.012)
-    right = np.concatenate([np.zeros(delay), mono])[: len(mono)]
-    stereo = np.stack([mono, 0.85 * right + 0.15 * mono], axis=1)
+
+def render_bed(spec: BedSpec, n_bars: int) -> np.ndarray:
+    """Render and sum `n_bars` of backing music as stereo float32."""
+    stems = render_stems(spec, n_bars)
+    stereo = sum(stems.values(), np.zeros_like(next(iter(stems.values()))))
     peak = np.abs(stereo).max()
     if peak > 0:
         stereo = stereo / peak * 0.7
