@@ -9,13 +9,17 @@ word list, fully locally on an Apple Silicon Mac.
 ## 0. What was built
 
 ```
-generate.py          CLI entry point
-earworms/vocab.py    parses the Obsidian markdown notes into (Spanish, English) pairs
-earworms/music.py    procedural ambient bed synthesised at a known BPM
-earworms/voice.py    Kokoro TTS with per-repetition prosody variation
-earworms/arrange.py  places utterances on downbeats according to a pattern
-earworms/mix.py      LUFS normalisation, sidechain ducking, block limiter
-DESIGN.md            this document
+generate.py            CLI entry point
+compare_voices.py      renders the same words through several voice setups
+earworms/vocab.py      parses the Obsidian notes into (Spanish, English, emoji) triples
+earworms/bedspec.py    every music parameter, as styles and as JSON
+earworms/music.py      renders a BedSpec into audio on a known beat grid
+earworms/instruments.py  synth and sampled instruments behind one interface
+earworms/samples.py    sample-pack registry and downloader
+earworms/emotion.py    emoji -> delivery mapping
+earworms/voice.py      Kokoro and Chatterbox backends, per-repeat variation
+earworms/arrange.py    places utterances on downbeats according to a pattern
+earworms/mix.py        LUFS normalisation, sidechain ducking, block limiter
 ```
 
 ### Running it
@@ -25,46 +29,53 @@ brew install espeak-ng          # required by Kokoro for Spanish G2P
 uv sync
 
 uv run generate.py --words 12 --out out/lesson.wav
-uv run generate.py --words 6 --dry-run          # show the plan, generate nothing
+uv run generate.py --words 6 --dry-run              # show the plan only
+uv run generate.py --bed-only --bed-style lofi      # audition a bed in ~1 s
+uv run generate.py --download-samples               # fetch the piano (~88 MB)
+uv run generate.py --words 6 --backend chatterbox   # slower, much more expressive
+uv run compare_voices.py --words 3                  # A/B the voice setups
 ```
 
-Useful flags: `--mode words|phrases|mixed`, `--pattern retrieval|earworms`,
-`--bpm`, `--seed`, `--voice-es`, `--voice-en`, `--duck-db`, `--speech-lufs`,
-`--music-lufs`. A sidecar `.txt` tracklist with timestamps is written next to
-the audio.
+Flags worth knowing: `--bed-style yoga|nocturne|lofi|warm`, `--bed-seed`,
+`--bed-spec <file>`, `--instrument synth|piano`, `--mode words|phrases|mixed`,
+`--pattern retrieval|earworms`, `--backend kokoro|chatterbox`, `--ref-audio`,
+`--prosody-strength`, `--no-emotion`, `--duck-db`.
 
-### Measured behaviour of the output
+Every run writes a `.txt` tracklist and a `.bed.json` with the resolved music
+parameters, so a bed that sounds good can be replayed or hand-edited.
+
+### Measured behaviour
 
 | Check | Result |
 |---|---|
-| Render time | ~40 s for a 4.2 min / 10-word track (M1, 16 GB) |
-| Music bed render | 0.5 s for 49 s of audio |
-| Utterance onset vs downbeat | **median 12 ms** offset |
-| Utterance durations (single words) | 0.62–1.07 s, against a 2.76 s slot at 80 BPM |
-| Integrated loudness | −17.5 LUFS, true peak 0.97 |
+| Utterance onset vs downbeat | median **15 ms** |
+| Integrated loudness / true peak | −17.4 LUFS / 0.97 |
 | Recovered tempo of the finished mix | 80.75 BPM (requested 80) |
-
-Speech synthesis dominates the runtime at roughly 1.6 s per utterance; repeated
-strings are cached.
+| Bed render | 0.3–1.4 s for ~70 s of audio, all styles |
+| Kokoro | ~0.4 s per utterance; 4.2 min track in 36 s |
+| Chatterbox (MLX) | ~5.5–6.1 s per utterance — about 14× Kokoro |
+| Emoji coverage in the vocabulary notes | **922 / 939 entries (98%)** |
 
 ### Known limitations
 
-- Kokoro's Spanish voices are European-leaning; `ef_dora` is not a Latin
-  American accent. See §4 for alternatives.
-- Only 40% of the 939 vocabulary entries carry an example sentence, so
-  `--mode phrases` silently falls back to the headword for the other 60%.
-- The `Item` translation takes only the first semicolon-separated sense, so
-  "the check; the bill" is taught as "the check".
-- Repeats of a word are blocked together rather than spaced across the track
-  (see §2, improvement 2 — not yet implemented).
-- Single fixed chord progression and one arrangement; the bed varies only by
-  `--seed`.
+- Kokoro's Spanish voices are European-leaning. Chatterbox clones whatever
+  reference it is given, so `--ref-audio` with a macOS `say -v Paulina` clip is
+  the current route to Latin American Spanish (macOS only).
+- Chatterbox needs Apple Silicon; `--backend kokoro` remains the portable path.
+- `mlx-community/chatterbox-multilingual-v3` ships without built-in voice
+  conditioning, so a reference clip is mandatory. One is generated
+  automatically and cached in `~/.cache/earworms/refs/`.
+- Only 40% of entries carry an example sentence, so `--mode phrases` falls back
+  to the headword for the rest.
+- Multi-sense glosses are truncated to the first sense.
+- Repeats of a word are blocked together rather than spaced across the track.
+
 
 ---
 
 ## 1. Analysis of the reference track
 
-Measured from `Rapid Spanish (Latin American), Vols. 1–3 - Earworms Learning.mp3`
+Measured from `Earworms_Learning_Sample.mp3`
 (184.6 s) using `librosa.beat.beat_track` plus a crude speech-band energy VAD
 (300–3400 Hz, 70th-percentile threshold):
 
@@ -88,7 +99,7 @@ Reproduce with:
 ```bash
 uv run --with librosa python -c "
 import librosa, numpy as np
-y, sr = librosa.load('Rapid Spanish (Latin American), Vols. 1-3 - Earworms Learning.mp3', sr=22050, mono=True)
+y, sr = librosa.load('Earworms_Learning_Sample.mp3', sr=22050, mono=True)
 tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
 print(tempo, np.median(np.diff(librosa.frames_to_time(beats, sr=sr))))
 "
@@ -218,6 +229,62 @@ a two-bar slot. This is why the prototype defaults to a lower BPM.
 3. **Seed variation**: regenerate with different random seeds. Weakest, since
    Kokoro is largely deterministic per voice.
 
+### What was actually built and measured (iteration 2)
+
+`mlx-audio` turned out to be the practical route on Apple Silicon. It ships MLX
+ports of **Chatterbox, IndexTTS, Zonos2, Higgs Audio, Qwen3-TTS, MOSS-TTS,
+Dia, Sesame** and more, and its dependencies are light — `mlx`, `numpy`,
+`scipy`, `transformers>=5.14`, `huggingface_hub`, `miniaudio`, `sounddevice`
+— with **no torch pin**, so it installs alongside Kokoro without conflict.
+
+This matters: the PyPI `chatterbox-tts` package pins `torch==2.6.0` and
+`numpy<2.0.0`, which can never share an environment with Kokoro's torch 2.13
+and numpy 2.x. The MLX route sidesteps that entirely.
+
+Verified against the MLX source and by running it: `generate()` takes
+`lang_code`, `ref_audio`, `exaggeration`, `cfg_weight`, `temperature`, `speed`,
+`repetition_penalty`, `min_p`, `top_p`. Note it is `lang_code`, not
+`language_id` as the class docstring suggests.
+
+**Why the later repeats sounded mechanical.** The v1 pipeline pitch-shifted
+each repeat with `librosa.effects.pitch_shift`, which uses librosa's own phase
+vocoder — documented as a reference implementation that "makes no attempt to
+handle transients, producing many audible artifacts". Three changes:
+
+1. Chatterbox varies delivery natively, so no post-processing is applied at all.
+2. Where a shift is still used (Kokoro), it goes through Rubber Band via
+   `pedalboard.PitchShift`.
+3. The variation table was rescaled from ±0.9 to ±0.4 semitones, leaning on
+   speed — which is native to the engine and artifact-free — instead of pitch.
+   `--prosody-strength` scales the whole table.
+
+**Emotion from emoji.** `vocab.py` already captured the emoji trailing each
+headword and discarded it. 922 of 939 entries (98%) carry one, so the notes are
+effectively pre-annotated. Faces and gestures map to a named delivery; object
+emoji fall through to a warm neutral. Resulting distribution: warm 76%,
+emphatic 7.5%, thoughtful 3.8%, sad 3.0%, angry 2.2%, the rest below 2%.
+
+### Music parameterisation
+
+`BedSpec` (`earworms/bedspec.py`) holds metre, harmony, four layers and space.
+Chords are derived from `root` + `scale` + scale degrees rather than a hard-coded
+table; the voicing formula `[r, r+7, r+12, r+12+third, r+19]` reproduces the v1
+progression **exactly**, which is how the refactor was verified as
+sound-preserving. Drum patterns are 16-step strings, so rhythm is data.
+
+Four styles — `yoga` (the original), `nocturne`, `lofi`, `warm` — define
+*ranges* that a seeded rng samples within, so the same style gives related but
+distinct beds.
+
+### Sampled instruments
+
+Salamander Grand Piano (Yamaha C5, CC-BY 3.0, Alexander Holm): 30 root notes at
+**minor-third** spacing across 16 velocity layers. Two layers are fetched (~88 MB
+of the 748 MB library) into `~/.cache/earworms/samples/`. Minor-third spacing
+means resampling never exceeds 1.5 semitones, so the timbre holds. Pure Python
+plus `soundfile`, so it works on Linux as well as macOS.
+
+
 ---
 
 ## 5. Timing and mixing
@@ -263,13 +330,26 @@ a separate venv.
 
 ## 7. Things to try next
 
+Done in iteration 2: Chatterbox for genuine intonation control; Latin American
+Spanish via Chatterbox cloning from a macOS Paulina reference; parameterised and
+randomisable music beds; recorded piano samples.
+
+Still open:
+
+- **IndexTTS-2 via mlx-audio** — an explicit 8-float emotion vector
+  `[happy, angry, sad, afraid, disgusted, melancholic, surprised, calm]` plus
+  duration control, which would let a word land on the beat *by construction*
+  rather than by time-stretching. `earworms/emotion.py` already emits this
+  vector via `Emotion.vector()`. Note its model licence restricts commercial use.
+- **Zonos2 via mlx-audio** — emotion conditioning plus pitch-variance and
+  speaking-rate parameters.
 - Hybrid music: neural 8-bar loop, grid-snapped with `beat_this`, then looped.
-- Chatterbox for genuine intonation control.
 - Expanding-interval spacing across the track rather than blocked repeats.
 - Sung rather than spoken delivery, to capture the actual song superiority effect.
-- Latin American Spanish voice (Kokoro's are European-leaning) — Chatterbox
-  cloning from a short reference sample, or macOS Paulina.
 - A "test mode" track: Spanish only, with silence where the English would be.
+- More sample packs — VSCO 2 CE (CC0) for marimba, glockenspiel and strings.
+- More bed parameters: chord extensions, alternative time signatures, filter
+  automation curves, per-layer sidechain.
 
 ---
 
@@ -298,3 +378,12 @@ a separate venv.
 - [vocabulary-to-speech-api — GitHub](https://github.com/elhalili/vocabulary-to-speech-api)
 - [The song that never ends: repeated exposure and earworm development](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10585939/)
 - [Music Training Program based on language development and neuroscience principles](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3846262/)
+- [mlx-audio — GitHub](https://github.com/Blaizzy/mlx-audio)
+- [Chatterbox — Resemble AI](https://github.com/resemble-ai/chatterbox)
+- [IndexTTS — GitHub](https://github.com/index-tts/index-tts)
+- [IndexTTS2 paper](https://arxiv.org/pdf/2506.21619)
+- [Salamander Grand Piano (CC-BY 3.0)](https://archive.org/details/SalamanderGrandPianoV3)
+- [SalamanderGrandPiano SFZ mirror](https://github.com/sfzinstruments/SalamanderGrandPiano)
+- [VSCO 2 Community Edition (CC0)](https://github.com/sgossner/VSCO-2-CE)
+- [librosa phase vocoder caveat](https://librosa.org/doc/main/generated/librosa.phase_vocoder.html)
+- [pedalboard — Spotify](https://github.com/spotify/pedalboard)

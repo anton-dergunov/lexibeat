@@ -1,0 +1,17 @@
+Third-party assets used by this project
+=======================================
+
+Salamander Grand Piano
+----------------------
+Yamaha C5 grand piano samples by Alexander Holm.
+Licensed under Creative Commons Attribution 3.0 Unported (CC-BY 3.0).
+https://archive.org/details/SalamanderGrandPianoV3
+
+Downloaded on demand into ~/.cache/earworms/samples/salamander/ and used as the
+lead instrument in the generated music bed. Samples are not redistributed with
+this repository.
+
+Models
+------
+Kokoro-82M (hexgrad/Kokoro-82M) — Apache-2.0.
+Chatterbox Multilingual (Resemble AI, via mlx-community/chatterbox-multilingual-v3) — MIT.

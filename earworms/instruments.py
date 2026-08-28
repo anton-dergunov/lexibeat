@@ -1,0 +1,136 @@
+"""Instruments for the lead layer.
+
+Both implementations answer the same question — "give me this note, at this
+velocity, lasting this long" — so the bed can swap an oscillator for a recorded
+piano by changing one field in the spec.
+"""
+
+from __future__ import annotations
+
+from functools import lru_cache
+from pathlib import Path
+from typing import Protocol
+
+import librosa
+import numpy as np
+import soundfile as sf
+
+from . import samples as sample_packs
+from .samples import SamplePack
+
+SR = 44100
+
+
+class Instrument(Protocol):
+    def render(self, midi_note: float, velocity: float,
+               seconds: float) -> np.ndarray: ...
+
+
+def _midi_hz(note: float) -> float:
+    return 440.0 * 2 ** ((note - 69) / 12.0)
+
+
+class SynthInstrument:
+    """The original additive bell: a sine plus two quiet harmonics."""
+
+    name = "synth"
+
+    def render(self, midi_note: float, velocity: float,
+               seconds: float) -> np.ndarray:
+        n = int(seconds * SR)
+        t = np.arange(n) / SR
+        f = _midi_hz(midi_note)
+        sig = (np.sin(2 * np.pi * f * t)
+               + 0.3 * np.sin(2 * np.pi * 2 * f * t)
+               + 0.12 * np.sin(2 * np.pi * 3 * f * t))
+        attack = np.clip(t / 0.006, 0, 1)
+        return sig * attack * np.exp(-t / 0.5) * velocity
+
+
+@lru_cache(maxsize=128)
+def _load_sample(path: str, max_seconds: float) -> tuple[np.ndarray, int]:
+    """Read a sample as mono, truncated — the full files are 15 s each."""
+    with sf.SoundFile(path) as f:
+        data = f.read(frames=int(max_seconds * f.samplerate), dtype="float32")
+        rate = f.samplerate
+    if data.ndim == 2:
+        data = data.mean(axis=1)
+    return data, rate
+
+
+class SampledInstrument:
+    """Plays back recorded samples, pitched to the requested note.
+
+    The library is sampled in minor thirds, so the resampling ratio is never
+    more than 1.5 semitones and the timbre stays convincing.
+    """
+
+    def __init__(self, pack: SamplePack, velocities: tuple[int, ...] | None = None):
+        self.name = pack.name
+        self.pack = pack
+        directory = sample_packs.pack_dir(pack)
+        self.layers: dict[int, list[tuple[int, str]]] = {}
+        for filename in pack.filenames(velocities):
+            parsed = sample_packs.midi_of(filename)
+            path = directory / filename
+            if parsed and path.exists():
+                note, layer = parsed
+                self.layers.setdefault(layer, []).append((note, str(path)))
+        if not self.layers:
+            raise FileNotFoundError(
+                f"No samples cached for '{pack.name}'. "
+                f"Run: uv run generate.py --download-samples {pack.name}")
+        for entries in self.layers.values():
+            entries.sort()
+        self._sorted_layers = sorted(self.layers)
+
+    def _pick(self, midi_note: float, velocity: float) -> tuple[str, float]:
+        """Choose a sample, and how many semitones it must be shifted."""
+        # Velocity layers run 1..layer_count across the dynamic range.
+        wanted = 1 + velocity * (self.pack.layer_count - 1)
+        layer = min(self._sorted_layers, key=lambda k: abs(k - wanted))
+        entries = self.layers[layer]
+        note, path = min(entries, key=lambda e: abs(e[0] - midi_note))
+        return path, midi_note - note
+
+    def render(self, midi_note: float, velocity: float,
+               seconds: float) -> np.ndarray:
+        path, semitones = self._pick(midi_note, velocity)
+        # Read a little extra, since shifting up shortens the sample.
+        audio, rate = _load_sample(path, seconds * 1.4 + 0.5)
+
+        # Resampling to a lower target rate and then calling the result 44.1 kHz
+        # raises the pitch — one operation covers both shift and rate change.
+        ratio = 2 ** (semitones / 12.0)
+        target = SR / ratio
+        if abs(target - rate) > 1.0:
+            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
+                                     res_type="soxr_hq")
+
+        n = int(seconds * SR)
+        if len(audio) < n:
+            audio = np.pad(audio, (0, n - len(audio)))
+        audio = audio[:n].copy()
+
+        # Fade the tail so a truncated note does not click.
+        release = min(int(0.25 * SR), n)
+        if release:
+            audio[-release:] *= np.linspace(1.0, 0.0, release) ** 1.5
+
+        peak = np.abs(audio).max()
+        if peak > 0:
+            audio = audio / peak * velocity
+        return audio
+
+
+def build(name: str, velocities: tuple[int, ...] | None = None) -> Instrument:
+    """Resolve an instrument name from a BedSpec into a usable instrument."""
+    if name == "synth":
+        return SynthInstrument()
+    if name in sample_packs.PACKS:
+        return SampledInstrument(sample_packs.PACKS[name], velocities)
+    if name == "piano":
+        return SampledInstrument(sample_packs.SALAMANDER, velocities)
+    raise ValueError(f"Unknown instrument '{name}'. "
+                     f"Try 'synth', 'piano', or one of: "
+                     f"{', '.join(sample_packs.PACKS)}")

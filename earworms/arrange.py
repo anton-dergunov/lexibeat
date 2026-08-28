@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from .emotion import for_item
 from .music import Grid
 from .vocab import Item
 from .voice import Prosody, Speaker, fit
@@ -51,6 +52,7 @@ def arrange(
     pattern: str = "retrieval",
     intro_bars: int = 2,
     outro_bars: int = 2,
+    emotions: bool = True,
     progress: bool = True,
 ) -> tuple[list[Event], int]:
     """Return the scheduled utterances and the total number of bars needed."""
@@ -59,14 +61,18 @@ def arrange(
     bar = intro_bars
 
     for n, item in enumerate(items, 1):
+        emotion = for_item(item.source, item.emoji, enabled=emotions)
         if progress:
-            print(f"  [{n}/{len(items)}] {item.source} — {item.target}", flush=True)
+            print(f"  [{n}/{len(items)}] {item.emoji or ' '} {item.source} — "
+                  f"{item.target}  ({emotion.name})", flush=True)
         for kind, rep in slots:
             if kind in ("gap", "rest"):
                 bar += 1
                 continue
             text = item.source if kind == "es" else item.target
-            audio = speaker.say(text, kind, Prosody.for_repeat(rep))
+            prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
+            prosody = prosody.with_emotion(emotion, speaker.prosody_strength)
+            audio = speaker.say(text, kind, prosody, emotion)
             # Leave a little of the bar clear so the next downbeat stays audible.
             audio = fit(audio, grid.bar * 0.92)
             events.append(Event(grid.bar_start(bar), audio, f"{kind}:{text}"))

@@ -21,6 +21,12 @@ TRANSLATION = re.compile(r"^\*(?P<gloss>[^*].*?)\*\s*$")
 EXAMPLE = re.compile(r"^>\s*(?P<body>.+)$")
 
 
+def _emoji_only(text: str) -> str:
+    """Keep just the symbol characters trailing a headword."""
+    return "".join(c for c in (text or "")
+                   if unicodedata.category(c) in {"So", "Sk"})
+
+
 def _strip_markup(text: str) -> str:
     text = text.replace("**", "").replace("*", "")
     # Emoji and other symbol characters read badly when sent to a TTS engine.
@@ -34,6 +40,7 @@ class Item:
 
     source: str  # Spanish
     target: str  # English
+    emoji: str = ""  # the note's own emoji, used to colour the delivery
 
     def __post_init__(self) -> None:
         self.source = _strip_markup(self.source)
@@ -52,21 +59,23 @@ class Entry:
 def parse_file(path: Path) -> list[Entry]:
     entries: list[Entry] = []
     word: str | None = None
+    emoji: str = ""
     gloss: str | None = None
     example: Item | None = None
 
     def flush() -> None:
-        nonlocal word, gloss, example
+        nonlocal word, emoji, gloss, example
         if word and gloss:
-            item = Item(word, gloss.split(";")[0])
+            item = Item(word, gloss.split(";")[0], emoji)
             if item:
                 entries.append(Entry(item, example))
-        word, gloss, example = None, None, None
+        word, emoji, gloss, example = None, "", None, None
 
     for line in path.read_text(encoding="utf-8").splitlines():
         if m := HEADWORD.match(line):
             flush()
             word = m.group("word")
+            emoji = _emoji_only(m.group("emoji"))
         elif word and gloss is None and (m := TRANSLATION.match(line)):
             gloss = m.group("gloss")
         elif word and example is None and (m := EXAMPLE.match(line)):
@@ -74,7 +83,7 @@ def parse_file(path: Path) -> list[Entry]:
             # The two halves are joined by a spaced hyphen; be tolerant of dashes.
             parts = re.split(r"\s+[-–—]\s+", body, maxsplit=1)
             if len(parts) == 2:
-                candidate = Item(*parts)
+                candidate = Item(parts[0], parts[1], emoji)
                 if candidate:
                     example = candidate
     flush()
