@@ -224,6 +224,20 @@ larger candidate pool, extracts audio descriptors and greedily chooses a
 family-balanced, maximally separated listening set rather than hard-coding 30
 tracks.
 
+Listener feedback from the first 30-bed comparison established a clearer
+production prior: nearly straight subdivision, audible first-beat hierarchy,
+restrained percussion and coherent acoustic foreground instruments. The second
+comparison profile therefore caps ordinary swing, forces the low percussion
+lane onto every bar downbeat, applies transient/RMS-aware one-shot gain, and
+keeps bells and other metallic ornaments out of normal drum roles.
+
+Individual catalog samples remain useful for percussion. Pitched foreground
+parts now use a resolved `InstrumentRef`: a directory-level set of logical
+sample zones with pitch and velocity bounds saved into BedSpec. This restores
+the dedicated Salamander piano path and unlocks coherent VCSL/VSCO pianos,
+harps, mallets, organs and winds. Open Samples remains available for explicit
+experiments but the default `safe` policy is CC0-only.
+
 ---
 
 ## 4. Voice — options

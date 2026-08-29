@@ -17,9 +17,10 @@ import soundfile as sf
 from earworms.bedspec import BedSpec
 from earworms.arrange import arrange
 from earworms.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
-from earworms.instruments import SampledInstrument
-from earworms.library import (EXTERNAL_LIMIT, SampleLibrary, SampleRef,
-                              directory_size)
+from earworms.instruments import CatalogMultiSampleInstrument, SampledInstrument
+from earworms.library import (EXTERNAL_LIMIT, InstrumentRef, SampleAsset,
+                              SampleLibrary, SampleRef, directory_size,
+                              instrument_refs)
 from earworms.mix import duck_envelope, mix_stems
 from earworms.music import Grid, SR, filter_curve, render_bed, render_stems
 from earworms.samples import PACKS, Sample, SamplePack, midi, missing
@@ -43,7 +44,7 @@ from earworms.voice import (
 from earworms.vocab import Item
 from benchmark_voices import pressure_snapshot, write_comparison
 from compare_gemini_batched import split_on_long_silences
-from compare_beds import Candidate, FAMILIES, select_balanced
+from compare_beds import Candidate, FAMILIES, POSITIVE_FAMILIES, select_balanced
 from earworms.sfz import parse as parse_sfz
 
 
@@ -587,6 +588,7 @@ class TieredLibraryTests(unittest.TestCase):
             self.assertEqual(library.resolve(asset.ref), source)
             promoted = library.promote([asset.ref])[0]
             self.assertTrue(promoted.exists())
+            self.assertEqual(promoted.suffix, ".wav")
             source.unlink()
             self.assertEqual(library.resolve(asset.ref), promoted)
             promoted.unlink()
@@ -602,6 +604,19 @@ class TieredLibraryTests(unittest.TestCase):
                     library._check_budget("external", 1)
             self.assertEqual(directory_size(Path(tmp) / "unmanaged"), 0)
 
+    def test_demo_audio_is_quarantined_from_normal_selection(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(base / "external", base / "local")
+            demo = library.collection_path("open-samples") / "Piano Demo.wav"
+            demo.parent.mkdir(parents=True)
+            sf.write(demo, np.zeros(SR // 20), SR)
+            library.index("open-samples", deep=True)
+            self.assertEqual(library.assets(), [])
+            quarantined = library.assets(usable_only=False)
+            self.assertEqual(len(quarantined), 1)
+            self.assertTrue(quarantined[0].quarantined)
+
     def test_sfz_regions_inherit_group_and_report_unsupported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "instrument.sfz"
@@ -615,6 +630,38 @@ class TieredLibraryTests(unittest.TestCase):
             self.assertEqual(document.zones[0].key_center, 60)
             self.assertEqual(document.zones[0].lo_vel, 1)
             self.assertIn("unsupported_filter", document.unsupported_opcodes)
+
+    def test_catalog_samples_form_serializable_multisample_instrument(self) -> None:
+        assets = [SampleAsset(
+            collection="vcsl", asset_id=f"id-{note}", sha256=f"hash-{note}",
+            relative_path=f"Grand Piano/Sustains/Piano_C{note - 60}.wav",
+            license="CC0-1.0", category="pitched", midi_note=note,
+            duration_seconds=2.0)
+            for note in range(60, 66)]
+        instruments = instrument_refs(assets)
+        self.assertEqual(len(instruments), 1)
+        self.assertEqual(len(instruments[0].zones), 6)
+        spec = BedSpec.from_style("radiant", 4)
+        spec.phrase.lead_instrument = instruments[0]
+        rebuilt = BedSpec.from_dict(json.loads(spec.to_json()))
+        self.assertEqual(rebuilt.phrase.lead_instrument, instruments[0])
+
+    def test_multisample_renderer_selects_nearest_zone(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(base / "external", base / "local")
+            root = library.collection_path("vcsl") / "Piano"
+            root.mkdir(parents=True)
+            for index, pitch in enumerate(("C4", "D4", "E4", "F4", "G4", "A4")):
+                sf.write(root / f"tone_{pitch}.wav",
+                         np.sin(2 * np.pi * (220 + index * 17) *
+                                np.arange(SR) / SR), SR)
+            library.index("vcsl", deep=True)
+            instrument = instrument_refs(library.assets())[0]
+            audio = CatalogMultiSampleInstrument(instrument, library).render(
+                65, 0.5, 0.15)
+            self.assertEqual(len(audio), int(0.15 * SR))
+            self.assertTrue(np.isfinite(audio).all())
 
 
 class BedSelectionTests(unittest.TestCase):
@@ -633,6 +680,15 @@ class BedSelectionTests(unittest.TestCase):
                          [(row.family, row.seed) for row in second])
         self.assertEqual({family: sum(row.family == family for row in first)
                           for family in FAMILIES}, {family: 2 for family in FAMILIES})
+
+    def test_positive_families_are_straight_and_anchor_every_bar(self) -> None:
+        for family in POSITIVE_FAMILIES:
+            spec = BedSpec.from_style(family, 19)
+            self.assertLessEqual(spec.swing, 0.08)
+            lane = spec.phrase.percussion[0]
+            self.assertTrue(all(lane.pattern[bar * spec.steps_per_bar] == "x"
+                                for bar in range(spec.phrase.loop_bars)))
+            self.assertLessEqual(spec.drums.level, 0.76)
 
 
 class RenderAndMixTests(unittest.TestCase):

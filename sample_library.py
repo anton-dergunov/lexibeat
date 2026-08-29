@@ -68,6 +68,12 @@ def main() -> None:
     report_parser.add_argument("--out", type=Path)
     promote = sub.add_parser("promote")
     promote.add_argument("bed_specs", type=Path, nargs="+")
+    playlist = sub.add_parser("playlist")
+    playlist.add_argument("collection", choices=sorted(COLLECTIONS))
+    playlist.add_argument("--category", choices=("pitched", "percussion", "loop",
+                                                  "texture"))
+    playlist.add_argument("--limit", type=int)
+    playlist.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     library = SampleLibrary()
     if args.command == "status":
@@ -86,6 +92,17 @@ def main() -> None:
         refs = list({(ref.collection, ref.asset_id): ref for ref in refs}.values())
         result = {"promoted": [str(path) for path in library.promote(refs)],
                   "refs": [asdict(ref) for ref in refs]}
+    elif args.command == "playlist":
+        assets = library.assets(category=args.category,
+                                collections=(args.collection,))
+        if args.limit is not None:
+            assets = assets[:args.limit]
+        paths = [library.resolve(asset.ref) for asset in assets]
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text("#EXTM3U\n" + "\n".join(str(path) for path in paths) +
+                            "\n", encoding="utf-8")
+        result = {"playlist": str(args.out), "collection": args.collection,
+                  "category": args.category, "files": len(paths)}
     else:
         result = library.report()
         if args.out:

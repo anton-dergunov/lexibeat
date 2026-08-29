@@ -56,11 +56,28 @@ directories, the index stores SHA-256 identities, and samples selected for a
 saved bed can be promoted into the local cache so it remains playable when the
 external SSD is disconnected.
 
+`safe` is the default bake-off policy and uses only the CC0 collections. Open
+Samples is opt-in through `--sample-policy all`: much of that repository is in
+Kontakt NCW format, and its custom license permits rendered music but not
+sample-product repackaging or model training. Promoted catalog files retain
+their WAV/FLAC/AIFF extensions. To make a Foobar2000-compatible audition list
+without copying the bulk library:
+
+```bash
+uv run sample_library.py playlist vcsl --category pitched --out out/vcsl.m3u8
+uv run sample_library.py playlist open-samples --out out/open-samples.m3u8
+```
+
+The catalog also groups pitch-labelled VCSL/VSCO directories into resolved
+multisample instruments with note and velocity zones. This keeps pianos, harps,
+mallets and winds coherent instead of transposing one arbitrary sample across
+the entire register.
+
 Generate a controlled listening set with:
 
 ```bash
 uv run --extra hosted-tts --env-file .env compare_beds.py \
-  --count 30 --sample-policy all --voice-backend gemini-vertex \
+  --count 30 --sample-policy safe --voice-backend gemini-vertex \
   --out-dir out/music-bakeoff
 ```
 
@@ -69,6 +86,17 @@ audio-feature distance to choose the requested count. Every final clip uses the
 same two bilingual items, so timbre, rhythm and speech masking can be compared
 directly. It writes WAV/BedSpec pairs, a complete manifest, a listening guide
 and a rating CSV.
+
+The feedback-focused profile adds `radiant`, `acoustic-flow`,
+`playful-minimal`, `warm-motion`, `bright-organic`, and `gentle-game`. It keeps
+swing subtle, anchors every bar with a downbeat, lowers the percussion bus and
+excludes metallic ornaments from ordinary drum selection:
+
+```bash
+uv run --extra hosted-tts compare_beds.py --count 20 \
+  --family-profile positive --sample-policy safe \
+  --speech-cache-from out/music-bakeoff --out-dir out/music-bakeoff-2
+```
 
 ## Generate a lesson
 

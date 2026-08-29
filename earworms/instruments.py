@@ -16,7 +16,7 @@ import numpy as np
 import soundfile as sf
 
 from . import samples as sample_packs
-from .library import SampleLibrary, SampleRef
+from .library import InstrumentRef, SampleLibrary, SampleRef
 from .samples import SamplePack
 
 SR = 44100
@@ -151,6 +151,47 @@ class CatalogSampleInstrument:
         return audio / peak * velocity if peak else audio
 
 
+class CatalogMultiSampleInstrument:
+    """Render a complete resolved instrument rather than stretching one sample."""
+
+    def __init__(self, ref: InstrumentRef, library: SampleLibrary | None = None):
+        if not ref.zones:
+            raise ValueError(f"Instrument '{ref.name}' has no sample zones.")
+        self.ref = ref
+        self.library = library or SampleLibrary()
+        self.name = ref.name
+
+    def _pick(self, midi_note: float, velocity: float):
+        midi_velocity = int(np.clip(round(velocity * 127), 0, 127))
+        matching = [zone for zone in self.ref.zones
+                    if zone.lo_note <= midi_note <= zone.hi_note and
+                    zone.lo_velocity <= midi_velocity <= zone.hi_velocity]
+        choices = matching or list(self.ref.zones)
+        return min(choices, key=lambda zone: (
+            abs(zone.root_note - midi_note),
+            abs((zone.lo_velocity + zone.hi_velocity) / 2 - midi_velocity),
+            zone.sample.asset_id))
+
+    def render(self, midi_note: float, velocity: float,
+               seconds: float) -> np.ndarray:
+        zone = self._pick(midi_note, velocity)
+        path = self.library.resolve(zone.sample)
+        audio, rate = _load_sample(str(path), seconds * 1.5 + 0.5)
+        ratio = 2 ** ((midi_note - zone.root_note) / 12.0)
+        target = SR / ratio
+        if abs(target - rate) > 1.0:
+            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
+                                     res_type="soxr_hq")
+        n = max(int(seconds * SR), 1)
+        audio = np.pad(audio, (0, max(n - len(audio), 0)))[:n].copy()
+        release = min(int(0.2 * SR), n)
+        if release:
+            audio[-release:] *= np.linspace(1.0, 0.0, release) ** 1.3
+        peak = float(np.abs(audio).max())
+        gain = 10 ** (zone.gain_db / 20)
+        return audio / peak * velocity * gain if peak else audio
+
+
 def load_one_shot(ref: SampleRef, max_seconds: float = 3.0,
                   library: SampleLibrary | None = None) -> np.ndarray:
     """Load, mono-fold and resample one catalog percussion asset."""
@@ -168,8 +209,17 @@ def load_one_shot(ref: SampleRef, max_seconds: float = 3.0,
     release = min(int(0.02 * SR), len(audio))
     if release:
         audio[-release:] *= np.linspace(1.0, 0.0, release)
-    peak = np.abs(audio).max()
-    return audio / peak if peak else audio
+    peak = float(np.abs(audio).max())
+    if not peak:
+        return audio
+    active_audio = audio[np.abs(audio) > peak * 0.01]
+    rms = float(np.sqrt(np.mean(active_audio.astype(np.float64) ** 2))) \
+        if active_audio.size else peak
+    gain = min(1.0 / peak, 0.16 / max(rms, 1e-8))
+    asset = library.asset(ref)
+    if asset.spectral_centroid and asset.spectral_centroid > 4200:
+        gain *= 10 ** (-3.0 / 20)
+    return audio * gain
 
 
 def build(name: str, velocities: tuple[int, ...] | None = None) -> Instrument:

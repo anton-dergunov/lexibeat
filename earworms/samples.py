@@ -136,8 +136,9 @@ PACK_GROUPS = {"vsco": ("vsco-marimba", "vsco-glockenspiel", "vsco-strings")}
 
 
 def cache_dir() -> Path:
-    root = Path(os.environ.get("EARWORMS_CACHE",
-                               Path.home() / ".cache" / "earworms"))
+    root = Path(os.environ.get(
+        "EARWORMS_SAMPLE_PACK_CACHE",
+        os.environ.get("EARWORMS_CACHE", Path.home() / ".cache" / "earworms")))
     return root / "samples"
 
 

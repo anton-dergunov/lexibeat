@@ -16,8 +16,8 @@ import numpy as np
 from scipy import signal
 
 from .bedspec import BedSpec, ChordEvent, NoteEvent, ResolvedPhrase
-from .instruments import (CatalogSampleInstrument, build as build_instrument,
-                          load_one_shot)
+from .instruments import (CatalogMultiSampleInstrument, CatalogSampleInstrument,
+                          build as build_instrument, load_one_shot)
 
 SR = 44100
 
@@ -276,7 +276,9 @@ def _resolved_pad(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
     out = _blank(grid, n_bars)
     if not spec.pad.enabled:
         return out
-    instrument = (CatalogSampleInstrument(phrase.pad_sample)
+    instrument = (CatalogMultiSampleInstrument(phrase.pad_instrument)
+                  if phrase.pad_instrument else
+                  CatalogSampleInstrument(phrase.pad_sample)
                   if phrase.pad_sample else
                   build_instrument(spec.pad.instrument)
                   if spec.pad.instrument != "synth" else None)
@@ -394,7 +396,7 @@ def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
                 if lane.humanize else 0.0
             at = grid.samples(max(0.0, _event_time(grid, step) + jitter))
             _add(out, hit * lane.level * local_rng.uniform(0.84, 1.12), at)
-    return out
+    return out * spec.drums.level
 
 
 def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
@@ -402,7 +404,9 @@ def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
     out = _blank(grid, n_bars)
     if not spec.lead.enabled:
         return out
-    instrument = (CatalogSampleInstrument(phrase.lead_sample)
+    instrument = (CatalogMultiSampleInstrument(phrase.lead_instrument)
+                  if phrase.lead_instrument else
+                  CatalogSampleInstrument(phrase.lead_sample)
                   if phrase.lead_sample else build_instrument(spec.lead.instrument))
     for step, event in _repeat_events(phrase.lead, phrase, grid, n_bars):
         assert isinstance(event, NoteEvent)

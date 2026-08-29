@@ -15,6 +15,7 @@ import shutil
 import sqlite3
 import subprocess
 import time
+from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -51,6 +52,27 @@ class SampleRef:
     collection: str
     asset_id: str
     sha256: str = ""
+
+
+@dataclass(frozen=True)
+class InstrumentZoneRef:
+    """One resolved multisample zone stored independently of physical paths."""
+
+    sample: SampleRef
+    root_note: int
+    lo_note: int = 0
+    hi_note: int = 127
+    lo_velocity: int = 0
+    hi_velocity: int = 127
+    gain_db: float = 0.0
+
+
+@dataclass(frozen=True)
+class InstrumentRef:
+    """A complete, serializable multisample instrument."""
+
+    name: str
+    zones: tuple[InstrumentZoneRef, ...]
 
 
 @dataclass(frozen=True)
@@ -160,6 +182,74 @@ def _note_from_name(path: Path) -> int | None:
         return midi(match.group(1).upper())
     except (ValueError, KeyError):
         return None
+
+
+def _velocity_from_name(path: str) -> int:
+    match = re.search(r"(?:^|[_ -])(?:vl|v)(\d+)(?:[_ .-]|$)", path.lower())
+    return int(match.group(1)) if match else 1
+
+
+def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
+                    include: tuple[str, ...] | None = None) -> list[InstrumentRef]:
+    """Group catalog samples into playable directory-level multisample banks.
+
+    Raw VCSL and VSCO collections do not always ship SFZ mappings. Their stable
+    directory layout and pitch-bearing filenames still provide enough metadata
+    to construct conservative note/velocity zones without treating isolated
+    recordings as complete instruments.
+    """
+    wanted = include or ("piano", "harp", "marimba", "glock", "vibra", "kalimba",
+                         "recorder", "flute", "oboe", "clarinet", "strumstick",
+                         "guitar", "harpsichord", "organ", "celesta", "xylophone")
+    excluded = ("release", "/rel", "noise", "demo", "loop")
+    groups: dict[tuple[str, str], list[SampleAsset]] = defaultdict(list)
+    for asset in assets:
+        parent = Path(asset.relative_path).parent.as_posix()
+        lowered = parent.lower()
+        if (asset.midi_note is None or
+                asset.duration_seconds is None or not 0.08 <= asset.duration_seconds <= 24 or
+                not any(word in lowered for word in wanted) or
+                any(word in lowered for word in excluded)):
+            continue
+        groups[(asset.collection, parent)].append(asset)
+
+    instruments: list[InstrumentRef] = []
+    for (collection, parent), values in sorted(groups.items()):
+        notes = sorted({asset.midi_note for asset in values if asset.midi_note is not None})
+        if len(notes) < min_notes:
+            continue
+        by_note_velocity: dict[tuple[int, int], SampleAsset] = {}
+        for asset in sorted(values, key=lambda row: row.relative_path):
+            assert asset.midi_note is not None
+            key = (asset.midi_note, _velocity_from_name(asset.relative_path))
+            by_note_velocity.setdefault(key, asset)  # stable first round robin
+        velocity_values = sorted({velocity for _, velocity in by_note_velocity})
+        velocity_centers = {
+            value: (64 if len(velocity_values) == 1 else
+                    round(index * 127 / (len(velocity_values) - 1)))
+            for index, value in enumerate(velocity_values)
+        }
+        zones: list[InstrumentZoneRef] = []
+        for (note, velocity), asset in by_note_velocity.items():
+            note_index = notes.index(note)
+            lo_note = 0 if note_index == 0 else (notes[note_index - 1] + note + 1) // 2
+            hi_note = 127 if note_index == len(notes) - 1 else (note + notes[note_index + 1]) // 2
+            velocity_index = velocity_values.index(velocity)
+            center = velocity_centers[velocity]
+            lo_velocity = (0 if velocity_index == 0 else
+                           (velocity_centers[velocity_values[velocity_index - 1]] +
+                            center + 1) // 2)
+            hi_velocity = (127 if velocity_index == len(velocity_values) - 1 else
+                           (center + velocity_centers[
+                               velocity_values[velocity_index + 1]]) // 2)
+            zones.append(InstrumentZoneRef(
+                asset.ref, note, lo_note, hi_note,
+                max(0, min(127, lo_velocity)), max(0, min(127, hi_velocity))))
+        name = f"{collection}:{parent}"
+        instruments.append(InstrumentRef(name, tuple(sorted(
+            zones, key=lambda zone: (zone.root_note, zone.lo_velocity,
+                                    zone.sample.asset_id)))))
+    return instruments
 
 
 class SampleLibrary:
@@ -317,7 +407,8 @@ class SampleLibrary:
                         collection=name, asset_id=digest[:20], sha256=digest,
                         relative_path=relative, license=spec.license,
                         category=_category(path), midi_note=_note_from_name(path),
-                        quarantined=not bool(spec.license), **metadata)
+                        quarantined=(not bool(spec.license) or
+                                     "demo" in relative.lower()), **metadata)
                     values = asdict(asset)
                     db.execute("""INSERT OR REPLACE INTO assets VALUES
                         (:collection,:asset_id,:sha256,:relative_path,:license,:category,
@@ -382,9 +473,6 @@ class SampleLibrary:
         return asset
 
     def resolve(self, ref: SampleRef) -> Path:
-        local = self.local / "samples" / ref.collection / ref.asset_id
-        if local.exists():
-            return local
         db = self._connect()
         row = db.execute("SELECT relative_path,sha256 FROM assets WHERE collection=? "
                          "AND asset_id=?", (ref.collection, ref.asset_id)).fetchone()
@@ -392,6 +480,13 @@ class SampleLibrary:
         if not row:
             raise FileNotFoundError(
                 f"Unknown sample {ref.collection}:{ref.asset_id}; index its collection.")
+        suffix = Path(row[0]).suffix.lower()
+        local = self.local / "samples" / ref.collection / f"{ref.asset_id}{suffix}"
+        legacy_local = self.local / "samples" / ref.collection / ref.asset_id
+        if local.exists():
+            return local
+        if legacy_local.exists():
+            return legacy_local
         path = self.collection_path(ref.collection) / row[0]
         if not path.exists():
             raise FileNotFoundError(
@@ -407,9 +502,16 @@ class SampleLibrary:
         for ref in refs:
             source = self.resolve(ref)
             self._check_budget("local", source.stat().st_size)
-            target = self.local / "samples" / ref.collection / ref.asset_id
+            asset = self.asset(ref)
+            target = (self.local / "samples" / ref.collection /
+                      f"{ref.asset_id}{Path(asset.relative_path).suffix.lower()}")
             target.parent.mkdir(parents=True, exist_ok=True)
             if not target.exists():
+                legacy = self.local / "samples" / ref.collection / ref.asset_id
+                if source == legacy:
+                    legacy.rename(target)
+                    promoted.append(target)
+                    continue
                 tmp = target.with_suffix(".partial")
                 shutil.copy2(source, tmp)
                 if ref.sha256 and _sha256(tmp) != ref.sha256:

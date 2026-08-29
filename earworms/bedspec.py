@@ -13,7 +13,7 @@ import random
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from pathlib import Path
 
-from .library import SampleRef
+from .library import InstrumentRef, InstrumentZoneRef, SampleRef
 
 SCALES: dict[str, list[int]] = {
     "natural_minor": [0, 2, 3, 5, 7, 8, 10],
@@ -67,6 +67,7 @@ class Drums:
     rim_level: float = 0.16
     shaker_level: float = 0.06
     shaker_density: float = 1.0  # 1.0 = every eighth note
+    level: float = 1.0
     duck_db: float = 5.0
     enabled: bool = True
 
@@ -136,6 +137,8 @@ class ResolvedPhrase:
     percussion: list[PercussionLane] = field(default_factory=list)
     lead_sample: SampleRef | None = None
     pad_sample: SampleRef | None = None
+    lead_instrument: InstrumentRef | None = None
+    pad_instrument: InstrumentRef | None = None
 
 
 @dataclass
@@ -274,6 +277,19 @@ def _sample_ref(data: dict | None) -> SampleRef | None:
     return SampleRef(**data) if data else None
 
 
+def _instrument_ref(data: dict | None) -> InstrumentRef | None:
+    if not data:
+        return None
+    return InstrumentRef(data["name"], tuple(
+        InstrumentZoneRef(
+            sample=_sample_ref(zone["sample"]), root_note=zone["root_note"],
+            lo_note=zone.get("lo_note", 0), hi_note=zone.get("hi_note", 127),
+            lo_velocity=zone.get("lo_velocity", 0),
+            hi_velocity=zone.get("hi_velocity", 127),
+            gain_db=zone.get("gain_db", 0.0))
+        for zone in data.get("zones", [])))
+
+
 def _phrase_from_dict(data: dict) -> ResolvedPhrase:
     return ResolvedPhrase(
         family=data["family"], loop_bars=int(data["loop_bars"]),
@@ -290,6 +306,8 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
             for lane in data.get("percussion", [])],
         lead_sample=_sample_ref(data.get("lead_sample")),
         pad_sample=_sample_ref(data.get("pad_sample")),
+        lead_instrument=_instrument_ref(data.get("lead_instrument")),
+        pad_instrument=_instrument_ref(data.get("pad_instrument")),
     )
 
 
@@ -458,6 +476,14 @@ def _euclidean(pulses: int, steps: int, rotation: int = 0) -> str:
     return "".join(values)
 
 
+def _with_bar_downbeats(pattern: str, steps_per_bar: int) -> str:
+    """Guarantee the primary rhythmic anchor beneath every spoken downbeat."""
+    values = list(pattern)
+    for index in range(0, len(values), steps_per_bar):
+        values[index] = "x"
+    return "".join(values)
+
+
 def _smooth_voicing(notes: list[int], previous: list[int] | None) -> list[int]:
     """Choose an inversion with compact motion from the previous chord."""
     base = sorted(set(notes))[:5]
@@ -484,7 +510,7 @@ _WIDE_FAMILIES = {
         "roots": [40, 43, 45, 48], "textures": ["sustain", "drone", "open"],
         "bass": ["sustain", "drone", "root_fifth"],
         "pads": ["sine", "triangle", "strings"],
-        "leads": ["synth", "piano", "glockenspiel"], "swing": (0.0, 0.06),
+        "leads": ["synth", "piano", "glockenspiel"], "swing": (0.0, 0.03),
         "density": (0.12, 0.28), "brightness": (550, 1050),
     },
     "organic": {
@@ -493,7 +519,7 @@ _WIDE_FAMILIES = {
         "roots": [43, 45, 48, 50], "textures": ["pulse", "open", "arpeggio"],
         "bass": ["root_fifth", "syncopated", "sustain"],
         "pads": ["triangle", "strings", "soft_saw"],
-        "leads": ["marimba", "piano", "synth"], "swing": (0.02, 0.16),
+        "leads": ["marimba", "piano", "synth"], "swing": (0.0, 0.05),
         "density": (0.28, 0.52), "brightness": (700, 1350),
     },
     "acoustic": {
@@ -502,7 +528,7 @@ _WIDE_FAMILIES = {
         "roots": [45, 48, 50, 53], "textures": ["arpeggio", "sustain", "pulse"],
         "bass": ["sustain", "root_fifth", "passing"],
         "pads": ["strings", "triangle"],
-        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.08),
+        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.04),
         "density": (0.22, 0.46), "brightness": (850, 1500),
     },
     "nocturnal": {
@@ -511,7 +537,7 @@ _WIDE_FAMILIES = {
         "roots": [38, 40, 41, 43, 45], "textures": ["drone", "sustain", "open"],
         "bass": ["drone", "sustain", "passing"],
         "pads": ["sine", "strings", "triangle"],
-        "leads": ["piano", "glockenspiel", "synth"], "swing": (0.0, 0.1),
+        "leads": ["piano", "glockenspiel", "synth"], "swing": (0.0, 0.04),
         "density": (0.1, 0.32), "brightness": (420, 850),
     },
     "sunlit": {
@@ -520,7 +546,7 @@ _WIDE_FAMILIES = {
         "roots": [48, 50, 53, 55], "textures": ["pulse", "arpeggio", "open"],
         "bass": ["root_fifth", "syncopated", "passing"],
         "pads": ["triangle", "soft_saw", "strings"],
-        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.12),
+        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.04),
         "density": (0.3, 0.55), "brightness": (1050, 1800),
     },
     "lofi-wide": {
@@ -529,8 +555,52 @@ _WIDE_FAMILIES = {
         "roots": [43, 45, 46, 48, 50], "textures": ["pulse", "arpeggio", "sustain"],
         "bass": ["syncopated", "root_fifth", "passing"],
         "pads": ["soft_saw", "triangle", "sine"],
-        "leads": ["piano", "marimba", "synth"], "swing": (0.16, 0.32),
+        "leads": ["piano", "marimba", "synth"], "swing": (0.02, 0.08),
         "density": (0.28, 0.5), "brightness": (500, 1100),
+    },
+    "radiant": {
+        "bpms": [86, 90, 94, 98, 102], "scales": ["major", "lydian"],
+        "roots": [48, 50, 53, 55], "textures": ["open", "pulse", "arpeggio"],
+        "bass": ["root_fifth", "sustain"],
+        "pads": ["strings", "triangle", "soft_saw"],
+        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.025),
+        "density": (0.3, 0.5), "brightness": (1150, 1850),
+    },
+    "acoustic-flow": {
+        "bpms": [68, 72, 76, 80, 84, 88], "scales": ["major", "dorian"],
+        "roots": [45, 48, 50, 53], "textures": ["sustain", "open", "arpeggio"],
+        "bass": ["sustain", "root_fifth"], "pads": ["strings", "triangle"],
+        "leads": ["piano", "marimba"], "swing": (0.0, 0.025),
+        "density": (0.2, 0.4), "brightness": (800, 1450),
+    },
+    "playful-minimal": {
+        "bpms": [76, 82, 86, 90, 94], "scales": ["major", "lydian", "dorian"],
+        "roots": [48, 50, 53, 55], "textures": ["pulse", "open"],
+        "bass": ["root_fifth", "sustain"], "pads": ["sine", "triangle"],
+        "leads": ["marimba", "piano", "glockenspiel"], "swing": (0.0, 0.02),
+        "density": (0.16, 0.34), "brightness": (900, 1650),
+    },
+    "warm-motion": {
+        "bpms": [72, 76, 80, 84, 88], "scales": ["major", "dorian"],
+        "roots": [45, 48, 50, 53], "textures": ["pulse", "open"],
+        "bass": ["root_fifth", "sustain"],
+        "pads": ["triangle", "strings", "soft_saw"],
+        "leads": ["piano", "marimba", "synth"], "swing": (0.0, 0.03),
+        "density": (0.26, 0.44), "brightness": (750, 1350),
+    },
+    "bright-organic": {
+        "bpms": [76, 80, 84, 88, 92], "scales": ["major", "dorian", "lydian"],
+        "roots": [48, 50, 53, 55], "textures": ["open", "arpeggio", "pulse"],
+        "bass": ["root_fifth", "passing"], "pads": ["strings", "triangle"],
+        "leads": ["marimba", "piano", "synth"], "swing": (0.0, 0.035),
+        "density": (0.24, 0.46), "brightness": (950, 1600),
+    },
+    "gentle-game": {
+        "bpms": [82, 86, 90, 94, 98], "scales": ["major", "lydian"],
+        "roots": [48, 50, 53, 55], "textures": ["arpeggio", "pulse"],
+        "bass": ["root_fifth", "passing"], "pads": ["triangle", "sine"],
+        "leads": ["marimba", "piano", "glockenspiel"], "swing": (0.0, 0.025),
+        "density": (0.26, 0.44), "brightness": (1000, 1700),
     },
 }
 
@@ -645,14 +715,16 @@ def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
     mid_pulses = max(1, round(bars * (1.0 + density * 3)))
     high_pulses = max(2, round(bars * (2.5 + density * 5)))
     lanes = [
-        PercussionLane("synth:kick", _euclidean(kick_pulses, loop_steps, 1),
-                       0.38 + density * 0.22, 0.94),
+        PercussionLane("synth:kick", _with_bar_downbeats(
+            _euclidean(kick_pulses, loop_steps), steps),
+            0.30 + density * 0.16, 0.96),
         PercussionLane(rng.choice(["synth:rim", "synth:wood", "synth:brush"]),
                        _euclidean(mid_pulses, loop_steps, steps // 4),
-                       0.11 + density * 0.2, 0.82, 0.008, rng.uniform(-0.25, 0.25)),
+                       0.075 + density * 0.13, 0.84, 0.003,
+                       rng.uniform(-0.25, 0.25)),
         PercussionLane(rng.choice(["synth:shaker", "synth:soft_hat"]),
                        _euclidean(high_pulses, loop_steps, rng.randrange(max(steps, 1))),
-                       0.025 + density * 0.08, 0.82, 0.012,
+                       0.018 + density * 0.045, 0.82, 0.004,
                        rng.choice([-0.35, 0.35])),
     ]
     if family in ("meditative", "nocturnal") and rng.random() < 0.55:
@@ -682,10 +754,10 @@ def _wide_style(family: str, rng: random.Random) -> BedSpec:
                 overlap=rng.uniform(1.1, 1.9), duck_db=rng.uniform(6.0, 7.5)),
         bass=Bass(level=rng.uniform(0.34, 0.56), attack=rng.uniform(0.04, 0.22),
                   decay_bars=rng.uniform(0.35, 0.9), duck_db=rng.uniform(2.0, 3.5)),
-        drums=Drums(duck_db=rng.uniform(3.0, 5.0)),
+        drums=Drums(level=rng.uniform(0.58, 0.76), duck_db=rng.uniform(4.5, 6.0)),
         lead=Lead(instrument=rng.choice(config["leads"]), level=rng.uniform(0.72, 1.08),
                   register=(rng.choice([19, 24]), rng.choice([34, 36, 39])),
-                  velocity=(0.3, 0.66), humanize=rng.uniform(0.0, 0.025),
+                  velocity=(0.3, 0.66), humanize=rng.uniform(0.0, 0.006),
                   duck_db=rng.uniform(7.0, 9.0)),
         space=Space(reverb_seconds=rng.uniform(1.5, 4.4),
                     reverb_mix=rng.uniform(0.28, 0.58)),

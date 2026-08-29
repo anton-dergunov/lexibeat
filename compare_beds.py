@@ -8,6 +8,7 @@ import copy
 import csv
 import json
 import math
+import shutil
 import warnings
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -19,14 +20,20 @@ from compare_gemini_batched import split_on_long_silences
 from earworms.arrange import PATTERNS
 from earworms.bedspec import BedSpec
 from earworms.emotion import NEUTRAL
-from earworms.library import SampleAsset, SampleLibrary, SampleRef
+from earworms.library import (InstrumentRef, SampleAsset, SampleLibrary, SampleRef,
+                              instrument_refs)
 from earworms.mix import mix_stems
 from earworms.music import Grid, SR, render_stems
+from earworms import samples as sample_packs
 from earworms.voice import Prosody, Speaker, fit
 
 
-FAMILIES = ("meditative", "organic", "acoustic", "nocturnal", "sunlit",
-            "lofi-wide")
+BROAD_FAMILIES = ("meditative", "organic", "acoustic", "nocturnal", "sunlit",
+                  "lofi-wide")
+POSITIVE_FAMILIES = ("meditative", "organic", "acoustic", "sunlit", "radiant",
+                     "acoustic-flow", "playful-minimal", "warm-motion",
+                     "bright-organic", "gentle-game")
+FAMILIES = BROAD_FAMILIES  # compatibility for callers importing the original pool
 ITEMS = (("el cava", "sparkling wine"), ("la salchicha", "sausage"))
 DEFAULT_MODEL = "gemini-3.1-flash-tts-preview"
 
@@ -59,6 +66,11 @@ def _audio_features(audio: np.ndarray, spec: BedSpec) -> np.ndarray:
     onset_density = float(np.count_nonzero(changes > np.percentile(changes, 90)) /
                           max(len(mono) / SR, 1))
     phrase = spec.phrase
+    downbeat_hits = 0
+    if phrase.percussion:
+        downbeat_hits = sum(
+            phrase.percussion[0].pattern[bar * spec.steps_per_bar] == "x"
+            for bar in range(phrase.loop_bars))
     return np.array([
         spec.bpm / 100, spec.beats_per_bar / 5, spec.swing,
         rms / peak, math.log10(max(centroid, 1)) / 4, high, onset_density / 10,
@@ -66,10 +78,26 @@ def _audio_features(audio: np.ndarray, spec: BedSpec) -> np.ndarray:
         len(phrase.bass) / max(phrase.loop_bars * spec.steps_per_bar, 1),
         len(phrase.lead) / max(phrase.loop_bars * spec.steps_per_bar, 1),
         len(phrase.percussion) / 4,
+        downbeat_hits / max(phrase.loop_bars, 1),
     ], dtype=np.float64)
 
 
-def select_balanced(candidates: list[Candidate], count: int) -> list[Candidate]:
+def _preference_score(candidate: Candidate) -> float:
+    """Transparent prior distilled from the first 30 human ratings."""
+    spec, phrase = candidate.spec, candidate.spec.phrase
+    straight = 1.0 - min(spec.swing / 0.08, 1.0)
+    downbeats = 0.0
+    if phrase and phrase.percussion:
+        downbeats = sum(
+            phrase.percussion[0].pattern[bar * spec.steps_per_bar] == "x"
+            for bar in range(phrase.loop_bars)) / phrase.loop_bars
+    restrained_drums = 1.0 - min(abs(spec.drums.level - 0.66) / 0.25, 1.0)
+    positive = 1.0 if spec.scale in ("major", "lydian") else 0.55
+    return 0.38 * straight + 0.3 * downbeats + 0.2 * restrained_drums + 0.12 * positive
+
+
+def select_balanced(candidates: list[Candidate], count: int,
+                    families: tuple[str, ...] | None = None) -> list[Candidate]:
     """Round-robin families while maximizing distance from prior selections."""
     if count < 1:
         raise ValueError("count must be positive")
@@ -80,22 +108,27 @@ def select_balanced(candidates: list[Candidate], count: int) -> list[Candidate]:
     scale = matrix.std(axis=0)
     scale[scale < 1e-9] = 1.0
     normalized = (matrix - mean) / scale
+    family_order = families or tuple(dict.fromkeys(
+        candidate.family for candidate in candidates))
     by_family = {family: [index for index, candidate in enumerate(candidates)
-                          if candidate.family == family] for family in FAMILIES}
+                          if candidate.family == family] for family in family_order}
     selected: list[int] = []
     while len(selected) < count:
         made_progress = False
-        for family in FAMILIES:
+        for family in family_order:
             available = [index for index in by_family[family] if index not in selected]
             if not available or len(selected) >= count:
                 continue
             if not selected:
                 chosen = max(available, key=lambda index: (
-                    float(np.linalg.norm(normalized[index])), -candidates[index].seed))
+                    _preference_score(candidates[index]) +
+                    0.12 * float(np.linalg.norm(normalized[index])),
+                    -candidates[index].seed))
             else:
                 chosen = max(available, key=lambda index: (
                     min(float(np.linalg.norm(normalized[index] - normalized[prior]))
-                        for prior in selected), -candidates[index].seed))
+                        for prior in selected) + 0.35 * _preference_score(candidates[index]),
+                    -candidates[index].seed))
             selected.append(chosen)
             made_progress = True
         if not made_progress:
@@ -112,14 +145,19 @@ def _choose(rng: np.random.Generator, values: list[SampleAsset]) -> SampleAsset 
     return values[int(rng.integers(0, len(values)))] if values else None
 
 
+_ORNAMENT_WORDS = ("sleigh", "jingle", "bell", "cowbell", "chime", "cymbal",
+                   "triangle", "musicbox", "music box", "roll")
+
+
 def enrich_with_catalog_samples(spec: BedSpec, assets: list[SampleAsset],
-                                seed: int) -> None:
+                                instruments: list[InstrumentRef], seed: int) -> None:
     """Resolve catalog assets into a phrase without consulting cache availability."""
     if spec.phrase is None or not assets:
         return
     rng = np.random.default_rng(seed * 7919 + 17)
     short = [asset for asset in assets if asset.category == "percussion" and
-             asset.duration_seconds is not None and 0.015 <= asset.duration_seconds <= 3.0]
+             asset.duration_seconds is not None and 0.015 <= asset.duration_seconds <= 3.0 and
+             not any(word in asset.relative_path.lower() for word in _ORNAMENT_WORDS)]
     roles = {
         "kick": _matching(short, ("kick", "bass drum", "cajon", "conga", "bongo",
                                   "darbuka", "low tom", "adufe")),
@@ -129,7 +167,7 @@ def enrich_with_catalog_samples(spec: BedSpec, assets: list[SampleAsset],
                                   "glass", "bell", "key")),
     }
     for lane_index, lane in enumerate(spec.phrase.percussion):
-        if rng.random() > 0.72:
+        if rng.random() > 0.66:
             continue
         role = "kick" if "kick" in lane.sound else "high" if any(
             name in lane.sound for name in ("shaker", "hat")) else "mid"
@@ -138,18 +176,27 @@ def enrich_with_catalog_samples(spec: BedSpec, assets: list[SampleAsset],
             lane.sample = asset.ref
             lane.sound = f"sample:{asset.collection}"
 
-    pitched = [asset for asset in assets if asset.category == "pitched" and
-               asset.midi_note is not None and asset.duration_seconds is not None and
-               0.08 <= asset.duration_seconds <= 18.0]
-    if pitched and (spec.lead.instrument != "synth" or rng.random() < 0.55):
-        asset = _choose(rng, pitched)
-        if asset:
-            spec.phrase.lead_sample = asset.ref
-    sustained = [asset for asset in pitched if asset.duration_seconds >= 2.0]
-    if sustained and (spec.pad.instrument != "synth" or rng.random() < 0.22):
-        asset = _choose(rng, sustained)
-        if asset:
-            spec.phrase.pad_sample = asset.ref
+    preferences = {
+        "piano": ("piano",),
+        "marimba": ("marimba", "vibraphone", "xylophone", "kalimba"),
+        "glockenspiel": ("glockenspiel", "celesta", "concert harp", "folk harp"),
+        "synth": ("recorder", "flute", "oboe", "clarinet", "strumstick",
+                  "guitar", "harp", "organ"),
+    }
+    compatible = [instrument for instrument in instruments if any(
+        word in instrument.name.lower()
+        for word in preferences.get(spec.lead.instrument, ()))]
+    # Preserve the dedicated Salamander/VSCO instruments frequently, while
+    # exercising complete catalog instruments instead of isolated note files.
+    catalog_probability = 0.34 if spec.lead.instrument == "piano" else 0.58
+    if compatible and rng.random() < catalog_probability:
+        by_collection: dict[str, list[InstrumentRef]] = {}
+        for instrument in compatible:
+            collection = instrument.name.split(":", 1)[0]
+            by_collection.setdefault(collection, []).append(instrument)
+        collection = sorted(by_collection)[int(rng.integers(0, len(by_collection)))]
+        choices = by_collection[collection]
+        spec.phrase.lead_instrument = choices[int(rng.integers(0, len(choices)))]
 
 
 def _refs(spec: BedSpec) -> list[SampleRef]:
@@ -157,20 +204,41 @@ def _refs(spec: BedSpec) -> list[SampleRef]:
         return []
     refs = [lane.sample for lane in spec.phrase.percussion if lane.sample]
     refs.extend(ref for ref in (spec.phrase.lead_sample, spec.phrase.pad_sample) if ref)
+    for instrument in (spec.phrase.lead_instrument, spec.phrase.pad_instrument):
+        if instrument:
+            refs.extend(zone.sample for zone in instrument.zones)
     return list({(ref.collection, ref.asset_id): ref for ref in refs}.values())
 
 
+def _named_pack_names(spec: BedSpec) -> set[str]:
+    if spec.phrase is None:
+        return set()
+    aliases = {"piano": "salamander", "marimba": "vsco-marimba",
+               "glockenspiel": "vsco-glockenspiel", "strings": "vsco-strings"}
+    names: set[str] = set()
+    if not spec.phrase.lead_instrument and not spec.phrase.lead_sample:
+        name = aliases.get(spec.lead.instrument)
+        if name:
+            names.add(name)
+    if not spec.phrase.pad_instrument and not spec.phrase.pad_sample:
+        name = aliases.get(spec.pad.instrument)
+        if name:
+            names.add(name)
+    return names
+
+
 def build_candidates(count: int, multiplier: int, seed: int,
-                     assets: list[SampleAsset]) -> tuple[list[Candidate], list[dict]]:
-    pool_size = max(count * multiplier, len(FAMILIES) * 2)
+                     assets: list[SampleAsset], instruments: list[InstrumentRef] | None = None,
+                     families: tuple[str, ...] = FAMILIES) -> tuple[list[Candidate], list[dict]]:
+    pool_size = max(count * multiplier, len(families) * 2)
     candidates: list[Candidate] = []
     rejected: list[dict] = []
     for index in range(pool_size):
-        family = FAMILIES[index % len(FAMILIES)]
+        family = families[index % len(families)]
         bed_seed = seed + index * 104729
         spec = BedSpec.from_style(family, bed_seed)
         if assets:
-            enrich_with_catalog_samples(spec, assets, bed_seed)
+            enrich_with_catalog_samples(spec, assets, instruments or [], bed_seed)
         grid = Grid.from_spec(spec)
         minimum_lesson = 20 * grid.bar + 1.0
         if minimum_lesson > 90.0:
@@ -189,7 +257,9 @@ def build_candidates(count: int, multiplier: int, seed: int,
             rejected.append({"family": family, "seed": bed_seed,
                              "reason": "empty or non-finite preview"})
             continue
-        collections = tuple(sorted({ref.collection for ref in _refs(spec)}))
+        collections = tuple(sorted(
+            {ref.collection for ref in _refs(spec)} |
+            {f"pack:{name}" for name in _named_pack_names(spec)}))
         candidates.append(Candidate(family, bed_seed, spec,
                                     _audio_features(preview, spec),
                                     len(preview) / SR, collections))
@@ -348,12 +418,16 @@ def main() -> None:
     parser.add_argument("--candidate-multiplier", type=int, default=3)
     parser.add_argument("--out-dir", type=Path, default=Path("out/music-bakeoff"))
     parser.add_argument("--sample-policy", choices=("none", "safe", "all"),
-                        default="all")
+                        default="safe")
+    parser.add_argument("--family-profile", choices=("broad", "positive"),
+                        default="broad")
     parser.add_argument("--voice-backend", choices=("gemini-vertex", "gemini",
                                                      "chatterbox", "none"),
                         default="gemini-vertex")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--fallback-backend", default="chatterbox")
+    parser.add_argument("--speech-cache-from", type=Path,
+                        help="reuse a validated speech/ directory from another bake-off")
     args = parser.parse_args()
     if args.count < 1 or args.candidate_multiplier < 1:
         raise SystemExit("--count and --candidate-multiplier must be positive")
@@ -366,11 +440,14 @@ def main() -> None:
             name for name, source in __import__("earworms.library", fromlist=["COLLECTIONS"])
             .COLLECTIONS.items() if source.safe_default)
         assets = library.assets(collections=collections)
+    families = POSITIVE_FAMILIES if args.family_profile == "positive" else BROAD_FAMILIES
+    instruments = instrument_refs(assets)
     print(f"Building {args.count * args.candidate_multiplier} candidates across "
-          f"{len(FAMILIES)} families using {len(assets)} catalog assets…", flush=True)
+          f"{len(families)} families using {len(assets)} catalog assets and "
+          f"{len(instruments)} multisample instruments…", flush=True)
     candidates, rejected = build_candidates(args.count, args.candidate_multiplier,
-                                            args.seed, assets)
-    selected = select_balanced(candidates, args.count)
+                                            args.seed, assets, instruments, families)
+    selected = select_balanced(candidates, args.count, families)
     refs = list({(ref.collection, ref.asset_id): ref
                  for candidate in selected for ref in _refs(candidate.spec)}.values())
     if refs:
@@ -380,9 +457,17 @@ def main() -> None:
     speech_metadata: dict = {"backend": "none"}
     if args.voice_backend != "none":
         print("Preparing one shared bilingual voice set…", flush=True)
+        if args.speech_cache_from:
+            source = args.speech_cache_from / "speech"
+            if not (source / "segments.json").exists():
+                raise FileNotFoundError(f"No reusable speech manifest at {source}.")
+            shutil.copytree(source, args.out_dir / "speech", dirs_exist_ok=True)
         speech_segments, speech_metadata = shared_speech(
             args.out_dir, args.voice_backend, args.model,
             args.fallback_backend, args.seed)
+        if args.speech_cache_from:
+            speech_metadata = dict(speech_metadata)
+            speech_metadata["reused_from"] = str(args.speech_cache_from)
 
     manifest_rows: list[dict] = []
     for number, candidate in enumerate(selected, 1):
@@ -424,12 +509,22 @@ def main() -> None:
 
     used_assets = [asdict(library.asset(ref)) for ref in refs]
     used_collections = {asset["collection"] for asset in used_assets}
+    named_pack_names = sorted({name for candidate in selected
+                               for name in _named_pack_names(candidate.spec)})
+    named_packs = [{"id": name, "license": sample_packs.PACKS[name].license,
+                    "attribution": sample_packs.PACKS[name].attribution,
+                    "homepage": sample_packs.PACKS[name].homepage,
+                    "files": sample_packs.PACKS[name].filenames()}
+                   for name in named_pack_names]
     manifest = {"schema_version": 1, "seed": args.seed, "count": args.count,
                 "candidate_multiplier": args.candidate_multiplier,
-                "sample_policy": args.sample_policy, "storage": library.status(),
+                "sample_policy": args.sample_policy,
+                "family_profile": args.family_profile,
+                "storage": library.status(),
                 "voice": speech_metadata, "items": ITEMS,
                 "sample_assets": used_assets,
                 "sample_collections": library.collection_metadata(used_collections),
+                "named_sample_packs": named_packs,
                 "rejected_candidates": rejected, "clips": manifest_rows}
     (args.out_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
