@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import io
 import json
 import os
 import sys
@@ -21,8 +23,11 @@ from earworms.music import Grid, SR, filter_curve, render_bed, render_stems
 from earworms.samples import PACKS, Sample, SamplePack, midi, missing
 from earworms.voice import (
     CAPABILITIES,
+    CloudflareAura2Backend,
+    CloudflareMeloBackend,
     DEFAULT_MODELS,
     FISH_TAGS,
+    GeminiBackend,
     IndexTTS25Backend,
     MlxAudioBackend,
     Prosody,
@@ -30,10 +35,12 @@ from earworms.voice import (
     Speaker,
     SynthesisResult,
     delivery_instruction,
+    gemini_prompt,
     reference_path,
 )
 from earworms.vocab import Item
 from benchmark_voices import pressure_snapshot, write_comparison
+from compare_gemini_batched import split_on_long_silences
 
 
 class VoiceTests(unittest.TestCase):
@@ -58,6 +65,282 @@ class VoiceTests(unittest.TestCase):
         self.assertIn("slowly", text)
         self.assertIn("lower", text)
         self.assertEqual(FISH_TAGS["emphatic"], "emphasis")
+
+    def test_hosted_capabilities_and_defaults_are_explicit(self) -> None:
+        hosted = {"gemini", "gemini-vertex", "cloudflare-aura2",
+                  "cloudflare-melotts"}
+        self.assertTrue(hosted.issubset(DEFAULT_MODELS))
+        self.assertTrue(all(CAPABILITIES[name].experimental for name in hosted))
+        self.assertEqual(CAPABILITIES["gemini"].emotion, "instruction")
+        self.assertEqual(CAPABILITIES["cloudflare-aura2"].rate,
+                         "post-process")
+
+    def test_gemini_prompt_fences_exact_transcript(self) -> None:
+        prompt = gemini_prompt("¿Dónde está?", "es", EMOTIONS["thoughtful"],
+                               Prosody(speed=0.96, semitones=-0.35))
+        self.assertIn("native Spanish", prompt)
+        self.assertIn("thoughtful", prompt)
+        self.assertIn("slightly slowly", prompt)
+        self.assertIn("<TRANSCRIPT>\n¿Dónde está?\n</TRANSCRIPT>", prompt)
+        self.assertIn("Speak only the transcript", prompt)
+
+    def test_gemini_batch_prompt_treats_pause_tags_as_silence(self) -> None:
+        prompt = gemini_prompt("uno\n[long pause]\ndos", "es", NEUTRAL,
+                               Prosody())
+        self.assertIn("silent timing instruction", prompt)
+        self.assertIn("do not speak the tag", prompt)
+
+    def test_batched_gemini_split_uses_longest_silences(self) -> None:
+        rate = 1000
+        tone = np.sin(2 * np.pi * 30 * np.arange(180) / rate).astype(np.float32)
+        short_internal_gap = np.zeros(40, dtype=np.float32)
+        phrase = np.concatenate((tone, short_internal_gap, tone))
+        long_gap = np.zeros(700, dtype=np.float32)
+        audio = np.concatenate([piece for index in range(10)
+                                for piece in ((phrase, long_gap)
+                                              if index < 9 else (phrase,))])
+        segments, metadata = split_on_long_silences(
+            audio, 10, sample_rate=rate, min_silence_seconds=0.35)
+        self.assertEqual(len(segments), 10)
+        self.assertGreaterEqual(metadata["shortest_pause_seconds"], 0.35)
+        self.assertGreater(metadata["confidence"], 2.0)
+
+    def test_gemini_routes_voice_and_decodes_pcm_with_cost(self) -> None:
+        calls: list[dict] = []
+        pcm = (np.array([0, 16384, -16384], dtype="<i2")).tobytes()
+
+        class Interactions:
+            def create(self, **kwargs):
+                calls.append(kwargs)
+                output = types.SimpleNamespace(
+                    data=base64.b64encode(pcm).decode(), sample_rate=24000,
+                    channels=1,
+                    mime_type="audio/l16; rate=24000; channels=1")
+                usage = types.SimpleNamespace(total_input_tokens=20,
+                                              total_output_tokens=30)
+                return types.SimpleNamespace(output_audio=output, usage=usage)
+
+        backend = GeminiBackend.__new__(GeminiBackend)
+        backend._client = types.SimpleNamespace(interactions=Interactions())
+        backend.model_id = "gemini-3.1-flash-tts-preview"
+        backend.voices = {"es": "Sulafat", "en": "Achird"}
+        backend.sample_rate = 24000
+        result = backend.synth("hola", "es", Prosody(), EMOTIONS["warm"], seed=9)
+        self.assertEqual(calls[0]["generation_config"]["speech_config"],
+                         [{"voice": "Sulafat"}])
+        self.assertIn("<TRANSCRIPT>\nhola\n</TRANSCRIPT>", calls[0]["input"])
+        np.testing.assert_allclose(result.audio, [0.0, 0.5, -0.5])
+        self.assertEqual(result.controls["model"],
+                         "gemini-3.1-flash-tts-preview")
+        self.assertGreater(result.controls["estimated_cost_usd"], 0)
+        self.assertFalse(result.controls["seed_supported"])
+
+    def test_gemini_vertex_routes_adc_model_locale_and_pcm(self) -> None:
+        calls: list[dict] = []
+        pcm = np.array([0, 8192, -8192], dtype="<i2").tobytes()
+
+        def record(kind):
+            return lambda **kwargs: {"kind": kind, **kwargs}
+
+        fake_types = types.SimpleNamespace(
+            GenerateContentConfig=record("config"),
+            SpeechConfig=record("speech"),
+            VoiceConfig=record("voice"),
+            PrebuiltVoiceConfig=record("prebuilt"),
+        )
+
+        class Models:
+            def generate_content(self, **kwargs):
+                calls.append(kwargs)
+                inline = types.SimpleNamespace(
+                    data=pcm, mime_type="audio/L16;rate=24000;channels=1")
+                part = types.SimpleNamespace(inline_data=inline)
+                candidate = types.SimpleNamespace(
+                    content=types.SimpleNamespace(parts=[part]))
+                usage = types.SimpleNamespace(prompt_token_count=12,
+                                              candidates_token_count=25)
+                return types.SimpleNamespace(candidates=[candidate],
+                                             usage_metadata=usage)
+
+        backend = GeminiBackend.__new__(GeminiBackend)
+        backend._client = types.SimpleNamespace(models=Models())
+        backend._types = fake_types
+        backend.vertex = True
+        backend.location = "global"
+        backend.model_id = "gemini-2.5-flash-tts"
+        backend.voices = {"es": "Sulafat", "en": "Achird"}
+        backend.sample_rate = 24000
+        backend.capabilities = CAPABILITIES["gemini-vertex"]
+        backend._min_request_interval = 0.0
+        backend._last_request_started = None
+        result = backend.synth("hola", "es", Prosody(), EMOTIONS["warm"])
+        self.assertEqual(calls[0]["model"], "gemini-2.5-flash-tts")
+        speech = calls[0]["config"]["speech_config"]
+        self.assertEqual(speech["language_code"], "es-US")
+        self.assertEqual(speech["voice_config"]["prebuilt_voice_config"]
+                         ["voice_name"], "Sulafat")
+        np.testing.assert_allclose(result.audio, [0.0, 0.25, -0.25])
+        self.assertEqual(result.controls["provider"], "vertex-ai")
+        self.assertGreater(result.controls["estimated_cost_usd"], 0)
+
+    def test_gemini_adapts_to_preview_rate_limit(self) -> None:
+        class RateLimitError(Exception):
+            status_code = 429
+            response = types.SimpleNamespace(headers={})
+
+        interactions = mock.Mock()
+        interactions.create.side_effect = [RateLimitError("quota"), "ok"]
+        backend = GeminiBackend.__new__(GeminiBackend)
+        backend._client = types.SimpleNamespace(interactions=interactions)
+        backend.model_id = "gemini-3.1-flash-tts-preview"
+        backend._min_request_interval = 0.0
+        backend._last_request_started = None
+        with mock.patch("earworms.voice.time.monotonic", side_effect=[0.0, 0.0]), \
+                mock.patch("earworms.voice.time.sleep") as sleep:
+            self.assertEqual(backend._generate("prompt", "voice"), "ok")
+        sleep.assert_called_once_with(20.5)
+        self.assertEqual(backend._min_request_interval, 20.5)
+
+    def test_gemini_does_not_retry_daily_quota(self) -> None:
+        class DailyLimitError(Exception):
+            status_code = 429
+
+        interactions = mock.Mock()
+        interactions.create.side_effect = DailyLimitError(
+            "GenerateRequestsPerDayPerProjectPerModel-FreeTier")
+        backend = GeminiBackend.__new__(GeminiBackend)
+        backend._client = types.SimpleNamespace(interactions=interactions)
+        backend.model_id = "gemini-3.1-flash-tts-preview"
+        backend._min_request_interval = 0.0
+        backend._last_request_started = None
+        with self.assertRaisesRegex(RuntimeError, "HTTP 429"):
+            backend._generate("prompt", "voice")
+        interactions.create.assert_called_once()
+
+    @staticmethod
+    def _wav_bytes(audio: np.ndarray, rate: int = 24000) -> bytes:
+        buffer = io.BytesIO()
+        sf.write(buffer, audio, rate, format="WAV", subtype="PCM_16")
+        return buffer.getvalue()
+
+    def test_cloudflare_aura_routes_language_speaker_and_cost(self) -> None:
+        calls: list[tuple[str, dict]] = []
+        backend = CloudflareAura2Backend.__new__(CloudflareAura2Backend)
+        backend.model_id = "@cf/deepgram/aura-2-{lang}"
+        backend.voices = {"es": "aquila", "en": "luna"}
+        backend.sample_rate = 24000
+        backend._request = lambda model, payload: (
+            calls.append((model, payload)) or
+            (self._wav_bytes(np.array([0.0, 0.25], dtype=np.float32)),
+             "audio/wav"))
+        result = backend.synth("hola", "es", Prosody(speed=0.96),
+                               EMOTIONS["warm"], seed=4)
+        self.assertEqual(calls[0][0], "@cf/deepgram/aura-2-es")
+        self.assertEqual(calls[0][1]["speaker"], "aquila")
+        self.assertEqual(calls[0][1]["container"], "wav")
+        self.assertAlmostEqual(result.controls["estimated_cost_usd"], 0.00012)
+        self.assertFalse(result.controls["native_prosody_supported"])
+
+    def test_cloudflare_decodes_json_envelope_and_retries(self) -> None:
+        audio = self._wav_bytes(np.array([0.0, 0.2], dtype=np.float32))
+
+        class Response:
+            def __init__(self, status, *, envelope=None, content=b"",
+                         content_type="application/json"):
+                self.status_code = status
+                self.ok = status < 400
+                self.headers = {"content-type": content_type}
+                self.content = content
+                self.text = json.dumps(envelope or {})
+                self._envelope = envelope
+
+            def json(self):
+                return self._envelope
+
+        responses = [Response(429), Response(200, envelope={
+            "success": True,
+            "result": {"audio": base64.b64encode(audio).decode(),
+                       "content_type": "audio/wav"},
+        })]
+        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
+        backend.account_id = "account"
+        backend.api_token = "token"
+        backend._session = types.SimpleNamespace(
+            post=lambda *args, **kwargs: responses.pop(0))
+        with mock.patch("earworms.voice.time.sleep") as sleep:
+            decoded, content_type = backend._request("@cf/model", {"prompt": "hi"})
+        self.assertEqual(decoded, audio)
+        self.assertEqual(content_type, "audio/wav")
+        sleep.assert_called_once()
+
+    def test_cloudflare_melo_rejects_broken_spanish_path_without_call(self) -> None:
+        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
+        backend.model_id = "@cf/myshell-ai/melotts"
+        backend._request = mock.Mock()
+        with self.assertRaisesRegex(RuntimeError, "AiError 8002"):
+            backend.synth("hola", "es", Prosody(), EMOTIONS["warm"])
+        backend._request.assert_not_called()
+
+    def test_cloudflare_melo_caches_text_before_local_variation(self) -> None:
+        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
+        backend.model_id = "@cf/myshell-ai/melotts"
+        backend._audio_cache = {}
+        backend._request = mock.Mock(return_value=(
+            self._wav_bytes(np.array([0.0, 0.25], dtype=np.float32)),
+            "audio/wav"))
+        first = backend.synth("hello", "en", Prosody(), EMOTIONS["warm"])
+        second = backend.synth("hello", "en", Prosody(semitones=0.4),
+                               EMOTIONS["warm"])
+        backend._request.assert_called_once()
+        self.assertFalse(first.controls["cache_hit"])
+        self.assertTrue(second.controls["cache_hit"])
+        self.assertGreater(first.controls["estimated_cost_usd"], 0)
+        self.assertEqual(second.controls["estimated_cost_usd"], 0)
+
+    def test_cloudflare_errors_redact_credentials(self) -> None:
+        secret = "super-secret-token"
+
+        class Response:
+            status_code = 401
+            ok = False
+            headers = {"content-type": "application/json"}
+            text = f'{{"error":"bad {secret}"}}'
+
+        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
+        backend.account_id = "account"
+        backend.api_token = secret
+        backend._session = types.SimpleNamespace(post=lambda *a, **k: Response())
+        with mock.patch.dict(os.environ, {"CLOUDFLARE_API_TOKEN": secret}):
+            with self.assertRaisesRegex(RuntimeError, "<redacted>") as caught:
+                backend._request("@cf/model", {"prompt": "hi"})
+        self.assertNotIn(secret, str(caught.exception))
+
+    def test_cloudflare_post_processing_is_recorded(self) -> None:
+        class FakeBackend:
+            name = "cloudflare-aura2"
+            model_id = "fake"
+            sample_rate = SR
+            load_seconds = 0.0
+
+            def synth(self, text, lang, prosody, emotion, target_seconds=None,
+                      seed=None):
+                return SynthesisResult(np.ones(100, dtype=np.float32), SR, 0.1,
+                                       {"native_prosody_supported": False})
+
+        with mock.patch("earworms.voice.make_backend", return_value=FakeBackend()), \
+                mock.patch("earworms.voice.warnings.warn"), \
+                mock.patch("earworms.voice.librosa.effects.time_stretch",
+                           return_value=np.ones(90, dtype=np.float32)) as stretch, \
+                mock.patch("earworms.voice._pitch_shift",
+                           side_effect=lambda audio, *_: audio) as pitch:
+            speaker = Speaker(backend="cloudflare-aura2", voice_seed=3)
+            speaker.say("hola", "es", Prosody(
+                speed=1.02, semitones=0.4, gain_db=0.6))
+        stretch.assert_called_once()
+        pitch.assert_called_once()
+        applied = speaker.stats[0]["controls"]["local_post_process"]
+        self.assertEqual(applied, {
+            "speed": 1.02, "semitones": 0.4, "gain_db": 0.6})
 
     def test_qwen_uses_language_voice_instruction_and_seed(self) -> None:
         calls = []

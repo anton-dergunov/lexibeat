@@ -3,9 +3,9 @@
 
     uv run generate.py --words 12 --out out/spanish.wav
 
-Everything runs locally: the music bed is synthesised from a parameter set, the
-speech comes from Kokoro-82M or, on Apple Silicon, from Chatterbox via
-mlx-audio. See DESIGN.md for the reasoning and the alternatives considered.
+The music bed is synthesised locally. Speech can come from the preferred local
+Chatterbox backend, fast Kokoro fallback, experimental local models, or explicit
+hosted Gemini and Cloudflare backends. See DESIGN.md for the trade-offs.
 """
 
 from __future__ import annotations
@@ -74,7 +74,10 @@ def parse_args() -> argparse.Namespace:
                        help="fetch one sample pack, or 'vsco' for all VSCO packs")
 
     voice = p.add_argument_group("voice")
-    voice.add_argument("--backend", choices=["kokoro", "chatterbox", "indextts25",
+    voice.add_argument("--backend", choices=["kokoro", "chatterbox", "gemini",
+                                              "gemini-vertex",
+                                              "cloudflare-aura2",
+                                              "cloudflare-melotts", "indextts25",
                                               "voxcpm2", "qwen3", "tada", "fish-s2"],
                        default="chatterbox",
                        help="Chatterbox is the quality default; Kokoro is the fast fallback")
@@ -245,6 +248,8 @@ def main() -> None:
     if args.stats_json:
         utterance_audio = sum(float(row["duration_seconds"]) for row in speaker.stats)
         generation_seconds = sum(float(row["generation_seconds"]) for row in speaker.stats)
+        estimated_cost = sum(float(row.get("controls", {}).get(
+            "estimated_cost_usd") or 0.0) for row in speaker.stats)
         reference_seconds = sum(float(row.get("controls", {}).get(
             "reference_preparation_seconds", 0.0)) for row in speaker.stats)
         peak_mlx = max((int(row["peak_memory_bytes"] or 0)
@@ -285,6 +290,7 @@ def main() -> None:
                 "peak": float(np.abs(track).max()),
                 "finite": bool(np.isfinite(track).all()),
             },
+            "estimated_provider_cost_usd": estimated_cost,
             "utterances": speaker.stats,
         }
         _write_stats(args.stats_json, stats)

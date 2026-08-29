@@ -1,15 +1,17 @@
-"""Speech synthesis with capability-aware expressive backends.
+"""Speech synthesis with capability-aware local and hosted backends.
 
-Kokoro and Chatterbox remain the stable paths. The other backends are local
-research integrations whose model-side controls are recorded separately from
-post-processing.
+Kokoro and Chatterbox remain the stable paths. Experimental model-side controls,
+provider metadata, and any local post-processing are recorded separately.
 """
 
 from __future__ import annotations
 
+import base64
 import hashlib
+import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -33,6 +35,10 @@ CHATTERBOX_LANGS = {"es": "es", "en": "en"}
 DEFAULT_MLX_MODEL = "mlx-community/chatterbox-multilingual-v3"
 DEFAULT_MODELS = {
     "chatterbox": DEFAULT_MLX_MODEL,
+    "gemini": "gemini-3.1-flash-tts-preview",
+    "gemini-vertex": "gemini-3.1-flash-tts-preview",
+    "cloudflare-aura2": "@cf/deepgram/aura-2-{lang}",
+    "cloudflare-melotts": "@cf/myshell-ai/melotts",
     "indextts25": "vanch007/mlx-indextts2-2.5-8bit",
     "voxcpm2": "mlx-community/VoxCPM2-4bit",
     "qwen3": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-4bit",
@@ -41,6 +47,13 @@ DEFAULT_MODELS = {
 }
 TADA_TOKENIZER_MODEL = "gafiatulin/tada-3b-ml-mlx"
 QWEN_VOICES = {"es": "Serena", "en": "Ryan"}
+GEMINI_VOICES = {"es": "Sulafat", "en": "Achird"}
+GEMINI_LOCALES = {"es": "es-US", "en": "en-GB"}
+AURA2_VOICES = {"es": "aquila", "en": "luna"}
+GEMINI_FREE_TIER_INTERVALS = {
+    "gemini-3.1-flash-tts-preview": 20.5,
+    "gemini-2.5-flash-preview-tts": 20.5,
+}
 
 REFERENCE_TEXTS = {
     "es": ("Buenos días. Hoy vamos a practicar algunas palabras nuevas. "
@@ -67,6 +80,29 @@ class BackendCapabilities:
 CAPABILITIES = {
     "kokoro": BackendCapabilities("post-process", "native", "preset"),
     "chatterbox": BackendCapabilities("exaggeration", "unsupported", "clone"),
+    "gemini": BackendCapabilities(
+        "instruction", "instruction", "preset", experimental=True,
+        license="Google Gemini API Additional Terms",
+        warnings=("Preview API; output is nondeterministic and voice_seed is not supported.",),
+    ),
+    "gemini-vertex": BackendCapabilities(
+        "instruction", "instruction", "preset", experimental=True,
+        license="Google Cloud and Vertex AI terms",
+        warnings=("Hosted output is nondeterministic and voice_seed is not supported.",),
+    ),
+    "cloudflare-aura2": BackendCapabilities(
+        "post-process", "post-process", "preset", experimental=True,
+        license="Cloudflare Workers AI and Deepgram terms",
+        warnings=("The hosted model has no explicit prosody or seed control; "
+                  "gentle variation is applied locally.",),
+    ),
+    "cloudflare-melotts": BackendCapabilities(
+        "post-process", "post-process", "unsupported", languages=("en",),
+        experimental=True,
+        license="Cloudflare Workers AI and MeloTTS terms",
+        warnings=("The hosted API exposes only text and language; Cloudflare's "
+                  "current deployment rejects Spanish (AiError 8002).",),
+    ),
     "indextts25": BackendCapabilities(
         "8-float vector", "model duration factor", "clone", experimental=True,
         license="bilibili Model Use License Agreement",
@@ -312,6 +348,463 @@ def delivery_instruction(emotion: Emotion, prosody: Prosody) -> str:
     elif prosody.semitones < -0.25:
         pitch = "with a slightly lower, softer pitch"
     return f"Speak in a {emotion.name} but clear tone, {pace}, {pitch}."
+
+
+def gemini_prompt(text: str, lang: str, emotion: Emotion,
+                  prosody: Prosody) -> str:
+    """Build restrained director notes without changing the spoken transcript."""
+    language = "native Spanish" if lang == "es" else "native English"
+    instruction = delivery_instruction(emotion, prosody)
+    pause_note = ""
+    if "[long pause]" in text:
+        pause_note = (
+            " Treat every [long pause] tag as a silent timing instruction: "
+            "do not speak the tag, and leave a clearly separable long silence."
+        )
+    return (
+        "Generate speech for a short language-learning repetition.\n"
+        f"Use {language}. {instruction}\n"
+        "Keep the delivery natural, subtle, clear, and gently reinforcing. "
+        "Do not sing, spell, translate, paraphrase, add words, or make any "
+        "non-verbal sounds. Speak only the transcript between the markers."
+        f"{pause_note}\n"
+        "<TRANSCRIPT>\n"
+        f"{text}\n"
+        "</TRANSCRIPT>"
+    )
+
+
+def _decode_audio_file(data: bytes) -> tuple[np.ndarray, int]:
+    import soundfile as sf
+
+    try:
+        audio, rate = sf.read(io.BytesIO(data), dtype="float32", always_2d=False)
+    except Exception as exc:
+        raise RuntimeError("Provider returned malformed or unsupported audio.") from exc
+    audio = np.asarray(audio, dtype=np.float32)
+    if audio.ndim == 2:
+        audio = audio.mean(axis=1)
+    audio = audio.reshape(-1)
+    if not audio.size or not np.all(np.isfinite(audio)):
+        raise RuntimeError("Provider returned empty or non-finite audio.")
+    return audio, int(rate)
+
+
+def _redact_provider_text(value: str) -> str:
+    redacted = value
+    for name in ("GEMINI_API_KEY", "CLOUDFLARE_ACCOUNT_ID",
+                 "CLOUDFLARE_API_TOKEN"):
+        secret = os.environ.get(name)
+        if secret:
+            redacted = redacted.replace(secret, "<redacted>")
+    return redacted[:500]
+
+
+class GeminiBackend:
+    name = "gemini"
+    capabilities = CAPABILITIES[name]
+    sample_rate = 24000
+
+    def __init__(self, model: str = DEFAULT_MODELS[name],
+                 voices: dict[str, str] | None = None,
+                 vertex: bool = False, **_: Any) -> None:
+        api_key = os.environ.get("GEMINI_API_KEY")
+        project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        if vertex and not project:
+            raise RuntimeError(
+                "GOOGLE_CLOUD_PROJECT is required for the Gemini Vertex backend.")
+        if not vertex and not api_key:
+            raise RuntimeError("GEMINI_API_KEY is required for the Gemini backend.")
+        try:
+            from google import genai
+            from google.genai import types as genai_types
+        except ImportError as exc:
+            raise RuntimeError("Install hosted backends with "
+                               "'uv sync --extra hosted-tts'.") from exc
+        started = time.perf_counter()
+        self.vertex = vertex
+        self.capabilities = CAPABILITIES[
+            "gemini-vertex" if vertex else "gemini"]
+        self.project = project if vertex else None
+        self.location = (os.environ.get("GOOGLE_CLOUD_LOCATION", "global")
+                         if vertex else None)
+        self._types = genai_types
+        if vertex:
+            self._client = genai.Client(
+                vertexai=True,
+                project=project,
+                location=self.location,
+                http_options=genai_types.HttpOptions(timeout=180_000),
+            )
+        else:
+            self._client = genai.Client(api_key=api_key)
+        self.load_seconds = time.perf_counter() - started
+        self.model_id = model
+        self.voices = {**GEMINI_VOICES, **(voices or {})}
+        # These preview TTS models are currently limited to 3 RPM on the free
+        # project used by this repository. The interval also adapts upward when
+        # the API supplies a longer Retry-After value.
+        self._min_request_interval = (
+            0.0 if vertex else GEMINI_FREE_TIER_INTERVALS.get(model, 0.0))
+        self._last_request_started: float | None = None
+
+    def _wait_for_request_slot(self) -> None:
+        interval = float(getattr(self, "_min_request_interval", 0.0))
+        now = time.monotonic()
+        previous = getattr(self, "_last_request_started", None)
+        delay = 0.0 if previous is None else interval - (now - previous)
+        if delay > 0:
+            time.sleep(delay)
+            now += delay
+        self._last_request_started = now
+
+    @staticmethod
+    def _retry_after(exc: Exception) -> float | None:
+        headers = getattr(getattr(exc, "response", None), "headers", None)
+        value = headers.get("retry-after") if headers else None
+        try:
+            return min(max(float(value), 0.0), 120.0)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _daily_quota_exhausted(exc: Exception) -> bool:
+        detail = str(exc).lower().replace("_", "").replace("-", "")
+        return any(marker in detail for marker in (
+            "requestsperday", "permodelperday", "dailyrequest", "rpd",
+        ))
+
+    @staticmethod
+    def _status_code(exc: Exception) -> int | None:
+        value = (getattr(exc, "status_code", None) or
+                 getattr(exc, "code", None) or
+                 getattr(getattr(exc, "response", None), "status_code", None))
+        try:
+            return int(value) if value is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    def _generate(self, prompt: str, voice: str, lang: str = "en"):
+        last_error: Exception | None = None
+        for attempt in range(6):
+            self._wait_for_request_slot()
+            try:
+                if getattr(self, "vertex", False):
+                    config = self._types.GenerateContentConfig(
+                        response_modalities=["AUDIO"],
+                        speech_config=self._types.SpeechConfig(
+                            language_code=GEMINI_LOCALES[lang],
+                            voice_config=self._types.VoiceConfig(
+                                prebuilt_voice_config=
+                                self._types.PrebuiltVoiceConfig(
+                                    voice_name=voice),
+                            ),
+                        ),
+                    )
+                    return self._client.models.generate_content(
+                        model=self.model_id,
+                        contents=prompt,
+                        config=config,
+                    )
+                return self._client.interactions.create(
+                    model=self.model_id,
+                    input=prompt,
+                    response_format={"type": "audio"},
+                    generation_config={"speech_config": [{"voice": voice}]},
+                    timeout=180.0,
+                )
+            except Exception as exc:
+                last_error = exc
+                status = self._status_code(exc)
+                if status == 429 and self._daily_quota_exhausted(exc):
+                    break
+                if status != 429 and (not status or int(status) < 500):
+                    break
+                if attempt < 5:
+                    if status == 429:
+                        # The preview free tier commonly allows only a few
+                        # requests per minute. Learn that constraint on demand.
+                        retry_after = self._retry_after(exc)
+                        self._min_request_interval = max(
+                            float(getattr(self, "_min_request_interval", 0.0)),
+                            retry_after or 20.5,
+                        )
+                    else:
+                        time.sleep(0.5 * 2 ** attempt)
+        status = self._status_code(last_error) if last_error else None
+        suffix = f" (HTTP {status})" if status else ""
+        provider = "Gemini Vertex TTS" if getattr(self, "vertex", False) else "Gemini TTS"
+        raise RuntimeError(f"{provider} request failed{suffix}: "
+                           f"{_redact_provider_text(str(last_error))}") from last_error
+
+    def synth(self, text: str, lang: str, prosody: Prosody,
+              emotion: Emotion, target_seconds: float | None = None,
+              seed: int | None = None) -> SynthesisResult:
+        del target_seconds
+        prompt = gemini_prompt(text, lang, emotion, prosody)
+        voice = self.voices[lang]
+        started = time.perf_counter()
+        interaction = self._generate(prompt, voice, lang)
+        if getattr(self, "vertex", False):
+            candidates = getattr(interaction, "candidates", None) or []
+            content = getattr(candidates[0], "content", None) if candidates else None
+            parts = getattr(content, "parts", None) or []
+            output = getattr(parts[0], "inline_data", None) if parts else None
+        else:
+            output = getattr(interaction, "output_audio", None)
+        encoded = getattr(output, "data", None)
+        if not encoded:
+            raise RuntimeError("Gemini response contained no audio data.")
+        if isinstance(encoded, bytes):
+            raw = encoded
+        else:
+            try:
+                raw = base64.b64decode(str(encoded), validate=True)
+            except (ValueError, TypeError) as exc:
+                raise RuntimeError("Gemini returned invalid base64 audio data.") from exc
+        mime_type = str(getattr(output, "mime_type", None) or "audio/l16")
+        rate_match = re.search(r"(?:rate|sample_rate)=(\d+)", mime_type,
+                               flags=re.IGNORECASE)
+        channels_match = re.search(r"channels=(\d+)", mime_type,
+                                   flags=re.IGNORECASE)
+        rate = int(getattr(output, "sample_rate", None) or
+                   (rate_match.group(1) if rate_match else self.sample_rate))
+        channels = int(getattr(output, "channels", None) or
+                       (channels_match.group(1) if channels_match else 1))
+        base_mime_type = mime_type.split(";", 1)[0].strip().lower()
+        if base_mime_type in ("audio/l16", "audio/pcm", "none"):
+            if len(raw) % 2:
+                raise RuntimeError("Gemini returned malformed PCM16 audio.")
+            audio = np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768.0
+            if channels > 1:
+                if len(audio) % channels:
+                    raise RuntimeError("Gemini returned malformed multichannel PCM.")
+                audio = audio.reshape(-1, channels).mean(axis=1)
+        else:
+            audio, rate = _decode_audio_file(raw)
+        if not audio.size or not np.all(np.isfinite(audio)):
+            raise RuntimeError("Gemini returned empty or non-finite audio.")
+        duration = len(audio) / rate
+        usage = (getattr(interaction, "usage_metadata", None) or
+                 getattr(interaction, "usage", None))
+        input_tokens = (getattr(usage, "prompt_token_count", None) or
+                        getattr(usage, "total_input_tokens", None))
+        output_tokens = (getattr(usage, "candidates_token_count", None) or
+                         getattr(usage, "total_output_tokens", None))
+        prices = {
+            "gemini-3.1-flash-tts-preview": (1.0, 20.0),
+            "gemini-2.5-flash-preview-tts": (0.5, 10.0),
+            "gemini-2.5-flash-tts": (0.5, 10.0),
+            "gemini-2.5-flash-lite-preview-tts": (0.5, 10.0),
+            "gemini-2.5-pro-preview-tts": (1.0, 20.0),
+            "gemini-2.5-pro-tts": (1.0, 20.0),
+        }.get(self.model_id)
+        estimated_cost = None
+        if prices:
+            billed_input = int(input_tokens or max(1, len(prompt) // 4))
+            billed_output = int(output_tokens or round(duration * 25))
+            estimated_cost = (billed_input * prices[0] +
+                              billed_output * prices[1]) / 1_000_000
+        controls = {
+            "model": self.model_id,
+            "provider": "vertex-ai" if getattr(self, "vertex", False)
+            else "gemini-api",
+            "location": getattr(self, "location", None),
+            "instruction": delivery_instruction(emotion, prosody),
+            "voice": voice,
+            "language": lang,
+            "characters": len(text),
+            "seed_supported": False,
+            "requested_seed": seed,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "estimated_cost_usd": estimated_cost,
+        }
+        return SynthesisResult(audio.astype(np.float32), rate,
+                               time.perf_counter() - started, controls,
+                               "instruction-rate",
+                               list(self.capabilities.warnings))
+
+
+class _CloudflareBackend:
+    capabilities: BackendCapabilities
+
+    def _configure_cloudflare(self) -> None:
+        self.account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+        self.api_token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+        missing = [name for name, value in (
+            ("CLOUDFLARE_ACCOUNT_ID", self.account_id),
+            ("CLOUDFLARE_API_TOKEN", self.api_token),
+        ) if not value]
+        if missing:
+            raise RuntimeError(f"{', '.join(missing)} required for Cloudflare.")
+        try:
+            import requests
+        except ImportError as exc:
+            raise RuntimeError("Install hosted backends with "
+                               "'uv sync --extra hosted-tts'.") from exc
+        self._session = requests.Session()
+
+    def _request(self, model: str, payload: dict[str, Any]) -> tuple[bytes, str]:
+        endpoint = ("https://api.cloudflare.com/client/v4/accounts/"
+                    f"{self.account_id}/ai/run/{model}")
+        response = None
+        for attempt in range(6):
+            try:
+                response = self._session.post(
+                    endpoint,
+                    headers={"Authorization": f"Bearer {self.api_token}"},
+                    json=payload,
+                    timeout=180.0,
+                )
+            except Exception as exc:
+                if attempt < 5:
+                    time.sleep(1.0 * 2 ** attempt)
+                    continue
+                raise RuntimeError("Cloudflare TTS request failed: "
+                                   f"{type(exc).__name__}") from exc
+            if response.status_code == 429 or response.status_code >= 500:
+                if attempt < 5:
+                    retry_after = response.headers.get("retry-after")
+                    try:
+                        delay = min(float(retry_after), 5.0)
+                    except (TypeError, ValueError):
+                        delay = 1.0 * 2 ** attempt
+                    time.sleep(delay)
+                    continue
+            break
+        assert response is not None
+        if not response.ok:
+            detail = _redact_provider_text(response.text.strip())
+            raise RuntimeError(f"Cloudflare TTS HTTP {response.status_code}: "
+                               f"{detail or 'empty response body'}")
+        content_type = response.headers.get("content-type", "").split(";", 1)[0]
+        if content_type.startswith("audio/"):
+            return response.content, content_type
+        try:
+            envelope = response.json()
+        except ValueError as exc:
+            raise RuntimeError("Cloudflare returned neither audio nor JSON.") from exc
+        if isinstance(envelope, dict) and not envelope.get("success", True):
+            detail = _redact_provider_text(json.dumps(
+                envelope.get("errors", "unknown error"), ensure_ascii=False))
+            raise RuntimeError(f"Cloudflare TTS failed: {detail}")
+        result = envelope.get("result", envelope) if isinstance(envelope, dict) else envelope
+        encoded: Any = result
+        if isinstance(result, dict):
+            encoded = result.get("audio", result.get("data"))
+            content_type = str(result.get("content_type", "audio/mpeg"))
+        if isinstance(encoded, list) and encoded:
+            encoded = encoded[0]
+        if not isinstance(encoded, str):
+            raise RuntimeError("Cloudflare response contained no audio data.")
+        try:
+            return base64.b64decode(encoded.split(",", 1)[-1], validate=True), content_type
+        except (ValueError, TypeError) as exc:
+            raise RuntimeError("Cloudflare returned invalid base64 audio.") from exc
+
+
+class CloudflareAura2Backend(_CloudflareBackend):
+    name = "cloudflare-aura2"
+    capabilities = CAPABILITIES[name]
+    sample_rate = 24000
+
+    def __init__(self, model: str = DEFAULT_MODELS[name],
+                 voices: dict[str, str] | None = None, **_: Any) -> None:
+        if "{lang}" not in model:
+            raise ValueError("Cloudflare Aura 2 model must contain '{lang}'.")
+        started = time.perf_counter()
+        self._configure_cloudflare()
+        self.load_seconds = time.perf_counter() - started
+        self.model_id = model
+        self.voices = {**AURA2_VOICES, **(voices or {})}
+
+    def synth(self, text: str, lang: str, prosody: Prosody,
+              emotion: Emotion, target_seconds: float | None = None,
+              seed: int | None = None) -> SynthesisResult:
+        del target_seconds
+        model = self.model_id.format(lang=lang)
+        payload = {
+            "text": text,
+            "speaker": self.voices[lang],
+            "encoding": "linear16",
+            "container": "wav",
+            "sample_rate": self.sample_rate,
+        }
+        started = time.perf_counter()
+        raw, _ = self._request(model, payload)
+        audio, rate = _decode_audio_file(raw)
+        controls = {
+            "model": model,
+            "voice": self.voices[lang],
+            "characters": len(text),
+            "native_prosody_supported": False,
+            "requested_emotion": emotion.name,
+            "requested_speed": prosody.speed,
+            "requested_semitones": prosody.semitones,
+            "seed_supported": False,
+            "requested_seed": seed,
+            "estimated_cost_usd": len(text) / 1000 * 0.03,
+        }
+        return SynthesisResult(audio, rate, time.perf_counter() - started,
+                               controls, "local-post-process",
+                               list(self.capabilities.warnings))
+
+
+class CloudflareMeloBackend(_CloudflareBackend):
+    name = "cloudflare-melotts"
+    capabilities = CAPABILITIES[name]
+    sample_rate = 24000
+
+    def __init__(self, model: str = DEFAULT_MODELS[name],
+                 voices: dict[str, str] | None = None, **_: Any) -> None:
+        if voices:
+            raise ValueError("Cloudflare MeloTTS does not expose voice selection.")
+        started = time.perf_counter()
+        self._configure_cloudflare()
+        self.load_seconds = time.perf_counter() - started
+        self.model_id = model
+        self._audio_cache: dict[tuple[str, str], tuple[np.ndarray, int, float]] = {}
+
+    def synth(self, text: str, lang: str, prosody: Prosody,
+              emotion: Emotion, target_seconds: float | None = None,
+              seed: int | None = None) -> SynthesisResult:
+        del target_seconds
+        if lang != "en":
+            raise RuntimeError(
+                "Cloudflare MeloTTS currently rejects Spanish with AiError 8002; "
+                "the backend is retained as an English-only baseline until the "
+                "provider fixes cloudflare/ai#221.")
+        started = time.perf_counter()
+        cache_key = (text, lang)
+        cached = self._audio_cache.get(cache_key)
+        if cached is None:
+            raw, _ = self._request(self.model_id, {"prompt": text, "lang": lang})
+            audio, rate = _decode_audio_file(raw)
+            provider_cost = len(audio) / rate / 60 * 0.0002
+            self._audio_cache[cache_key] = (audio.copy(), rate, provider_cost)
+            cache_hit = False
+        else:
+            audio, rate, _ = cached
+            audio = audio.copy()
+            provider_cost = 0.0
+            cache_hit = True
+        controls = {
+            "model": self.model_id,
+            "language": lang,
+            "characters": len(text),
+            "native_prosody_supported": False,
+            "requested_emotion": emotion.name,
+            "requested_speed": prosody.speed,
+            "requested_semitones": prosody.semitones,
+            "seed_supported": False,
+            "requested_seed": seed,
+            "cache_hit": cache_hit,
+            "estimated_cost_usd": provider_cost,
+        }
+        return SynthesisResult(audio, rate, time.perf_counter() - started,
+                               controls, "local-post-process",
+                               list(self.capabilities.warnings))
 
 
 class VoxCPM2Backend(_ReferenceBackend):
@@ -617,6 +1110,10 @@ def make_backend(name: str, *, voices: dict[str, str] | None = None,
         return KokoroBackend(voices)
     classes = {
         "chatterbox": MlxAudioBackend,
+        "gemini": GeminiBackend,
+        "gemini-vertex": GeminiBackend,
+        "cloudflare-aura2": CloudflareAura2Backend,
+        "cloudflare-melotts": CloudflareMeloBackend,
         "indextts25": IndexTTS25Backend,
         "voxcpm2": VoxCPM2Backend,
         "qwen3": Qwen3Backend,
@@ -626,6 +1123,8 @@ def make_backend(name: str, *, voices: dict[str, str] | None = None,
     if normalized not in classes:
         raise ValueError(f"Unknown voice backend '{name}'.")
     selected_model = model or DEFAULT_MODELS[normalized]
+    if normalized == "gemini-vertex":
+        return GeminiBackend(selected_model, voices=voices, vertex=True)
     return classes[normalized](selected_model, voices=voices, ref_audio=ref_audio,
                                ref_audios=ref_audios, ref_texts=ref_texts)
 
@@ -649,7 +1148,12 @@ class Speaker:
                                     ref_texts=ref_texts)
         self.prosody_strength = prosody_strength
         self.voice_seed = voice_seed
-        self.post_process = normalized == "kokoro"
+        self.post_process_pitch = normalized in {
+            "kokoro", "cloudflare-aura2", "cloudflare-melotts"}
+        self.post_process_speed = normalized in {
+            "cloudflare-aura2", "cloudflare-melotts"}
+        self.post_process_gain = normalized in {
+            "cloudflare-aura2", "cloudflare-melotts"}
         self._cache: dict[tuple, np.ndarray] = {}
         self.stats: list[dict[str, Any]] = []
         self._call_index = 0
@@ -666,12 +1170,21 @@ class Speaker:
                                     target_seconds=target_seconds, seed=seed)
         audio = _trim(result.audio)
         rate = result.sample_rate
-        if self.post_process and abs(prosody.semitones) > 0.01:
+        post_process: dict[str, float] = {}
+        if self.post_process_speed and abs(prosody.speed - 1.0) > 0.001:
+            audio = librosa.effects.time_stretch(audio, rate=prosody.speed)
+            post_process["speed"] = prosody.speed
+        if self.post_process_pitch and abs(prosody.semitones) > 0.01:
             audio = _pitch_shift(audio, rate, prosody.semitones)
+            post_process["semitones"] = prosody.semitones
         if rate != SR:
             audio = librosa.resample(audio, orig_sr=rate, target_sr=SR,
                                      res_type="soxr_hq")
         audio = audio * 10 ** (prosody.gain_db / 20)
+        if self.post_process_gain and abs(prosody.gain_db) > 0.01:
+            post_process["gain_db"] = prosody.gain_db
+        if post_process:
+            result.controls["local_post_process"] = post_process
         before_fit = len(audio) / SR
         fitted = False
         if target_seconds is not None and before_fit > target_seconds:

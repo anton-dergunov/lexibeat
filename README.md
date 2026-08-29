@@ -19,12 +19,16 @@ Install [`uv`](https://docs.astral.sh/uv/), then:
 uv sync
 # Optional research backends and benchmark resource monitoring
 uv sync --extra experimental-tts
+# Optional hosted Gemini and Cloudflare speech backends
+uv sync --extra hosted-tts
 uv run generate.py --download-samples salamander  # piano
 uv run generate.py --download-samples vsco        # strings, marimba, glockenspiel
 ```
 
-Samples are downloaded once to `~/.cache/earworms/`; generation itself remains
-local and offline. Kokoro additionally needs `brew install espeak-ng`.
+Samples are downloaded once to `~/.cache/earworms/`. The default Chatterbox and
+other local backends run offline after their weights are cached; the explicitly
+selected Gemini and Cloudflare backends send transcript text to their provider.
+Kokoro additionally needs `brew install espeak-ng`.
 
 ## Generate a lesson
 
@@ -48,6 +52,19 @@ uv run generate.py --backend voxcpm2 --words 1 --out out/voxcpm.wav
 uv run generate.py --backend qwen3 --words 1 --out out/qwen.wav
 uv run generate.py --backend tada --words 1 --out out/tada.wav
 uv run generate.py --backend fish-s2 --words 1 --out out/fish.wav
+
+# Hosted backends read credentials from the environment
+uv run --extra hosted-tts --env-file .env generate.py \
+  --backend gemini --words 1 --out out/gemini.wav
+# Paid Vertex AI via Application Default Credentials (no API key)
+GOOGLE_CLOUD_PROJECT=your-project-id \
+GOOGLE_CLOUD_LOCATION=global \
+uv run --extra hosted-tts generate.py --backend gemini-vertex \
+  --words 1 --out out/gemini-vertex.wav
+uv run --extra hosted-tts --env-file .env generate.py \
+  --backend cloudflare-aura2 --words 1 --out out/aura2.wav
+uv run --extra hosted-tts --env-file .env generate.py \
+  --backend cloudflare-melotts --words 1 --out out/melotts.wav
 ```
 
 Vocabulary comes from Markdown files or directories passed with `--vocab`.
@@ -56,8 +73,8 @@ Every lesson also writes a timestamped `.txt` tracklist and the resolved
 
 ## Experimental expressive voices
 
-The experimental backends expose only controls their current MLX runtimes
-actually implement:
+The experimental backends expose only controls their current local runtimes or
+hosted APIs actually implement:
 
 | Backend | Emotion/variation | Timing | Voice |
 |---|---|---|---|
@@ -66,6 +83,10 @@ actually implement:
 | `qwen3` | natural-language emotion and prosody | qualitative instruction | Serena/Ryan presets |
 | `tada` | stochastic dynamic prosody | no explicit rate control | Paulina/Daniel cloning |
 | `fish-s2` | inline emotion tags and style instruction | no native rate control | Paulina/Daniel cloning |
+| `gemini` | natural-language emotion, pace and pitch | qualitative instruction | Sulafat/Achird presets |
+| `gemini-vertex` | same controls via paid Vertex AI/ADC | qualitative instruction | Sulafat/Achird presets |
+| `cloudflare-aura2` | gentle local pitch/speed variation | local post-process | Aquila/Luna presets |
+| `cloudflare-melotts` | gentle local pitch/speed variation | local post-process | provider default; currently English-only |
 
 IndexTTS duration shaping is not sample-exact. When any backend still overruns a
 bar, the existing bounded pitch-preserving fit is used and recorded in the JSON
@@ -89,6 +110,54 @@ phrases can expose reference-boundary artifacts, wrong stress, degraded later
 repetitions, or hallucinated trailing speech even when a WAV is finite and
 correctly timed. Treat the generated comparison as a listening bake-off, not a
 model-quality certification.
+
+Hosted credentials are never loaded from tracked configuration. Copy
+`.env.example` to the ignored `.env`, fill in the three values, and pass
+`--env-file .env` to `uv run`. Gemini and Cloudflare do not honor `voice_seed`;
+their output is not reproducible even though placement on the beat grid remains
+deterministic. Gemini requests retry transient failures and adaptively pace
+themselves for the preview endpoint's 3-RPM free-tier limit. The current project
+also has a 10-request daily limit, while ten bilingual items repeated three times
+need 60 requests; use increased quota or collect that comparison across multiple
+quota days. A daily-quota error fails immediately because retrying cannot resolve
+it. Cloudflare's current MeloTTS deployment rejects its documented
+Spanish language code, so it remains available as an English-only diagnostic
+until [cloudflare/ai#221](https://github.com/cloudflare/ai/issues/221) is fixed.
+A hosted listening comparison can be attempted with the command below. MeloTTS
+contributes English only, and its statistics record that language restriction.
+
+```bash
+uv run --extra hosted-tts --env-file .env compare_voices.py \
+  --words 10 --reps 3 \
+  --configs gemini cloudflare-aura2 cloudflare-melotts \
+  --out-dir out/hosted-tts
+```
+
+For projects with billing and Vertex AI enabled, authenticate once with
+`gcloud auth application-default login`, then export `GOOGLE_CLOUD_PROJECT` and
+`GOOGLE_CLOUD_LOCATION=global`. The comparison presets
+`gemini-vertex-31`, `gemini-vertex-25-flash`, `gemini-vertex-25-lite`, and
+`gemini-vertex-25-pro` cover all currently documented Gemini-TTS models. The
+Vertex path uses paid standard quota and does not read `GEMINI_API_KEY`.
+
+Gemini 3.1 also has a separate six-call batching experiment. It groups all ten
+items by language and repetition style, inserts the documented `[long pause]`
+tag, splits the returned PCM at the nine strongest silent gaps, and refuses any
+batch without ten credible segments. This reduces 60 provider requests to six,
+but it does not provide authoritative word timestamps and the silent output is
+still billed. Run it with:
+
+```bash
+GOOGLE_CLOUD_PROJECT=your-project-id \
+GOOGLE_CLOUD_LOCATION=global \
+uv run --extra hosted-tts compare_gemini_batched.py \
+  --words 10 --reps 3 --out-dir out/hosted-tts-batched
+```
+
+The acceptance run split every batch cleanly, but cost `$0.099465` versus
+`$0.059309` for 60 separate Gemini 3.1 calls because the long pauses consume
+output audio tokens. Treat batching as a request-quota optimization, not a cost
+optimization, and listen to the saved raw files before trusting the split.
 
 IndexTTS weights use the bilibili Model Use License, TADA uses the Llama 3.2
 Community License, and Fish S2 Pro is research-only. See [NOTICE](NOTICE) before

@@ -18,3 +18,7 @@ experimental-tts = [
     "mlx-tada>=0.1.0",
     "psutil>=7.0.0",
 ]
+hosted-tts = [
+    "google-genai>=2.19.0",
+    "requests>=2.32.0",
+]

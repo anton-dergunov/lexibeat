@@ -389,6 +389,91 @@ Still open:
 - Sung rather than spoken delivery, to capture the actual song superiority effect.
 - A "test mode" track: Spanish only, with silence where the English would be.
 
+### Hosted expressive TTS snapshot (2026-08-29)
+
+Hosted speech is opt-in and does not replace Chatterbox. Gemini 3.1 Flash TTS is
+the most promising current fit because its exact-text TTS endpoint accepts
+director instructions for tone, accent, pace and style in both Spanish and
+English. Cloudflare Aura 2 supplies separate Spanish and English models but only
+exposes speaker and encoding controls; MeloTTS exposes only text and language.
+The two Cloudflare paths therefore use the same restrained local speed/pitch
+variation as Kokoro, and record that post-processing rather than describing it
+as native model control. A live REST/schema check on 2026-08-29 also confirmed
+that Cloudflare still rejects MeloTTS `lang: "es"` with AiError 8002, matching
+[cloudflare/ai#221](https://github.com/cloudflare/ai/issues/221); that backend is
+therefore an English-only diagnostic rather than a viable lesson renderer.
+
+| Service/model | Direct expressive control | Free allocation | Published paid rate | Five minutes/day (150 min/month) |
+|---|---|---:|---:|---:|
+| Gemini 3.1 Flash TTS Preview | prompt controls for style, accent, pace and tone | free tier, rate-limited | ~$0.03/audio min | ~$4.50 if billed |
+| Gemini 2.5 Flash / Flash-Lite TTS | same prompt controls; Flash-Lite is preview and single-speaker | no Vertex free allocation | ~$0.015/audio min | ~$2.25 on paid Vertex |
+| Gemini 2.5 Pro TTS | higher-control structured speech workflows | no Vertex free allocation | ~$0.03/audio min | ~$4.50 on paid Vertex |
+| Cloudflare Aura 2 ES/EN | none beyond contextual delivery and speaker | 10,000 Workers AI neurons/day shared | $0.03/1k characters | about 4,500 chars/day; exceeds free allocation slightly and requires the $5 Workers Paid plan |
+| Cloudflare MeloTTS | language only; deployed Spanish path currently broken | same 10,000 neurons/day | $0.0002/audio min | ~$0.03; well inside free allocation |
+| Hume Octave 1 | acting instructions and speed | ~10 min/month | $0.15/1k characters above Creator quota | roughly $15/month at current Creator allowance |
+| Cartesia Sonic 3 | explicit emotion, speed and volume | ~27 min/month | $5 plan includes ~133 min | slightly above the $5 plan allowance |
+| Eleven v3 | emotional audio tags and stability modes | ~10 min/month | ~$0.10/audio min | ~$15 usage-equivalent; current Creator plan includes 220 min |
+| Google Cloud Chirp 3 HD | pace, pause and pronunciation; no comparable emotion prompt | first 1M chars/month, billing required | $30/M characters | normally inside the character allowance |
+| OpenAI GPT-4o Mini TTS | natural-language voice instructions | no API free tier | ~$0.015/audio min | ~$2.25, but the model is deprecated |
+
+For the smaller target of 50 vocabulary pairs per day, three Spanish/English
+repetitions are roughly 3,000 billed characters when each short utterance
+averages ten characters. That is about 8,182 Aura neurons and remains inside the
+daily Cloudflare allocation. Five continuous minutes is a deliberately more
+conservative projection and depends on language, word length and delivery rate.
+The Gemini free project observed during the 2026-08-29 acceptance run is limited
+to 3 RPM and 10 RPD for each preview TTS model. Consequently the requested ten
+items x three repetitions x two languages (60 requests) cannot complete in one
+quota day without batching or a quota upgrade; pacing fixes RPM errors but cannot
+fix an exhausted daily allowance.
+
+The paid Vertex experiment uses Application Default Credentials and the project
+and `global` location already established by the sibling `vim-mastery` project.
+Google Cloud currently exposes four Gemini-TTS endpoints there:
+`gemini-3.1-flash-tts-preview`, `gemini-2.5-flash-tts`,
+`gemini-2.5-flash-lite-preview-tts`, and `gemini-2.5-pro-tts`. Vertex returns
+headerless 24 kHz mono PCM, which the backend decodes directly. The separate
+Cloud Text-to-Speech API is required for Chirp 3 HD and was not enabled when the
+Vertex setup was inspected.
+
+#### Batched Gemini pause experiment
+
+Gemini 3.1 documents `[short pause]` and `[long pause]` inline audio tags, but
+the Gemini-TTS API does not document word timestamps, SSML marks, or distinct
+audio parts for multiple phrases. Cloud TTS streaming chunks are transport
+chunks and are not promised to align with input phrase boundaries. The batching
+experiment therefore makes six calls (two languages by three repeat styles),
+puts ten phrases behind `[long pause]` separators in each call, then splits at
+the nine longest local silence regions. It uses one neutral emotional direction
+per batch so every phrase in a batch truly shares the same delivery settings.
+
+The 2026-08-29 live run found exactly ten segments in all six responses. The
+shortest chosen gap was 0.85 seconds and the weakest selected/unselected gap
+confidence was 5.16x. The reconstructed 60-utterance listening file was finite
+with a 0.95 peak. The experiment used six calls instead of 60 but cost
+`$0.099465`, compared with `$0.059309` for separate Gemini 3.1 requests, because
+the generated silence is billable output audio. This route is useful when
+request quota is the constraint; it still requires listening for omitted words,
+spoken tags, or bad segment boundaries.
+
+Sources: [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation),
+[Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing),
+[Gemini-TTS on Google Cloud](https://docs.cloud.google.com/text-to-speech/docs/gemini-tts),
+[Gemini 3.1 audio-tag prompting](https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-tts-on-google-cloud/),
+[Cloudflare Aura 2 ES](https://developers.cloudflare.com/workers-ai/models/aura-2-es/),
+[Aura 2 EN](https://developers.cloudflare.com/workers-ai/models/aura-2-en/),
+[MeloTTS](https://developers.cloudflare.com/workers-ai/models/melotts/),
+[Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/),
+[Hume acting instructions](https://dev.hume.ai/docs/text-to-speech-tts/acting-instructions),
+[Hume pricing](https://www.hume.ai/pricing),
+[Cartesia controls](https://docs.cartesia.ai/build-with-cartesia/capability-guides/volume-speed-emotion),
+[Cartesia pricing](https://www.cartesia.ai/pricing),
+[ElevenLabs TTS](https://elevenlabs.io/docs/overview/capabilities/text-to-speech),
+[ElevenLabs pricing](https://elevenlabs.io/pricing/api),
+[Chirp 3 HD](https://docs.cloud.google.com/text-to-speech/docs/chirp3-hd),
+[Google Cloud TTS pricing](https://cloud.google.com/text-to-speech/pricing), and
+[OpenAI GPT-4o Mini TTS](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts).
+
 ---
 
 ## 8. Sources
