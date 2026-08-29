@@ -25,7 +25,9 @@ class Emotion:
     def vector(self) -> list[float]:
         """An 8-float emotion vector, for backends that take one."""
         weights = dict.fromkeys(VECTOR_ORDER, 0.0)
-        weights[_VECTOR_NAME.get(self.name, "calm")] = self.exaggeration
+        vector_name = (self.name if self.name in VECTOR_ORDER
+                       else _VECTOR_NAME.get(self.name, "calm"))
+        weights[vector_name] = self.exaggeration
         return [weights[k] for k in VECTOR_ORDER]
 
 

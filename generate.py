@@ -11,9 +11,15 @@ mlx-audio. See DESIGN.md for the reasoning and the alternatives considered.
 from __future__ import annotations
 
 import argparse
+import json
+import os
+import platform
+import resource
 import time
+from dataclasses import asdict
 from pathlib import Path
 
+import numpy as np
 import soundfile as sf
 
 from earworms.arrange import PATTERNS, arrange, render_speech
@@ -22,7 +28,7 @@ from earworms.mix import mix_stems
 from earworms.music import SR, Grid, render_bed, render_stems
 from earworms.samples import PACKS, PACK_GROUPS, download_target
 from earworms.vocab import load
-from earworms.voice import DEFAULT_MLX_MODEL, DEFAULT_VOICES, Speaker
+from earworms.voice import CAPABILITIES, DEFAULT_MODELS, Speaker
 
 VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 
@@ -68,17 +74,23 @@ def parse_args() -> argparse.Namespace:
                        help="fetch one sample pack, or 'vsco' for all VSCO packs")
 
     voice = p.add_argument_group("voice")
-    voice.add_argument("--backend", choices=["kokoro", "chatterbox"],
+    voice.add_argument("--backend", choices=["kokoro", "chatterbox", "indextts25",
+                                              "voxcpm2", "qwen3", "tada", "fish-s2"],
                        default="chatterbox",
                        help="Chatterbox is the quality default; Kokoro is the fast fallback")
-    voice.add_argument("--model", default=DEFAULT_MLX_MODEL)
+    voice.add_argument("--model", default=None,
+                       help="override the backend-specific default model")
     voice.add_argument("--ref-audio", help="voice to clone for the chatterbox backend")
     voice.add_argument("--ref-audio-es",
                        help="Spanish reference path or descriptor such as say:Paulina")
     voice.add_argument("--ref-audio-en",
                        help="English reference path or descriptor such as say:Daniel")
-    voice.add_argument("--voice-es", default=DEFAULT_VOICES["es"])
-    voice.add_argument("--voice-en", default=DEFAULT_VOICES["en"])
+    voice.add_argument("--ref-text-es", help="transcript for a custom Spanish reference")
+    voice.add_argument("--ref-text-en", help="transcript for a custom English reference")
+    voice.add_argument("--voice-es", default=None)
+    voice.add_argument("--voice-en", default=None)
+    voice.add_argument("--voice-seed", type=int, default=None,
+                       help="TTS sampling seed (defaults to --seed)")
     voice.add_argument("--prosody-strength", type=float, default=1.0,
                        help="0 disables per-repeat variation, 1 is the default")
     voice.add_argument("--no-emotion", action="store_true",
@@ -92,6 +104,8 @@ def parse_args() -> argparse.Namespace:
     out.add_argument("--music-lufs", type=float, default=-26.0)
     out.add_argument("--dry-run", action="store_true",
                      help="print the selected items and the timing plan only")
+    out.add_argument("--stats-json", type=Path,
+                     help="write detailed timing, control and audio statistics")
     return p.parse_args()
 
 
@@ -119,8 +133,21 @@ def build_spec(args: argparse.Namespace) -> tuple[BedSpec, str]:
     return spec, label
 
 
+def _peak_rss_bytes() -> int:
+    value = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    return value if platform.system() == "Darwin" else value * 1024
+
+
+def _write_stats(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+                    encoding="utf-8")
+
+
 def main() -> None:
     args = parse_args()
+    process_started = time.perf_counter()
+    cpu_started = time.process_time()
 
     if args.download_samples:
         download_target(args.download_samples)
@@ -159,22 +186,36 @@ def main() -> None:
                   f"{item.source} — {item.target}")
         return
 
-    started = time.time()
+    started = time.perf_counter()
     print("Synthesising speech…")
-    speaker = Speaker({"es": args.voice_es, "en": args.voice_en},
-                      backend=args.backend, model=args.model,
+    voices = {key: value for key, value in {
+        "es": args.voice_es, "en": args.voice_en}.items() if value}
+    speaker_started = time.perf_counter()
+    speaker = Speaker(voices or None, backend=args.backend, model=args.model,
                       ref_audio=args.ref_audio,
                       ref_audios={"es": args.ref_audio_es,
                                   "en": args.ref_audio_en},
-                      prosody_strength=args.prosody_strength)
+                      ref_texts={key: value for key, value in {
+                          "es": args.ref_text_es, "en": args.ref_text_en}.items()
+                          if value},
+                      prosody_strength=args.prosody_strength,
+                      voice_seed=args.voice_seed if args.voice_seed is not None
+                      else args.seed)
+    speaker_init_seconds = time.perf_counter() - speaker_started
+    speech_started = time.perf_counter()
     events, total_bars = arrange(items, speaker, grid, pattern=args.pattern,
                                  emotions=not args.no_emotion)
     speech = render_speech(events, total_bars, grid)
+    speech_seconds = time.perf_counter() - speech_started
+    speaker.close()
 
     print("Rendering music bed…")
+    music_started = time.perf_counter()
     stems = render_stems(spec, total_bars)
+    music_seconds = time.perf_counter() - music_started
 
     print("Mixing…")
+    mix_started = time.perf_counter()
     depths = {name: getattr(spec, name).duck_db for name in stems}
     if args.duck_db is not None:
         depths = {name: args.duck_db for name in stems}
@@ -182,20 +223,74 @@ def main() -> None:
                       music_lufs=args.music_lufs)
     sf.write(args.out, track, SR)
     spec.to_json(args.out.with_suffix(".bed.json"))
+    mix_seconds = time.perf_counter() - mix_started
 
     # A sidecar tracklist makes it possible to skip to a word while listening.
     listing = args.out.with_suffix(".txt")
     lines = [f"{args.out.name} — {len(items)} items, {spec.bpm:g} BPM, "
              f"pattern '{args.pattern}', bed '{bed_label}', "
              f"voice '{args.backend}'", ""]
+    capabilities = CAPABILITIES[args.backend]
+    if capabilities.experimental:
+        lines += [f"Experimental model: {getattr(speaker.backend, 'model_id', args.model)}",
+                  f"License: {capabilities.license}",
+                  *[f"Warning: {warning}" for warning in capabilities.warnings], ""]
     for i, item in enumerate(items):
         at = (2 + i * slots) * grid.bar
         lines.append(f"{int(at)//60:02d}:{int(at)%60:02d}  {item.emoji or ' '} "
                      f"{item.source} — {item.target}")
     listing.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    total_seconds = time.perf_counter() - process_started
+    if args.stats_json:
+        utterance_audio = sum(float(row["duration_seconds"]) for row in speaker.stats)
+        generation_seconds = sum(float(row["generation_seconds"]) for row in speaker.stats)
+        reference_seconds = sum(float(row.get("controls", {}).get(
+            "reference_preparation_seconds", 0.0)) for row in speaker.stats)
+        peak_mlx = max((int(row["peak_memory_bytes"] or 0)
+                        for row in speaker.stats), default=0)
+        stats = {
+            "schema_version": 1,
+            "success": True,
+            "backend": args.backend,
+            "model_id": getattr(speaker.backend, "model_id",
+                                args.model or DEFAULT_MODELS.get(args.backend, "")),
+            "capabilities": asdict(capabilities),
+            "hardware": {
+                "platform": platform.platform(),
+                "machine": platform.machine(),
+                "cpu_count": os.cpu_count(),
+            },
+            "timing": {
+                "backend_init_seconds": speaker_init_seconds,
+                "model_load_seconds": float(getattr(speaker.backend, "load_seconds", 0.0)),
+                "speech_stage_seconds": speech_seconds,
+                "model_generation_seconds": generation_seconds,
+                "reference_preparation_seconds": reference_seconds,
+                "music_render_seconds": music_seconds,
+                "mix_write_seconds": mix_seconds,
+                "total_seconds": total_seconds,
+                "cpu_seconds": time.process_time() - cpu_started,
+                "speech_rtf": generation_seconds / utterance_audio
+                if utterance_audio else None,
+            },
+            "memory": {
+                "process_peak_rss_bytes": _peak_rss_bytes(),
+                "mlx_peak_bytes": peak_mlx or None,
+            },
+            "audio": {
+                "path": str(args.out), "sample_rate": SR,
+                "channels": int(track.shape[1]) if track.ndim == 2 else 1,
+                "duration_seconds": len(track) / SR,
+                "peak": float(np.abs(track).max()),
+                "finite": bool(np.isfinite(track).all()),
+            },
+            "utterances": speaker.stats,
+        }
+        _write_stats(args.stats_json, stats)
     print(f"\nWrote {args.out} ({len(track)/SR/60:.1f} min), {listing.name} "
-          f"and {args.out.with_suffix('.bed.json').name} in {time.time()-started:.0f}s")
+          f"and {args.out.with_suffix('.bed.json').name} in "
+          f"{time.perf_counter()-started:.0f}s")
 
 
 if __name__ == "__main__":

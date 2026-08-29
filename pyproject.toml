@@ -12,3 +12,9 @@ dependencies = [
     "scipy>=1.18.1",
     "soundfile>=0.14.0",
 ]
+
+[project.optional-dependencies]
+experimental-tts = [
+    "mlx-tada>=0.1.0",
+    "psutil>=7.0.0",
+]

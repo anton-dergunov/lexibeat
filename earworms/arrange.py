@@ -14,7 +14,7 @@ import numpy as np
 from .emotion import for_item
 from .music import Grid
 from .vocab import Item
-from .voice import Prosody, Speaker, fit
+from .voice import Prosody, Speaker
 
 # Each entry is one bar: (language | "gap" | "rest", repetition index).
 #   "gap"  - deliberate silence for the learner to recall the translation
@@ -72,9 +72,9 @@ def arrange(
             text = item.source if kind == "es" else item.target
             prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
             prosody = prosody.with_emotion(emotion, speaker.prosody_strength)
-            audio = speaker.say(text, kind, prosody, emotion)
             # Leave a little of the bar clear so the next downbeat stays audible.
-            audio = fit(audio, grid.bar * 0.92)
+            audio = speaker.say(text, kind, prosody, emotion,
+                                target_seconds=grid.bar * 0.92)
             events.append(Event(grid.bar_start(bar), audio, f"{kind}:{text}"))
             bar += 1
 

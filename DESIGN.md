@@ -356,15 +356,34 @@ native Paulina/Daniel references; parameterised and randomisable music beds;
 recorded piano, strings, marimba and glockenspiel; chord extensions; alternative
 meters; filter automation; and per-layer sidechain ducking.
 
+Done in the expressive-voice iteration:
+
+- **IndexTTS 2.5 via an isolated native-MLX worker** — consumes the explicit
+  `[happy, angry, sad, afraid, disgusted, melancholic, surprised, calm]` vector
+  from `Emotion.vector()` and applies the model's `duration_factor`. A first
+  overlong render is regenerated once with a calibrated factor. The published
+  control is not sample-exact, so the ordinary bounded fit remains a measured
+  fallback rather than being hidden.
+- **VoxCPM2, Qwen3-TTS, TADA and Fish Audio S2 Pro** — experimental comparison
+  backends spanning instruction-controlled emotion/prosody, dynamic stochastic
+  duration, and word-level emotion tags. Each declares its real capabilities,
+  licence and fallback behavior in the generated statistics.
+- **Zonos2 deferred** — current ZONOS2 in mlx-audio does not expose the emotion
+  and pitch-variance controls described by the earlier design note. Those
+  controls belong to Zonos v0.1, whose released language list excludes Spanish.
+
+The first one-item listening bake-off also made clear that successful generation
+is not linguistic correctness. IndexTTS 2.5 followed Spanish stress best among
+the new models, but exposed short-reference boundary artifacts. Fish rendered
+Spanish with incorrect stress and a pronounced final `h`; Qwen's Spanish retained
+an unsuitable accent and hallucinated trailing material; and VoxCPM2 degraded on
+later Spanish repetitions despite strong English variation. Chatterbox remained
+the subjective quality leader, although it too has occasionally inserted or
+mispronounced a short initial syllable. These observations are artifact-specific,
+so the benchmark records them separately from finite/stereo/timing validation.
+
 Still open:
 
-- **IndexTTS-2 via mlx-audio** — an explicit 8-float emotion vector
-  `[happy, angry, sad, afraid, disgusted, melancholic, surprised, calm]` plus
-  duration control, which would let a word land on the beat *by construction*
-  rather than by time-stretching. `earworms/emotion.py` already emits this
-  vector via `Emotion.vector()`. Note its model licence restricts commercial use.
-- **Zonos2 via mlx-audio** — emotion conditioning plus pitch-variance and
-  speaking-rate parameters.
 - Hybrid music: neural 8-bar loop, grid-snapped with `beat_this`, then looped.
 - Expanding-interval spacing across the track rather than blocked repeats.
 - Sung rather than spoken delivery, to capture the actual song superiority effect.
