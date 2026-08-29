@@ -30,6 +30,46 @@ other local backends run offline after their weights are cached; the explicitly
 selected Gemini and Cloudflare backends send transcript text to their provider.
 Kokoro additionally needs `brew install espeak-ng`.
 
+## Large sample library and varied procedural beds
+
+The expanded music engine has six additional procedural families:
+`meditative`, `organic`, `acoustic`, `nocturnal`, `sunlit`, and `lofi-wide`.
+Unlike the four legacy styles, these resolve a complete repeating phrase—chord
+voicings, bass rhythm, motif and multi-lane percussion—into the saved
+`.bed.json`. A fixed seed therefore reproduces both the composition and audio.
+
+Bulk sample collections are managed explicitly and never downloaded by normal
+generation. On this workstation the defaults are a 500 GB external library and
+a 50 GB local working cache:
+
+```bash
+uv run sample_library.py status
+uv run sample_library.py download library-core   # CC0 sources
+uv run sample_library.py index --deep
+uv run sample_library.py report
+```
+
+The core target contains VCSL, VSCO 2 CE, FreePats World Percussion and the
+Stargate public-domain pack. `library-full` additionally fetches Open Samples,
+whose separate custom license is recorded below. Downloads use staging
+directories, the index stores SHA-256 identities, and samples selected for a
+saved bed can be promoted into the local cache so it remains playable when the
+external SSD is disconnected.
+
+Generate a controlled listening set with:
+
+```bash
+uv run --extra hosted-tts --env-file .env compare_beds.py \
+  --count 30 --sample-policy all --voice-backend gemini-vertex \
+  --out-dir out/music-bakeoff
+```
+
+The command builds a larger candidate pool, balances all six families and uses
+audio-feature distance to choose the requested count. Every final clip uses the
+same two bilingual items, so timbre, rhythm and speech masking can be compared
+directly. It writes WAV/BedSpec pairs, a complete manifest, a listening guide
+and a rating CSV.
+
 ## Generate a lesson
 
 ```bash

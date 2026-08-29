@@ -20,6 +20,33 @@ https://github.com/sgossner/VSCO-2-CE
 Curated strings, marimba and glockenspiel samples are downloaded on demand into
 ~/.cache/earworms/samples/. They are not redistributed with this repository.
 
+The expanded tiered library can also download and index the full VSCO 2 CE and
+Versilian Community Sample Library collections. VCSL is likewise dedicated to
+the public domain under CC0 1.0. Assets stay outside the repository.
+https://github.com/sgossner/VCSL
+
+FreePats World Percussion
+-------------------------
+World-percussion recordings by Xavimart, Gonzalo, Roberto and contributors.
+Dedicated to the public domain under CC0 1.0. The bank includes cajon, bongos,
+shaker, tambourine, hand clap, claves, castanets, conga, maracas and darbuka.
+https://github.com/freepats/world-percussion
+
+Stargate Sample Pack
+--------------------
+Public-domain/CC0 sample collection contributed by the Stargate DAW community.
+https://github.com/stargatedaw/stargate-sample-pack
+
+Open Samples
+------------
+Samples by Jeffrey Brice and Open Samples contributors under the Open Samples
+Permissive Use Public License version 2 (December 2025). The license permits
+commercial and non-commercial music production, prohibits selling or
+repackaging the library as a sample product, and prohibits its use for training
+generative AI or language models. Earworms uses these files only as playback
+instruments in rendered music; it does not redistribute them or train a model.
+https://github.com/pumodi/open-samples
+
 Models
 ------
 Kokoro-82M (hexgrad/Kokoro-82M) — Apache-2.0.

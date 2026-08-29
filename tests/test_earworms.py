@@ -18,6 +18,8 @@ from earworms.bedspec import BedSpec
 from earworms.arrange import arrange
 from earworms.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from earworms.instruments import SampledInstrument
+from earworms.library import (EXTERNAL_LIMIT, SampleLibrary, SampleRef,
+                              directory_size)
 from earworms.mix import duck_envelope, mix_stems
 from earworms.music import Grid, SR, filter_curve, render_bed, render_stems
 from earworms.samples import PACKS, Sample, SamplePack, midi, missing
@@ -41,6 +43,8 @@ from earworms.voice import (
 from earworms.vocab import Item
 from benchmark_voices import pressure_snapshot, write_comparison
 from compare_gemini_batched import split_on_long_silences
+from compare_beds import Candidate, FAMILIES, select_balanced
+from earworms.sfz import parse as parse_sfz
 
 
 class VoiceTests(unittest.TestCase):
@@ -521,6 +525,29 @@ class BedSpecTests(unittest.TestCase):
             self.assertGreaterEqual(float(a.min()), 120.0)
             self.assertLessEqual(float(a.max()), SR * 0.45)
 
+    def test_wide_styles_resolve_and_round_trip_complete_phrases(self) -> None:
+        for style in FAMILIES:
+            first = BedSpec.from_style(style, 17)
+            second = BedSpec.from_style(style, 17)
+            self.assertIsNotNone(first.phrase)
+            self.assertEqual(first.to_json(), second.to_json())
+            rebuilt = BedSpec.from_dict(json.loads(first.to_json()))
+            self.assertEqual(rebuilt.to_json(), first.to_json())
+            self.assertGreaterEqual(first.phrase.loop_bars, 4)
+            self.assertTrue(first.phrase.chords)
+            self.assertTrue(first.phrase.bass)
+
+    def test_resolved_synth_phrase_pcm_is_deterministic(self) -> None:
+        spec = BedSpec.from_style("meditative", 3)
+        spec.pad.instrument = "synth"
+        spec.lead.instrument = "synth"
+        spec.phrase.pad_sample = None
+        spec.phrase.lead_sample = None
+        first = render_stems(spec, 1)
+        second = render_stems(spec, 1)
+        for name in first:
+            np.testing.assert_array_equal(first[name], second[name])
+
 
 class SampleTests(unittest.TestCase):
     def test_pack_manifests_cover_requested_instruments(self) -> None:
@@ -544,6 +571,68 @@ class SampleTests(unittest.TestCase):
             audio = SampledInstrument(pack).render(60, 0.5, 0.2)
             self.assertEqual(len(audio), int(0.2 * SR))
             self.assertAlmostEqual(float(np.abs(audio).max()), 0.5, places=3)
+
+
+class TieredLibraryTests(unittest.TestCase):
+    def test_index_resolve_promote_and_external_offline_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(base / "external", base / "local")
+            source = library.collection_path("freepats-world") / "samples" / "hit_C4.wav"
+            source.parent.mkdir(parents=True)
+            sf.write(source, np.sin(2 * np.pi * 261.6 * np.arange(SR // 10) / SR), SR)
+            self.assertEqual(library.index("freepats-world", deep=True), 1)
+            asset = library.assets()[0]
+            self.assertEqual(asset.midi_note, 60)
+            self.assertEqual(library.resolve(asset.ref), source)
+            promoted = library.promote([asset.ref])[0]
+            self.assertTrue(promoted.exists())
+            source.unlink()
+            self.assertEqual(library.resolve(asset.ref), promoted)
+            promoted.unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "Attach the external SSD"):
+                library.resolve(asset.ref)
+
+    def test_external_quota_is_scoped_and_enforced(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            library = SampleLibrary(Path(tmp) / "external", Path(tmp) / "local")
+            with mock.patch("earworms.library.directory_size",
+                            return_value=EXTERNAL_LIMIT):
+                with self.assertRaisesRegex(RuntimeError, "exceed"):
+                    library._check_budget("external", 1)
+            self.assertEqual(directory_size(Path(tmp) / "unmanaged"), 0)
+
+    def test_sfz_regions_inherit_group_and_report_unsupported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "instrument.sfz"
+            path.write_text(
+                "<global> lovel=1 hivel=100\n"
+                "<group> pitch_keycenter=C4 unsupported_filter=2\n"
+                "<region> sample=Samples/Tone C4.wav lokey=C4 hikey=C4 seq_length=2 "
+                "seq_position=1\n", encoding="utf-8")
+            document = parse_sfz(path)
+            self.assertEqual(len(document.zones), 1)
+            self.assertEqual(document.zones[0].key_center, 60)
+            self.assertEqual(document.zones[0].lo_vel, 1)
+            self.assertIn("unsupported_filter", document.unsupported_opcodes)
+
+
+class BedSelectionTests(unittest.TestCase):
+    def test_selector_balances_families_and_is_deterministic(self) -> None:
+        candidates = []
+        for family_index, family in enumerate(FAMILIES):
+            for seed in range(3):
+                spec = BedSpec.from_style(family, seed)
+                candidates.append(Candidate(
+                    family, seed, spec,
+                    np.array([family_index, seed, family_index * seed], dtype=float),
+                    8.0, ()))
+        first = select_balanced(candidates, 12)
+        second = select_balanced(candidates, 12)
+        self.assertEqual([(row.family, row.seed) for row in first],
+                         [(row.family, row.seed) for row in second])
+        self.assertEqual({family: sum(row.family == family for row in first)
+                          for family in FAMILIES}, {family: 2 for family in FAMILIES})
 
 
 class RenderAndMixTests(unittest.TestCase):

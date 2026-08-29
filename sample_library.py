@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""Manage the explicit tiered sample library used by Earworms."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from dataclasses import asdict
+from pathlib import Path
+
+from earworms.library import COLLECTIONS, LIBRARY_TARGETS, SampleLibrary, SampleRef
+
+
+def _refs(value) -> list[SampleRef]:
+    found: list[SampleRef] = []
+    if isinstance(value, dict):
+        if {"collection", "asset_id"}.issubset(value):
+            found.append(SampleRef(value["collection"], value["asset_id"],
+                                   value.get("sha256", "")))
+        else:
+            for child in value.values():
+                found.extend(_refs(child))
+    elif isinstance(value, list):
+        for child in value:
+            found.extend(_refs(child))
+    return list({(ref.collection, ref.asset_id): ref for ref in found}.values())
+
+
+def _markdown(report: dict) -> str:
+    lines = ["# Earworms sample-library report", "", "## Storage", ""]
+    for tier, row in report["storage"].items():
+        lines.append(f"- {tier}: {row['bytes'] / 1e9:.2f} GB / "
+                     f"{row['limit_bytes'] / 1e9:.0f} GB — `{row['path']}`")
+    assets = report["assets"]
+    lines += ["", "## Provenance and licenses", "",
+              "| Collection | Revision | License | Attribution |",
+              "|---|---|---|---|"]
+    for row in report["collections"]:
+        lines.append(f"| {row['name']} | `{row['revision'][:12]}` | "
+                     f"{row['license']} | {row['attribution']} |")
+    lines += ["", "## Indexed assets", "",
+              f"{assets['total']} catalog records, {assets['unique_sha256']} unique "
+              f"SHA-256 payloads, and {assets['quarantined']} quarantined records.", "",
+              "| Collection | Category | Assets | Duration |",
+              "|---|---:|---:|---:|"]
+    for row in report["groups"]:
+        lines.append(f"| {row['collection']} | {row['category']} | {row['assets']} | "
+                     f"{row['duration_seconds'] / 60:.1f} min |")
+    unsupported = report["sfz_with_unsupported_opcodes"]
+    lines += ["", "## SFZ compatibility", "",
+              f"{len(unsupported)} documents use unsupported opcodes; inspect the JSON "
+              "report before treating those instruments as fully supported.", ""]
+    return "\n".join(lines)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("status")
+    download = sub.add_parser("download")
+    download.add_argument("target", choices=sorted(COLLECTIONS | LIBRARY_TARGETS.keys()))
+    index = sub.add_parser("index")
+    index.add_argument("collection", nargs="?", choices=sorted(COLLECTIONS))
+    index.add_argument("--deep", action="store_true")
+    verify = sub.add_parser("verify")
+    verify.add_argument("collection", nargs="?", choices=sorted(COLLECTIONS))
+    report_parser = sub.add_parser("report")
+    report_parser.add_argument("--out", type=Path)
+    promote = sub.add_parser("promote")
+    promote.add_argument("bed_specs", type=Path, nargs="+")
+    args = parser.parse_args()
+    library = SampleLibrary()
+    if args.command == "status":
+        result = library.status()
+    elif args.command == "download":
+        names = LIBRARY_TARGETS.get(args.target, (args.target,))
+        result = {name: str(library.download(name)) for name in names}
+    elif args.command == "index":
+        result = {"indexed": library.index(args.collection, deep=args.deep)}
+    elif args.command == "verify":
+        result = library.verify(args.collection)
+    elif args.command == "promote":
+        refs = []
+        for path in args.bed_specs:
+            refs.extend(_refs(json.loads(path.read_text(encoding="utf-8"))))
+        refs = list({(ref.collection, ref.asset_id): ref for ref in refs}.values())
+        result = {"promoted": [str(path) for path in library.promote(refs)],
+                  "refs": [asdict(ref) for ref in refs]}
+    else:
+        result = library.report()
+        if args.out:
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(_markdown(result), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()

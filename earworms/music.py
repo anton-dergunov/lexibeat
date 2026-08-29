@@ -15,8 +15,9 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import signal
 
-from .bedspec import BedSpec
-from .instruments import build as build_instrument
+from .bedspec import BedSpec, ChordEvent, NoteEvent, ResolvedPhrase
+from .instruments import (CatalogSampleInstrument, build as build_instrument,
+                          load_one_shot)
 
 SR = 44100
 
@@ -256,6 +257,175 @@ def _lead(spec: BedSpec, grid: Grid, n_bars: int,
     return out * spec.lead.level * 0.11
 
 
+def _event_time(grid: Grid, absolute_step: int) -> float:
+    bar, step = divmod(absolute_step, grid.steps_per_bar)
+    return grid.step_time(bar, step)
+
+
+def _repeat_events(events, phrase: ResolvedPhrase, grid: Grid, n_bars: int):
+    phrase_steps = phrase.loop_bars * grid.steps_per_bar
+    total_steps = n_bars * grid.steps_per_bar
+    for offset in range(0, total_steps, phrase_steps):
+        for event in events:
+            if offset + event.step < total_steps:
+                yield offset + event.step, event
+
+
+def _resolved_pad(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
+                  n_bars: int, rng: np.random.Generator) -> np.ndarray:
+    out = _blank(grid, n_bars)
+    if not spec.pad.enabled:
+        return out
+    instrument = (CatalogSampleInstrument(phrase.pad_sample)
+                  if phrase.pad_sample else
+                  build_instrument(spec.pad.instrument)
+                  if spec.pad.instrument != "synth" else None)
+    for step, event in _repeat_events(phrase.chords, phrase, grid, n_bars):
+        assert isinstance(event, ChordEvent)
+        seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.05)
+        n = grid.samples(seconds)
+        t = np.arange(n) / grid.sr
+        env = np.sin(np.pi * np.clip(t / seconds, 0, 1)) ** 1.35
+        voice = np.zeros(n)
+        if instrument is not None:
+            for note in event.midi_notes:
+                _add(voice, instrument.render(note, event.velocity, seconds), 0)
+            voice /= max(len(event.midi_notes), 1)
+        else:
+            for note in event.midi_notes:
+                f = _midi_hz(note)
+                phase = rng.uniform(0, 2 * np.pi)
+                if phrase.pad_timbre == "triangle":
+                    tone = signal.sawtooth(2 * np.pi * f * t + phase, width=0.5)
+                elif phrase.pad_timbre == "soft_saw":
+                    tone = signal.sawtooth(2 * np.pi * f * t + phase)
+                    tone = _onepole_lp(tone, min(f * 5, 2600), grid.sr)
+                else:
+                    tone = (np.sin(2 * np.pi * f * t + phase)
+                            + 0.18 * np.sin(2 * np.pi * f * 2 * t + phase / 2))
+                voice += tone
+            voice /= max(len(event.midi_notes), 1)
+        _add(out, voice * env * event.velocity,
+             grid.samples(_event_time(grid, step)))
+    return _automated_lp(out, spec, n_bars, rng) * spec.pad.level
+
+
+def _resolved_bass(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
+                   n_bars: int) -> np.ndarray:
+    out = _blank(grid, n_bars)
+    if not spec.bass.enabled:
+        return out
+    for step, event in _repeat_events(phrase.bass, phrase, grid, n_bars):
+        assert isinstance(event, NoteEvent)
+        seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.04)
+        n = grid.samples(seconds)
+        t = np.arange(n) / grid.sr
+        f = _midi_hz(event.midi_note)
+        if phrase.bass_timbre == "triangle":
+            tone = signal.sawtooth(2 * np.pi * f * t, width=0.5)
+        elif phrase.bass_timbre == "pluck":
+            tone = (np.sin(2 * np.pi * f * t) +
+                    0.28 * np.sin(2 * np.pi * f * 2 * t)) * np.exp(-t / 0.28)
+        elif phrase.bass_timbre == "round":
+            tone = (np.sin(2 * np.pi * f * t) +
+                    0.15 * np.sin(2 * np.pi * f * 2 * t))
+        else:
+            tone = np.sin(2 * np.pi * f * t)
+        attack = np.clip(t / max(spec.bass.attack, 0.003), 0, 1)
+        release = np.minimum(1.0, np.maximum((seconds - t) / min(0.18, seconds / 2), 0))
+        _add(out, tone * attack * release * event.velocity,
+             grid.samples(_event_time(grid, step)))
+    return _onepole_lp(out, 420.0, grid.sr) * spec.bass.level
+
+
+def _synth_percussion(name: str, grid: Grid,
+                      rng: np.random.Generator) -> np.ndarray:
+    if name == "kick":
+        n = grid.samples(0.34)
+        t = np.arange(n) / grid.sr
+        phase = 2 * np.pi * np.cumsum(52 * np.exp(-t * 17) + 35) / grid.sr
+        return np.sin(phase) * _env(n, 0.002, 0.12)
+    if name == "wood":
+        n = grid.samples(0.13)
+        t = np.arange(n) / grid.sr
+        f = rng.uniform(420, 760)
+        return (np.sin(2 * np.pi * f * t) + 0.45 * np.sin(2 * np.pi * f * 1.53 * t)) \
+            * _env(n, 0.001, 0.026)
+    n = grid.samples(0.16 if name == "brush" else 0.07)
+    noise = rng.standard_normal(n)
+    if name in ("shaker", "soft_hat"):
+        sos = signal.butter(2, (4300 if name == "shaker" else 6200) /
+                            (grid.sr / 2), btype="high", output="sos")
+        return signal.sosfilt(sos, noise) * _env(n, 0.001, 0.014)
+    if name == "brush":
+        sos = signal.butter(2, [900 / (grid.sr / 2), 6000 / (grid.sr / 2)],
+                            btype="band", output="sos")
+        return signal.sosfilt(sos, noise) * _env(n, 0.002, 0.055)
+    sos = signal.butter(2, [1200 / (grid.sr / 2), 3800 / (grid.sr / 2)],
+                        btype="band", output="sos")
+    return signal.sosfilt(sos, noise) * _env(n, 0.001, 0.018)
+
+
+def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
+                    n_bars: int, rng: np.random.Generator) -> np.ndarray:
+    out = _blank(grid, n_bars)
+    if not spec.drums.enabled:
+        return out
+    phrase_steps = phrase.loop_bars * grid.steps_per_bar
+    total_steps = n_bars * grid.steps_per_bar
+    for lane_index, lane in enumerate(phrase.percussion):
+        if len(lane.pattern) != phrase_steps:
+            raise ValueError(f"Percussion lane '{lane.sound}' has {len(lane.pattern)} "
+                             f"steps; expected {phrase_steps}.")
+        hit = (load_one_shot(lane.sample) if lane.sample else
+               _synth_percussion(lane.sound.removeprefix("synth:"), grid,
+                                  np.random.default_rng(spec.seed + 100 + lane_index)))
+        for step in range(total_steps):
+            if lane.pattern[step % phrase_steps] != "x":
+                continue
+            # Probability and velocity variation are tied to phrase position, so
+            # every repetition is musically identical.
+            phrase_position = step % phrase_steps
+            local_rng = np.random.default_rng(
+                spec.seed * 1009 + lane_index * 9176 + phrase_position)
+            if local_rng.random() > lane.probability:
+                continue
+            jitter = local_rng.uniform(-lane.humanize, lane.humanize) \
+                if lane.humanize else 0.0
+            at = grid.samples(max(0.0, _event_time(grid, step) + jitter))
+            _add(out, hit * lane.level * local_rng.uniform(0.84, 1.12), at)
+    return out
+
+
+def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
+                   n_bars: int) -> np.ndarray:
+    out = _blank(grid, n_bars)
+    if not spec.lead.enabled:
+        return out
+    instrument = (CatalogSampleInstrument(phrase.lead_sample)
+                  if phrase.lead_sample else build_instrument(spec.lead.instrument))
+    for step, event in _repeat_events(phrase.lead, phrase, grid, n_bars):
+        assert isinstance(event, NoteEvent)
+        seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.08)
+        audio = instrument.render(event.midi_note, event.velocity, seconds)
+        _add(out, audio, grid.samples(_event_time(grid, step)))
+    return out * spec.lead.level * 0.11
+
+
+def _resolved_stems(spec: BedSpec, grid: Grid, n_bars: int,
+                    rng: np.random.Generator) -> dict[str, np.ndarray]:
+    assert spec.phrase is not None
+    phrase = spec.phrase
+    pad = _reverb(_resolved_pad(spec, phrase, grid, n_bars, rng),
+                  seconds=spec.space.reverb_seconds, mix=spec.space.reverb_mix, rng=rng)
+    lead = _reverb(_resolved_lead(spec, phrase, grid, n_bars),
+                   seconds=spec.space.reverb_seconds * 0.75,
+                   mix=min(spec.space.reverb_mix + 0.04, 0.68), rng=rng)
+    return {"pad": pad, "bass": _resolved_bass(spec, phrase, grid, n_bars),
+            "drums": _resolved_drums(spec, phrase, grid, n_bars, rng),
+            "lead": lead}
+
+
 def _stereo(mono: np.ndarray, grid: Grid) -> np.ndarray:
     """Widen one stem with a short Haas delay without smearing its beat."""
     delay = grid.samples(0.012)
@@ -269,17 +439,20 @@ def render_stems(spec: BedSpec, n_bars: int) -> dict[str, np.ndarray]:
     rng = np.random.default_rng(spec.seed)
     space = spec.space
 
-    pad = _reverb(_pad(spec, grid, n_bars, rng),
-                  seconds=space.reverb_seconds, mix=space.reverb_mix, rng=rng)
-    lead = _reverb(_lead(spec, grid, n_bars, rng),
-                   seconds=space.reverb_seconds * 0.8,
-                   mix=min(space.reverb_mix + 0.05, 0.7), rng=rng)
-    stems = {
-        "pad": pad,
-        "bass": _bass(spec, grid, n_bars),
-        "drums": _drums(spec, grid, n_bars, rng),
-        "lead": lead,
-    }
+    if spec.phrase is not None:
+        stems = _resolved_stems(spec, grid, n_bars, rng)
+    else:
+        pad = _reverb(_pad(spec, grid, n_bars, rng),
+                      seconds=space.reverb_seconds, mix=space.reverb_mix, rng=rng)
+        lead = _reverb(_lead(spec, grid, n_bars, rng),
+                       seconds=space.reverb_seconds * 0.8,
+                       mix=min(space.reverb_mix + 0.05, 0.7), rng=rng)
+        stems = {
+            "pad": pad,
+            "bass": _bass(spec, grid, n_bars),
+            "drums": _drums(spec, grid, n_bars, rng),
+            "lead": lead,
+        }
 
     # Fade the very start and end so the track does not click in or out.
     for mono in stems.values():

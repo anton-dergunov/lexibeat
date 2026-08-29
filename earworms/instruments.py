@@ -16,6 +16,7 @@ import numpy as np
 import soundfile as sf
 
 from . import samples as sample_packs
+from .library import SampleLibrary, SampleRef
 from .samples import SamplePack
 
 SR = 44100
@@ -120,6 +121,55 @@ class SampledInstrument:
         if peak > 0:
             audio = audio / peak * velocity
         return audio
+
+
+class CatalogSampleInstrument:
+    """Play a stable logical sample reference from the tiered library."""
+
+    def __init__(self, ref: SampleRef, library: SampleLibrary | None = None):
+        self.ref = ref
+        self.library = library or SampleLibrary()
+        self.asset = self.library.asset(ref)
+        self.path = self.library.resolve(ref)
+        self.name = f"{ref.collection}:{ref.asset_id}"
+
+    def render(self, midi_note: float, velocity: float,
+               seconds: float) -> np.ndarray:
+        root = self.asset.midi_note if self.asset.midi_note is not None else midi_note
+        audio, rate = _load_sample(str(self.path), seconds * 1.5 + 0.5)
+        ratio = 2 ** ((midi_note - root) / 12.0)
+        target = SR / ratio
+        if abs(target - rate) > 1.0:
+            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
+                                     res_type="soxr_hq")
+        n = max(int(seconds * SR), 1)
+        audio = np.pad(audio, (0, max(n - len(audio), 0)))[:n].copy()
+        release = min(int(0.18 * SR), n)
+        if release:
+            audio[-release:] *= np.linspace(1.0, 0.0, release)
+        peak = np.abs(audio).max()
+        return audio / peak * velocity if peak else audio
+
+
+def load_one_shot(ref: SampleRef, max_seconds: float = 3.0,
+                  library: SampleLibrary | None = None) -> np.ndarray:
+    """Load, mono-fold and resample one catalog percussion asset."""
+    library = library or SampleLibrary()
+    path = library.resolve(ref)
+    audio, rate = _load_sample(str(path), max_seconds)
+    if rate != SR:
+        audio = librosa.resample(audio, orig_sr=rate, target_sr=SR,
+                                 res_type="soxr_hq")
+    audio = np.asarray(audio, dtype=np.float32)
+    # Remove leading digital silence while retaining a tiny pre-transient margin.
+    active = np.flatnonzero(np.abs(audio) > max(float(np.abs(audio).max()) * 0.002, 1e-5))
+    if active.size:
+        audio = audio[max(0, int(active[0]) - int(0.003 * SR)):]
+    release = min(int(0.02 * SR), len(audio))
+    if release:
+        audio[-release:] *= np.linspace(1.0, 0.0, release)
+    peak = np.abs(audio).max()
+    return audio / peak if peak else audio
 
 
 def build(name: str, velocities: tuple[int, ...] | None = None) -> Instrument:

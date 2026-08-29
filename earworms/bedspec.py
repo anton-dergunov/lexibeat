@@ -13,6 +13,8 @@ import random
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from pathlib import Path
 
+from .library import SampleRef
+
 SCALES: dict[str, list[int]] = {
     "natural_minor": [0, 2, 3, 5, 7, 8, 10],
     "dorian": [0, 2, 3, 5, 7, 9, 10],
@@ -89,6 +91,54 @@ class Space:
 
 
 @dataclass
+class NoteEvent:
+    """A fully resolved note positioned on the loop's sixteenth-note grid."""
+
+    step: int
+    duration_steps: float
+    midi_note: int
+    velocity: float
+
+
+@dataclass
+class ChordEvent:
+    step: int
+    duration_steps: float
+    midi_notes: list[int]
+    velocity: float = 0.55
+
+
+@dataclass
+class PercussionLane:
+    """A resolved repeating lane; pattern spans the complete phrase loop."""
+
+    sound: str
+    pattern: str
+    level: float
+    probability: float = 1.0
+    humanize: float = 0.0
+    pan: float = 0.0
+    sample: SampleRef | None = None
+
+
+@dataclass
+class ResolvedPhrase:
+    """All musical decisions needed to replay one coherent phrase."""
+
+    family: str
+    loop_bars: int
+    harmony_texture: str
+    pad_timbre: str
+    bass_timbre: str
+    chords: list[ChordEvent] = field(default_factory=list)
+    bass: list[NoteEvent] = field(default_factory=list)
+    lead: list[NoteEvent] = field(default_factory=list)
+    percussion: list[PercussionLane] = field(default_factory=list)
+    lead_sample: SampleRef | None = None
+    pad_sample: SampleRef | None = None
+
+
+@dataclass
 class BedSpec:
     bpm: float = 80.0
     beats_per_bar: int = 4
@@ -104,6 +154,7 @@ class BedSpec:
     drums: Drums = field(default_factory=Drums)
     lead: Lead = field(default_factory=Lead)
     space: Space = field(default_factory=Space)
+    phrase: ResolvedPhrase | None = None
 
     # -- harmony helpers -------------------------------------------------
 
@@ -173,7 +224,10 @@ class BedSpec:
 
     @classmethod
     def from_dict(cls, data: dict) -> "BedSpec":
-        return _build(cls, data)
+        spec = _build(cls, data)
+        if data.get("phrase") is not None:
+            spec.phrase = _phrase_from_dict(data["phrase"])
+        return spec
 
     @classmethod
     def from_json(cls, path: Path) -> "BedSpec":
@@ -200,6 +254,8 @@ def _build(kind, data):
         if f.name not in data:
             continue
         value = data[f.name]
+        if f.name == "phrase":
+            continue
         if is_dataclass(f.type) or (isinstance(value, dict) and f.name in _NESTED):
             kwargs[f.name] = _build(_NESTED[f.name], value)
         elif f.name == "register":
@@ -212,6 +268,29 @@ def _build(kind, data):
 
 
 _NESTED = {"pad": Pad, "bass": Bass, "drums": Drums, "lead": Lead, "space": Space}
+
+
+def _sample_ref(data: dict | None) -> SampleRef | None:
+    return SampleRef(**data) if data else None
+
+
+def _phrase_from_dict(data: dict) -> ResolvedPhrase:
+    return ResolvedPhrase(
+        family=data["family"], loop_bars=int(data["loop_bars"]),
+        harmony_texture=data["harmony_texture"], pad_timbre=data["pad_timbre"],
+        bass_timbre=data["bass_timbre"],
+        chords=[ChordEvent(**event) for event in data.get("chords", [])],
+        bass=[NoteEvent(**event) for event in data.get("bass", [])],
+        lead=[NoteEvent(**event) for event in data.get("lead", [])],
+        percussion=[PercussionLane(
+            sound=lane["sound"], pattern=lane["pattern"], level=lane["level"],
+            probability=lane.get("probability", 1.0),
+            humanize=lane.get("humanize", 0.0), pan=lane.get("pan", 0.0),
+            sample=_sample_ref(lane.get("sample")))
+            for lane in data.get("percussion", [])],
+        lead_sample=_sample_ref(data.get("lead_sample")),
+        pad_sample=_sample_ref(data.get("pad_sample")),
+    )
 
 
 # --------------------------------------------------------------------------
@@ -361,4 +440,265 @@ def _warm(rng: random.Random) -> BedSpec:
     )
 
 
-STYLES = {"yoga": _yoga, "nocturne": _nocturne, "lofi": _lofi, "warm": _warm}
+def _euclidean(pulses: int, steps: int, rotation: int = 0) -> str:
+    """Evenly distribute ``pulses`` across ``steps`` without a pattern table."""
+    pulses = max(0, min(pulses, steps))
+    bucket = 0
+    values: list[str] = []
+    for _ in range(steps):
+        bucket += pulses
+        if bucket >= steps:
+            bucket -= steps
+            values.append("x")
+        else:
+            values.append(".")
+    if values:
+        rotation %= len(values)
+        values = values[-rotation:] + values[:-rotation]
+    return "".join(values)
+
+
+def _smooth_voicing(notes: list[int], previous: list[int] | None) -> list[int]:
+    """Choose an inversion with compact motion from the previous chord."""
+    base = sorted(set(notes))[:5]
+    candidates: list[list[int]] = []
+    for inversion in range(min(4, len(base))):
+        inverted = sorted(base[inversion:] + [note + 12 for note in base[:inversion]])
+        for shift in (-12, 0, 12):
+            candidate = [note + shift for note in inverted]
+            if 35 <= min(candidate) and max(candidate) <= 84:
+                candidates.append(candidate)
+    if not candidates:
+        return base
+    if previous is None:
+        return min(candidates, key=lambda chord: abs(sum(chord) / len(chord) - 57))
+    return min(candidates, key=lambda chord: sum(
+        abs(note - previous[min(index, len(previous) - 1)])
+        for index, note in enumerate(chord)))
+
+
+_WIDE_FAMILIES = {
+    "meditative": {
+        "bpms": [58, 62, 66, 70, 72, 76],
+        "scales": ["natural_minor", "dorian", "major"],
+        "roots": [40, 43, 45, 48], "textures": ["sustain", "drone", "open"],
+        "bass": ["sustain", "drone", "root_fifth"],
+        "pads": ["sine", "triangle", "strings"],
+        "leads": ["synth", "piano", "glockenspiel"], "swing": (0.0, 0.06),
+        "density": (0.12, 0.28), "brightness": (550, 1050),
+    },
+    "organic": {
+        "bpms": [68, 72, 76, 80, 84, 88],
+        "scales": ["dorian", "natural_minor", "major"],
+        "roots": [43, 45, 48, 50], "textures": ["pulse", "open", "arpeggio"],
+        "bass": ["root_fifth", "syncopated", "sustain"],
+        "pads": ["triangle", "strings", "soft_saw"],
+        "leads": ["marimba", "piano", "synth"], "swing": (0.02, 0.16),
+        "density": (0.28, 0.52), "brightness": (700, 1350),
+    },
+    "acoustic": {
+        "bpms": [64, 68, 72, 76, 80, 84],
+        "scales": ["major", "dorian", "natural_minor"],
+        "roots": [45, 48, 50, 53], "textures": ["arpeggio", "sustain", "pulse"],
+        "bass": ["sustain", "root_fifth", "passing"],
+        "pads": ["strings", "triangle"],
+        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.08),
+        "density": (0.22, 0.46), "brightness": (850, 1500),
+    },
+    "nocturnal": {
+        "bpms": [56, 60, 62, 66, 68, 72],
+        "scales": ["natural_minor", "harmonic_minor", "dorian"],
+        "roots": [38, 40, 41, 43, 45], "textures": ["drone", "sustain", "open"],
+        "bass": ["drone", "sustain", "passing"],
+        "pads": ["sine", "strings", "triangle"],
+        "leads": ["piano", "glockenspiel", "synth"], "swing": (0.0, 0.1),
+        "density": (0.1, 0.32), "brightness": (420, 850),
+    },
+    "sunlit": {
+        "bpms": [78, 82, 86, 90, 94, 98],
+        "scales": ["major", "lydian", "dorian"],
+        "roots": [48, 50, 53, 55], "textures": ["pulse", "arpeggio", "open"],
+        "bass": ["root_fifth", "syncopated", "passing"],
+        "pads": ["triangle", "soft_saw", "strings"],
+        "leads": ["piano", "marimba", "glockenspiel"], "swing": (0.0, 0.12),
+        "density": (0.3, 0.55), "brightness": (1050, 1800),
+    },
+    "lofi-wide": {
+        "bpms": [66, 70, 74, 78, 82, 86],
+        "scales": ["dorian", "natural_minor", "major"],
+        "roots": [43, 45, 46, 48, 50], "textures": ["pulse", "arpeggio", "sustain"],
+        "bass": ["syncopated", "root_fifth", "passing"],
+        "pads": ["soft_saw", "triangle", "sine"],
+        "leads": ["piano", "marimba", "synth"], "swing": (0.16, 0.32),
+        "density": (0.28, 0.5), "brightness": (500, 1100),
+    },
+}
+
+
+def _progression(rng: random.Random, scale: str, bars: int) -> list[int]:
+    choices = {
+        0: [2, 3, 4, 5, 5, 6], 1: [4, 6, 0], 2: [4, 5, 6],
+        3: [0, 4, 5], 4: [0, 5, 6], 5: [0, 2, 3, 4], 6: [0, 3, 4],
+    }
+    if scale == "harmonic_minor":
+        choices[4] = [0, 0, 5, 6]
+    degrees = [0]
+    while len(degrees) < bars:
+        degrees.append(rng.choice(choices[degrees[-1]]))
+    return degrees
+
+
+def _note_events(spec: BedSpec, rng: random.Random, bars: int,
+                 mode: str) -> list[NoteEvent]:
+    steps = spec.steps_per_bar
+    events: list[NoteEvent] = []
+    for bar in range(bars):
+        degree = spec.progression[bar % len(spec.progression)]
+        root = spec.chord_root(degree) - 12
+        if mode in ("sustain", "drone"):
+            note = spec.root - 12 if mode == "drone" else root
+            events.append(NoteEvent(bar * steps, steps * 0.82, note,
+                                    rng.uniform(0.42, 0.62)))
+        elif mode == "root_fifth":
+            events.extend([
+                NoteEvent(bar * steps, steps * 0.42, root, rng.uniform(0.45, 0.65)),
+                NoteEvent(bar * steps + steps // 2, steps * 0.35, root + 7,
+                          rng.uniform(0.34, 0.54)),
+            ])
+        elif mode == "syncopated":
+            for at, interval, velocity in ((0, 0, 0.62),
+                                           (max(3, steps * 3 // 8), 7, 0.42),
+                                           (max(6, steps * 3 // 4), 0, 0.5)):
+                events.append(NoteEvent(bar * steps + min(at, steps - 1),
+                                        max(1.5, steps / 5), root + interval,
+                                        velocity * rng.uniform(0.86, 1.08)))
+        else:  # passing
+            next_degree = spec.progression[(bar + 1) % len(spec.progression)]
+            target = spec.chord_root(next_degree) - 12
+            passing = root + max(-2, min(2, target - root))
+            events.extend([
+                NoteEvent(bar * steps, steps * 0.55, root, rng.uniform(0.45, 0.62)),
+                NoteEvent(bar * steps + steps * 3 // 4, steps * 0.2, passing,
+                          rng.uniform(0.3, 0.46)),
+            ])
+    return events
+
+
+def _lead_events(spec: BedSpec, rng: random.Random, bars: int,
+                 density: float) -> list[NoteEvent]:
+    notes = spec.pentatonic()
+    if not notes:
+        return []
+    steps = spec.steps_per_bar
+    index = rng.randrange(len(notes))
+    motif: list[tuple[int, int, float]] = []
+    for step in range(2, steps * min(2, bars), 2):
+        if rng.random() > density:
+            continue
+        index = max(0, min(len(notes) - 1, index + rng.choice([-2, -1, 0, 0, 1, 2])))
+        motif.append((step, notes[index], rng.uniform(*spec.lead.velocity)))
+    events: list[NoteEvent] = []
+    phrase_steps = bars * steps
+    motif_span = steps * min(2, bars)
+    for offset in range(0, phrase_steps, motif_span):
+        for step, note, velocity in motif:
+            if offset + step < phrase_steps and rng.random() < 0.88:
+                events.append(NoteEvent(offset + step, rng.choice([1.5, 2.5, 4.0]),
+                                        note, velocity * rng.uniform(0.88, 1.08)))
+    return events
+
+
+def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
+                    config: dict) -> ResolvedPhrase:
+    bars = rng.choice([4, 4, 8])
+    spec.progression = _progression(rng, spec.scale, bars)
+    steps = spec.steps_per_bar
+    texture = rng.choice(config["textures"])
+    chords: list[ChordEvent] = []
+    previous: list[int] | None = None
+    for bar, degree in enumerate(spec.progression):
+        notes = _smooth_voicing(spec.chord(degree), previous)
+        previous = notes
+        if texture in ("sustain", "drone", "open"):
+            if texture == "drone":
+                notes = sorted(set([spec.root, spec.root + 7, spec.root + 12,
+                                    *notes[-2:]]))
+            elif texture == "open":
+                notes = sorted(set([notes[0], notes[1], notes[-2], notes[-1]]))
+            chords.append(ChordEvent(bar * steps, steps * spec.pad.overlap, notes,
+                                     rng.uniform(0.42, 0.62)))
+        elif texture == "pulse":
+            for at, accent in ((0, 1.0), (steps // 2, 0.72)):
+                chords.append(ChordEvent(bar * steps + at, steps * 0.34, notes,
+                                         rng.uniform(0.4, 0.58) * accent))
+        else:  # arpeggio
+            order = notes + list(reversed(notes[1:-1]))
+            for index, at in enumerate(range(0, steps, 2)):
+                chords.append(ChordEvent(bar * steps + at, 1.7,
+                                         [order[index % len(order)]],
+                                         rng.uniform(0.34, 0.5)))
+
+    density_lo, density_hi = config["density"]
+    density = rng.uniform(density_lo, density_hi)
+    loop_steps = bars * steps
+    kick_pulses = max(1, round(bars * (1.2 + density * 2)))
+    mid_pulses = max(1, round(bars * (1.0 + density * 3)))
+    high_pulses = max(2, round(bars * (2.5 + density * 5)))
+    lanes = [
+        PercussionLane("synth:kick", _euclidean(kick_pulses, loop_steps, 1),
+                       0.38 + density * 0.22, 0.94),
+        PercussionLane(rng.choice(["synth:rim", "synth:wood", "synth:brush"]),
+                       _euclidean(mid_pulses, loop_steps, steps // 4),
+                       0.11 + density * 0.2, 0.82, 0.008, rng.uniform(-0.25, 0.25)),
+        PercussionLane(rng.choice(["synth:shaker", "synth:soft_hat"]),
+                       _euclidean(high_pulses, loop_steps, rng.randrange(max(steps, 1))),
+                       0.025 + density * 0.08, 0.82, 0.012,
+                       rng.choice([-0.35, 0.35])),
+    ]
+    if family in ("meditative", "nocturnal") and rng.random() < 0.55:
+        lanes = lanes[:rng.choice([1, 2])]
+    return ResolvedPhrase(
+        family=family, loop_bars=bars, harmony_texture=texture,
+        pad_timbre=rng.choice(config["pads"]),
+        bass_timbre=rng.choice(["sine", "round", "triangle", "pluck"]),
+        chords=chords,
+        bass=_note_events(spec, rng, bars, rng.choice(config["bass"])),
+        lead=_lead_events(spec, rng, bars, density), percussion=lanes,
+    )
+
+
+def _wide_style(family: str, rng: random.Random) -> BedSpec:
+    config = _WIDE_FAMILIES[family]
+    bpm, beats, unit = _meter(rng, config["bpms"])
+    low, high = config["brightness"]
+    spec = BedSpec(
+        bpm=bpm, beats_per_bar=beats, beat_unit=unit,
+        swing=rng.uniform(*config["swing"]), root=rng.choice(config["roots"]),
+        scale=rng.choice(config["scales"]), chord_extension=_harmony(rng),
+        pad=Pad(instrument="strings" if "strings" in config["pads"] and
+                rng.random() < 0.35 else "synth", level=rng.uniform(0.38, 0.58),
+                cutoff_base=rng.uniform(low, high), cutoff_motion=rng.uniform(120, 520),
+                cutoff_curve=_curve(rng), cutoff_period_bars=rng.uniform(4, 14),
+                overlap=rng.uniform(1.1, 1.9), duck_db=rng.uniform(6.0, 7.5)),
+        bass=Bass(level=rng.uniform(0.34, 0.56), attack=rng.uniform(0.04, 0.22),
+                  decay_bars=rng.uniform(0.35, 0.9), duck_db=rng.uniform(2.0, 3.5)),
+        drums=Drums(duck_db=rng.uniform(3.0, 5.0)),
+        lead=Lead(instrument=rng.choice(config["leads"]), level=rng.uniform(0.72, 1.08),
+                  register=(rng.choice([19, 24]), rng.choice([34, 36, 39])),
+                  velocity=(0.3, 0.66), humanize=rng.uniform(0.0, 0.025),
+                  duck_db=rng.uniform(7.0, 9.0)),
+        space=Space(reverb_seconds=rng.uniform(1.5, 4.4),
+                    reverb_mix=rng.uniform(0.28, 0.58)),
+    )
+    spec.phrase = _resolve_phrase(spec, family, rng, config)
+    return spec
+
+
+def _family_style(name: str):
+    return lambda rng: _wide_style(name, rng)
+
+
+STYLES = {
+    "yoga": _yoga, "nocturne": _nocturne, "lofi": _lofi, "warm": _warm,
+    **{name: _family_style(name) for name in _WIDE_FAMILIES},
+}

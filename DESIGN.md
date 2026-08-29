@@ -202,6 +202,28 @@ Synthesise the bed directly in NumPy at a chosen BPM.
 Generate a single 8-bar loop neurally, snap it to a grid with `beat_this`, then
 loop it for the full track. Neural timbre with an exact grid.
 
+### Iteration 4 — resolved procedural phrases and a tiered sample catalog
+
+The later music expansion stayed with Option A but removed its main source of
+sameness. The old styles all used the same topology: one sustained chord and
+one bass root per bar, the same synthetic three-piece kit, and unrelated random
+pentatonic lead notes. Range changes alone could not make those outputs sound
+structurally different.
+
+New styles instead resolve a four- or eight-bar phrase before rendering. The
+saved BedSpec contains exact chord voicings, chord rhythm, bass events, a
+repeating motif, Euclidean or syncopated percussion lanes, timbres and stable
+sample references. The renderer repeats that coherent phrase and does not make
+new compositional decisions. Legacy BedSpec JSON follows the old path unchanged.
+
+Large libraries live outside the repository. A SQLite catalog maps logical
+`collection:asset` references to SHA-256-verified files on either the external
+bulk tier or local promoted tier. Normal generation performs no network access,
+and missing/offline assets fail explicitly. The bake-off generator renders a
+larger candidate pool, extracts audio descriptors and greedily chooses a
+family-balanced, maximally separated listening set rather than hard-coding 30
+tracks.
+
 ---
 
 ## 4. Voice — options
