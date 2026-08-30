@@ -47,9 +47,20 @@ jobs:
         run: |
           uv run --extra explorer python -m unittest discover -s tests -v
           uv run --extra explorer python -c "from lexibeat.explorer_web import create_api; assert create_api(mount_ui=False)"
+          PYTHONPYCACHEPREFIX=/tmp/lexibeat-chatterbox-pyc python -m compileall -q third_party/chatterbox
 
-      - name: Build code-only Space package
-        run: ./scripts/build_space_dist.sh
+      - name: Resolve hosted Linux dependencies
+        run: |
+          uv pip compile requirements-space.txt \
+            --python-version 3.12 \
+            --python-platform x86_64-unknown-linux-gnu \
+            --output-file /tmp/lexibeat-space-requirements.txt
+
+      - name: Build and inspect Space package
+        run: |
+          ./scripts/build_space_dist.sh
+          test -f .space-dist/third_party/chatterbox/chatterbox/mtl_tts.py
+          grep -q '@spaces.GPU(duration=lesson_gpu_duration)' .space-dist/app.py
 
       - name: Synchronize the public Space
         uses: huggingface/hub-sync@v0.1.0

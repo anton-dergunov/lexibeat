@@ -56,6 +56,13 @@ Models
 Kokoro-82M (hexgrad/Kokoro-82M) — Apache-2.0.
 Chatterbox Multilingual (Resemble AI, via mlx-community/chatterbox-multilingual-v3) — MIT.
 
+The Hugging Face Space vendors the official Chatterbox Multilingual CUDA runtime
+source from resemble-ai/chatterbox revision
+`5de7a54aa4e5e2baadb0182dde554908b48b85c2`. The source is distributed under
+the Chatterbox MIT license; model weights remain downloaded from
+`ResembleAI/chatterbox` and are not stored in this repository.
+https://github.com/resemble-ai/chatterbox
+
 Experimental model weights are downloaded on demand into the LexiBeat model
 cache and are not redistributed with this repository:
 

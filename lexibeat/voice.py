@@ -1136,16 +1136,17 @@ class Speaker:
                  ref_audios: dict[str, str] | None = None,
                  ref_texts: dict[str, str] | None = None,
                  prosody_strength: float = 1.0,
-                 voice_seed: int = 7) -> None:
+                 voice_seed: int = 7,
+                 backend_instance: Backend | None = None) -> None:
         normalized = "chatterbox" if backend == "mlx" else backend
         self.capabilities = CAPABILITIES[normalized]
         if self.capabilities.experimental:
             warnings.warn(
                 f"Experimental backend '{normalized}' ({self.capabilities.license}): "
                 + " ".join(self.capabilities.warnings), stacklevel=2)
-        self.backend = make_backend(normalized, voices=voices, model=model,
-                                    ref_audio=ref_audio, ref_audios=ref_audios,
-                                    ref_texts=ref_texts)
+        self.backend = backend_instance or make_backend(
+            normalized, voices=voices, model=model, ref_audio=ref_audio,
+            ref_audios=ref_audios, ref_texts=ref_texts)
         self.prosody_strength = prosody_strength
         self.voice_seed = voice_seed
         self.post_process_pitch = normalized in {

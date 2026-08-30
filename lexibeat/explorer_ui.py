@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import secrets
+import threading
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Callable
@@ -29,11 +30,19 @@ from .explorer import (
     validate_bed_spec,
 )
 from .generator import sample_refs
+from .lesson import (
+    DEFAULT_LESSON_ROWS,
+    LESSON_MODEL,
+    finalize_lesson,
+    render_lesson_speech,
+)
 
 
 _TABLE_PATHS = ("/phrase/chords", "/phrase/bass", "/phrase/lead",
                 "/phrase/percussion")
 _EXTRA_LOCK_PATHS = tuple(sorted(TABLE_LOCK_PATHS - set(_TABLE_PATHS)))
+_LOCAL_VOICE_LOCK = threading.Lock()
+_LOCAL_VOICE_BACKEND = None
 
 
 def _initial_state() -> dict:
@@ -249,24 +258,64 @@ def _sample_tables(spec: BedSpec, samples: SampleService) -> tuple[list[list], l
 
 def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                samples: SampleService,
-               gpu_probe: Callable[[], dict[str, str | bool]] | None = None):
+               lesson_generate: Callable[[object, str, dict], dict] | None = None):
     import gradio as gr
 
     schema = __import__("lexibeat.explorer", fromlist=["explorer_schema"]).explorer_schema(config)
     scalar_fields = [field for field in CONTROL_FIELDS
                      if field.kind != "table" and not field.read_only]
+    palette_choices = schema["simple"]["palette"]
+    lesson_palette = "hybrid" if "hybrid" in palette_choices else "electronic"
 
-    with gr.Blocks(title="LexiBeat Music Explorer", fill_width=True,
+    if lesson_generate is None:
+        def lesson_generate(rows: object, model: str, state: dict) -> dict:
+            global _LOCAL_VOICE_BACKEND
+            with _LOCAL_VOICE_LOCK:
+                if _LOCAL_VOICE_BACKEND is None:
+                    from .voice import MlxAudioBackend
+                    _LOCAL_VOICE_BACKEND = MlxAudioBackend()
+            return render_lesson_speech(
+                rows, model, state, backend=_LOCAL_VOICE_BACKEND,
+                config=config, palette=lesson_palette)
+
+    with gr.Blocks(title="LexiBeat Lesson Generator", fill_width=True,
                    analytics_enabled=False) as demo:
         current = gr.State(_initial_state())
-        gr.Markdown("# LexiBeat Music Explorer\nGenerate and inspect reproducible music beds. Voice generation is not enabled.")
+        lesson_job = gr.State(None)
+        gr.Markdown(
+            "# LexiBeat\nCreate a bilingual spoken lesson over a reproducible music bed, "
+            "or explore the music on its own.")
 
-        if gpu_probe is not None:
-            gpu_trigger = gr.Button("ZeroGPU readiness probe", visible=False)
-            gpu_trigger.click(gpu_probe, api_name=False)
+        with gr.Tabs(selected="lesson") as tabs:
+            with gr.Tab("Lesson", id="lesson"):
+                gr.Markdown(
+                    "Enter one to six Spanish/English pairs. The current applied music "
+                    "bed is reused; if there is none, LexiBeat creates a safe automatic bed.")
+                with gr.Row():
+                    with gr.Column(scale=3, min_width=420):
+                        vocabulary = gr.Dataframe(
+                            value=DEFAULT_LESSON_ROWS,
+                            headers=["Spanish", "English"],
+                            datatype=["str", "str"], type="array",
+                            label="Vocabulary", interactive=True)
+                        voice_model = gr.Dropdown(
+                            choices=[("Chatterbox Multilingual", LESSON_MODEL)],
+                            value=LESSON_MODEL, label="Voice model",
+                            interactive=True)
+                        lesson_button = gr.Button(
+                            "Generate spoken lesson", variant="primary")
+                        lesson_open_lab = gr.Button("Open bed in Lab")
+                    with gr.Column(scale=4, min_width=420):
+                        lesson_status = gr.Markdown(
+                            "### Lesson\nReady to generate three vocabulary pairs.")
+                        lesson_audio = gr.Audio(
+                            label="Spoken lesson", interactive=False,
+                            editable=False, autoplay=False, buttons=["download"],
+                            elem_id="lesson-audio")
+                        lesson_download = gr.File(
+                            label="Download lesson WAV", interactive=False)
 
-        with gr.Tabs(selected="simple") as tabs:
-            with gr.Tab("Simple", id="simple"):
+            with gr.Tab("Music", id="simple"):
                 with gr.Row():
                     with gr.Column(scale=1, min_width=300):
                         family = gr.Dropdown(
@@ -415,10 +464,12 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                            percussion_lock, *extra_locks]
 
         def audio_value(path: str | None, *, label: str,
-                        autoplay: bool = False):
+                        autoplay: bool = False,
+                        subtitles: list[dict[str, Any]] | None = None):
             return gr.Audio(
                 value=path, label=label, autoplay=autoplay, playback_position=0,
-                interactive=False, editable=False, buttons=["download"])
+                interactive=False, editable=False, buttons=["download"],
+                subtitles=subtitles)
 
         def full_values(state: dict, *, clear_locks: bool,
                         simple_audio_path: str | None = None,
@@ -564,6 +615,44 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             state.update(bed_spec=_json_data(spec), validation=report.to_dict(),
                          audio_path=None)
             return full_values(state, clear_locks=False)
+
+        def finish_lesson(job: dict, state: dict, progress=gr.Progress()):
+            if not job:
+                raise gr.Error("Speech generation did not return a lesson artifact.")
+            result = finalize_lesson(
+                job, config=config,
+                progress=lambda value, message: progress(value, desc=message))
+            spec, report = validate_bed_spec(result["bed_spec"], analyze=False)
+            if spec is None or report.state == "invalid":
+                raise gr.Error("The generated lesson contains an invalid BedSpec.")
+            previous_request = (state or {}).get("music_request")
+            state = _initial_state()
+            state.update(
+                bed_spec=_json_data(spec), validation=report.to_dict(),
+                audio_path=result["audio_path"])
+            if previous_request:
+                state["music_request"] = previous_request
+            values = full_values(state, clear_locks=True)
+            count = len(job["items"])
+            cache_note = " (cached)" if result["cache_hit"] else ""
+            status = (
+                "### Lesson ready\n"
+                f"{count} vocabulary pair{'s' if count != 1 else ''} · "
+                f"{result['duration_seconds'] / 60:.1f} minutes{cache_note}")
+            lesson_value = audio_value(
+                result["audio_path"], label="Spoken lesson", autoplay=True,
+                subtitles=result["subtitles"])
+            return [*values, status, lesson_value, result["audio_path"]]
+
+        lesson_event = lesson_button.click(
+            lesson_generate, [vocabulary, voice_model, current], lesson_job,
+            api_name=False)
+        lesson_event.then(
+            finish_lesson, [lesson_job, current],
+            [*full_outputs, lesson_status, lesson_audio, lesson_download],
+            api_name=False)
+        lesson_open_lab.click(lambda: gr.Tabs(selected="lab"), outputs=tabs,
+                              api_name=False)
 
         generate_event = generate_button.click(
             generate, [family, energy, rhythm, palette], full_outputs,

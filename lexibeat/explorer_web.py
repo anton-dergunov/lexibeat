@@ -102,7 +102,7 @@ class SampleListResponse(BaseModel):
 
 
 def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
-               gpu_probe: Callable[[], dict[str, str | bool]] | None = None):
+               lesson_generate: Callable[[object, str, dict], dict] | None = None):
     """Create the shared ASGI application without importing web dependencies early."""
     from fastapi import FastAPI, HTTPException, Query, Request
     from fastapi.exceptions import RequestValidationError
@@ -279,7 +279,7 @@ def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
 
         demo = build_demo(
             resolved_config, artifacts=artifacts, samples=samples,
-            gpu_probe=gpu_probe)
+            lesson_generate=lesson_generate)
         app = gr.mount_gradio_app(app, demo, path="/", ssr_mode=False)
         app.state.explorer_config = resolved_config
         app.state.artifacts = artifacts

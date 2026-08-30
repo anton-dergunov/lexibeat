@@ -1,5 +1,5 @@
 ---
-title: LexiBeat Music Explorer
+title: LexiBeat Language Lesson Generator
 emoji: 🎵
 colorFrom: indigo
 colorTo: green
@@ -18,10 +18,11 @@ over a calm procedural music bed. Speech lands on a known beat grid, repeats use
 slightly different delivery, and the music ducks gently while either speaker is
 talking.
 
-The preferred voice backend is Chatterbox on Apple Silicon. It uses separate
+The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate
 native references by default—Paulina for Mexican Spanish and Daniel for British
 English—so the two languages are easy to distinguish. Kokoro remains available
-as a faster fallback.
+as a faster fallback. The public Hugging Face Space uses the official CUDA
+Chatterbox Multilingual runtime on ZeroGPU.
 
 ## Setup
 
@@ -46,7 +47,7 @@ backends run offline after their weights are cached; explicitly selected Gemini
 and Cloudflare backends send transcript text to their provider. Kokoro
 additionally needs `brew install espeak-ng`.
 
-## Music explorer
+## Web interface
 
 Run the optional browser explorer locally with:
 
@@ -54,25 +55,35 @@ Run the optional browser explorer locally with:
 ./scripts/run_explorer.sh
 ```
 
-It opens a Gradio interface backed by the versioned Python music API. Simple
-mode exposes safe product controls; Lab mode edits the resolved `BedSpec`,
-validates production safety, randomizes unlocked fields, renders WAV previews,
-and loads or saves complete `.bed.json` files. Local full renders may be up to
-180 seconds. The public [Hugging Face Space](https://huggingface.co/spaces/AntonDergunov/LexiBeat)
-uses the same application with a 30-second cap.
+It installs the explorer and local-TTS extras and opens a Gradio interface.
+**Lesson** accepts one to six Spanish/English pairs, synthesizes the established
+retrieval-practice sequence with Chatterbox, mixes it over the current music
+bed, and displays timed text in the audio player. The first local request may
+download model weights and create the language-specific reference cache.
 
-FastAPI routes are available beneath `/api/`; interactive API documentation is
-at `/api/docs`. The service never accepts client filesystem paths and writes
-only beneath `out/explorer/` unless `LEXIBEAT_EXPLORER_OUT` selects another
-managed root. Hosted sample promotion and all voice functionality are disabled.
+**Music** exposes the safe product controls. **Lab** edits the resolved
+`BedSpec`, validates production safety, randomizes unlocked fields, renders WAV
+previews, and loads or saves complete `.bed.json` files. A lesson reuses the
+last applied Music/Lab bed, or creates a safe automatic bed when none exists.
+Local music-only renders may be up to 180 seconds; the public
+[Hugging Face Space](https://huggingface.co/spaces/AntonDergunov/LexiBeat)
+caps music-only renders at 30 seconds and lessons at six vocabulary pairs.
+
+The local launcher retains FastAPI routes beneath `/api/`, with interactive API
+documentation at `/api/docs`. The public Space launches Gradio directly so
+ZeroGPU can discover its GPU callback and does not expose these custom routes.
+The service never accepts client filesystem paths and writes only beneath
+`out/explorer/` unless `LEXIBEAT_EXPLORER_OUT` selects another managed root.
+Hosted sample promotion remains disabled.
 
 Deployment from `main` is handled by `.github/workflows/deploy-huggingface.yml`.
 Add a write-capable Hugging Face token as the GitHub Actions secret `HF_TOKEN`.
-The workflow verifies the Linux music/web installation and synchronizes a small,
-code-only staging directory to `AntonDergunov/LexiBeat`. It deliberately excludes
+The workflow verifies the Linux music/web installation and synchronizes a small
+staging directory to `AntonDergunov/LexiBeat`. It includes a revision-pinned
+official Chatterbox CUDA runtime with the multilingual v3 model and hosted-only
+dependency pins, but excludes
 the checkout's `.venv` and the Git-LFS production audio, so the Space repository
-stays well below its Git storage limit and always receives the complete
-`lexibeat` package.
+stays well below its Git storage limit.
 
 The hosted sample library lives separately in the private
 `AntonDergunov/LexiBeatSamples` Storage Bucket. Upload the checksum-locked local
@@ -98,11 +109,16 @@ and visitors use samples through the application rather than receiving direct
 bucket access. The bucket can be made public later if direct redistribution is
 desired and every included source remains license-compatible.
 
-The Space remains on ZeroGPU for future Linux/CUDA speech models. Its entry point
-registers a small `@spaces.GPU` readiness probe because ZeroGPU requires at least
-one decorated function at startup. Current music generation stays on CPU and
-does not consume GPU quota; a future TTS callback can use the same explicit GPU
-boundary.
+The Space runs Chatterbox Multilingual v3 on ZeroGPU. Its module-level model is
+placed on the CUDA-emulated device during startup, and the exact Gradio lesson
+handler is decorated with `@spaces.GPU`; its reservation grows from 70 to 120
+seconds with the number of vocabulary pairs. Only speech synthesis occupies the
+GPU allocation. Music rendering and final mixing run in the chained CPU stage.
+The Space launches Gradio directly with server-side rendering disabled, which
+also lets ZeroGPU complete its startup scan before serving requests.
+The first process start downloads the model checkpoint, and a cold ZeroGPU
+allocation can therefore take longer than later requests. Generated speech and
+finished lessons are cached beneath the managed explorer output directory.
 
 ## Versioned music API
 

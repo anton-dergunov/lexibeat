@@ -1,0 +1,21 @@
+# Hugging Face Space runtime. Torch and torchaudio are supplied by ZeroGPU.
+gradio==6.26.0
+librosa==0.11.0
+numpy==1.26.0
+pedalboard>=0.9.24
+pyloudnorm>=0.2.0
+scipy>=1.11.0,<2
+soundfile>=0.14.0
+
+# Pinned dependencies used by the vendored official Chatterbox ZeroGPU runtime.
+conformer==0.3.2
+diffusers==0.29.0
+einops>=0.8.0
+huggingface-hub>=1.16.0,<2
+omegaconf==2.3.0
+resemble-perth==1.0.1
+s3tokenizer
+safetensors==0.5.3
+spacy-pkuseg
+pykakasi==2.3.0
+transformers==5.2.0
