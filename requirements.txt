@@ -1,1 +1,10 @@
-.[explorer]
+fastapi>=0.116.0,<1
+gradio>=6.0.0,<7
+httpx>=0.28.0,<1
+librosa>=1.0.0
+numpy>=2.5.2
+pedalboard>=0.9.24
+pyloudnorm>=0.2.0
+scipy>=1.18.1
+soundfile>=0.14.0
+uvicorn>=0.35.0,<1
