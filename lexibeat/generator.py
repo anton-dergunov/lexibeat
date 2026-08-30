@@ -342,8 +342,16 @@ def build_candidates(
         if cancel_check and cancel_check():
             raise GenerationCancelledError("Music resolution cancelled.")
         if progress_callback:
-            progress_callback(index / max(resolved_pool_size, 1),
-                              f"Analyzing candidate {index + 1} of {resolved_pool_size}")
+            if stop_after_valid is not None:
+                accepted_target = max(stop_after_valid, 1)
+                progress_callback(
+                    min(len(candidates) / accepted_target, 0.99),
+                    f"Finding variation {min(len(candidates) + 1, accepted_target)} "
+                    f"of {accepted_target}",
+                )
+            else:
+                progress_callback(index / max(resolved_pool_size, 1),
+                                  f"Analyzing candidate {index + 1} of {resolved_pool_size}")
         family = families[index % len(families)]
         bed_seed = (seed + index * SEED_STEP) % (2 ** 64)
         spec = BedSpec.from_style(family, bed_seed)

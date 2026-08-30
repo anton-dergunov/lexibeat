@@ -26,7 +26,6 @@ from .sfz import parse as parse_sfz
 
 
 EXTERNAL_DEFAULT = Path("/Volumes/EXTSSD_SAND/downloaded_music/lexibeat-library")
-LOCAL_DEFAULT = Path("/Users/anton/downloaded_music/lexibeat-cache")
 BUNDLED_ROOT = Path(__file__).resolve().parents[1] / "assets" / "production-core" / "v1"
 GB = 1_000_000_000
 EXTERNAL_WARN = 450 * GB
@@ -144,7 +143,11 @@ def external_root() -> Path:
 
 
 def local_root() -> Path:
-    return Path(os.environ.get("LEXIBEAT_CACHE", LOCAL_DEFAULT))
+    configured = os.environ.get("LEXIBEAT_CACHE")
+    if configured:
+        return Path(configured)
+    cache_home = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return cache_home / "lexibeat"
 
 
 def directory_size(path: Path) -> int:
@@ -358,13 +361,14 @@ class SampleLibrary:
         return target
 
     def _connect(self, *, write: bool = False) -> sqlite3.Connection:
+        target = self.local_catalog_path if write else self.catalog_path
+        if not write and target == self.bundled_catalog_path and target.exists():
+            return sqlite3.connect(f"file:{target}?mode=ro", uri=True)
         self.ensure_roots()
         if (write and self.use_bundled and not self.local_catalog_path.exists()
                 and self.bundled_catalog_path.exists()):
             shutil.copy2(self.bundled_catalog_path, self.local_catalog_path)
         target = self.local_catalog_path if write else self.catalog_path
-        if target == self.bundled_catalog_path and target.exists():
-            return sqlite3.connect(f"file:{target}?mode=ro", uri=True)
         db = sqlite3.connect(target)
         db.execute("""CREATE TABLE IF NOT EXISTS collections (
             id TEXT PRIMARY KEY, name TEXT NOT NULL, repository TEXT NOT NULL,

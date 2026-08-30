@@ -25,6 +25,8 @@ from lexibeat.explorer import (
     randomize_unlocked,
     validate_bed_spec,
 )
+from lexibeat.library import SampleLibrary, local_root
+from lexibeat.explorer_ui import build_demo
 
 try:
     from fastapi.testclient import TestClient
@@ -117,6 +119,16 @@ class ExplorerCoreTests(unittest.TestCase):
         service = SampleService(ExplorerConfig(hosted=True))
         with self.assertRaisesRegex(PermissionError, "disabled"):
             service.promote("vcsl:00000000000000000000")
+
+    def test_default_sample_cache_is_portable(self) -> None:
+        with mock.patch.dict("os.environ", {}, clear=True), \
+                mock.patch("pathlib.Path.home", return_value=Path("/home/runner")):
+            self.assertEqual(local_root(), Path("/home/runner/.cache/lexibeat"))
+            library = SampleLibrary()
+            self.assertEqual(library.local, Path("/home/runner/.cache/lexibeat"))
+
+        with mock.patch.dict("os.environ", {"XDG_CACHE_HOME": "/tmp/cache"}, clear=True):
+            self.assertEqual(local_root(), Path("/tmp/cache/lexibeat"))
 
 
 @unittest.skipUnless(TestClient is not None, "install the explorer extra")
@@ -215,6 +227,50 @@ class ExplorerHttpTests(unittest.TestCase):
                           for component in config.json().get("components", [])}
                 self.assertIn("Style", labels)
                 self.assertIn("Current BedSpec JSON", labels)
+
+    def test_simple_generate_renders_a_fresh_reset_preview(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = ExplorerConfig(output_root=Path(tmp))
+            demo = build_demo(
+                config, artifacts=ArtifactStore(config),
+                samples=SampleService(config))
+            generate = next(
+                block for block in demo.fns.values()
+                if block.fn is not None and block.fn.__name__ == "generate")
+            progress_events: list[tuple[float, str]] = []
+
+            def record_progress(value: float, *, desc: str = "") -> None:
+                progress_events.append((value, desc))
+
+            with mock.patch("lexibeat.explorer_ui.secrets.randbits", return_value=1234):
+                values = generate.fn(
+                    "warm-motion", "balanced", "steady", "electronic",
+                    record_progress)
+            by_label = {
+                output.label: values[index]
+                for index, output in enumerate(generate.outputs)
+                if getattr(output, "label", None)
+            }
+            preview = by_label["Current music preview"]
+            self.assertTrue(preview.autoplay)
+            self.assertEqual(preview.playback_position, 0)
+            self.assertEqual(preview.buttons, ["download"])
+            self.assertFalse(preview.editable)
+            self.assertTrue(Path(by_label["Download WAV"]).is_file())
+            button_values = {
+                component.value for component in demo.blocks.values()
+                if component.__class__.__name__ == "Button"
+            }
+            self.assertIn("Generate", button_values)
+            self.assertNotIn("Generate another", button_values)
+            self.assertNotIn("Play", button_values)
+            self.assertNotIn("Stop", button_values)
+            self.assertTrue(any("variation 6 of 6" in message
+                                for _, message in progress_events))
+            self.assertFalse(any("of 24" in message
+                                 for _, message in progress_events))
+            fractions = [fraction for fraction, _ in progress_events]
+            self.assertEqual(fractions, sorted(fractions))
 
 
 if __name__ == "__main__":

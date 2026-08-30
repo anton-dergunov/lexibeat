@@ -151,10 +151,9 @@ def _apply_form(state: dict, scalar_values: list[object],
     if not state.get("bed_spec"):
         raise ValueError("Generate or load a BedSpec first.")
     data = json.loads(json.dumps(state["bed_spec"]))
-    scalar_fields = [field for field in CONTROL_FIELDS if field.kind != "table"]
+    scalar_fields = [field for field in CONTROL_FIELDS
+                     if field.kind != "table" and not field.read_only]
     for control, value in zip(scalar_fields, scalar_values, strict=True):
-        if control.read_only:
-            continue
         try:
             pointer_get(data, control.path)
         except (KeyError, IndexError, TypeError, ValueError):
@@ -185,7 +184,7 @@ def _locked_paths(lock_values: list[object]) -> list[str]:
 
 
 def _status(report: ExplorerValidationReport | dict | None,
-            heading: str = "Current bed") -> str:
+            heading: str = "Lab validation") -> str:
     if report is None:
         return f"### {heading}\nNo BedSpec is loaded."
     data = report.to_dict() if isinstance(report, ExplorerValidationReport) else report
@@ -197,6 +196,16 @@ def _status(report: ExplorerValidationReport | dict | None,
     if len(issues) > 8:
         lines.append(f"- …and {len(issues) - 8} more issues")
     return "\n".join(lines)
+
+
+def _identity(spec: BedSpec) -> str:
+    return (
+        "#### Resolved identity\n"
+        f"**Engine:** `{spec.engine_version}` &nbsp;·&nbsp; "
+        f"**Profile:** `{spec.profile_version}` &nbsp;·&nbsp; "
+        f"**Schema:** `{spec.schema_version}` &nbsp;·&nbsp; "
+        f"**Seed:** `{spec.seed}`"
+    )
 
 
 def _exports(spec: BedSpec) -> tuple[str, str, str]:
@@ -243,88 +252,104 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
     import gradio as gr
 
     schema = __import__("lexibeat.explorer", fromlist=["explorer_schema"]).explorer_schema(config)
-    scalar_fields = [field for field in CONTROL_FIELDS if field.kind != "table"]
-    editable_scalar_fields = [field for field in scalar_fields if not field.read_only]
+    scalar_fields = [field for field in CONTROL_FIELDS
+                     if field.kind != "table" and not field.read_only]
 
     with gr.Blocks(title="LexiBeat Music Explorer", fill_width=True,
                    analytics_enabled=False) as demo:
         current = gr.State(_initial_state())
         gr.Markdown("# LexiBeat Music Explorer\nGenerate and inspect reproducible music beds. Voice generation is not enabled.")
-        status = gr.Markdown(_status(None))
 
         with gr.Tabs(selected="simple") as tabs:
             with gr.Tab("Simple", id="simple"):
                 with gr.Row():
-                    family = gr.Dropdown(schema["simple"]["families"], value="auto", label="Style")
-                    energy = gr.Radio(schema["simple"]["energy"], value="balanced", label="Energy")
-                    rhythm = gr.Radio(schema["simple"]["rhythm"], value="steady", label="Rhythm")
-                    palette = gr.Radio(schema["simple"]["palette"], value="hybrid", label="Palette")
-                with gr.Row():
-                    generate_button = gr.Button("Generate another", variant="primary")
-                    play_button = gr.Button("Play")
-                    stop_button = gr.Button("Stop", variant="stop")
-                    open_lab_button = gr.Button("Open in Lab")
-                simple_audio = gr.Audio(label="Current music preview", interactive=False)
+                    with gr.Column(scale=1, min_width=300):
+                        family = gr.Dropdown(
+                            schema["simple"]["families"], value="auto", label="Style")
+                        energy = gr.Radio(
+                            schema["simple"]["energy"], value="balanced", label="Energy")
+                        rhythm = gr.Radio(
+                            schema["simple"]["rhythm"], value="steady", label="Rhythm")
+                        palette = gr.Radio(
+                            schema["simple"]["palette"], value="hybrid", label="Palette")
+                        generate_button = gr.Button("Generate", variant="primary")
+                        open_lab_button = gr.Button("Open in Lab")
+                    with gr.Column(scale=2, min_width=420):
+                        gr.Markdown(
+                            "Choose a direction, then generate one complete phrase. "
+                            "Generating again replaces the current clip.")
+                        simple_audio = gr.Audio(
+                            label="Current music preview", interactive=False,
+                            editable=False, autoplay=False, buttons=["download"],
+                            elem_id="simple-audio")
                 with gr.Row():
                     audio_download = gr.File(label="Download WAV", interactive=False)
                     spec_download = gr.File(label="Download BedSpec JSON", interactive=False)
 
             with gr.Tab("Lab", id="lab"):
-                gr.Markdown("Edits are applied when you validate, randomize, or render. Values are never silently clamped.")
+                gr.Markdown(
+                    "Edit the current resolved bed directly. Changes are applied when you "
+                    "validate, randomize, or render; values are never silently clamped.")
+                identity_info = gr.Markdown("#### Resolved identity\nGenerate or load a BedSpec first.")
+                gr.Markdown(
+                    "**Keep on randomize:** these checkboxes do not disable editing. They only "
+                    "preserve the checked value when **Randomize unlocked** creates a new bed.")
                 scalar_components: list[Any] = []
                 scalar_locks: list[Any] = []
                 grouped: dict[str, list] = {}
                 for control in scalar_fields:
                     grouped.setdefault(control.group, []).append(control)
                 for group, controls in grouped.items():
-                    with gr.Accordion(group, open=group in ("Identity", "Harmony")):
+                    display_group = "Timing and structure" if group == "Identity" else group
+                    with gr.Accordion(display_group, open=True):
                         for control in controls:
                             with gr.Row():
                                 if control.kind == "enum":
                                     component = gr.Dropdown(list(control.choices), label=control.label,
-                                                            interactive=not control.read_only)
+                                                            interactive=True)
                                 elif control.kind == "boolean":
                                     component = gr.Checkbox(label=control.label,
-                                                            interactive=not control.read_only)
+                                                            interactive=True)
                                 elif control.kind in ("number", "integer"):
                                     component = gr.Number(label=control.label,
                                                           minimum=control.minimum,
                                                           maximum=control.maximum,
                                                           step=control.step,
-                                                          interactive=not control.read_only)
+                                                          interactive=True)
                                 else:
                                     component = gr.Textbox(label=control.label,
-                                                           interactive=not control.read_only)
+                                                           interactive=True)
                                 scalar_components.append(component)
-                                if control.read_only:
-                                    gr.Markdown("Read-only provenance")
-                                else:
-                                    scalar_locks.append(gr.Checkbox(label="Lock", value=False,
-                                                                    min_width=90))
+                                scalar_locks.append(gr.Checkbox(
+                                    label="Keep on randomize", value=False, min_width=160))
 
                 with gr.Accordion("Resolved event tables", open=True):
                     chords = gr.Dataframe(
                         headers=["step", "position", "duration", "MIDI notes", "note names", "velocity"],
                         datatype=["number", "str", "number", "str", "str", "number"],
                         type="array", label="Chords", interactive=True)
-                    chord_lock = gr.Checkbox(label="Lock all chord events")
+                    chord_lock = gr.Checkbox(label="Keep all chord events on randomize")
                     bass_events = gr.Dataframe(
                         headers=["step", "position", "duration", "MIDI note", "note name", "velocity"],
                         datatype=["number", "str", "number", "number", "str", "number"],
                         type="array", label="Bass notes", interactive=True)
-                    bass_lock = gr.Checkbox(label="Lock all bass events")
+                    bass_lock = gr.Checkbox(label="Keep all bass events on randomize")
                     lead_events = gr.Dataframe(
                         headers=["step", "position", "duration", "MIDI note", "note name", "velocity"],
                         datatype=["number", "str", "number", "number", "str", "number"],
                         type="array", label="Lead notes", interactive=True)
-                    lead_lock = gr.Checkbox(label="Lock all lead events")
+                    lead_lock = gr.Checkbox(label="Keep all lead events on randomize")
                     percussion = gr.Dataframe(
                         headers=["sound", "pattern", "level", "probability", "humanize", "pan", "role", "sample logical ID"],
                         datatype=["str", "str", "number", "number", "number", "number", "str", "str"],
                         type="array", label="Percussion lanes", interactive=True)
-                    percussion_lock = gr.Checkbox(label="Lock all percussion lanes")
+                    percussion_lock = gr.Checkbox(label="Keep all percussion lanes on randomize")
 
                 with gr.Accordion("Sample provenance", open=False):
+                    gr.Markdown(
+                        "These tables show only the samples referenced by the current bed, "
+                        "including every multisample instrument zone. They do not list the "
+                        "whole library.")
                     sample_table = gr.Dataframe(
                         headers=["logical ID", "collection", "category", "availability", "promoted", "license", "SHA-256", "source path"],
                         type="array", interactive=False, label="Selected samples")
@@ -332,20 +357,36 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                         headers=["role", "instrument", "logical ID", "root MIDI", "root note", "low note", "high note", "low velocity", "high velocity", "gain dB"],
                         type="array", interactive=False, label="Instrument zones")
                     gr.Markdown("Sample references can be changed in percussion rows or in the advanced JSON editor. Instrument locks preserve complete checksum-addressed zone maps.")
-                    extra_locks = [gr.Checkbox(label=f"Lock {path.removeprefix('/phrase/').replace('_', ' ')}")
+                    extra_locks = [gr.Checkbox(label=(
+                        "Keep " + path.removeprefix("/phrase/").replace("_", " ") +
+                        " on randomize"))
                                    for path in _EXTRA_LOCK_PATHS]
 
+                gr.Markdown("### Lab actions")
                 with gr.Row():
                     randomize_button = gr.Button("Randomize unlocked", variant="primary")
                     validate_button = gr.Button("Validate")
                     safe_button = gr.Button("Return to safe range")
+                gr.Markdown(
+                    "- **Randomize unlocked** creates a new deterministic bed with a fresh seed "
+                    "while preserving every checked field or event section.\n"
+                    "- **Validate** applies the current edits and reports whether they are "
+                    "production-safe, experimental, or invalid. It does not render audio.\n"
+                    "- **Return to safe range** applies only the explicit repair values shown by "
+                    "validation; it does not silently change unrelated fields.")
                 with gr.Row():
                     preview_button = gr.Button("Render preview")
                     duration = gr.Number(value=min(30, config.max_duration_seconds),
                                          minimum=1, maximum=config.max_duration_seconds,
                                          label="Full render duration (seconds)")
                     render_button = gr.Button("Render full WAV")
-                lab_audio = gr.Audio(label="Lab render", interactive=False)
+                gr.Markdown(
+                    "**Render preview** produces one complete phrase, capped at 15 seconds. "
+                    "**Render full WAV** uses the duration above and the current edited values.")
+                lab_status = gr.Markdown(_status(None))
+                lab_audio = gr.Audio(
+                    label="Lab render", interactive=False, editable=False,
+                    autoplay=False, buttons=["download"], elem_id="lab-audio")
                 validation_json = gr.JSON(label="Validation and quality report")
 
                 with gr.Accordion("Load, save, and advanced JSON", open=False):
@@ -366,7 +407,15 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
         lock_components = [*scalar_locks, chord_lock, bass_lock, lead_lock,
                            percussion_lock, *extra_locks]
 
-        def full_values(state: dict, *, clear_locks: bool) -> list:
+        def audio_value(path: str | None, *, label: str,
+                        autoplay: bool = False):
+            return gr.Audio(
+                value=path, label=label, autoplay=autoplay, playback_position=0,
+                interactive=False, editable=False, buttons=["download"])
+
+        def full_values(state: dict, *, clear_locks: bool,
+                        simple_audio_path: str | None = None,
+                        autoplay: bool = False) -> list:
             spec = BedSpec.from_dict(state["bed_spec"])
             report = state.get("validation")
             python, cli, json_text = _exports(spec)
@@ -382,35 +431,46 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             tables = list(_table_rows(spec))
             lock_values = [False] * len(lock_components) if clear_locks else [gr.skip()] * len(lock_components)
             return [
-                state, _status(report), None, None, None,
+                state, _identity(spec),
+                audio_value(simple_audio_path, label="Current music preview",
+                            autoplay=autoplay),
+                audio_value(None, label="Lab render"), simple_audio_path,
                 _write_spec_download(spec, artifacts),
-                report, json_text, python, cli, json_text, sample_rows, zones,
+                _status(report), report, json_text, python, cli, json_text,
+                sample_rows, zones,
                 *scalar_values, *tables, *lock_values,
             ]
 
         full_outputs = [
-            current, status, simple_audio, lab_audio, audio_download, spec_download,
-            validation_json, raw_json, python_code, cli_code, json_code,
-            sample_table, zone_table, *scalar_components, *table_components,
-            *lock_components,
+            current, identity_info, simple_audio, lab_audio, audio_download,
+            spec_download, lab_status, validation_json, raw_json, python_code,
+            cli_code, json_code, sample_table, zone_table, *scalar_components,
+            *table_components, *lock_components,
         ]
 
         def generate(family_value: str, energy_value: str, rhythm_value: str,
                      palette_value: str, progress=gr.Progress()):
-            progress(0.02, desc="Resolving production candidates")
+            progress(0.01, desc="Preparing variations")
             request = MusicRequest(family=family_value, energy=energy_value,
                                    rhythm=rhythm_value, palette=palette_value,
                                    seed=secrets.randbits(64))
             result = resolve_music(
                 request,
-                progress_callback=lambda value, message: progress(value, desc=message))
+                progress_callback=lambda value, message:
+                    progress(0.02 + 0.70 * value, desc=message))
             _, report = validate_bed_spec(result.bed_spec, analyze=False)
+            artifact = artifacts.render(
+                result.bed_spec, preview_duration(result.bed_spec), preview=True,
+                progress=lambda value, message:
+                    progress(0.72 + 0.28 * value, desc=message))
+            path = str(artifacts.path_for(artifact.artifact_id))
             state = _initial_state()
             state.update(bed_spec=_json_data(result.bed_spec),
                          music_request=result.request.to_dict(),
-                         validation=report.to_dict())
-            progress(1.0, desc="Bed ready")
-            return full_values(state, clear_locks=True)
+                         validation=report.to_dict(), audio_path=path)
+            progress(1.0, desc="Loading preview")
+            return full_values(state, clear_locks=True,
+                               simple_audio_path=path, autoplay=True)
 
         def edited(state: dict, *values):
             scalar_values = list(values[:len(scalar_components)])
@@ -439,18 +499,9 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                 progress=lambda value, message: progress(value, desc=message))
             path = str(artifacts.path_for(artifact.artifact_id))
             state.update(validation=report.to_dict(), audio_path=path)
-            return state, _status(report, "Render ready"), path, path, report.to_dict()
-
-        def play_current(state: dict, progress=gr.Progress()):
-            if not state.get("bed_spec"):
-                raise gr.Error("Generate a bed first.")
-            spec = BedSpec.from_dict(state["bed_spec"])
-            artifact = artifacts.render(
-                spec, preview_duration(spec), preview=True,
-                progress=lambda value, message: progress(value, desc=message))
-            path = str(artifacts.path_for(artifact.artifact_id))
-            state["audio_path"] = path
-            return state, path, path, _status(state.get("validation"), "Preview ready")
+            return (state, _status(report, "Render result"),
+                    audio_value(path, label="Lab render", autoplay=True),
+                    path, report.to_dict())
 
         def randomize_current(state: dict, *values, progress=gr.Progress()):
             edit_count = len(scalar_components) + len(table_components)
@@ -510,28 +561,23 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
         generate_event = generate_button.click(
             generate, [family, energy, rhythm, palette], full_outputs,
             api_name=False)
-        demo.load(generate, [family, energy, rhythm, palette], full_outputs,
-                  api_name=False)
-        play_event = play_button.click(
-            play_current, [current], [current, simple_audio, audio_download, status],
-            api_name=False)
         open_lab_button.click(lambda: gr.Tabs(selected="lab"), outputs=tabs,
                               api_name=False)
 
         validate_button.click(
             validate_current, edit_inputs,
-            [current, status, validation_json, raw_json, python_code, cli_code,
+            [current, lab_status, validation_json, raw_json, python_code, cli_code,
              json_code, spec_download], api_name=False)
         preview_event = preview_button.click(
             lambda state, *values, progress=gr.Progress():
                 render_current(state, None, True, progress, *values),
-            edit_inputs, [current, status, lab_audio, audio_download, validation_json],
+            edit_inputs, [current, lab_status, lab_audio, audio_download, validation_json],
             api_name=False)
         render_event = render_button.click(
             lambda state, seconds, *values, progress=gr.Progress():
                 render_current(state, seconds, False, progress, *values),
             [current, duration, *scalar_components, *table_components],
-            [current, status, lab_audio, audio_download, validation_json],
+            [current, lab_status, lab_audio, audio_download, validation_json],
             api_name=False)
         randomize_event = randomize_button.click(
             randomize_current, [*edit_inputs, *lock_components], full_outputs,
@@ -540,11 +586,5 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
         load_button.click(load_file, [current, upload], full_outputs, api_name=False)
         apply_json_button.click(apply_raw, [current, raw_json], full_outputs,
                                 api_name=False)
-        stop_button.click(
-            lambda state: ({**state, "audio_path": None}, None, None,
-                           "### Stopped\nPlayback or queued work was stopped."),
-            [current], [current, simple_audio, lab_audio, status],
-            cancels=[generate_event, play_event, preview_event, render_event,
-                     randomize_event], api_name=False)
 
     return demo.queue(default_concurrency_limit=1, max_size=config.max_pending_renders)
