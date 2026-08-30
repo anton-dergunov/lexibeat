@@ -6,7 +6,7 @@ import threading
 from contextlib import contextmanager
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -101,7 +101,8 @@ class SampleListResponse(BaseModel):
     limit: int
 
 
-def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True):
+def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
+               gpu_probe: Callable[[], dict[str, str | bool]] | None = None):
     """Create the shared ASGI application without importing web dependencies early."""
     from fastapi import FastAPI, HTTPException, Query, Request
     from fastapi.exceptions import RequestValidationError
@@ -276,7 +277,9 @@ def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True):
         from .explorer_ui import build_demo
         import gradio as gr
 
-        demo = build_demo(resolved_config, artifacts=artifacts, samples=samples)
+        demo = build_demo(
+            resolved_config, artifacts=artifacts, samples=samples,
+            gpu_probe=gpu_probe)
         app = gr.mount_gradio_app(app, demo, path="/")
         app.state.explorer_config = resolved_config
         app.state.artifacts = artifacts

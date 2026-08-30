@@ -6,7 +6,7 @@ import json
 import secrets
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .api import MusicRequest, resolve_music
 from .bedspec import BedSpec
@@ -248,7 +248,8 @@ def _sample_tables(spec: BedSpec, samples: SampleService) -> tuple[list[list], l
 
 
 def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
-               samples: SampleService):
+               samples: SampleService,
+               gpu_probe: Callable[[], dict[str, str | bool]] | None = None):
     import gradio as gr
 
     schema = __import__("lexibeat.explorer", fromlist=["explorer_schema"]).explorer_schema(config)
@@ -259,6 +260,10 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                    analytics_enabled=False) as demo:
         current = gr.State(_initial_state())
         gr.Markdown("# LexiBeat Music Explorer\nGenerate and inspect reproducible music beds. Voice generation is not enabled.")
+
+        if gpu_probe is not None:
+            gpu_trigger = gr.Button("ZeroGPU readiness probe", visible=False)
+            gpu_trigger.click(gpu_probe, api_name=False)
 
         with gr.Tabs(selected="simple") as tabs:
             with gr.Tab("Simple", id="simple"):

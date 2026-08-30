@@ -143,6 +143,14 @@ class ExplorerCoreTests(unittest.TestCase):
                 clear=True):
             self.assertEqual(configured_bundle_root(), Path("/data/custom/v1"))
 
+    def test_space_entrypoint_registers_a_local_safe_gpu_probe(self) -> None:
+        import app as space_entrypoint
+
+        result = space_entrypoint.zero_gpu_readiness_probe()
+        self.assertEqual(set(result), {"available", "device"})
+        self.assertIsInstance(result["available"], bool)
+        self.assertIsInstance(result["device"], str)
+
 
 @unittest.skipUnless(TestClient is not None, "install the explorer extra")
 class ExplorerHttpTests(unittest.TestCase):
@@ -240,6 +248,23 @@ class ExplorerHttpTests(unittest.TestCase):
                           for component in config.json().get("components", [])}
                 self.assertIn("Style", labels)
                 self.assertIn("Current BedSpec JSON", labels)
+
+    def test_zero_gpu_probe_is_a_hidden_registered_gradio_handler(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            config = ExplorerConfig(output_root=Path(tmp))
+
+            def gpu_probe() -> dict[str, str | bool]:
+                return {"available": False, "device": "test"}
+
+            demo = build_demo(
+                config, artifacts=ArtifactStore(config),
+                samples=SampleService(config), gpu_probe=gpu_probe)
+            handlers = [block.fn for block in demo.fns.values()]
+            self.assertIn(gpu_probe, handlers)
+            trigger = next(
+                block for block in demo.blocks.values()
+                if getattr(block, "value", None) == "ZeroGPU readiness probe")
+            self.assertFalse(trigger.visible)
 
     def test_simple_generate_renders_a_fresh_reset_preview(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

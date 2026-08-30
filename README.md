@@ -98,6 +98,12 @@ and visitors use samples through the application rather than receiving direct
 bucket access. The bucket can be made public later if direct redistribution is
 desired and every included source remains license-compatible.
 
+The Space remains on ZeroGPU for future Linux/CUDA speech models. Its entry point
+registers a small `@spaces.GPU` readiness probe because ZeroGPU requires at least
+one decorated function at startup. Current music generation stays on CPU and
+does not consume GPU quota; a future TTS callback can use the same explicit GPU
+boundary.
+
 ## Versioned music API
 
 Applications can request safe variety without understanding the complete music
