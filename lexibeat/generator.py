@@ -8,7 +8,7 @@ import random
 import secrets
 from dataclasses import replace
 from pathlib import Path
-from typing import Sequence
+from typing import Callable, Sequence
 
 import numpy as np
 
@@ -41,6 +41,12 @@ from .quality import (
 
 ENGINE_VERSION = "1.0.0"
 SEED_STEP = 104_729
+ProgressCallback = Callable[[float, str], None]
+CancelCheck = Callable[[], bool]
+
+
+class GenerationCancelledError(RuntimeError):
+    """Raised at a safe boundary when a caller cancels candidate generation."""
 
 _ORNAMENT_WORDS = (
     "sleigh", "jingle", "bell", "cowbell", "chime", "cymbal", "triangle",
@@ -321,6 +327,8 @@ def build_candidates(
     profile: GenerationProfile | None = None,
     pool_size: int | None = None,
     stop_after_valid: int | None = None,
+    progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
 ) -> tuple[list[Candidate], list[dict]]:
     """Build and validate a deterministic candidate pool."""
     request = request or MusicRequest(seed=seed)
@@ -331,6 +339,11 @@ def build_candidates(
     candidates: list[Candidate] = []
     rejected: list[dict] = []
     for index in range(resolved_pool_size):
+        if cancel_check and cancel_check():
+            raise GenerationCancelledError("Music resolution cancelled.")
+        if progress_callback:
+            progress_callback(index / max(resolved_pool_size, 1),
+                              f"Analyzing candidate {index + 1} of {resolved_pool_size}")
         family = families[index % len(families)]
         bed_seed = (seed + index * SEED_STEP) % (2 ** 64)
         spec = BedSpec.from_style(family, bed_seed)
@@ -351,7 +364,7 @@ def build_candidates(
             continue
         try:
             bars = max(spec.phrase.loop_bars if spec.phrase else 4, 4)
-            stems = render_stems(spec, bars)
+            stems = render_stems(spec, bars, cancel_check=cancel_check)
             preview = sum(stems.values(), np.zeros_like(next(iter(stems.values()))))
         except (FileNotFoundError, RuntimeError, ValueError) as exc:
             rejected.append({"family": family, "seed": bed_seed, "reason": str(exc)})
@@ -380,6 +393,8 @@ def build_candidates(
         ))
         if stop_after_valid is not None and len(candidates) >= stop_after_valid:
             break
+    if progress_callback:
+        progress_callback(1.0, "Candidate analysis complete")
     if len(candidates) < count:
         raise RuntimeError(
             f"Only {len(candidates)} valid candidates for requested count {count}; "
@@ -538,6 +553,8 @@ def resolve_request(
     *,
     avoid_fingerprints: Sequence[BedFingerprint] = (),
     library: SampleLibrary | None = None,
+    progress_callback: ProgressCallback | None = None,
+    cancel_check: CancelCheck | None = None,
 ) -> MusicGenerationResult:
     request.validated()
     profile = get_profile(request.profile)
@@ -561,6 +578,8 @@ def resolve_request(
         profile=profile,
         pool_size=profile.candidate_count * profile.candidate_attempt_multiplier,
         stop_after_valid=profile.candidate_count,
+        progress_callback=progress_callback,
+        cancel_check=cancel_check,
     )
     ranked = sorted(
         candidates,
@@ -586,9 +605,15 @@ def resolve_request(
     )
 
 
-def render_resolved(spec: BedSpec, *, duration_seconds: float) -> np.ndarray:
+def render_resolved(spec: BedSpec, *, duration_seconds: float,
+                    progress_callback: ProgressCallback | None = None,
+                    cancel_check: CancelCheck | None = None) -> np.ndarray:
     if not math.isfinite(duration_seconds) or duration_seconds <= 0:
         raise ValueError("duration_seconds must be a positive finite number")
     grid = Grid.from_spec(spec)
     bars = max(1, round(max(duration_seconds - 1.0, grid.bar) / grid.bar))
-    return render_bed(spec, bars)
+    try:
+        return render_bed(spec, bars, progress_callback=progress_callback,
+                          cancel_check=cancel_check)
+    except InterruptedError as exc:
+        raise GenerationCancelledError("Music render cancelled.") from exc

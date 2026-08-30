@@ -10,6 +10,14 @@ from .api import (
     render_music,
     resolve_music,
 )
+from .explorer import (
+    ExplorerValidationReport,
+    RandomizationResult,
+    ValidationIssue,
+    apply_safe_repairs,
+    randomize_unlocked,
+    validate_bed_spec,
+)
 
 __all__ = [
     "BedFingerprint",
@@ -20,6 +28,12 @@ __all__ = [
     "generate_music",
     "render_music",
     "resolve_music",
+    "ExplorerValidationReport",
+    "RandomizationResult",
+    "ValidationIssue",
+    "apply_safe_repairs",
+    "randomize_unlocked",
+    "validate_bed_spec",
 ]
 
 __version__ = "1.0.0"

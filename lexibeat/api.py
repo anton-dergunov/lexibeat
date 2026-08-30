@@ -8,7 +8,7 @@ never download samples.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Literal, Sequence
+from typing import Callable, Literal, Sequence
 
 import numpy as np
 
@@ -35,7 +35,10 @@ class MusicRequest:
 
     @classmethod
     def from_dict(cls, values: dict) -> "MusicRequest":
-        return cls(**values).validated()
+        try:
+            return cls(**values).validated()
+        except TypeError as exc:
+            raise ValueError(f"Invalid MusicRequest fields: {exc}") from exc
 
     def validated(self) -> "MusicRequest":
         from .profiles import get_profile
@@ -99,24 +102,32 @@ def resolve_music(
     request: MusicRequest,
     *,
     avoid_fingerprints: Sequence[BedFingerprint] = (),
+    progress_callback: Callable[[float, str], None] | None = None,
+    cancel_check: Callable[[], bool] | None = None,
 ) -> MusicGenerationResult:
     """Resolve caller intent into one validated, fully replayable bed."""
     from .generator import resolve_request
 
-    return resolve_request(request, avoid_fingerprints=avoid_fingerprints)
+    return resolve_request(request, avoid_fingerprints=avoid_fingerprints,
+                           progress_callback=progress_callback,
+                           cancel_check=cancel_check)
 
 
 def render_music(
     result_or_spec: MusicGenerationResult | BedSpec,
     *,
     duration_seconds: float,
+    progress_callback: Callable[[float, str], None] | None = None,
+    cancel_check: Callable[[], bool] | None = None,
 ) -> np.ndarray:
     """Render a resolved bed close to the requested duration, on whole bars."""
     from .generator import render_resolved
 
     spec = (result_or_spec.bed_spec if isinstance(result_or_spec, MusicGenerationResult)
             else result_or_spec)
-    return render_resolved(spec, duration_seconds=duration_seconds)
+    return render_resolved(spec, duration_seconds=duration_seconds,
+                           progress_callback=progress_callback,
+                           cancel_check=cancel_check)
 
 
 def generate_music(
@@ -124,7 +135,13 @@ def generate_music(
     *,
     duration_seconds: float,
     avoid_fingerprints: Sequence[BedFingerprint] = (),
+    progress_callback: Callable[[float, str], None] | None = None,
+    cancel_check: Callable[[], bool] | None = None,
 ) -> tuple[np.ndarray, MusicGenerationResult]:
     """Resolve and render in one call while still returning the replay contract."""
-    result = resolve_music(request, avoid_fingerprints=avoid_fingerprints)
-    return render_music(result, duration_seconds=duration_seconds), result
+    result = resolve_music(request, avoid_fingerprints=avoid_fingerprints,
+                           progress_callback=progress_callback,
+                           cancel_check=cancel_check)
+    return render_music(result, duration_seconds=duration_seconds,
+                        progress_callback=progress_callback,
+                        cancel_check=cancel_check), result

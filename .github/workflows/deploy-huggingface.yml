@@ -1,0 +1,57 @@
+name: Test and deploy Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: huggingface-space-production
+  cancel-in-progress: true
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out source without downloading LFS twice
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Cache immutable production audio
+        uses: actions/cache@v5
+        with:
+          path: .git/lfs
+          key: production-core-${{ hashFiles('assets/production-core/v1/manifest.json') }}
+
+      - name: Materialize Git LFS assets
+        run: |
+          git lfs install --local
+          git lfs pull
+
+      - name: Install uv and Python 3.12
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install music and explorer dependencies
+        run: uv sync --extra explorer --locked
+
+      - name: Run unit and explorer smoke tests
+        run: |
+          uv run --extra explorer python -m unittest discover -s tests -v
+          uv run --extra explorer python -c "from lexibeat.explorer_web import create_api; assert create_api(mount_ui=False)"
+
+      - name: Synchronize the public Space
+        uses: huggingface/hub-sync@v0.1.0
+        with:
+          github_repo_id: ${{ github.repository }}
+          huggingface_repo_id: AntonDergunov/LexiBeat
+          space_sdk: gradio
+          hf_token: ${{ secrets.HF_TOKEN }}

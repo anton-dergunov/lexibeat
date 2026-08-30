@@ -1,3 +1,15 @@
+---
+title: LexiBeat Music Explorer
+emoji: 🎵
+colorFrom: indigo
+colorTo: green
+sdk: gradio
+sdk_version: 6.26.0
+python_version: "3.12"
+app_file: app.py
+pinned: false
+---
+
 # LexiBeat
 
 LexiBeat is a small experimental project for making language-learning
@@ -17,8 +29,10 @@ Install [`uv`](https://docs.astral.sh/uv/), then:
 
 ```bash
 uv sync
+# Local Chatterbox, Kokoro, and other MLX voice backends
+uv sync --extra local-tts
 # Optional research backends and benchmark resource monitoring
-uv sync --extra experimental-tts
+uv sync --extra local-tts --extra experimental-tts
 # Optional hosted Gemini and Cloudflare speech backends
 uv sync --extra hosted-tts
 uv run generate.py --download-samples salamander  # piano
@@ -31,6 +45,32 @@ explicitly into `~/.cache/lexibeat/`. The default Chatterbox and other local
 backends run offline after their weights are cached; explicitly selected Gemini
 and Cloudflare backends send transcript text to their provider. Kokoro
 additionally needs `brew install espeak-ng`.
+
+## Music explorer
+
+Run the optional browser explorer locally with:
+
+```bash
+./scripts/run_explorer.sh
+```
+
+It opens a Gradio interface backed by the versioned Python music API. Simple
+mode exposes safe product controls; Lab mode edits the resolved `BedSpec`,
+validates production safety, randomizes unlocked fields, renders WAV previews,
+and loads or saves complete `.bed.json` files. Local full renders may be up to
+180 seconds. The public [Hugging Face Space](https://huggingface.co/spaces/AntonDergunov/LexiBeat)
+uses the same application with a 30-second cap.
+
+FastAPI routes are available beneath `/api/`; interactive API documentation is
+at `/api/docs`. The service never accepts client filesystem paths and writes
+only beneath `out/explorer/` unless `LEXIBEAT_EXPLORER_OUT` selects another
+managed root. Hosted sample promotion and all voice functionality are disabled.
+
+Deployment from `main` is handled by `.github/workflows/deploy-huggingface.yml`.
+Add a write-capable Hugging Face token as the GitHub Actions secret `HF_TOKEN`.
+The workflow verifies the Linux music/web installation before synchronizing the
+Git-LFS production bundle to `AntonDergunov/LexiBeat`; no storage bucket is
+required.
 
 ## Versioned music API
 

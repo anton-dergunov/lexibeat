@@ -11,6 +11,7 @@ module only renders it.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
 
 import numpy as np
 from scipy import signal
@@ -20,6 +21,17 @@ from .instruments import (CatalogMultiSampleInstrument, CatalogSampleInstrument,
                           build as build_instrument, load_one_shot)
 
 SR = 44100
+ProgressCallback = Callable[[float, str], None]
+CancelCheck = Callable[[], bool]
+
+
+def _render_checkpoint(cancel_check: CancelCheck | None,
+                       progress_callback: ProgressCallback | None,
+                       value: float, message: str) -> None:
+    if cancel_check and cancel_check():
+        raise InterruptedError("Music render cancelled.")
+    if progress_callback:
+        progress_callback(value, message)
 
 
 @dataclass(frozen=True)
@@ -452,24 +464,43 @@ def _stereo(mono: np.ndarray, grid: Grid) -> np.ndarray:
     return np.stack([mono, 0.85 * right + 0.15 * mono], axis=1)
 
 
-def render_stems(spec: BedSpec, n_bars: int) -> dict[str, np.ndarray]:
+def render_stems(spec: BedSpec, n_bars: int, *,
+                 progress_callback: ProgressCallback | None = None,
+                 cancel_check: CancelCheck | None = None) -> dict[str, np.ndarray]:
     """Render named stereo stems without bus peak normalisation."""
     grid = Grid.from_spec(spec)
     rng = np.random.default_rng(spec.seed)
     space = spec.space
 
+    _render_checkpoint(cancel_check, progress_callback, 0.05, "Rendering pad")
     if spec.phrase is not None:
-        stems = _resolved_stems(spec, grid, n_bars, rng)
+        phrase = spec.phrase
+        pad = _reverb(_resolved_pad(spec, phrase, grid, n_bars, rng),
+                      seconds=space.reverb_seconds, mix=space.reverb_mix, rng=rng)
+        _render_checkpoint(cancel_check, progress_callback, 0.28, "Rendering lead")
+        lead = _reverb(_resolved_lead(spec, phrase, grid, n_bars),
+                       seconds=space.reverb_seconds * 0.75,
+                       mix=min(space.reverb_mix + 0.04, 0.68), rng=rng)
+        _render_checkpoint(cancel_check, progress_callback, 0.52, "Rendering bass")
+        bass = _resolved_bass(spec, phrase, grid, n_bars)
+        _render_checkpoint(cancel_check, progress_callback, 0.7, "Rendering percussion")
+        drums = _resolved_drums(spec, phrase, grid, n_bars, rng)
+        stems = {"pad": pad, "bass": bass, "drums": drums, "lead": lead}
     else:
         pad = _reverb(_pad(spec, grid, n_bars, rng),
                       seconds=space.reverb_seconds, mix=space.reverb_mix, rng=rng)
+        _render_checkpoint(cancel_check, progress_callback, 0.28, "Rendering lead")
         lead = _reverb(_lead(spec, grid, n_bars, rng),
                        seconds=space.reverb_seconds * 0.8,
                        mix=min(space.reverb_mix + 0.05, 0.7), rng=rng)
+        _render_checkpoint(cancel_check, progress_callback, 0.52, "Rendering bass")
+        bass = _bass(spec, grid, n_bars)
+        _render_checkpoint(cancel_check, progress_callback, 0.7, "Rendering percussion")
+        drums = _drums(spec, grid, n_bars, rng)
         stems = {
             "pad": pad,
-            "bass": _bass(spec, grid, n_bars),
-            "drums": _drums(spec, grid, n_bars, rng),
+            "bass": bass,
+            "drums": drums,
             "lead": lead,
         }
 
@@ -478,15 +509,22 @@ def render_stems(spec: BedSpec, n_bars: int) -> dict[str, np.ndarray]:
         fade = grid.samples(min(grid.bar * 2, len(mono) / grid.sr / 3))
         mono[:fade] *= np.linspace(0, 1, fade)
         mono[-fade:] *= np.linspace(1, 0, fade)
-    return {name: _stereo(mono, grid).astype(np.float32)
-            for name, mono in stems.items()}
+    _render_checkpoint(cancel_check, progress_callback, 0.88, "Finalizing stems")
+    result = {name: _stereo(mono, grid).astype(np.float32)
+              for name, mono in stems.items()}
+    _render_checkpoint(cancel_check, progress_callback, 0.94, "Mixing stems")
+    return result
 
 
-def render_bed(spec: BedSpec, n_bars: int) -> np.ndarray:
+def render_bed(spec: BedSpec, n_bars: int, *,
+               progress_callback: ProgressCallback | None = None,
+               cancel_check: CancelCheck | None = None) -> np.ndarray:
     """Render and sum `n_bars` of backing music as stereo float32."""
-    stems = render_stems(spec, n_bars)
+    stems = render_stems(spec, n_bars, progress_callback=progress_callback,
+                         cancel_check=cancel_check)
     stereo = sum(stems.values(), np.zeros_like(next(iter(stems.values()))))
     peak = np.abs(stereo).max()
     if peak > 0:
         stereo = stereo / peak * 0.7
+    _render_checkpoint(cancel_check, progress_callback, 1.0, "Music render complete")
     return stereo.astype(np.float32)

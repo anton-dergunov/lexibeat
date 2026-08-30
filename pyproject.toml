@@ -3,9 +3,7 @@ name = "lexibeat"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "kokoro>=0.9.4",
     "librosa>=1.0.0",
-    "mlx-audio>=0.5.0",
     "numpy>=2.5.2",
     "pedalboard>=0.9.24",
     "pyloudnorm>=0.2.0",
@@ -14,6 +12,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+local-tts = [
+    "kokoro>=0.9.4",
+    "mlx-audio>=0.5.0",
+]
 experimental-tts = [
     "mlx-tada>=0.1.0",
     "psutil>=7.0.0",
@@ -21,4 +23,10 @@ experimental-tts = [
 hosted-tts = [
     "google-genai>=2.19.0",
     "requests>=2.32.0",
+]
+explorer = [
+    "fastapi>=0.116.0,<1",
+    "gradio>=6.0.0,<7",
+    "httpx>=0.28.0,<1",
+    "uvicorn>=0.35.0,<1",
 ]
