@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate an Earworms-style language-learning track from a vocabulary list.
+"""Generate a LexiBeat language-learning track from a vocabulary list.
 
     uv run generate.py --words 12 --out out/spanish.wav
 
@@ -22,13 +22,15 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from earworms.arrange import PATTERNS, arrange, render_speech
-from earworms.bedspec import STYLES, BedSpec
-from earworms.mix import mix_stems
-from earworms.music import SR, Grid, render_bed, render_stems
-from earworms.samples import PACKS, PACK_GROUPS, download_target
-from earworms.vocab import load
-from earworms.voice import CAPABILITIES, DEFAULT_MODELS, Speaker
+from lexibeat.api import MusicRequest, resolve_music
+from lexibeat.arrange import PATTERNS, arrange, render_speech
+from lexibeat.bedspec import STYLES, BedSpec
+from lexibeat.mix import mix_stems
+from lexibeat.music import SR, Grid, render_bed, render_stems
+from lexibeat.profiles import POSITIVE_FAMILIES
+from lexibeat.samples import PACKS, PACK_GROUPS, download_target
+from lexibeat.vocab import load
+from lexibeat.voice import CAPABILITIES, DEFAULT_MODELS, Speaker
 
 VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 
@@ -55,6 +57,15 @@ def parse_args() -> argparse.Namespace:
                        help="varies the bed independently of item selection")
     music.add_argument("--bed-spec", type=Path,
                        help="load a saved bed spec JSON instead of a style")
+    music.add_argument("--music-family", choices=("auto", *POSITIVE_FAMILIES),
+                       help="use the production API instead of a legacy bed style")
+    music.add_argument("--music-energy", choices=("calm", "balanced", "bright"),
+                       default="balanced")
+    music.add_argument("--music-rhythm", choices=("sparse", "steady", "groovy"),
+                       default="steady")
+    music.add_argument("--music-palette",
+                       choices=("acoustic", "hybrid", "electronic"),
+                       default="hybrid")
     music.add_argument("--bpm", type=float, default=None,
                        help="override the tempo the style chose")
     music.add_argument("--meter", choices=["3/4", "4/4", "5/4"],
@@ -117,6 +128,17 @@ def build_spec(args: argparse.Namespace) -> tuple[BedSpec, str]:
     if args.bed_spec:
         spec = BedSpec.from_json(args.bed_spec)
         label = args.bed_spec.name
+    elif getattr(args, "music_family", None):
+        seed = args.bed_seed if args.bed_seed is not None else args.seed
+        result = resolve_music(MusicRequest(
+            family=args.music_family,
+            energy=args.music_energy,
+            rhythm=args.music_rhythm,
+            palette=args.music_palette,
+            seed=seed,
+        ))
+        spec = result.bed_spec
+        label = f"{result.profile_version}:{result.fingerprint.family}"
     else:
         seed = args.bed_seed if args.bed_seed is not None else args.seed
         spec = BedSpec.from_style(args.bed_style, seed)

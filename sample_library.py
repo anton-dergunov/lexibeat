@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Manage the explicit tiered sample library used by Earworms."""
+"""Manage the explicit tiered sample library used by LexiBeat."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from earworms.library import COLLECTIONS, LIBRARY_TARGETS, SampleLibrary, SampleRef
+from lexibeat.library import COLLECTIONS, LIBRARY_TARGETS, SampleLibrary, SampleRef
 
 
 def _refs(value) -> list[SampleRef]:
@@ -27,7 +27,7 @@ def _refs(value) -> list[SampleRef]:
 
 
 def _markdown(report: dict) -> str:
-    lines = ["# Earworms sample-library report", "", "## Storage", ""]
+    lines = ["# LexiBeat sample-library report", "", "## Storage", ""]
     for tier, row in report["storage"].items():
         state = "available" if row.get("available", True) else "offline"
         lines.append(f"- {tier}: {row['bytes'] / 1e9:.2f} GB / "

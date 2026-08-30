@@ -1,6 +1,6 @@
-# Earworms Generator
+# LexiBeat
 
-Earworms Generator is a small experimental project for making language-learning
+LexiBeat is a small experimental project for making language-learning
 audio: a word or phrase is spoken in Spanish, followed by its English meaning,
 over a calm procedural music bed. Speech lands on a known beat grid, repeats use
 slightly different delivery, and the music ducks gently while either speaker is
@@ -25,10 +25,50 @@ uv run generate.py --download-samples salamander  # piano
 uv run generate.py --download-samples vsco        # strings, marimba, glockenspiel
 ```
 
-Samples are downloaded once to `~/.cache/earworms/`. The default Chatterbox and
-other local backends run offline after their weights are cached; the explicitly
-selected Gemini and Cloudflare backends send transcript text to their provider.
-Kokoro additionally needs `brew install espeak-ng`.
+The repository includes a checksum-locked production sample bundle through Git
+LFS. Run `git lfs pull` after cloning. Additional samples can be downloaded
+explicitly into `~/.cache/lexibeat/`. The default Chatterbox and other local
+backends run offline after their weights are cached; explicitly selected Gemini
+and Cloudflare backends send transcript text to their provider. Kokoro
+additionally needs `brew install espeak-ng`.
+
+## Versioned music API
+
+Applications can request safe variety without understanding the complete music
+schema:
+
+```python
+from lexibeat import MusicRequest, generate_music
+
+audio, result = generate_music(
+    MusicRequest(
+        family="auto",
+        energy="balanced",
+        rhythm="steady",
+        palette="hybrid",
+        seed=42,
+    ),
+    duration_seconds=75,
+)
+
+# Persist this complete contract to reproduce the composition later.
+result.bed_spec.to_json()
+```
+
+`MusicRequest` resolves several candidates through the versioned
+`production-v1` profile, rejects unsafe previews, and selects randomly within
+the highest-quality tier. Supplying recent `BedFingerprint` values is optional
+and increases novelty without introducing hidden engine state. Resolution and
+rendering never download assets.
+
+The CLI exposes the same production path while preserving the legacy style
+flags:
+
+```bash
+uv run generate.py --bed-only --music-family auto \
+  --music-energy bright --music-rhythm steady --music-palette acoustic \
+  --out out/production-bed.wav
+```
 
 ## Large sample library and varied procedural beds
 
@@ -49,12 +89,11 @@ uv run sample_library.py index --deep
 uv run sample_library.py report
 ```
 
-The core target contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
+The library contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
 Spanish Classical Guitar, Karoryfer Fashionbass and the Stargate public-domain
-pack. `library-full` additionally fetches Open Samples, whose separate custom
-license is recorded below. Downloads use staging directories, the index stores
-SHA-256 identities, and samples selected for a saved bed can be promoted into
-the local cache so it remains playable when the external SSD is disconnected.
+pack. Downloads use staging directories, the index stores SHA-256 identities,
+and samples selected for a saved bed can be promoted into the local cache so it
+remains playable when the external SSD is disconnected.
 Old extensionless promotions can be migrated or removed only after a matching
 catalog checksum is verified:
 
@@ -66,16 +105,12 @@ When the external volume is offline, saved beds and bake-off candidates can use
 locally promoted catalog assets without attempting to recreate the missing
 mount. Download and index operations still require the configured volume.
 
-`safe` is the default bake-off policy and uses only the CC0 collections. Open
-Samples is opt-in through `--sample-policy all`: much of that repository is in
-Kontakt NCW format, and its custom license permits rendered music but not
-sample-product repackaging or model training. Promoted catalog files retain
-their WAV/FLAC/AIFF extensions. To make a Foobar2000-compatible audition list
-without copying the bulk library:
+The bake-off uses only the redistributable collection set. Promoted catalog
+files retain their WAV/FLAC/AIFF extensions. To make a Foobar2000-compatible
+audition list without copying the bulk library:
 
 ```bash
 uv run sample_library.py playlist vcsl --category pitched --out out/vcsl.m3u8
-uv run sample_library.py playlist open-samples --out out/open-samples.m3u8
 ```
 
 The catalog also groups pitch-labelled directories into resolved multisample
@@ -126,7 +161,7 @@ uv run generate.py --pad-instrument strings --instrument piano \
 # Fast voice fallback
 uv run generate.py --backend kokoro --words 6 --out out/quick.wav
 
-# Experimental expressive backends (weights download to the Earworms cache)
+# Experimental expressive backends (weights download to the LexiBeat cache)
 uv run generate.py --backend indextts25 --words 1 --out out/index.wav
 uv run generate.py --backend voxcpm2 --words 1 --out out/voxcpm.wav
 uv run generate.py --backend qwen3 --words 1 --out out/qwen.wav
@@ -240,7 +275,7 @@ output audio tokens. Treat batching as a request-quota optimization, not a cost
 optimization, and listen to the saved raw files before trusting the split.
 
 IndexTTS weights use the bilibili Model Use License, TADA uses the Llama 3.2
-Community License, and Fish S2 Pro is research-only. See [NOTICE](NOTICE) before
+Community License, and Fish S2 Pro is research-only. See [NOTICE](NOTICE.md) before
 using these backends outside local research.
 
 See [DESIGN.md](DESIGN.md) for the research, musical design, measured behaviour,

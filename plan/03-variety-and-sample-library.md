@@ -127,18 +127,15 @@ ordinary Git source. The repository should contain:
 - A script/command to verify an installed bundle.
 - An explicit command to install or promote the bundle; normal generation never
   invokes it.
-- A complete `NOTICE` and machine-readable license report.
+- A complete `NOTICE.md` and machine-readable license report.
 
-Publish the binary bundle through GitHub Releases, Git LFS, or another artifact
-store chosen during implementation. A conventional Git history is not a good
-home for approximately 1.8 GB of binary samples. Split the artifact if host
-limits require it, but preserve one logical bundle version and checksums.
+Publish the binary bundle through Git LFS. A conventional Git object history is
+not a good home for approximately 1.8 GB of binary samples. Preserve one logical
+bundle version and checksums even if host limits later require splitting it.
 
 Prefer CC0 assets for the redistributable production core. Attributed compatible
-assets require preserved attribution. Open Samples remains excluded from the
-normal redistributable core because its license permits rendered music but
-restricts sample repackaging. It can remain an optional, separately identifiable
-local source.
+assets require preserved attribution. Collections that restrict sample
+repackaging are not supported or cataloged.
 
 ## Novelty policy
 

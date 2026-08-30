@@ -18,10 +18,10 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from earworms.emotion import for_item
-from earworms.music import SR
-from earworms.vocab import load
-from earworms.voice import Prosody, Speaker
+from lexibeat.emotion import for_item
+from lexibeat.music import SR
+from lexibeat.vocab import load
+from lexibeat.voice import Prosody, Speaker
 
 VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 OUT = Path("out/compare")

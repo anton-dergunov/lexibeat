@@ -1,8 +1,8 @@
-# Earworms Generator — Design Notes & Options
+# LexiBeat — Design Notes & Options
 
-Research and design decisions behind this prototype: generating Earworms-style
-language-learning audio (vocabulary spoken over a rhythmic ambient bed) from a
-word list, fully locally on an Apple Silicon Mac.
+Research and design decisions behind LexiBeat: generating language-learning
+audio (vocabulary spoken over a rhythmic ambient bed) from a word list, fully
+locally on an Apple Silicon Mac.
 
 ---
 
@@ -11,15 +11,15 @@ word list, fully locally on an Apple Silicon Mac.
 ```
 generate.py            CLI entry point
 compare_voices.py      renders the same words through several voice setups
-earworms/vocab.py      parses the Obsidian notes into (Spanish, English, emoji) triples
-earworms/bedspec.py    every music parameter, as styles and as JSON
-earworms/music.py      renders a BedSpec into audio on a known beat grid
-earworms/instruments.py  synth and sampled instruments behind one interface
-earworms/samples.py    sample-pack registry and downloader
-earworms/emotion.py    emoji -> delivery mapping
-earworms/voice.py      Kokoro and Chatterbox backends, per-repeat variation
-earworms/arrange.py    places utterances on downbeats according to a pattern
-earworms/mix.py        LUFS normalisation, sidechain ducking, block limiter
+lexibeat/vocab.py      parses the Obsidian notes into (Spanish, English, emoji) triples
+lexibeat/bedspec.py    every music parameter, as styles and as JSON
+lexibeat/music.py      renders a BedSpec into audio on a known beat grid
+lexibeat/instruments.py  synth and sampled instruments behind one interface
+lexibeat/samples.py    sample-pack registry and downloader
+lexibeat/emotion.py    emoji -> delivery mapping
+lexibeat/voice.py      Kokoro and Chatterbox backends, per-repeat variation
+lexibeat/arrange.py    places utterances on downbeats according to a pattern
+lexibeat/mix.py        LUFS normalisation, sidechain ducking, block limiter
 ```
 
 ### Running it
@@ -39,7 +39,7 @@ uv run compare_voices.py --words 3                  # A/B the voice setups
 
 Flags worth knowing: `--bed-style yoga|nocturne|lofi|warm`, `--bed-seed`,
 `--bed-spec <file>`, `--instrument`, `--pad-instrument`, `--meter`,
-`--chord-extension`, `--mode words|phrases|mixed`, `--pattern retrieval|earworms`,
+`--chord-extension`, `--mode words|phrases|mixed`, `--pattern retrieval|alternating`,
 `--backend chatterbox|kokoro`, `--ref-audio-es`, `--ref-audio-en`,
 `--prosody-strength`, `--no-emotion`, `--duck-db`.
 
@@ -65,7 +65,7 @@ parameters, so a bed that sounds good can be replayed or hand-edited.
 - Chatterbox needs Apple Silicon; `--backend kokoro` remains the portable path.
 - `mlx-community/chatterbox-multilingual-v3` ships without built-in voice
   conditioning, so language-specific reference clips are generated and cached
-  automatically in `~/.cache/earworms/refs/`.
+  automatically in `~/.cache/lexibeat/refs/`.
 - Only 40% of entries carry an example sentence, so `--mode phrases` falls back
   to the headword for the rest.
 - Multi-sense glosses are truncated to the first sense.
@@ -74,11 +74,11 @@ parameters, so a bed that sounds good can be replayed or hand-edited.
 
 ---
 
-## 1. Analysis of the reference track
+## 1. Early timing analysis
 
-Measured from `Earworms_Learning_Sample.mp3`
-(184.6 s) using `librosa.beat.beat_track` plus a crude speech-band energy VAD
-(300–3400 Hz, 70th-percentile threshold):
+The initial prototype used a private, untracked 184.6-second reference recording
+to establish timing. It was measured with `librosa.beat.beat_track` plus a crude
+speech-band energy VAD (300–3400 Hz, 70th-percentile threshold):
 
 | Property | Measured value |
 |---|---|
@@ -95,16 +95,7 @@ The structure is *one short utterance per bar, onset on the downbeat, remainder 
 the bar silent*. "Finding insertion points" is therefore not a semantic problem —
 it is a beat grid problem.
 
-Reproduce with:
-
-```bash
-uv run --with librosa python -c "
-import librosa, numpy as np
-y, sr = librosa.load('Earworms_Learning_Sample.mp3', sr=22050, mono=True)
-tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-print(tempo, np.median(np.diff(librosa.frames_to_time(beats, sr=sr))))
-"
-```
+The private reference recording is intentionally not redistributed.
 
 ---
 
@@ -112,10 +103,9 @@ print(tempo, np.median(np.diff(librosa.frames_to_time(beats, sr=sr))))
 
 **Split verdict.**
 
-Earworms' own claims ("engages both hemispheres of the brain", "proven to be
-highly effective") are marketing copy. No peer-reviewed validation of the product
-itself was found — search results for the method returned only vendor material and
-app reviews.
+Claims made by commercial predecessors were marketing copy. No peer-reviewed
+validation of a particular commercial product was found; the relevant evidence
+supports individual learning mechanisms rather than a branded implementation.
 
 The *components* underneath do have support:
 
@@ -137,9 +127,8 @@ The *components* underneath do have support:
 2. **Expanding-interval spacing** (future work). Rather than blocking all repeats
    of a word together, interleave repeats at expanding intervals across the track
    (the Pimsleur "graduated interval recall" idea).
-3. **Phrases over bare words** (supported). Earworms teaches phrases, not isolated
-   vocabulary. The Obsidian notes contain example sentences, which are arguably
-   better material than the headwords.
+3. **Phrases over bare words** (supported). The source notes contain example
+   sentences, which are often better learning material than isolated headwords.
 
 ### Prior art
 
@@ -151,7 +140,7 @@ No project was found that does this. Nearest neighbours:
   generates an audio file from a vocabulary list. No music.
 - **Glossika** (commercial) — spaced audio repetition, no music.
 - **Pimsleur** (commercial) — graduated interval recall, no music.
-- **Earworms / Berlitz MBT** (commercial) — human-recorded, not generated.
+- Commercial musical-vocabulary courses — human-recorded, not generated.
 
 The niche is open.
 
@@ -170,7 +159,7 @@ Synthesise the bed directly in NumPy at a chosen BPM.
   deterministic (seeded), arbitrary length, loops perfectly, no model downloads,
   no GPU.
 - **Con:** ambient wallpaper rather than an authored track.
-- **Note:** the Earworms bed is deliberately unremarkable, so the quality gap is
+- **Note:** the target bed is deliberately unobtrusive, so the quality gap is
   smaller than it first appears.
 
 ### Option B — Neural music generation
@@ -216,13 +205,13 @@ repeating motif, Euclidean or syncopated percussion lanes, timbres and stable
 sample references. The renderer repeats that coherent phrase and does not make
 new compositional decisions. Legacy BedSpec JSON follows the old path unchanged.
 
-Large libraries live outside the repository. A SQLite catalog maps logical
-`collection:asset` references to SHA-256-verified files on either the external
-bulk tier or local promoted tier. Normal generation performs no network access,
-and missing/offline assets fail explicitly. The bake-off generator renders a
-larger candidate pool, extracts audio descriptors and greedily chooses a
-family-balanced, maximally separated listening set rather than hard-coding 30
-tracks.
+Complete source libraries live outside the repository. A checksum-locked
+production subset is shipped with Git LFS. A SQLite catalog maps logical
+`collection:asset` references to SHA-256-verified files in the bundled, external,
+or local promoted tier. Normal generation performs no network access, and
+missing/offline assets fail explicitly. The bake-off generator renders a larger
+candidate pool, extracts audio descriptors and greedily chooses a family-balanced,
+maximally separated listening set rather than hard-coding tracks.
 
 Listener feedback from the first 30-bed comparison established a clearer
 production prior: nearly straight subdivision, audible first-beat hierarchy,
@@ -235,8 +224,8 @@ Individual catalog samples remain useful for percussion. Pitched foreground
 parts now use a resolved `InstrumentRef`: a directory-level set of logical
 sample zones with pitch and velocity bounds saved into BedSpec. This restores
 the dedicated Salamander piano path and unlocks coherent VCSL/VSCO pianos,
-harps, mallets, organs and winds. Open Samples remains available for explicit
-experiments but the default `safe` policy is CC0-only.
+harps, mallets, organs and winds. The production catalog is restricted to
+redistributable sources.
 
 ### Iteration 5 — pulse clarity and foreground-instrument coverage
 
@@ -327,7 +316,7 @@ separate `ef_dora` and `af_heart` voices as the fast fallback.
 
 ### Music parameterisation
 
-`BedSpec` (`earworms/bedspec.py`) holds metre, harmony, four layers and space.
+`BedSpec` (`lexibeat/bedspec.py`) holds metre, harmony, four layers and space.
 Chords are derived from `root` + `scale` + scale degrees rather than a hard-coded
 table; the voicing formula `[r, r+7, r+12, r+12+third, r+19]` reproduces the v1
 progression **exactly**, which is how the refactor was verified as
@@ -342,7 +331,7 @@ distinct beds.
 
 Salamander Grand Piano (Yamaha C5, CC-BY 3.0, Alexander Holm): 30 root notes at
 **minor-third** spacing across 16 velocity layers. Two layers are fetched (~88 MB
-of the 748 MB library) into `~/.cache/earworms/samples/`. Minor-third spacing
+of the 748 MB library) into `~/.cache/lexibeat/samples/`. Minor-third spacing
 means resampling never exceeds 1.5 semitones, so the timbre holds. Pure Python
 plus `soundfile`, so it works on Linux as well as macOS.
 
@@ -530,8 +519,6 @@ Sources: [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation),
 
 ## 8. Sources
 
-- [Earworms — the Musical Memorisation Method](https://www.earwormslearning.com/about)
-- [Earworms MBT review (Mezzofanti Guild)](https://www.mezzoguild.com/review-berlitz-earworms-music-brain-trainer/)
 - [Beat This! Accurate beat tracking without DBN postprocessing](https://arxiv.org/pdf/2407.21658)
 - [beat_this — GitHub](https://github.com/CPJKU/beat_this)
 - [BeatNet — GitHub](https://github.com/mjhydri/BeatNet)
@@ -551,7 +538,6 @@ Sources: [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation),
 - [Amphion toolkit — GitHub](https://github.com/open-mmlab/Amphion)
 - [langlearnai — PyPI](https://pypi.org/project/langlearnai/0.0.3/)
 - [vocabulary-to-speech-api — GitHub](https://github.com/elhalili/vocabulary-to-speech-api)
-- [The song that never ends: repeated exposure and earworm development](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10585939/)
 - [Music Training Program based on language development and neuroscience principles](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3846262/)
 - [mlx-audio — GitHub](https://github.com/Blaizzy/mlx-audio)
 - [Chatterbox — Resemble AI](https://github.com/resemble-ai/chatterbox)

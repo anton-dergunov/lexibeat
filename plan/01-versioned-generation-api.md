@@ -127,16 +127,16 @@ The default profile should preserve these established constraints:
 Extract reusable behavior rather than importing functions from
 `compare_beds.py`:
 
-- `earworms/api.py`: public types, validation, and entry points.
-- `earworms/profiles.py`: immutable, versioned safe ranges, family weights,
+- `lexibeat/api.py`: public types, validation, and entry points.
+- `lexibeat/profiles.py`: immutable, versioned safe ranges, family weights,
   quality thresholds, and instrument policies.
-- `earworms/generator.py`: high-level request resolution and candidate-pool
+- `lexibeat/generator.py`: high-level request resolution and candidate-pool
   orchestration.
-- `earworms/quality.py`: preview measurements, hard rejection, scoring,
+- `lexibeat/quality.py`: preview measurements, hard rejection, scoring,
   fingerprints, and distance calculations.
-- `earworms/bedspec.py`: complete serializable musical choices and legacy JSON
+- `lexibeat/bedspec.py`: complete serializable musical choices and legacy JSON
   compatibility.
-- `earworms/music.py`: rendering only.
+- `lexibeat/music.py`: rendering only.
 - `compare_beds.py`: a thin batch consumer of the public API, retaining
   listening-guide and rating-file production.
 - `generate.py`: a thin lesson/CLI consumer of the same API.
@@ -166,9 +166,9 @@ generation additionally maximizes pairwise distance and coverage.
 - If neither contains a required checksum, return the existing actionable
   attach-or-promote error. Never silently substitute a different instrument.
 - Ordinary API calls remain offline and never acquire samples implicitly.
-- The source package contains code and manifests, not the downloaded cache.
-  A separately versioned production asset bundle may be published through
-  GitHub Releases or equivalent artifact storage, with checksums and licenses.
+- The mutable downloaded cache remains outside source control. The curated,
+  checksum-locked production subset is stored under `assets/production-core/`
+  through Git LFS with its manifest and upstream licenses.
 
 ## Verification
 
@@ -201,4 +201,3 @@ must preserve their resolved specifications and safety measurements.
   package, and display it.
 - All existing and new unit tests pass, followed by synth-only and sampled
   integration renders.
-

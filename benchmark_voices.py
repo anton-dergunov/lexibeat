@@ -13,8 +13,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from earworms.bedspec import BedSpec
-from earworms.voice import CAPABILITIES, DEFAULT_MODELS, model_cache_root
+from lexibeat.bedspec import BedSpec
+from lexibeat.voice import CAPABILITIES, DEFAULT_MODELS, model_cache_root
 
 BACKENDS = ("indextts25", "voxcpm2", "qwen3", "tada", "fish-s2")
 VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
@@ -233,7 +233,7 @@ def main() -> None:
     parser.add_argument("--skip-download", action="store_true")
     args = parser.parse_args()
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    # Resolve every snapshot into Earworms' explicit cache, including the
+    # Resolve every snapshot into LexiBeat's explicit cache, including the
     # untimed prefetch phase.  Child renders receive the resolved local path.
     cache_root = model_cache_root()
     os.environ.setdefault("HF_HOME", str(cache_root / "huggingface"))
