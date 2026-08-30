@@ -317,27 +317,36 @@ def _resolved_bass(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
     out = _blank(grid, n_bars)
     if not spec.bass.enabled:
         return out
+    instrument = (CatalogMultiSampleInstrument(phrase.bass_instrument)
+                  if phrase.bass_instrument else None)
     for step, event in _repeat_events(phrase.bass, phrase, grid, n_bars):
         assert isinstance(event, NoteEvent)
         seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.04)
-        n = grid.samples(seconds)
-        t = np.arange(n) / grid.sr
-        f = _midi_hz(event.midi_note)
-        if phrase.bass_timbre == "triangle":
-            tone = signal.sawtooth(2 * np.pi * f * t, width=0.5)
-        elif phrase.bass_timbre == "pluck":
-            tone = (np.sin(2 * np.pi * f * t) +
-                    0.28 * np.sin(2 * np.pi * f * 2 * t)) * np.exp(-t / 0.28)
-        elif phrase.bass_timbre == "round":
-            tone = (np.sin(2 * np.pi * f * t) +
-                    0.15 * np.sin(2 * np.pi * f * 2 * t))
+        if instrument is not None:
+            tone = instrument.render(event.midi_note, event.velocity, seconds) * 0.68
         else:
-            tone = np.sin(2 * np.pi * f * t)
+            n = grid.samples(seconds)
+            t = np.arange(n) / grid.sr
+            f = _midi_hz(event.midi_note)
+            if phrase.bass_timbre == "triangle":
+                tone = signal.sawtooth(2 * np.pi * f * t, width=0.5)
+            elif phrase.bass_timbre == "pluck":
+                tone = (np.sin(2 * np.pi * f * t) +
+                        0.28 * np.sin(2 * np.pi * f * 2 * t)) * np.exp(-t / 0.28)
+            elif phrase.bass_timbre == "round":
+                tone = (np.sin(2 * np.pi * f * t) +
+                        0.15 * np.sin(2 * np.pi * f * 2 * t))
+            else:
+                tone = np.sin(2 * np.pi * f * t)
+        t = np.arange(len(tone)) / grid.sr
         attack = np.clip(t / max(spec.bass.attack, 0.003), 0, 1)
-        release = np.minimum(1.0, np.maximum((seconds - t) / min(0.18, seconds / 2), 0))
-        _add(out, tone * attack * release * event.velocity,
+        release = np.minimum(1.0, np.maximum((seconds - t) /
+                             min(0.18, seconds / 2), 0))
+        event_gain = 1.0 if instrument is not None else event.velocity
+        _add(out, tone * attack * release * event_gain,
              grid.samples(_event_time(grid, step)))
-    return _onepole_lp(out, 420.0, grid.sr) * spec.bass.level
+    cutoff = 850.0 if instrument is not None else 420.0
+    return _onepole_lp(out, cutoff, grid.sr) * spec.bass.level
 
 
 def _synth_percussion(name: str, grid: Grid,
@@ -396,7 +405,12 @@ def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
                 if lane.humanize else 0.0
             at = grid.samples(max(0.0, _event_time(grid, step) + jitter))
             _add(out, hit * lane.level * local_rng.uniform(0.84, 1.12), at)
-    return out * spec.drums.level
+    hits_per_bar = sum(lane.pattern.count("x") for lane in phrase.percussion) / max(
+        phrase.loop_bars, 1)
+    # Equal lane gains do not imply equal perceived loudness: several short,
+    # bright lanes accumulate rapidly. Compensate gently for event density.
+    density_gain = float(np.clip((5.0 / max(hits_per_bar, 5.0)) ** 0.28, 0.72, 1.0))
+    return out * spec.drums.level * density_gain
 
 
 def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
@@ -413,7 +427,8 @@ def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.08)
         audio = instrument.render(event.midi_note, event.velocity, seconds)
         _add(out, audio, grid.samples(_event_time(grid, step)))
-    return out * spec.lead.level * 0.11
+    lead_gain = 0.135 if spec.lead.instrument == "piano" else 0.11
+    return out * spec.lead.level * lead_gain
 
 
 def _resolved_stems(spec: BedSpec, grid: Grid, n_bars: int,

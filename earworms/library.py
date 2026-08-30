@@ -118,6 +118,14 @@ COLLECTIONS: dict[str, SampleCollection] = {
         "freepats-world", "FreePats World Percussion",
         "https://github.com/freepats/world-percussion.git", "CC0-1.0",
         "FreePats contributors", 20_000_000, ("percussion",)),
+    "freepats-guitar": SampleCollection(
+        "freepats-guitar", "FreePats Spanish Classical Guitar",
+        "https://github.com/freepats/spanish-classical-guitar.git", "CC0-1.0",
+        "Roberto and FreePats contributors", 30_000_000, ("pitched",)),
+    "karoryfer-fashionbass": SampleCollection(
+        "karoryfer-fashionbass", "Karoryfer Fashionbass",
+        "https://github.com/sfzinstruments/karoryfer.fashionbass.git", "CC0-1.0",
+        "Karoryfer Samples", 500_000_000, ("pitched",)),
     "stargate": SampleCollection(
         "stargate", "Stargate Sample Pack",
         "https://github.com/stargatedaw/stargate-sample-pack.git", "CC0-1.0",
@@ -131,7 +139,8 @@ COLLECTIONS: dict[str, SampleCollection] = {
         ("pitched", "percussion", "keyboard", "synth", "texture"), False),
 }
 LIBRARY_TARGETS = {
-    "library-core": ("freepats-world", "stargate", "vsco2", "vcsl"),
+    "library-core": ("freepats-world", "freepats-guitar",
+                     "karoryfer-fashionbass", "stargate", "vsco2", "vcsl"),
     "library-full": tuple(COLLECTIONS),
 }
 
@@ -186,7 +195,11 @@ def _note_from_name(path: Path) -> int | None:
 
 def _velocity_from_name(path: str) -> int:
     match = re.search(r"(?:^|[_ -])(?:vl|v)(\d+)(?:[_ .-]|$)", path.lower())
-    return int(match.group(1)) if match else 1
+    if match:
+        return int(match.group(1))
+    dynamic = re.search(r"(?:^|[_ -])(pp|p|mf|f|ff)(?:[_ .-]|$)", path.lower())
+    return {"pp": 1, "p": 2, "mf": 3, "f": 4, "ff": 5}.get(
+        dynamic.group(1) if dynamic else "", 1)
 
 
 def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
@@ -198,18 +211,26 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
     to construct conservative note/velocity zones without treating isolated
     recordings as complete instruments.
     """
-    wanted = include or ("piano", "harp", "marimba", "glock", "vibra", "kalimba",
-                         "recorder", "flute", "oboe", "clarinet", "strumstick",
-                         "guitar", "harpsichord", "organ", "celesta", "xylophone")
+    wanted = include or ("piano", "harp", "marimba", "glock", "vibraphone",
+                         "kalimba", "mbira", "nyunga", "psaltery", "ocarina",
+                         "harmonica", "recorder", "flute", "oboe", "clarinet",
+                         "bassoon", "strumstick", "guitar", "fashionbass",
+                         "harpsichord", "organ", "celesta", "xylophone",
+                         "violin", "viola", "cello", "contrabass")
     excluded = ("release", "/rel", "noise", "demo", "loop")
     groups: dict[tuple[str, str], list[SampleAsset]] = defaultdict(list)
     for asset in assets:
         parent = Path(asset.relative_path).parent.as_posix()
         lowered = parent.lower()
+        searchable = f"{asset.collection}/{parent}".lower()
+        string_front = any(word in lowered for word in
+                           ("violin", "viola", "cello", "contrabass"))
         if (asset.midi_note is None or
                 asset.duration_seconds is None or not 0.08 <= asset.duration_seconds <= 24 or
-                not any(word in lowered for word in wanted) or
-                any(word in lowered for word in excluded)):
+                not any(word in searchable for word in wanted) or
+                any(word in lowered for word in excluded) or
+                (string_front and not any(word in lowered for word in
+                                          ("pizz", "spic")))):
             continue
         groups[(asset.collection, parent)].append(asset)
 
@@ -256,22 +277,32 @@ class SampleLibrary:
     def __init__(self, external: Path | None = None, local: Path | None = None):
         self.external = Path(external or external_root())
         self.local = Path(local or local_root())
+        self._external_explicit = external is not None or bool(
+            os.environ.get("EARWORMS_LIBRARY_ROOT"))
 
     @property
     def catalog_path(self) -> Path:
         return self.local / "catalog.sqlite3"
 
-    def ensure_roots(self) -> None:
-        self.external.mkdir(parents=True, exist_ok=True)
+    def ensure_roots(self, *, require_external: bool = False) -> None:
         self.local.mkdir(parents=True, exist_ok=True)
-        (self.external / "collections").mkdir(exist_ok=True)
         (self.local / "samples").mkdir(exist_ok=True)
+        if self.external.exists() or self._external_explicit or require_external:
+            try:
+                self.external.mkdir(parents=True, exist_ok=True)
+                (self.external / "collections").mkdir(exist_ok=True)
+            except OSError as exc:
+                if require_external:
+                    raise FileNotFoundError(
+                        f"External sample tier is unavailable at {self.external}; "
+                        "attach the configured library volume.") from exc
 
     def status(self) -> dict:
         external = directory_size(self.external)
         local = directory_size(self.local)
         return {
             "external": {"path": str(self.external), "bytes": external,
+                         "available": self.external.exists(),
                          "warning": external >= EXTERNAL_WARN,
                          "limit_bytes": EXTERNAL_LIMIT},
             "local": {"path": str(self.local), "bytes": local,
@@ -294,7 +325,7 @@ class SampleLibrary:
         """Explicitly shallow-clone or update a configured source collection."""
         if collection not in COLLECTIONS:
             raise ValueError(f"Unknown collection '{collection}'.")
-        self.ensure_roots()
+        self.ensure_roots(require_external=True)
         spec = COLLECTIONS[collection]
         target = self.collection_path(collection)
         if target.exists():
@@ -496,6 +527,12 @@ class SampleLibrary:
             raise RuntimeError(f"Checksum mismatch for {ref.collection}:{ref.asset_id}.")
         return path
 
+    def is_promoted(self, asset: SampleAsset) -> bool:
+        """Return whether an asset can resolve without the external tier."""
+        suffix = Path(asset.relative_path).suffix.lower()
+        base = self.local / "samples" / asset.collection / asset.asset_id
+        return base.with_suffix(suffix).exists() or base.exists()
+
     def promote(self, refs: list[SampleRef]) -> list[Path]:
         self.ensure_roots()
         promoted: list[Path] = []
@@ -520,6 +557,46 @@ class SampleLibrary:
                 tmp.rename(target)
             promoted.append(target)
         return promoted
+
+    def migrate_legacy_promotions(self) -> dict[str, list[str]]:
+        """Rename old extensionless promotions or remove verified duplicates.
+
+        Only 20-character SHA-derived asset names are considered. A redundant
+        file is removed solely when its catalog-resolved, suffixed counterpart
+        exists and both payloads have the same SHA-256 digest.
+        """
+        samples = self.local / "samples"
+        result: dict[str, list[str]] = {"renamed": [], "removed_duplicates": []}
+        if not samples.exists():
+            return result
+        db = self._connect()
+        try:
+            for legacy in sorted(samples.glob("*/*")):
+                if (not legacy.is_file() or legacy.suffix or
+                        not re.fullmatch(r"[0-9a-f]{20}", legacy.name)):
+                    continue
+                collection = legacy.parent.name
+                row = db.execute(
+                    "SELECT relative_path FROM assets WHERE collection=? AND asset_id=?",
+                    (collection, legacy.name)).fetchone()
+                if not row:
+                    continue
+                suffix = Path(row[0]).suffix.lower()
+                if not suffix:
+                    continue
+                target = legacy.with_suffix(suffix)
+                if not target.exists():
+                    legacy.rename(target)
+                    result["renamed"].append(str(target))
+                elif _sha256(legacy) == _sha256(target):
+                    legacy.unlink()
+                    result["removed_duplicates"].append(str(legacy))
+                else:
+                    raise RuntimeError(
+                        f"Legacy promotion differs from its suffixed copy: {legacy}")
+        finally:
+            db.close()
+        return result
 
     def verify(self, collection: str | None = None) -> dict:
         assets = self.assets(collections=(collection,) if collection else None,

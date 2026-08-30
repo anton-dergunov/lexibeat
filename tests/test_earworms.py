@@ -575,6 +575,17 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_catalog_can_open_when_default_external_tier_is_offline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+                os.environ, {"EARWORMS_LIBRARY_ROOT": ""}), mock.patch(
+                "earworms.library.external_root",
+                return_value=Path(tmp) / "missing-volume" / "library"):
+            external = Path(tmp) / "missing-volume" / "library"
+            library = SampleLibrary(local=Path(tmp) / "local")
+            self.assertEqual(library.assets(), [])
+            self.assertFalse(external.exists())
+            self.assertFalse(library.status()["external"]["available"])
+
     def test_index_resolve_promote_and_external_offline_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -643,8 +654,44 @@ class TieredLibraryTests(unittest.TestCase):
         self.assertEqual(len(instruments[0].zones), 6)
         spec = BedSpec.from_style("radiant", 4)
         spec.phrase.lead_instrument = instruments[0]
+        spec.phrase.bass_instrument = instruments[0]
         rebuilt = BedSpec.from_dict(json.loads(spec.to_json()))
         self.assertEqual(rebuilt.phrase.lead_instrument, instruments[0])
+        self.assertEqual(rebuilt.phrase.bass_instrument, instruments[0])
+
+    def test_front_instrument_groups_include_mbira_but_not_vibrato_sax(self) -> None:
+        assets = []
+        for note in range(60, 66):
+            assets.extend([
+                SampleAsset("vcsl", f"mbira-{note}", f"hash-mbira-{note}",
+                            f"Idiophones/Mbira Zimbabwe/Mbira_{note}_C{note - 60}.wav",
+                            "CC0-1.0", "pitched", midi_note=note,
+                            duration_seconds=1.0),
+                SampleAsset("vcsl", f"sax-{note}", f"hash-sax-{note}",
+                            f"Aerophones/Tenor Saxophone/Vibrato/Sax_{note}_C{note - 60}.wav",
+                            "CC0-1.0", "pitched", midi_note=note,
+                            duration_seconds=1.0),
+            ])
+        names = [instrument.name.lower() for instrument in instrument_refs(assets)]
+        self.assertTrue(any("mbira" in name for name in names))
+        self.assertFalse(any("saxophone" in name for name in names))
+
+    def test_legacy_promotions_are_only_removed_after_checksum_match(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(base / "external", base / "local")
+            source = library.collection_path("freepats-world") / "samples" / "hit_C4.wav"
+            source.parent.mkdir(parents=True)
+            sf.write(source, np.ones(100, dtype=np.float32) * 0.1, SR)
+            library.index("freepats-world", deep=True)
+            asset = library.assets()[0]
+            promoted = library.promote([asset.ref])[0]
+            legacy = promoted.with_suffix("")
+            legacy.write_bytes(promoted.read_bytes())
+            result = library.migrate_legacy_promotions()
+            self.assertFalse(legacy.exists())
+            self.assertEqual(result["removed_duplicates"], [str(legacy)])
+            self.assertTrue(promoted.exists())
 
     def test_multisample_renderer_selects_nearest_zone(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -684,11 +731,31 @@ class BedSelectionTests(unittest.TestCase):
     def test_positive_families_are_straight_and_anchor_every_bar(self) -> None:
         for family in POSITIVE_FAMILIES:
             spec = BedSpec.from_style(family, 19)
-            self.assertLessEqual(spec.swing, 0.08)
+            self.assertLessEqual(spec.swing, 0.025)
             lane = spec.phrase.percussion[0]
             self.assertTrue(all(lane.pattern[bar * spec.steps_per_bar] == "x"
                                 for bar in range(spec.phrase.loop_bars)))
-            self.assertLessEqual(spec.drums.level, 0.76)
+            self.assertEqual(lane.role, "low")
+            for boundary in range(spec.steps_per_bar, len(lane.pattern),
+                                  spec.steps_per_bar):
+                self.assertNotEqual(lane.pattern[boundary - 1:boundary + 2], "xxx")
+                self.assertEqual(lane.pattern[boundary - 1], ".")
+            self.assertLessEqual(spec.drums.level, 0.64)
+
+    def test_positive_piano_phrases_have_a_useful_register(self) -> None:
+        checked = 0
+        for family in POSITIVE_FAMILIES:
+            for seed in range(20):
+                spec = BedSpec.from_style(family, seed)
+                if spec.lead.instrument != "piano":
+                    continue
+                notes = [event.midi_note for event in spec.phrase.lead]
+                self.assertGreaterEqual(len(set(notes)), 2)
+                self.assertGreaterEqual(max(notes) - min(notes), 7)
+                self.assertLessEqual(spec.lead.duck_db, 7.0)
+                self.assertGreaterEqual(spec.lead.register[1] - spec.lead.register[0], 24)
+                checked += 1
+        self.assertGreater(checked, 0)
 
 
 class RenderAndMixTests(unittest.TestCase):

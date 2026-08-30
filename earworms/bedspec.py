@@ -120,6 +120,7 @@ class PercussionLane:
     humanize: float = 0.0
     pan: float = 0.0
     sample: SampleRef | None = None
+    role: str = ""  # low, mid or high; empty keeps legacy JSON compatible
 
 
 @dataclass
@@ -139,6 +140,7 @@ class ResolvedPhrase:
     pad_sample: SampleRef | None = None
     lead_instrument: InstrumentRef | None = None
     pad_instrument: InstrumentRef | None = None
+    bass_instrument: InstrumentRef | None = None
 
 
 @dataclass
@@ -302,12 +304,13 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
             sound=lane["sound"], pattern=lane["pattern"], level=lane["level"],
             probability=lane.get("probability", 1.0),
             humanize=lane.get("humanize", 0.0), pan=lane.get("pan", 0.0),
-            sample=_sample_ref(lane.get("sample")))
+            sample=_sample_ref(lane.get("sample")), role=lane.get("role", ""))
             for lane in data.get("percussion", [])],
         lead_sample=_sample_ref(data.get("lead_sample")),
         pad_sample=_sample_ref(data.get("pad_sample")),
         lead_instrument=_instrument_ref(data.get("lead_instrument")),
         pad_instrument=_instrument_ref(data.get("pad_instrument")),
+        bass_instrument=_instrument_ref(data.get("bass_instrument")),
     )
 
 
@@ -602,6 +605,34 @@ _WIDE_FAMILIES = {
         "leads": ["marimba", "piano", "glockenspiel"], "swing": (0.0, 0.025),
         "density": (0.26, 0.44), "brightness": (1000, 1700),
     },
+    "sunlit-acoustic": {
+        "bpms": [76, 80, 84, 88, 92], "scales": ["major", "lydian"],
+        "roots": [48, 50, 53, 55], "textures": ["open", "sustain", "arpeggio"],
+        "bass": ["root_fifth", "sustain"], "pads": ["strings", "triangle"],
+        "leads": ["piano", "marimba", "synth"], "swing": (0.0, 0.015),
+        "density": (0.2, 0.38), "brightness": (1050, 1750),
+    },
+    "gentle-movement": {
+        "bpms": [70, 74, 78, 82, 86], "scales": ["major", "dorian"],
+        "roots": [45, 48, 50, 53], "textures": ["pulse", "open", "sustain"],
+        "bass": ["root_fifth", "passing"], "pads": ["triangle", "strings"],
+        "leads": ["piano", "marimba", "synth"], "swing": (0.0, 0.012),
+        "density": (0.22, 0.4), "brightness": (800, 1400),
+    },
+    "playful-plucked": {
+        "bpms": [78, 82, 86, 90, 94], "scales": ["major", "lydian"],
+        "roots": [48, 50, 53, 55], "textures": ["open", "pulse"],
+        "bass": ["root_fifth", "sustain"], "pads": ["sine", "triangle"],
+        "leads": ["marimba", "glockenspiel", "synth"], "swing": (0.0, 0.01),
+        "density": (0.18, 0.36), "brightness": (1000, 1700),
+    },
+    "bright-pastoral": {
+        "bpms": [72, 76, 80, 84, 88], "scales": ["major", "lydian", "dorian"],
+        "roots": [48, 50, 53, 55], "textures": ["sustain", "open", "arpeggio"],
+        "bass": ["sustain", "root_fifth"], "pads": ["strings", "triangle"],
+        "leads": ["piano", "marimba", "synth"], "swing": (0.0, 0.012),
+        "density": (0.18, 0.36), "brightness": (950, 1550),
+    },
 }
 
 
@@ -662,20 +693,131 @@ def _lead_events(spec: BedSpec, rng: random.Random, bars: int,
     steps = spec.steps_per_bar
     index = rng.randrange(len(notes))
     motif: list[tuple[int, int, float]] = []
-    for step in range(2, steps * min(2, bars), 2):
-        if rng.random() > density:
+    motif_bars = min(4, bars)
+    effective_density = max(density, 0.30 if spec.lead.instrument == "piano" else density)
+    for step in range(2, steps * motif_bars, 2):
+        if rng.random() > effective_density:
             continue
         index = max(0, min(len(notes) - 1, index + rng.choice([-2, -1, 0, 0, 1, 2])))
         motif.append((step, notes[index], rng.uniform(*spec.lead.velocity)))
+
+    if spec.lead.instrument != "piano":
+        available_steps = list(range(2, steps * motif_bars, 2))
+        used_steps = {event[0] for event in motif}
+        while len(motif) < min(2, len(available_steps)):
+            choices = [step for step in available_steps if step not in used_steps]
+            if not choices:
+                break
+            step = rng.choice(choices)
+            used_steps.add(step)
+            motif.append((step, rng.choice(notes), rng.uniform(*spec.lead.velocity)))
+        motif.sort()
+        if len(motif) >= 2 and max(note for _, note, _ in motif) - min(
+                note for _, note, _ in motif) < 3:
+            pairs = [(low, high) for low in notes for high in notes
+                     if 3 <= high - low <= 12]
+            if pairs:
+                low, high = rng.choice(pairs)
+                motif[0] = (motif[0][0], low, motif[0][2])
+                motif[-1] = (motif[-1][0], high, motif[-1][2])
+
+    # A piano random walk can become trapped at one edge of its register. Keep
+    # it sparse, but guarantee enough pitch movement to sound intentionally
+    # written rather than like one repeatedly triggered sample.
+    if spec.lead.instrument == "piano":
+        available_steps = list(range(2, steps * motif_bars, 2))
+        used_steps = {event[0] for event in motif}
+        while len(motif) < min(5, len(available_steps)):
+            choices = [step for step in available_steps if step not in used_steps]
+            if not choices:
+                break
+            step = rng.choice(choices)
+            used_steps.add(step)
+            motif.append((step, rng.choice(notes), rng.uniform(*spec.lead.velocity)))
+        motif.sort()
+        if len(motif) >= 2 and max(note for _, note, _ in motif) - min(
+                note for _, note, _ in motif) < 7:
+            pairs = [(low, high) for low in notes for high in notes
+                     if 7 <= high - low <= 19]
+            if pairs:
+                low, high = rng.choice(pairs)
+                first, last = motif[0], motif[-1]
+                motif[0] = (first[0], low, first[2])
+                motif[-1] = (last[0], high, last[2])
     events: list[NoteEvent] = []
     phrase_steps = bars * steps
-    motif_span = steps * min(2, bars)
+    motif_span = steps * motif_bars
     for offset in range(0, phrase_steps, motif_span):
-        for step, note, velocity in motif:
-            if offset + step < phrase_steps and rng.random() < 0.88:
+        repetition = offset // max(motif_span, 1)
+        for event_index, (step, note, velocity) in enumerate(motif):
+            keep = (spec.lead.instrument == "piano" and
+                    event_index in (0, len(motif) - 1)) or rng.random() < 0.88
+            if offset + step < phrase_steps and keep:
+                if (spec.lead.instrument == "piano" and repetition % 2 and
+                        event_index >= max(len(motif) - 2, 0)):
+                    shifted = note + rng.choice([-12, 12])
+                    if shifted in notes:
+                        note = shifted
                 events.append(NoteEvent(offset + step, rng.choice([1.5, 2.5, 4.0]),
                                         note, velocity * rng.uniform(0.88, 1.08)))
     return events
+
+
+def _bar_pattern(bars: int, steps: int, positions: list[int],
+                 rng: random.Random, optional: set[int] | None = None) -> str:
+    """Repeat a meter-aware pattern with deterministic light omissions."""
+    values = ["."] * (bars * steps)
+    optional = optional or set()
+    for bar in range(bars):
+        for position in positions:
+            if position in optional and rng.random() < 0.28:
+                continue
+            values[bar * steps + min(max(position, 0), steps - 1)] = "x"
+    return "".join(values)
+
+
+def _percussion_lanes(spec: BedSpec, rng: random.Random, bars: int,
+                      density: float) -> list[PercussionLane]:
+    """Create a clear pulse first, then restrained meter-aligned accents."""
+    steps = spec.steps_per_bar
+    half = max(4, (steps // 2 // 4) * 4)
+    grammar = rng.choice(["straight", "straight", "half-time",
+                          "gentle-syncopation", "sparse"])
+    low_positions = [0]
+    low_optional: set[int] = set()
+    if grammar != "sparse":
+        low_positions.append(half)
+        if grammar in ("half-time", "gentle-syncopation"):
+            low_optional.add(half)
+    low = _bar_pattern(bars, steps, low_positions, rng, low_optional)
+
+    beat_positions = list(range(4, steps, 8)) or [min(4, steps - 1)]
+    if grammar == "straight":
+        mid_positions = beat_positions
+    elif grammar == "gentle-syncopation":
+        mid_positions = sorted(set(beat_positions + [max(2, half - 2)]))
+    elif grammar == "half-time":
+        mid_positions = [half]
+    else:
+        mid_positions = [beat_positions[-1]]
+    mid = _bar_pattern(bars, steps, mid_positions, rng,
+                       set(mid_positions) if grammar == "sparse" else set())
+
+    high_positions = list(range(2, steps, 4))
+    if grammar in ("sparse", "half-time"):
+        high_positions = high_positions[::2]
+    high = _bar_pattern(bars, steps, high_positions, rng,
+                        set(high_positions) if density < 0.32 else set())
+    return [
+        PercussionLane("synth:kick", low, 0.25 + density * 0.14, 0.98,
+                       role="low"),
+        PercussionLane(rng.choice(["synth:rim", "synth:wood", "synth:brush"]),
+                       mid, 0.06 + density * 0.11, 0.86, 0.002,
+                       rng.uniform(-0.2, 0.2), role="mid"),
+        PercussionLane(rng.choice(["synth:shaker", "synth:soft_hat"]), high,
+                       0.012 + density * 0.035, 0.84, 0.002,
+                       rng.choice([-0.3, 0.3]), role="high"),
+    ]
 
 
 def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
@@ -710,23 +852,7 @@ def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
 
     density_lo, density_hi = config["density"]
     density = rng.uniform(density_lo, density_hi)
-    loop_steps = bars * steps
-    kick_pulses = max(1, round(bars * (1.2 + density * 2)))
-    mid_pulses = max(1, round(bars * (1.0 + density * 3)))
-    high_pulses = max(2, round(bars * (2.5 + density * 5)))
-    lanes = [
-        PercussionLane("synth:kick", _with_bar_downbeats(
-            _euclidean(kick_pulses, loop_steps), steps),
-            0.30 + density * 0.16, 0.96),
-        PercussionLane(rng.choice(["synth:rim", "synth:wood", "synth:brush"]),
-                       _euclidean(mid_pulses, loop_steps, steps // 4),
-                       0.075 + density * 0.13, 0.84, 0.003,
-                       rng.uniform(-0.25, 0.25)),
-        PercussionLane(rng.choice(["synth:shaker", "synth:soft_hat"]),
-                       _euclidean(high_pulses, loop_steps, rng.randrange(max(steps, 1))),
-                       0.018 + density * 0.045, 0.82, 0.004,
-                       rng.choice([-0.35, 0.35])),
-    ]
+    lanes = _percussion_lanes(spec, rng, bars, density)
     if family in ("meditative", "nocturnal") and rng.random() < 0.55:
         lanes = lanes[:rng.choice([1, 2])]
     return ResolvedPhrase(
@@ -754,7 +880,7 @@ def _wide_style(family: str, rng: random.Random) -> BedSpec:
                 overlap=rng.uniform(1.1, 1.9), duck_db=rng.uniform(6.0, 7.5)),
         bass=Bass(level=rng.uniform(0.34, 0.56), attack=rng.uniform(0.04, 0.22),
                   decay_bars=rng.uniform(0.35, 0.9), duck_db=rng.uniform(2.0, 3.5)),
-        drums=Drums(level=rng.uniform(0.58, 0.76), duck_db=rng.uniform(4.5, 6.0)),
+        drums=Drums(level=rng.uniform(0.48, 0.64), duck_db=rng.uniform(4.5, 6.0)),
         lead=Lead(instrument=rng.choice(config["leads"]), level=rng.uniform(0.72, 1.08),
                   register=(rng.choice([19, 24]), rng.choice([34, 36, 39])),
                   velocity=(0.3, 0.66), humanize=rng.uniform(0.0, 0.006),
@@ -762,6 +888,13 @@ def _wide_style(family: str, rng: random.Random) -> BedSpec:
         space=Space(reverb_seconds=rng.uniform(1.5, 4.4),
                     reverb_mix=rng.uniform(0.28, 0.58)),
     )
+    if family not in ("lofi-wide", "nocturnal"):
+        spec.swing = min(spec.swing, 0.025)
+    if spec.lead.instrument == "piano":
+        spec.lead.level = rng.uniform(0.92, 1.14)
+        spec.lead.register = (rng.choice([17, 19]), rng.choice([43, 46]))
+        spec.lead.velocity = (0.34, 0.7)
+        spec.lead.duck_db = rng.uniform(5.5, 7.0)
     spec.phrase = _resolve_phrase(spec, family, rng, config)
     return spec
 

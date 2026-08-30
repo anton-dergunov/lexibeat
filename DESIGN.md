@@ -238,6 +238,22 @@ the dedicated Salamander piano path and unlocks coherent VCSL/VSCO pianos,
 harps, mallets, organs and winds. Open Samples remains available for explicit
 experiments but the default `safe` policy is CC0-only.
 
+### Iteration 5 — pulse clarity and foreground-instrument coverage
+
+The third listening round replaced phrase-wide Euclidean low drums with
+meter-aware anchor patterns. Sample roles are explicit in BedSpec; kicks and
+bass drums can provide the low anchor, while darbuka, bongo and conga remain
+mid accents. Dense multi-lane percussion receives automatic gain compensation,
+and positive families keep only subtle grid swing.
+
+Piano motifs now span four bars and a wider register, with instrument-specific
+gain and shallower speech ducking. Candidate distance includes normalized pitch
+intervals and onset gaps so a new timbre cannot disguise a repeated melody.
+The safe catalog exposes CC0 mbiras, psaltery, ocarina, harmonica, pizzicato and
+spiccato strings, classical guitar and natural electric bass. Coverage-aware
+selection ensures the targeted guitar, bass and expanded foreground families
+appear in comparison sets while retaining one result per procedural family.
+
 ---
 
 ## 4. Voice — options

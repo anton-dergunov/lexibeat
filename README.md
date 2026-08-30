@@ -49,12 +49,22 @@ uv run sample_library.py index --deep
 uv run sample_library.py report
 ```
 
-The core target contains VCSL, VSCO 2 CE, FreePats World Percussion and the
-Stargate public-domain pack. `library-full` additionally fetches Open Samples,
-whose separate custom license is recorded below. Downloads use staging
-directories, the index stores SHA-256 identities, and samples selected for a
-saved bed can be promoted into the local cache so it remains playable when the
-external SSD is disconnected.
+The core target contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
+Spanish Classical Guitar, Karoryfer Fashionbass and the Stargate public-domain
+pack. `library-full` additionally fetches Open Samples, whose separate custom
+license is recorded below. Downloads use staging directories, the index stores
+SHA-256 identities, and samples selected for a saved bed can be promoted into
+the local cache so it remains playable when the external SSD is disconnected.
+Old extensionless promotions can be migrated or removed only after a matching
+catalog checksum is verified:
+
+```bash
+uv run sample_library.py migrate-promotions
+```
+
+When the external volume is offline, saved beds and bake-off candidates can use
+locally promoted catalog assets without attempting to recreate the missing
+mount. Download and index operations still require the configured volume.
 
 `safe` is the default bake-off policy and uses only the CC0 collections. Open
 Samples is opt-in through `--sample-policy all`: much of that repository is in
@@ -68,10 +78,10 @@ uv run sample_library.py playlist vcsl --category pitched --out out/vcsl.m3u8
 uv run sample_library.py playlist open-samples --out out/open-samples.m3u8
 ```
 
-The catalog also groups pitch-labelled VCSL/VSCO directories into resolved
-multisample instruments with note and velocity zones. This keeps pianos, harps,
-mallets and winds coherent instead of transposing one arbitrary sample across
-the entire register.
+The catalog also groups pitch-labelled directories into resolved multisample
+instruments with note and velocity zones. This keeps pianos, guitars, natural
+bass, harps, mallets, mbiras, plucked strings and winds coherent instead of
+transposing one arbitrary sample across the entire register.
 
 Generate a controlled listening set with:
 
@@ -81,21 +91,23 @@ uv run --extra hosted-tts --env-file .env compare_beds.py \
   --out-dir out/music-bakeoff
 ```
 
-The command builds a larger candidate pool, balances all six families and uses
-audio-feature distance to choose the requested count. Every final clip uses the
+The command builds a larger candidate pool, balances the selected families and
+uses audio plus melodic-interval distance to choose the requested count. Every final clip uses the
 same two bilingual items, so timbre, rhythm and speech masking can be compared
 directly. It writes WAV/BedSpec pairs, a complete manifest, a listening guide
 and a rating CSV.
 
 The feedback-focused profile adds `radiant`, `acoustic-flow`,
-`playful-minimal`, `warm-motion`, `bright-organic`, and `gentle-game`. It keeps
-swing subtle, anchors every bar with a downbeat, lowers the percussion bus and
-excludes metallic ornaments from ordinary drum selection:
+`playful-minimal`, `warm-motion`, `bright-organic`, `gentle-game`,
+`sunlit-acoustic`, `gentle-movement`, `playful-plucked`, and `bright-pastoral`.
+It keeps swing subtle, uses meter-aware low anchors, density-compensates the
+percussion bus, broadens piano writing and excludes metallic ornaments from
+ordinary drum selection:
 
 ```bash
-uv run --extra hosted-tts compare_beds.py --count 20 \
+uv run --extra hosted-tts compare_beds.py --count 14 \
   --family-profile positive --sample-policy safe \
-  --speech-cache-from out/music-bakeoff --out-dir out/music-bakeoff-2
+  --speech-cache-from out/music-bakeoff-2 --out-dir out/music-bakeoff-3
 ```
 
 ## Generate a lesson

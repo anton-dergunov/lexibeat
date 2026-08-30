@@ -29,8 +29,9 @@ def _refs(value) -> list[SampleRef]:
 def _markdown(report: dict) -> str:
     lines = ["# Earworms sample-library report", "", "## Storage", ""]
     for tier, row in report["storage"].items():
+        state = "available" if row.get("available", True) else "offline"
         lines.append(f"- {tier}: {row['bytes'] / 1e9:.2f} GB / "
-                     f"{row['limit_bytes'] / 1e9:.0f} GB — `{row['path']}`")
+                     f"{row['limit_bytes'] / 1e9:.0f} GB ({state}) — `{row['path']}`")
     assets = report["assets"]
     lines += ["", "## Provenance and licenses", "",
               "| Collection | Revision | License | Attribution |",
@@ -57,6 +58,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("status")
+    sub.add_parser("migrate-promotions")
     download = sub.add_parser("download")
     download.add_argument("target", choices=sorted(COLLECTIONS | LIBRARY_TARGETS.keys()))
     index = sub.add_parser("index")
@@ -78,6 +80,8 @@ def main() -> None:
     library = SampleLibrary()
     if args.command == "status":
         result = library.status()
+    elif args.command == "migrate-promotions":
+        result = library.migrate_legacy_promotions()
     elif args.command == "download":
         names = LIBRARY_TARGETS.get(args.target, (args.target,))
         result = {name: str(library.download(name)) for name in names}
