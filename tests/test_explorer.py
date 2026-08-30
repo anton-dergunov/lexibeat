@@ -25,7 +25,7 @@ from lexibeat.explorer import (
     randomize_unlocked,
     validate_bed_spec,
 )
-from lexibeat.library import SampleLibrary, local_root
+from lexibeat.library import SampleLibrary, configured_bundle_root, local_root
 from lexibeat.explorer_ui import build_demo
 
 try:
@@ -50,6 +50,13 @@ class ExplorerCoreTests(unittest.TestCase):
         self.assertEqual(schema["limits"]["render_seconds"], 30.0)
         self.assertFalse(schema["capabilities"]["sample_promotion"])
         self.assertIn("/bpm", schema["lockable_paths"])
+
+    def test_schema_offers_only_electronic_without_production_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp, mock.patch(
+                "lexibeat.explorer.BUNDLED_ROOT", Path(tmp)):
+            schema = explorer_schema(ExplorerConfig(hosted=True))
+        self.assertEqual(schema["simple"]["palette"], ["electronic"])
+        self.assertFalse(schema["capabilities"]["production_bundle"])
 
     def test_strict_unknown_field_and_invalid_pattern_are_rejected(self) -> None:
         unknown = copy.deepcopy(self.data)
@@ -129,6 +136,12 @@ class ExplorerCoreTests(unittest.TestCase):
 
         with mock.patch.dict("os.environ", {"XDG_CACHE_HOME": "/tmp/cache"}, clear=True):
             self.assertEqual(local_root(), Path("/tmp/cache/lexibeat"))
+
+    def test_bundle_root_can_select_an_attached_volume(self) -> None:
+        with mock.patch.dict(
+                "os.environ", {"LEXIBEAT_BUNDLE_ROOT": "/data/custom/v1"},
+                clear=True):
+            self.assertEqual(configured_bundle_root(), Path("/data/custom/v1"))
 
 
 @unittest.skipUnless(TestClient is not None, "install the explorer extra")

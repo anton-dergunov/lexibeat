@@ -260,6 +260,7 @@ LOCKABLE_PATHS = {
 
 def explorer_schema(config: ExplorerConfig | None = None) -> dict:
     config = config or ExplorerConfig.from_environment()
+    production_bundle = BUNDLED_ROOT.joinpath("catalog.sqlite3").is_file()
     return {
         "api_version": EXPLORER_API_VERSION,
         "engine_version": ENGINE_VERSION,
@@ -271,7 +272,8 @@ def explorer_schema(config: ExplorerConfig | None = None) -> dict:
             "families": ["auto", *get_profile("production-v1").families],
             "energy": ["calm", "balanced", "bright"],
             "rhythm": ["sparse", "steady", "groovy"],
-            "palette": ["acoustic", "hybrid", "electronic"],
+            "palette": (["acoustic", "hybrid", "electronic"]
+                        if production_bundle else ["electronic"]),
         },
         "controls": [asdict(field) for field in CONTROL_FIELDS],
         "lockable_paths": sorted(LOCKABLE_PATHS),
@@ -284,6 +286,7 @@ def explorer_schema(config: ExplorerConfig | None = None) -> dict:
         "capabilities": {
             "hosted": config.hosted,
             "sample_promotion": not config.hosted,
+            "production_bundle": production_bundle,
             "voice": False,
             "persistent_storage": False,
         },

@@ -1,4 +1,5 @@
 .venv/
+.space-dist/
 __pycache__/
 out/
 *.pyc

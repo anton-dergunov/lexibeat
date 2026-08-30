@@ -68,9 +68,35 @@ managed root. Hosted sample promotion and all voice functionality are disabled.
 
 Deployment from `main` is handled by `.github/workflows/deploy-huggingface.yml`.
 Add a write-capable Hugging Face token as the GitHub Actions secret `HF_TOKEN`.
-The workflow verifies the Linux music/web installation before synchronizing the
-Git-LFS production bundle to `AntonDergunov/LexiBeat`; no storage bucket is
-required.
+The workflow verifies the Linux music/web installation and synchronizes a small,
+code-only staging directory to `AntonDergunov/LexiBeat`. It deliberately excludes
+the checkout's `.venv` and the Git-LFS production audio, so the Space repository
+stays well below its Git storage limit and always receives the complete
+`lexibeat` package.
+
+The hosted sample library lives separately in the private
+`AntonDergunov/LexiBeatSamples` Storage Bucket. Upload the checksum-locked local
+bundle once (review the plan before the real upload):
+
+```bash
+hf auth login
+./scripts/sync_hf_samples.sh --dry-run
+./scripts/sync_hf_samples.sh
+```
+
+In the Space settings, attach that bucket at `/data`, preferably read-only. The
+application automatically discovers
+`/data/lexibeat-production-core/v1/catalog.sqlite3`. A custom mount can be set
+with `LEXIBEAT_BUCKET_MOUNT`, or the complete bundle path can be selected with
+`LEXIBEAT_BUNDLE_ROOT`. If the bundle is not mounted, the hosted UI remains
+usable but offers only the sample-free electronic palette. Rendering and
+validation never perform implicit downloads.
+
+The production bundle is currently about 1.8 GB. A private bucket is appropriate
+for the public Space: its visibility does not control the Space's visibility,
+and visitors use samples through the application rather than receiving direct
+bucket access. The bucket can be made public later if direct redistribution is
+desired and every included source remains license-compatible.
 
 ## Versioned music API
 

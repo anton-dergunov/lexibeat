@@ -22,11 +22,11 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
+from .paths import BUNDLED_ROOT, configured_bundle_root
 from .sfz import parse as parse_sfz
 
 
 EXTERNAL_DEFAULT = Path("/Volumes/EXTSSD_SAND/downloaded_music/lexibeat-library")
-BUNDLED_ROOT = Path(__file__).resolve().parents[1] / "assets" / "production-core" / "v1"
 GB = 1_000_000_000
 EXTERNAL_WARN = 450 * GB
 EXTERNAL_LIMIT = 500 * GB

@@ -48,6 +48,9 @@ jobs:
           uv run --extra explorer python -m unittest discover -s tests -v
           uv run --extra explorer python -c "from lexibeat.explorer_web import create_api; assert create_api(mount_ui=False)"
 
+      - name: Build code-only Space package
+        run: ./scripts/build_space_dist.sh
+
       - name: Synchronize the public Space
         uses: huggingface/hub-sync@v0.1.0
         with:
@@ -55,3 +58,4 @@ jobs:
           huggingface_repo_id: AntonDergunov/LexiBeat
           space_sdk: gradio
           hf_token: ${{ secrets.HF_TOKEN }}
+          subdirectory: .space-dist

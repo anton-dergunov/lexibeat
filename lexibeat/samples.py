@@ -13,10 +13,12 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+from .paths import BUNDLED_ROOT
+
+
 SEMITONES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
              "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
-BUNDLED_PACK_ROOT = (Path(__file__).resolve().parents[1] / "assets" /
-                     "production-core" / "v1" / "packs")
+BUNDLED_PACK_ROOT = BUNDLED_ROOT / "packs"
 
 
 def midi(note: str) -> int:

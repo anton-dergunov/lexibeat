@@ -270,8 +270,10 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                             schema["simple"]["energy"], value="balanced", label="Energy")
                         rhythm = gr.Radio(
                             schema["simple"]["rhythm"], value="steady", label="Rhythm")
+                        palettes = schema["simple"]["palette"]
                         palette = gr.Radio(
-                            schema["simple"]["palette"], value="hybrid", label="Palette")
+                            palettes, value=("hybrid" if "hybrid" in palettes
+                                             else "electronic"), label="Palette")
                         generate_button = gr.Button("Generate", variant="primary")
                         open_lab_button = gr.Button("Open in Lab")
                     with gr.Column(scale=2, min_width=420):
