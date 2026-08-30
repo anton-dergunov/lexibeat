@@ -240,6 +240,7 @@ class ExplorerHttpTests(unittest.TestCase):
     def test_gradio_application_mounts_without_rendering_on_startup(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             app = create_api(config=ExplorerConfig(output_root=Path(tmp)), mount_ui=True)
+            self.assertFalse(app.state.demo.ssr_mode)
             with TestClient(app) as client:
                 self.assertEqual(client.get("/").status_code, 200)
                 config = client.get("/config")

@@ -280,10 +280,11 @@ def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
         demo = build_demo(
             resolved_config, artifacts=artifacts, samples=samples,
             gpu_probe=gpu_probe)
-        app = gr.mount_gradio_app(app, demo, path="/")
+        app = gr.mount_gradio_app(app, demo, path="/", ssr_mode=False)
         app.state.explorer_config = resolved_config
         app.state.artifacts = artifacts
         app.state.samples = samples
+        app.state.demo = demo
     return app
 
 
