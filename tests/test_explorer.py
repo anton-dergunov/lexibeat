@@ -187,6 +187,11 @@ class LessonTests(unittest.TestCase):
         self.assertEqual([(item.source, item.target) for item in items],
                          [("hola", "hello"), ("hola", "hello")])
         self.assertEqual(lesson_gpu_duration(DEFAULT_LESSON_ROWS), 90)
+        self.assertEqual(
+            lesson_gpu_duration(
+                DEFAULT_LESSON_ROWS, LESSON_MODEL, {}, object()),
+            90,
+        )
         self.assertEqual(lesson_gpu_duration([["hola", "hello"]] * 6), 120)
         with self.assertRaisesRegex(ValueError, "both Spanish and English"):
             normalize_lesson_rows([["hola", ""]])

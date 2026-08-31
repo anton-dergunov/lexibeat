@@ -117,7 +117,8 @@ def resolve_lesson_spec(state: dict[str, Any] | None, *,
 
 
 def lesson_gpu_duration(rows: object, _model: object = None,
-                        _state: object = None) -> int:
+                        _state: object = None,
+                        _progress: object = None) -> int:
     """Reserve realistic ZeroGPU time without rejecting malformed UI input."""
     try:
         count = len(normalize_lesson_rows(rows))
