@@ -18,6 +18,10 @@ over a calm procedural music bed. Speech lands on a known beat grid, repeats use
 slightly different delivery, and the music ducks gently while either speaker is
 talking.
 
+> Spanish 🇦🇷 → English 🇬🇧 · generated music + generated speech
+
+https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
+
 The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate
 native references by default—Paulina for Mexican Spanish and Daniel for British
 English—so the two languages are easy to distinguish. Kokoro remains available
