@@ -188,7 +188,7 @@ audio, result = generate_music(
         family="auto",
         energy="balanced",
         rhythm="steady",
-        palette="hybrid",
+        palette="wooden",
         seed=42,
     ),
     duration_seconds=75,
@@ -264,6 +264,14 @@ mbiras, plucked strings and winds expressive without transposing one arbitrary
 sample across the entire register. Every selected take is represented in the
 saved BedSpec, so a fixed seed remains replayable.
 
+Resolved phrases also record a bass grammar (`drone`, `sustain`, `root_fifth`,
+`chord_tone`, `passing`, or `syncopated`) and a motif grammar (`random_walk`,
+`rising`, `falling`, `arch`, `return_home`, or `call_response`). Product-level
+palette choices include `airy`, `wooden`, `warm`, `shimmering`, `plucked`, and
+`soft-electronic` in addition to the original acoustic/hybrid/electronic modes.
+Grammar choices use independent seeded streams, so adding a new motif cannot
+reshuffle tempo, harmony, percussion, or unrelated instrument choices.
+
 Generate a controlled listening set with:
 
 ```bash
@@ -285,6 +293,14 @@ family/seed pairs for a controlled A/B comparison:
 uv run compare_beds.py --count 5 --voice-backend none \
   --replay-manifest out/music-before/manifest.json \
   --out-dir out/music-after
+```
+
+To test variety across an option set rather than within one same-seed pair:
+
+```bash
+uv run compare_beds.py --count 12 --family-profile positive \
+  --voice-backend none --palettes airy wooden warm shimmering plucked \
+  soft-electronic --out-dir out/variety-bakeoff
 ```
 
 The feedback-focused profile adds `radiant`, `acoustic-flow`,

@@ -49,13 +49,13 @@ class GenerationProfile:
 
 PRODUCTION_V1 = GenerationProfile(
     name="production-v1",
-    version="1.1.0",
+    version="1.2.0",
     families=POSITIVE_FAMILIES,
 )
 
 EXPLORATION_V1 = GenerationProfile(
     name="exploration-v1",
-    version="1.1.0",
+    version="1.2.0",
     families=BROAD_FAMILIES,
     max_swing=0.08,
     min_quality_score=0.55,

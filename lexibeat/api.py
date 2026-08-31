@@ -12,11 +12,12 @@ from typing import Callable, Literal, Sequence
 
 import numpy as np
 
-from .bedspec import BedSpec
+from .bedspec import BedSpec, TIMBRE_PALETTES
 
 Energy = Literal["calm", "balanced", "bright"]
 Rhythm = Literal["sparse", "steady", "groovy"]
-Palette = Literal["acoustic", "hybrid", "electronic"]
+Palette = Literal["acoustic", "hybrid", "electronic", "airy", "wooden",
+                  "warm", "shimmering", "plucked", "soft-electronic"]
 
 
 @dataclass(frozen=True)
@@ -51,8 +52,8 @@ class MusicRequest:
             raise ValueError("energy must be calm, balanced, or bright")
         if self.rhythm not in ("sparse", "steady", "groovy"):
             raise ValueError("rhythm must be sparse, steady, or groovy")
-        if self.palette not in ("acoustic", "hybrid", "electronic"):
-            raise ValueError("palette must be acoustic, hybrid, or electronic")
+        if self.palette not in TIMBRE_PALETTES:
+            raise ValueError(f"palette must be one of: {', '.join(TIMBRE_PALETTES)}")
         if self.seed is not None and not 0 <= self.seed < 2 ** 64:
             raise ValueError("seed must be an unsigned 64-bit integer")
         return self
@@ -64,6 +65,7 @@ class BedFingerprint:
     audio_features: tuple[float, ...]
     motif_features: tuple[float, ...]
     instrument_families: tuple[str, ...]
+    grammar_features: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

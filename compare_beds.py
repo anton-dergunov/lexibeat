@@ -7,6 +7,7 @@ import argparse
 import copy
 import csv
 import json
+import math
 import shutil
 import warnings
 from dataclasses import asdict
@@ -18,7 +19,7 @@ import soundfile as sf
 from compare_gemini_batched import split_on_long_silences
 from lexibeat.arrange import PATTERNS
 from lexibeat.api import MusicRequest
-from lexibeat.bedspec import BedSpec
+from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.emotion import NEUTRAL
 from lexibeat.generator import (
     ENGINE_VERSION,
@@ -195,6 +196,9 @@ def main() -> None:
                         default="safe")
     parser.add_argument("--family-profile", choices=("broad", "positive"),
                         default="broad")
+    parser.add_argument("--palettes", nargs="+", choices=TIMBRE_PALETTES,
+                        default=["hybrid"],
+                        help="one or more palettes to cover in the candidate pool")
     parser.add_argument("--voice-backend", choices=("gemini-vertex", "gemini",
                                                      "chatterbox", "none"),
                         default="gemini-vertex")
@@ -222,7 +226,8 @@ def main() -> None:
     instruments = instrument_refs(assets)
     profile_name = ("production-v1" if args.family_profile == "positive"
                     else "exploration-v1")
-    request = MusicRequest(seed=args.seed, profile=profile_name)
+    requests = [MusicRequest(seed=args.seed, profile=profile_name, palette=palette)
+                for palette in args.palettes]
     if args.replay_manifest:
         source_manifest = json.loads(args.replay_manifest.read_text(encoding="utf-8"))
         source_clips = source_manifest["clips"]
@@ -240,6 +245,9 @@ def main() -> None:
             spec.engine_version = ENGINE_VERSION
             spec.profile_version = profile_name
             profile = get_profile(profile_name)
+            palette = row.get("phrase", {}).get("palette", args.palettes[0])
+            request = MusicRequest(
+                seed=args.seed, profile=profile_name, palette=palette)
             _apply_request(spec, request, profile)
             enrich_with_catalog_samples(
                 spec, assets, instruments, bed_seed, palette=request.palette)
@@ -265,12 +273,21 @@ def main() -> None:
         pool_size = len(source_clips)
     else:
         pool_size = max(args.count * args.candidate_multiplier, len(families) * 2)
-        print(f"Building {pool_size} candidates across "
+        per_palette = max(len(families), math.ceil(pool_size / len(requests)))
+        print(f"Building {per_palette * len(requests)} candidates across "
               f"{len(families)} families using {len(assets)} catalog assets and "
-              f"{len(instruments)} multisample instruments…", flush=True)
-        candidates, rejected = build_candidates(
-            args.count, args.candidate_multiplier, args.seed, assets, instruments,
-            families, request=request)
+              f"{len(instruments)} multisample instruments and "
+              f"{len(requests)} palettes…", flush=True)
+        candidates = []
+        rejected = []
+        for palette_index, request in enumerate(requests):
+            palette_seed = args.seed + palette_index * 1_000_003
+            palette_candidates, palette_rejected = build_candidates(
+                1, 1, palette_seed, assets, instruments, families,
+                request=request, pool_size=per_palette)
+            candidates.extend(palette_candidates)
+            rejected.extend({**row, "palette": request.palette}
+                            for row in palette_rejected)
         selected = select_balanced(candidates, args.count, families)
     refs = list({(ref.collection, ref.asset_id): ref
                  for candidate in selected for ref in _refs(candidate.spec)}.values())
@@ -321,6 +338,7 @@ def main() -> None:
         spec.to_json(args.out_dir / f"{stem}.bed.json")
         row = {"number": number, "file": wav_path.name, "family": candidate.family,
                "seed": candidate.seed, "bpm": spec.bpm,
+               "palette": spec.phrase.palette if spec.phrase else "legacy",
                "meter": f"{spec.beats_per_bar}/{spec.beat_unit}",
                "scale": spec.scale, "phrase": asdict(spec.phrase),
                "sample_refs": [asdict(ref) for ref in _refs(spec)],
@@ -344,6 +362,7 @@ def main() -> None:
                 "candidate_multiplier": args.candidate_multiplier,
                 "sample_policy": args.sample_policy,
                 "family_profile": args.family_profile,
+                "palettes": args.palettes,
                 "replay_manifest": str(args.replay_manifest) if args.replay_manifest else None,
                 "storage": library.status(),
                 "voice": speech_metadata, "items": ITEMS,
@@ -355,11 +374,13 @@ def main() -> None:
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     with (args.out_dir / "ratings.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["number", "file", "family", "distinctiveness_1_5",
+        writer.writerow(["number", "file", "family", "palette",
+                         "distinctiveness_1_5",
                          "pleasantness_1_5", "rhythmic_usefulness_1_5",
                          "speech_clarity_1_5", "repetitiveness_1_5", "keep", "notes"])
         for row in manifest_rows:
-            writer.writerow([row["number"], row["file"], row["family"], "", "", "",
+            writer.writerow([row["number"], row["file"], row["family"],
+                             row["palette"], "", "", "",
                              "", "", "", ""])
     guide = [
         "# Music bake-off listening guide", "",
@@ -374,17 +395,16 @@ def main() -> None:
           "Listen for distinct musical identity, pleasant repetition, a useful pulse, "
           "coherent articulation and any repeated-sample or microphone-switching "
           "artifacts.") + " Record scores in `ratings.csv`."), "",
-        "| # | File | Family | BPM | Meter | Harmony | Bass | Percussion | Sources |",
-        "|---:|---|---|---:|---|---|---|---|---|",
+        "| # | File | Family | Palette | BPM | Meter | Harmony | Bass | Motif | Sources |",
+        "|---:|---|---|---|---:|---|---|---|---|---|",
     ]
     for row in manifest_rows:
         phrase = row["phrase"]
-        percussion = ", ".join(lane["pattern"] for lane in phrase["percussion"])
         sources = ", ".join(row["sample_collections"]) or "synth"
         guide.append(f"| {row['number']} | `{row['file']}` | {row['family']} | "
-                     f"{row['bpm']:g} | {row['meter']} | "
+                     f"{row['palette']} | {row['bpm']:g} | {row['meter']} | "
                      f"{phrase['harmony_texture']} | {phrase['bass_timbre']} | "
-                     f"{percussion} | {sources} |")
+                     f"{phrase['motif_grammar']} | {sources} |")
     (args.out_dir / "listening-guide.md").write_text(
         "\n".join(guide) + "\n", encoding="utf-8")
     print(f"Wrote {args.count} validated clips and comparison files to {args.out_dir}")

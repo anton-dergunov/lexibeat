@@ -263,6 +263,23 @@ The bake-off tool can replay an earlier manifest's exact family/seed pairs, so
 intentional engine-level PCM changes can be evaluated with controlled before and
 after renders.
 
+### Iteration 7 — audible grammar and palette variety
+
+Round robins improve repetition at the sample level but are intentionally hard
+to notice. Audible option-set variety now comes from two separately seeded,
+serialized dimensions: six bass grammars and six melodic motif grammars. The
+motifs include directed contours and call-and-response rather than relying only
+on unrelated random walks. Independent grammar seeds preserve the historical
+style RNG sequence and prevent one new choice from reshuffling tempo, harmony,
+percussion or timbre.
+
+The public palette control now adds airy, wooden, warm, shimmering, plucked and
+soft-electronic identities. Natural palettes bias coherent catalog banks and
+also apply restrained synthesis/mix differences; soft-electronic remains fully
+sample-free. Fingerprints include the resolved grammar, palette and harmony
+identity. Bake-off selection first covers those structures, then improves the
+minimum and mean pairwise distance while retaining one result per family.
+
 ---
 
 ## 4. Voice — options

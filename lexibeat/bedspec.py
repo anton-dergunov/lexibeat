@@ -32,6 +32,15 @@ PENTATONIC_DEGREES = {
     "lydian": [0, 1, 2, 4, 5],
 }
 
+BASS_GRAMMARS = ("drone", "sustain", "root_fifth", "chord_tone",
+                 "passing", "syncopated")
+MOTIF_GRAMMARS = ("random_walk", "rising", "falling", "arch",
+                  "return_home", "call_response")
+RESOLVED_BASS_GRAMMARS = ("legacy", *BASS_GRAMMARS)
+RESOLVED_MOTIF_GRAMMARS = ("legacy", *MOTIF_GRAMMARS)
+TIMBRE_PALETTES = ("acoustic", "hybrid", "electronic", "airy", "wooden",
+                   "warm", "shimmering", "plucked", "soft-electronic")
+
 
 @dataclass
 class Pad:
@@ -139,6 +148,9 @@ class ResolvedPhrase:
     pad_timbre: str
     bass_timbre: str
     round_robin_strategy: str = "cyclic"
+    bass_grammar: str = "legacy"
+    motif_grammar: str = "legacy"
+    palette: str = "hybrid"
     chords: list[ChordEvent] = field(default_factory=list)
     bass: list[NoteEvent] = field(default_factory=list)
     lead: list[NoteEvent] = field(default_factory=list)
@@ -168,7 +180,7 @@ class BedSpec:
     space: Space = field(default_factory=Space)
     phrase: ResolvedPhrase | None = None
     schema_version: int = 2
-    engine_version: str = "1.1.0"
+    engine_version: str = "1.2.0"
     profile_version: str = "legacy"
 
     # -- harmony helpers -------------------------------------------------
@@ -257,6 +269,7 @@ class BedSpec:
         rng = random.Random(seed)
         spec = STYLES[style](rng)
         spec.seed = seed
+        _apply_variety_grammars(spec, seed)
         return spec
 
 
@@ -310,6 +323,9 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
         harmony_texture=data["harmony_texture"], pad_timbre=data["pad_timbre"],
         bass_timbre=data["bass_timbre"],
         round_robin_strategy=data.get("round_robin_strategy", "cyclic"),
+        bass_grammar=data.get("bass_grammar", "legacy"),
+        motif_grammar=data.get("motif_grammar", "legacy"),
+        palette=data.get("palette", "hybrid"),
         chords=[ChordEvent(**event) for event in data.get("chords", [])],
         bass=[NoteEvent(**event) for event in data.get("bass", [])],
         lead=[NoteEvent(**event) for event in data.get("lead", [])],
@@ -690,6 +706,16 @@ def _note_events(spec: BedSpec, rng: random.Random, bars: int,
                 events.append(NoteEvent(bar * steps + min(at, steps - 1),
                                         max(1.5, steps / 5), root + interval,
                                         velocity * rng.uniform(0.86, 1.08)))
+        elif mode == "chord_tone":
+            scale = spec.scale_steps()
+            third = (scale[(degree + 2) % len(scale)] -
+                     scale[degree % len(scale)]) % 12
+            colour = third if bar % 2 == 0 else 7
+            for at, interval, velocity in (
+                    (0, 0, 0.58), (steps // 2, colour, 0.44)):
+                events.append(NoteEvent(
+                    bar * steps + min(at, steps - 1), max(1.5, steps / 5),
+                    root + interval, velocity * rng.uniform(0.88, 1.06)))
         else:  # passing
             next_degree = spec.progression[(bar + 1) % len(spec.progression)]
             target = spec.chord_root(next_degree) - 12
@@ -778,6 +804,87 @@ def _lead_events(spec: BedSpec, rng: random.Random, bars: int,
                 events.append(NoteEvent(offset + step, rng.choice([1.5, 2.5, 4.0]),
                                         note, velocity * rng.uniform(0.88, 1.08)))
     return events
+
+
+def _contour_lead_events(spec: BedSpec, rng: random.Random, bars: int,
+                         grammar: str) -> list[NoteEvent]:
+    """Write a sparse, clearly recognizable contour without renderer randomness."""
+    notes = spec.pentatonic()
+    if not notes:
+        return []
+    patterns = {
+        "rising": (0, 1, 2, 3, 4),
+        "falling": (4, 3, 2, 1, 0),
+        "arch": (0, 2, 4, 2, 0),
+        "return_home": (0, 3, 1, 4, 0),
+        "call_response": (0, 2, 3, 1, 4),
+    }
+    pattern = patterns[grammar]
+    width = min(max(pattern) + 1, len(notes))
+    start = rng.randrange(max(len(notes) - width + 1, 1))
+    pitches = [notes[min(start + index, len(notes) - 1)] for index in pattern]
+    motif_bars = min(4, bars)
+    steps = spec.steps_per_bar
+    span = motif_bars * steps
+    if grammar == "call_response" and motif_bars >= 2:
+        positions = [
+            min(2, steps - 1), max(3, steps // 2),
+            steps * 2 + min(2, steps - 1),
+            steps * 2 + max(3, steps // 2),
+            steps * 3 + max(2, steps * 3 // 4),
+        ] if motif_bars >= 4 else [
+            min(2, steps - 1), max(3, steps // 2),
+            steps + min(2, steps - 1), steps + max(3, steps // 2),
+            steps + max(4, steps * 3 // 4),
+        ]
+    else:
+        positions = [max(1, round((index + 1) * span / 6))
+                     for index in range(5)]
+    positions = [min(position, span - 1) for position in positions]
+    events: list[NoteEvent] = []
+    for offset in range(0, bars * steps, span):
+        for index, (position, note) in enumerate(zip(positions, pitches, strict=True)):
+            if offset + position >= bars * steps:
+                continue
+            response = grammar == "call_response" and index >= 2
+            velocity = rng.uniform(*spec.lead.velocity) * (0.9 if response else 1.0)
+            events.append(NoteEvent(
+                offset + position, rng.choice((1.5, 2.5, 3.5)), note, velocity,
+                articulation="natural", sample_variation=len(events)))
+    return events
+
+
+def _apply_variety_grammars(spec: BedSpec, seed: int) -> None:
+    """Resolve macro-grammars from independent seeds after legacy style sampling."""
+    phrase = spec.phrase
+    if phrase is None:
+        return
+    calm = phrase.family in ("meditative", "nocturnal", "acoustic-flow",
+                             "bright-pastoral")
+    bass_choices = (
+        ("sustain", "sustain", "drone", "root_fifth", "chord_tone")
+        if calm else
+        ("sustain", "root_fifth", "chord_tone", "passing", "syncopated")
+    )
+    bass_rng = random.Random(seed ^ 0x424153534752414D)
+    phrase.bass_grammar = bass_rng.choice(bass_choices)
+    phrase.bass = _note_events(
+        spec, bass_rng, phrase.loop_bars, phrase.bass_grammar)
+    for index, event in enumerate(phrase.bass):
+        event.sample_variation = index
+
+    motif_choices = (
+        ("random_walk", "arch", "return_home", "falling") if calm else
+        ("random_walk", "rising", "falling", "arch", "return_home",
+         "call_response")
+    )
+    motif_rng = random.Random(seed ^ 0x4D4F544946475241)
+    phrase.motif_grammar = motif_rng.choice(motif_choices)
+    if phrase.motif_grammar != "random_walk":
+        phrase.lead = _contour_lead_events(
+            spec, motif_rng, phrase.loop_bars, phrase.motif_grammar)
+    for index, event in enumerate(phrase.lead):
+        event.sample_variation = index
 
 
 def _bar_pattern(bars: int, steps: int, positions: list[int],
@@ -872,7 +979,12 @@ def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
     lanes = _percussion_lanes(spec, rng, bars, density)
     if family in ("meditative", "nocturnal") and rng.random() < 0.55:
         lanes = lanes[:rng.choice([1, 2])]
-    bass = _note_events(spec, rng, bars, rng.choice(config["bass"]))
+    # Preserve the historical draw order: timbres were resolved before bass and
+    # lead events. Macro-grammar RNGs are independent and applied by from_style.
+    pad_timbre = rng.choice(config["pads"])
+    bass_timbre = rng.choice(["sine", "round", "triangle", "pluck"])
+    bass_mode = rng.choice(config["bass"])
+    bass = _note_events(spec, rng, bars, bass_mode)
     lead = _lead_events(spec, rng, bars, density)
     for index, event in enumerate(chords):
         event.sample_variation = index
@@ -883,9 +995,9 @@ def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
         event.sample_variation = index
     return ResolvedPhrase(
         family=family, loop_bars=bars, harmony_texture=texture,
-        pad_timbre=rng.choice(config["pads"]),
-        bass_timbre=rng.choice(["sine", "round", "triangle", "pluck"]),
-        chords=chords, bass=bass, lead=lead, percussion=lanes,
+        pad_timbre=pad_timbre, bass_timbre=bass_timbre,
+        bass_grammar=bass_mode, chords=chords, bass=bass, lead=lead,
+        percussion=lanes,
     )
 
 

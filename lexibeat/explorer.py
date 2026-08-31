@@ -26,7 +26,8 @@ import pyloudnorm as pyln
 import soundfile as sf
 
 from .api import MusicGenerationResult, MusicRequest, resolve_music
-from .bedspec import BedSpec, SCALES, STYLES
+from .bedspec import (RESOLVED_BASS_GRAMMARS, RESOLVED_MOTIF_GRAMMARS,
+                      TIMBRE_PALETTES, BedSpec, SCALES, STYLES)
 from .generator import ENGINE_VERSION
 from .library import (BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary,
                       SampleRef, infer_articulation, infer_round_robin)
@@ -242,6 +243,12 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
                  choices=("sine", "triangle", "strings", "soft_saw")),
     ControlField("/phrase/bass_timbre", "Resolved phrase", "Bass timbre", "enum",
                  choices=("sine", "round", "triangle", "pluck")),
+    ControlField("/phrase/bass_grammar", "Resolved phrase", "Bass grammar", "enum",
+                 choices=RESOLVED_BASS_GRAMMARS, read_only=True),
+    ControlField("/phrase/motif_grammar", "Resolved phrase", "Motif grammar", "enum",
+                 choices=RESOLVED_MOTIF_GRAMMARS, read_only=True),
+    ControlField("/phrase/palette", "Resolved phrase", "Timbre palette", "enum",
+                 choices=TIMBRE_PALETTES, read_only=True),
     ControlField("/phrase/round_robin_strategy", "Resolved phrase",
                  "Sample variation", "enum", choices=("cyclic",), read_only=True),
     ControlField("/phrase/chords", "Resolved phrase", "Chord events", "table"),
@@ -275,8 +282,8 @@ def explorer_schema(config: ExplorerConfig | None = None) -> dict:
             "families": ["auto", *get_profile("production-v1").families],
             "energy": ["calm", "balanced", "bright"],
             "rhythm": ["sparse", "steady", "groovy"],
-            "palette": (["acoustic", "hybrid", "electronic"]
-                        if production_bundle else ["electronic"]),
+            "palette": (list(TIMBRE_PALETTES) if production_bundle
+                        else ["electronic", "soft-electronic"]),
         },
         "controls": [asdict(field) for field in CONTROL_FIELDS],
         "lockable_paths": sorted(LOCKABLE_PATHS),
@@ -315,7 +322,7 @@ _PHRASE_KEYS = {
     "family", "loop_bars", "harmony_texture", "pad_timbre", "bass_timbre",
     "chords", "bass", "lead", "percussion", "lead_sample", "pad_sample",
     "lead_instrument", "pad_instrument", "bass_instrument",
-    "round_robin_strategy",
+    "round_robin_strategy", "bass_grammar", "motif_grammar", "palette",
 }
 _NOTE_KEYS = {"step", "duration_steps", "midi_note", "velocity",
               "articulation", "sample_variation"}
@@ -573,6 +580,15 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
     if phrase.round_robin_strategy != "cyclic":
         _issue(issues, "error", "/phrase/round_robin_strategy", "enum",
                "Resolved sample variation strategy must be 'cyclic'.")
+    for value, choices, path, label in (
+            (phrase.bass_grammar, RESOLVED_BASS_GRAMMARS,
+             "/phrase/bass_grammar", "bass grammar"),
+            (phrase.motif_grammar, RESOLVED_MOTIF_GRAMMARS,
+             "/phrase/motif_grammar", "motif grammar"),
+            (phrase.palette, TIMBRE_PALETTES, "/phrase/palette", "palette")):
+        if value not in choices:
+            _issue(issues, "error", path, "enum",
+                   f"Unknown resolved {label} '{value}'.")
     for name, events in (("chords", phrase.chords), ("bass", phrase.bass),
                          ("lead", phrase.lead)):
         for index, event in enumerate(events):
