@@ -24,6 +24,9 @@ hosted-tts = [
     "google-genai>=2.19.0",
     "requests>=2.32.0",
 ]
+video-demo = [
+    "Pillow>=11.0.0",
+]
 explorer = [
     "fastapi>=0.116.0,<1",
     "gradio>=6.0.0,<7",

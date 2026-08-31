@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "title": "LexiBeat",
+  "pattern": "retrieval",
+  "items": [
+    {"source": "¡Qué susto!", "target": "What a scare!", "emoji": "😨"},
+    {"source": "la pesadilla", "target": "nightmare", "emoji": "😨"},
+    {"source": "estar envuelto en sus pensamientos", "target": "to be lost in thought", "emoji": "💭", "bars_per_utterance": 2},
+    {"source": "hacer ilusión", "target": "to excite", "emoji": "🤩"},
+    {"source": "espectacular", "target": "spectacular", "emoji": "🤩"},
+    {"source": "preciosa", "target": "precious", "emoji": "🥰"},
+    {"source": "¿arrancamos?", "target": "shall we start?", "emoji": "🚀"},
+    {"source": "¡Que cante!", "target": "Let him/her sing!", "emoji": "🎶"},
+    {"source": "asombroso", "target": "amazing", "emoji": "😲"},
+    {"source": "abrumado", "target": "overwhelmed", "emoji": "😥"},
+    {"source": "la rabia", "target": "rage", "emoji": "😡"},
+    {"source": "asco", "target": "disgust", "emoji": "🤮"},
+    {"source": "descansar", "target": "to rest", "emoji": "😴"}
+  ],
+  "variants": [
+    {"name": "gentle-movement", "style": "gentle-movement", "seed": 12},
+    {"name": "playful-plucked", "style": "playful-plucked", "seed": 15},
+    {"name": "sunlit", "style": "sunlit", "seed": 18}
+  ]
+}

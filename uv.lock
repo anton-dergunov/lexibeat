@@ -797,6 +797,9 @@ local-tts = [
     { name = "kokoro" },
     { name = "mlx-audio" },
 ]
+video-demo = [
+    { name = "pillow" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -810,6 +813,7 @@ requires-dist = [
     { name = "mlx-tada", marker = "extra == 'experimental-tts'", specifier = ">=0.1.0" },
     { name = "numpy", specifier = ">=2.5.2" },
     { name = "pedalboard", specifier = ">=0.9.24" },
+    { name = "pillow", marker = "extra == 'video-demo'", specifier = ">=11.0.0" },
     { name = "psutil", marker = "extra == 'experimental-tts'", specifier = ">=7.0.0" },
     { name = "pyloudnorm", specifier = ">=0.2.0" },
     { name = "requests", marker = "extra == 'hosted-tts'", specifier = ">=2.32.0" },
@@ -817,7 +821,7 @@ requires-dist = [
     { name = "soundfile", specifier = ">=0.14.0" },
     { name = "uvicorn", marker = "extra == 'explorer'", specifier = ">=0.35.0,<1" },
 ]
-provides-extras = ["local-tts", "experimental-tts", "hosted-tts", "explorer"]
+provides-extras = ["local-tts", "experimental-tts", "hosted-tts", "video-demo", "explorer"]
 
 [[package]]
 name = "librosa"

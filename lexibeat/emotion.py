@@ -64,7 +64,7 @@ _EMOJI = {
     "afraid": "😨😰😧🥶👻⚠️🆘",
     "disgusted": "🤢🤮😖😣🤧🦠🚫",
     "thoughtful": "🤔🧐💭📚🎓🧠💡❔",
-    "calm": "😐😑🧘🌙💤🕊️🌿🍃",
+    "calm": "😐😑🧘🌙💤😴🕊️🌿🍃",
 }
 
 EMOJI_TO_EMOTION = {ch: name for name, chars in _EMOJI.items() for ch in chars}
