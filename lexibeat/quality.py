@@ -122,18 +122,6 @@ def instrument_families(spec: BedSpec) -> tuple[str, ...]:
     return tuple(sorted(values))
 
 
-def grammar_features(spec: BedSpec) -> tuple[str, ...]:
-    phrase = spec.phrase
-    if phrase is None:
-        return ()
-    return (
-        f"bass:{phrase.bass_grammar}",
-        f"motif:{phrase.motif_grammar}",
-        f"palette:{phrase.palette}",
-        f"harmony:{phrase.harmony_texture}",
-    )
-
-
 def make_fingerprint(audio: np.ndarray, spec: BedSpec) -> BedFingerprint:
     phrase = spec.phrase
     return BedFingerprint(
@@ -141,7 +129,6 @@ def make_fingerprint(audio: np.ndarray, spec: BedSpec) -> BedFingerprint:
         audio_features=tuple(float(value) for value in audio_features(audio, spec)),
         motif_features=tuple(float(value) for value in motif_features(spec)),
         instrument_families=instrument_families(spec),
-        grammar_features=grammar_features(spec),
     )
 
 
@@ -227,15 +214,9 @@ def fingerprint_distance(left: BedFingerprint, right: BedFingerprint) -> float:
         len(union), 1
     )
     family_distance = 0.0 if left.family == right.family else 1.0
-    left_grammars = set(left.grammar_features)
-    right_grammars = set(right.grammar_features)
-    grammar_union = left_grammars | right_grammars
-    grammar_distance = 1.0 - len(left_grammars & right_grammars) / max(
-        len(grammar_union), 1)
     return (
         float(np.linalg.norm(audio))
         + 0.7 * float(np.linalg.norm(motif))
         + 0.5 * instrument_distance
-        + 0.75 * grammar_distance
         + 0.25 * family_distance
     )

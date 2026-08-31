@@ -64,9 +64,7 @@ def parse_args() -> argparse.Namespace:
     music.add_argument("--music-rhythm", choices=("sparse", "steady", "groovy"),
                        default="steady")
     music.add_argument("--music-palette",
-                       choices=("acoustic", "hybrid", "electronic", "airy",
-                                "wooden", "warm", "shimmering", "plucked",
-                                "soft-electronic"),
+                       choices=("acoustic", "hybrid", "electronic"),
                        default="hybrid")
     music.add_argument("--bpm", type=float, default=None,
                        help="override the tempo the style chose")

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import copy
 import io
 import json
 import os
@@ -16,8 +15,7 @@ import numpy as np
 import soundfile as sf
 
 from lexibeat.api import MusicRequest, render_music, resolve_music
-from lexibeat.bedspec import (BASS_GRAMMARS, MOTIF_GRAMMARS, TIMBRE_PALETTES,
-                              BedSpec)
+from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
 from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from lexibeat.generator import (
@@ -33,7 +31,6 @@ from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, SampleAsset,
                               instrument_refs, timbre_clusters)
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
-from lexibeat.quality import fingerprint_distance, make_fingerprint
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
 from lexibeat.voice import (
     CAPABILITIES,
@@ -503,7 +500,7 @@ class BedSpecTests(unittest.TestCase):
             event.pop("articulation")
             event.pop("sample_variation")
         rebuilt = BedSpec.from_dict(data)
-        self.assertEqual(rebuilt.phrase.round_robin_strategy, "cyclic")
+        self.assertEqual(rebuilt.phrase.round_robin_strategy, "first")
         self.assertEqual(rebuilt.phrase.bass_grammar, "legacy")
         self.assertEqual(rebuilt.phrase.motif_grammar, "legacy")
         self.assertEqual(rebuilt.phrase.palette, "hybrid")
@@ -511,7 +508,7 @@ class BedSpecTests(unittest.TestCase):
                             and event.sample_variation == 0
                             for event in rebuilt.phrase.lead))
 
-    def test_historical_style_draw_order_is_preserved_before_macro_grammar(self) -> None:
+    def test_control_composition_and_draw_order_are_restored(self) -> None:
         spec = BedSpec.from_style("meditative", 21727037)
         self.assertEqual(
             (spec.bpm, spec.beats_per_bar, spec.root, spec.scale),
@@ -523,35 +520,24 @@ class BedSpecTests(unittest.TestCase):
              spec.phrase.bass_timbre),
             ("sustain", "strings", "round"),
         )
+        self.assertEqual(spec.phrase.bass_grammar, "drone")
+        self.assertEqual(spec.phrase.motif_grammar, "random_walk")
+        self.assertEqual(spec.phrase.round_robin_strategy, "first")
+        self.assertEqual([event.step for event in spec.phrase.bass],
+                         [0, 16, 32, 48, 64, 80, 96, 112])
+        self.assertEqual({event.midi_note for event in spec.phrase.bass}, {36})
+        self.assertEqual({event.sample_variation for event in spec.phrase.bass}, {0})
 
-    def test_macro_grammars_are_serialized_and_cover_distinct_shapes(self) -> None:
-        bass = set()
-        motifs = set()
-        examples = {}
-        for family in ("radiant", "meditative"):
-            for seed in range(120):
-                spec = BedSpec.from_style(family, seed)
-                bass.add(spec.phrase.bass_grammar)
-                motifs.add(spec.phrase.motif_grammar)
-                examples.setdefault(spec.phrase.motif_grammar, spec)
-        self.assertEqual(bass, set(BASS_GRAMMARS))
-        self.assertEqual(motifs, set(MOTIF_GRAMMARS))
-        self.assertLess(examples["rising"].phrase.lead[0].midi_note,
-                        examples["rising"].phrase.lead[-1].midi_note)
-        self.assertGreater(examples["falling"].phrase.lead[0].midi_note,
-                           examples["falling"].phrase.lead[-1].midi_note)
-        arch = [event.midi_note for event in examples["arch"].phrase.lead]
-        self.assertGreater(max(arch), max(arch[0], arch[-1]))
-
-    def test_grammar_identity_contributes_to_novelty_distance(self) -> None:
-        first = BedSpec.from_style("radiant", 3)
-        second = copy.deepcopy(first)
-        second.phrase.motif_grammar = "falling"
-        audio = np.zeros((1000, 2), dtype=np.float32)
-        self.assertGreater(
-            fingerprint_distance(make_fingerprint(audio, first),
-                                 make_fingerprint(audio, second)),
-            0.0,
+    def test_step3b_resolved_metadata_remains_loadable(self) -> None:
+        data = json.loads(BedSpec.from_style("radiant", 3).to_json())
+        data["phrase"]["bass_grammar"] = "chord_tone"
+        data["phrase"]["motif_grammar"] = "falling"
+        data["phrase"]["palette"] = "airy"
+        rebuilt = BedSpec.from_dict(data)
+        self.assertEqual(
+            (rebuilt.phrase.bass_grammar, rebuilt.phrase.motif_grammar,
+             rebuilt.phrase.palette),
+            ("chord_tone", "falling", "airy"),
         )
 
     def test_json_round_trip_preserves_new_fields(self) -> None:
@@ -635,7 +621,7 @@ class PublicGenerationApiTests(unittest.TestCase):
     def test_fixed_request_is_fully_deterministic_and_versioned(self) -> None:
         self.assertEqual(self.first.bed_spec.to_json(), self.second.bed_spec.to_json())
         self.assertEqual(self.first.fingerprint, self.second.fingerprint)
-        self.assertEqual(self.first.engine_version, "1.2.0")
+        self.assertEqual(self.first.engine_version, "1.3.0")
         self.assertEqual(self.first.profile_version, "production-v1")
         self.assertEqual(self.first.bed_spec.profile_version, "production-v1")
         self.assertTrue(self.first.quality.accepted)
@@ -653,12 +639,10 @@ class PublicGenerationApiTests(unittest.TestCase):
                 family="playful-minimal", palette="electronic", seed=77))
         network.assert_not_called()
 
-    def test_soft_electronic_palette_is_sample_free_and_resolved(self) -> None:
-        result = resolve_music(MusicRequest(
-            family="radiant", palette="soft-electronic", seed=81))
-        self.assertEqual(result.bed_spec.phrase.palette, "soft-electronic")
-        self.assertEqual(result.bed_spec.phrase.pad_timbre, "sine")
-        self.assertFalse(result.sample_manifest)
+    def test_step3b_palette_is_not_a_production_choice(self) -> None:
+        with self.assertRaisesRegex(ValueError, "palette must be one of"):
+            resolve_music(MusicRequest(
+                family="radiant", palette="soft-electronic", seed=81))
 
     def test_resolved_synth_phrase_pcm_is_deterministic(self) -> None:
         spec = BedSpec.from_style("meditative", 3)

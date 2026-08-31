@@ -283,6 +283,14 @@ def _repeat_events(events, phrase: ResolvedPhrase, grid: Grid, n_bars: int):
                 yield offset + event.step, event
 
 
+def _sample_variation(phrase: ResolvedPhrase, base: int, step: int,
+                      grid: Grid) -> int:
+    if phrase.round_robin_strategy != "cyclic":
+        return 0
+    phrase_steps = max(phrase.loop_bars * grid.steps_per_bar, 1)
+    return base + step // phrase_steps
+
+
 def _resolved_pad(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
                   n_bars: int, rng: np.random.Generator) -> np.ndarray:
     out = _blank(grid, n_bars)
@@ -305,8 +313,8 @@ def _resolved_pad(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
             for note in event.midi_notes:
                 _add(voice, instrument.render(
                     note, event.velocity, seconds,
-                    variation=event.sample_variation + step // max(
-                        phrase.loop_bars * grid.steps_per_bar, 1)), 0)
+                    variation=_sample_variation(
+                        phrase, event.sample_variation, step, grid)), 0)
             voice /= max(len(event.midi_notes), 1)
         else:
             for note in event.midi_notes:
@@ -340,8 +348,8 @@ def _resolved_bass(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         if instrument is not None:
             tone = instrument.render(
                 event.midi_note, event.velocity, seconds,
-                variation=event.sample_variation + step // max(
-                    phrase.loop_bars * grid.steps_per_bar, 1)) * 0.68
+                variation=_sample_variation(
+                    phrase, event.sample_variation, step, grid)) * 0.68
         else:
             n = grid.samples(seconds)
             t = np.arange(n) / grid.sr
@@ -406,7 +414,10 @@ def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         if len(lane.pattern) != phrase_steps:
             raise ValueError(f"Percussion lane '{lane.sound}' has {len(lane.pattern)} "
                              f"steps; expected {phrase_steps}.")
-        refs = lane.round_robin_samples or ((lane.sample,) if lane.sample else ())
+        refs = (lane.round_robin_samples
+                if phrase.round_robin_strategy == "cyclic" and
+                lane.round_robin_samples
+                else ((lane.sample,) if lane.sample else ()))
         hits = ([load_one_shot(ref) for ref in refs] if refs else [
             _synth_percussion(lane.sound.removeprefix("synth:"), grid,
                               np.random.default_rng(spec.seed + 100 + lane_index))
@@ -450,8 +461,8 @@ def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.08)
         audio = instrument.render(
             event.midi_note, event.velocity, seconds,
-            variation=event.sample_variation + step // max(
-                phrase.loop_bars * grid.steps_per_bar, 1))
+            variation=_sample_variation(
+                phrase, event.sample_variation, step, grid))
         _add(out, audio, grid.samples(_event_time(grid, step)))
     lead_gain = 0.135 if spec.lead.instrument == "piano" else 0.11
     return out * spec.lead.level * lead_gain

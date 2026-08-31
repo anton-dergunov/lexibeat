@@ -252,10 +252,11 @@ indexes. Conservative filename inference avoids combining ambiguous siblings or
 switching microphone perspectives during a phrase.
 
 BedSpec 1.1 serializes event articulation, sample-variation indexes, percussion
-take groups and the cyclic selection strategy. Pitched parts offset that saved
-choice on each phrase repetition, while percussion advances through its resolved
-take group per hit. Replaying the same BedSpec is byte-deterministic; older JSON
-receives compatible natural-articulation and first-take defaults.
+take groups and the selection strategy. The cyclic strategy can offset a saved
+choice on each phrase repetition and advance percussion through its resolved
+take group per hit. Production uses the control-compatible first-take strategy.
+Replaying either strategy is byte-deterministic; older JSON receives compatible
+natural-articulation and first-take defaults.
 
 Catalog reports now expose register, articulation and timbre-cluster coverage,
 round-robin depth, instrument-bank utilization and explicit rejection reasons.
@@ -263,22 +264,21 @@ The bake-off tool can replay an earlier manifest's exact family/seed pairs, so
 intentional engine-level PCM changes can be evaluated with controlled before and
 after renders.
 
-### Iteration 7 — audible grammar and palette variety
+### Iteration 7 — variety experiment and control restoration
 
-Round robins improve repetition at the sample level but are intentionally hard
-to notice. Audible option-set variety now comes from two separately seeded,
-serialized dimensions: six bass grammars and six melodic motif grammars. The
-motifs include directed contours and call-and-response rather than relying only
-on unrelated random walks. Independent grammar seeds preserve the historical
-style RNG sequence and prevent one new choice from reshuffling tempo, harmony,
-percussion or timbre.
+An A/B experiment added six bass grammars, six melodic motif grammars and six
+broader timbre palettes. Listening confirmed that they increased audible
+variety, but high-register foreground sounds and stronger musical gestures were
+often distracting under speech. The treatment therefore did not meet the
+product goal even though it met the distinctiveness goal.
 
-The public palette control now adds airy, wooden, warm, shimmering, plucked and
-soft-electronic identities. Natural palettes bias coherent catalog banks and
-also apply restrained synthesis/mix differences; soft-electronic remains fully
-sample-free. Fingerprints include the resolved grammar, palette and harmony
-identity. Bake-off selection first covers those structures, then improves the
-minimum and mean pairwise distance while retaining one result per family.
+Production generation returned to the earlier bass patterns, random-walk motif,
+acoustic/hybrid/electronic palettes, fingerprint distance and balanced-selection
+policy. The historical style RNG order is explicitly preserved. Saved Step 3B
+BedSpecs remain loadable, while resolved metadata, opt-in deterministic sample
+round robins, catalog reports and manifest replay remain available as useful
+infrastructure. Future variety work will prioritize coherent natural sample
+banks and speech-safe register and perceived-level gates.
 
 ---
 

@@ -27,7 +27,8 @@ import soundfile as sf
 
 from .api import MusicGenerationResult, MusicRequest, resolve_music
 from .bedspec import (RESOLVED_BASS_GRAMMARS, RESOLVED_MOTIF_GRAMMARS,
-                      TIMBRE_PALETTES, BedSpec, SCALES, STYLES)
+                      RESOLVED_TIMBRE_PALETTES, TIMBRE_PALETTES, BedSpec,
+                      SCALES, STYLES)
 from .generator import ENGINE_VERSION
 from .library import (BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary,
                       SampleRef, infer_articulation, infer_round_robin)
@@ -248,9 +249,10 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
     ControlField("/phrase/motif_grammar", "Resolved phrase", "Motif grammar", "enum",
                  choices=RESOLVED_MOTIF_GRAMMARS, read_only=True),
     ControlField("/phrase/palette", "Resolved phrase", "Timbre palette", "enum",
-                 choices=TIMBRE_PALETTES, read_only=True),
+                 choices=RESOLVED_TIMBRE_PALETTES, read_only=True),
     ControlField("/phrase/round_robin_strategy", "Resolved phrase",
-                 "Sample variation", "enum", choices=("cyclic",), read_only=True),
+                 "Sample variation", "enum", choices=("first", "cyclic"),
+                 read_only=True),
     ControlField("/phrase/chords", "Resolved phrase", "Chord events", "table"),
     ControlField("/phrase/bass", "Resolved phrase", "Bass events", "table"),
     ControlField("/phrase/lead", "Resolved phrase", "Lead events", "table"),
@@ -283,7 +285,7 @@ def explorer_schema(config: ExplorerConfig | None = None) -> dict:
             "energy": ["calm", "balanced", "bright"],
             "rhythm": ["sparse", "steady", "groovy"],
             "palette": (list(TIMBRE_PALETTES) if production_bundle
-                        else ["electronic", "soft-electronic"]),
+                        else ["electronic"]),
         },
         "controls": [asdict(field) for field in CONTROL_FIELDS],
         "lockable_paths": sorted(LOCKABLE_PATHS),
@@ -577,15 +579,16 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
                "Loop bars must be an integer between 1 and 32.")
         return
     phrase_steps = phrase.loop_bars * steps_per_bar
-    if phrase.round_robin_strategy != "cyclic":
+    if phrase.round_robin_strategy not in ("first", "cyclic"):
         _issue(issues, "error", "/phrase/round_robin_strategy", "enum",
-               "Resolved sample variation strategy must be 'cyclic'.")
+               "Resolved sample variation strategy must be 'first' or 'cyclic'.")
     for value, choices, path, label in (
             (phrase.bass_grammar, RESOLVED_BASS_GRAMMARS,
              "/phrase/bass_grammar", "bass grammar"),
             (phrase.motif_grammar, RESOLVED_MOTIF_GRAMMARS,
              "/phrase/motif_grammar", "motif grammar"),
-            (phrase.palette, TIMBRE_PALETTES, "/phrase/palette", "palette")):
+            (phrase.palette, RESOLVED_TIMBRE_PALETTES,
+             "/phrase/palette", "palette")):
         if value not in choices:
             _issue(issues, "error", path, "enum",
                    f"Unknown resolved {label} '{value}'.")

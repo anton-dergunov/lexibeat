@@ -57,7 +57,7 @@ class ExplorerCoreTests(unittest.TestCase):
     def test_schema_reports_versions_controls_and_hosted_limits(self) -> None:
         schema = explorer_schema(ExplorerConfig(hosted=True))
         self.assertEqual(schema["api_version"], "explorer-v1")
-        self.assertEqual(schema["engine_version"], "1.2.0")
+        self.assertEqual(schema["engine_version"], "1.3.0")
         self.assertEqual(schema["limits"]["render_seconds"], 30.0)
         self.assertFalse(schema["capabilities"]["sample_promotion"])
         self.assertIn("/bpm", schema["lockable_paths"])
@@ -72,8 +72,7 @@ class ExplorerCoreTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp, mock.patch(
                 "lexibeat.explorer.BUNDLED_ROOT", Path(tmp)):
             schema = explorer_schema(ExplorerConfig(hosted=True))
-        self.assertEqual(schema["simple"]["palette"],
-                         ["electronic", "soft-electronic"])
+        self.assertEqual(schema["simple"]["palette"], ["electronic"])
         self.assertFalse(schema["capabilities"]["production_bundle"])
 
     def test_strict_unknown_field_and_invalid_pattern_are_rejected(self) -> None:

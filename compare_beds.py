@@ -245,7 +245,9 @@ def main() -> None:
             spec.engine_version = ENGINE_VERSION
             spec.profile_version = profile_name
             profile = get_profile(profile_name)
-            palette = row.get("phrase", {}).get("palette", args.palettes[0])
+            saved_palette = row.get("phrase", {}).get("palette")
+            palette = (saved_palette if saved_palette in TIMBRE_PALETTES
+                       else args.palettes[0])
             request = MusicRequest(
                 seed=args.seed, profile=profile_name, palette=palette)
             _apply_request(spec, request, profile)
@@ -291,8 +293,9 @@ def main() -> None:
         selected = select_balanced(candidates, args.count, families)
     refs = list({(ref.collection, ref.asset_id): ref
                  for candidate in selected for ref in _refs(candidate.spec)}.values())
-    if refs:
-        library.promote(refs)
+    unpromoted = [ref for ref in refs if not library.is_promoted(library.asset(ref))]
+    if unpromoted:
+        library.promote(unpromoted)
 
     speech_segments: dict = {}
     speech_metadata: dict = {"backend": "none"}

@@ -16,8 +16,7 @@ from .bedspec import BedSpec, TIMBRE_PALETTES
 
 Energy = Literal["calm", "balanced", "bright"]
 Rhythm = Literal["sparse", "steady", "groovy"]
-Palette = Literal["acoustic", "hybrid", "electronic", "airy", "wooden",
-                  "warm", "shimmering", "plucked", "soft-electronic"]
+Palette = Literal["acoustic", "hybrid", "electronic"]
 
 
 @dataclass(frozen=True)

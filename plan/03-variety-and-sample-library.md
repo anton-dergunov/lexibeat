@@ -12,6 +12,28 @@ Step 2 explorer. New assets alone do not count as added variety until they are
 cataloged, mapped to coherent instruments or percussion roles, included in the
 generation grammar, and exercised by tests and listening candidates.
 
+## Completion decision
+
+Step 3 is complete as an experiment, with only the successful parts retained:
+
+- Workstream 1 infrastructure is accepted: coherent articulation/microphone
+  grouping, opt-in deterministic round robins, replay tooling and catalog
+  reporting remain. Production keeps the control-compatible first take.
+- Workstreams 2 and 3 were implemented and evaluated in a 12-clip A/B set. They
+  increased variety but were not accepted for production because several
+  high-register and unusual foreground sounds distracted from speech, and the
+  larger musical gestures did not improve background suitability.
+- Production generation therefore uses the control bass patterns, random-walk
+  motif, original acoustic/hybrid/electronic palettes and control candidate
+  selection policy. Experimental BedSpecs remain replayable.
+- Workstream 4 continues as a separate staged library-expansion follow-up,
+  prioritizing natural piano, strings, guitar, bass and speech-safe percussion.
+  See `plan/03b-library-expansion.md`.
+
+For this product, greater distinctiveness is not sufficient on its own. An
+accepted change must preserve speech clarity, a useful pulse and unobtrusive
+background behavior.
+
 ## Workstream 1: Natural sample variation
 
 ### Deterministic round robins
@@ -39,7 +61,7 @@ without changing successful composition rules.
   strongly.
 - Expose articulation and layer choices in the Lab interface.
 
-## Workstream 2: More musical grammars
+## Workstream 2: More musical grammars (evaluated, not adopted)
 
 Add diversity inside the established metrical frame:
 
@@ -58,7 +80,7 @@ Resolved motif notes, onsets, velocities, and articulations remain serialized in
 Add grammar-distance features so the selection pipeline recognizes two clips
 with similar audio spectra but genuinely different melodic or rhythmic ideas.
 
-## Workstream 3: Timbre and palette coverage
+## Workstream 3: Timbre and palette coverage (evaluated, not adopted)
 
 Add reusable palette dimensions rather than continually creating narrowly named
 styles:
@@ -89,7 +111,7 @@ transient, pitch, width, duration, and source/category features can establish a
 transparent baseline. Introduce embeddings only if listening tests show a clear
 benefit.
 
-## Workstream 4: Use more of the downloaded library
+## Workstream 4: Use more of the downloaded library (next follow-up)
 
 First produce a gap and utilization report for the safe catalog:
 

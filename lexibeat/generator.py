@@ -38,13 +38,12 @@ from .quality import (
     Candidate,
     evaluate_preview,
     fingerprint_distance,
-    grammar_features,
     instrument_families,
     motif_features,
     preference_score,
 )
 
-ENGINE_VERSION = "1.2.0"
+ENGINE_VERSION = "1.3.0"
 SEED_STEP = 104_729
 ProgressCallback = Callable[[float, str], None]
 CancelCheck = Callable[[], bool]
@@ -216,8 +215,7 @@ def enrich_with_catalog_samples(
     palette: str = "hybrid",
 ) -> None:
     """Resolve safe catalog choices without consulting network availability."""
-    if (spec.phrase is None or not assets or
-            palette in ("electronic", "soft-electronic")):
+    if spec.phrase is None or not assets or palette == "electronic":
         return
     rng = np.random.default_rng(seed * 7919 + 17)
     short = [
@@ -228,12 +226,7 @@ def enrich_with_catalog_samples(
         and not any(word in asset.relative_path.lower() for word in _ORNAMENT_WORDS)
     ]
     roles = {role: _role_assets(short, role) for role in ("low", "mid", "high")}
-    percussion_probability = (
-        0.86 if palette == "acoustic"
-        else 0.76 if palette in ("wooden", "warm", "plucked")
-        else 0.60 if palette in ("airy", "shimmering")
-        else 0.66
-    )
+    percussion_probability = 0.86 if palette == "acoustic" else 0.66
     for lane in spec.phrase.percussion:
         if rng.random() > percussion_probability:
             continue
@@ -245,7 +238,9 @@ def enrich_with_catalog_samples(
         asset = _choose_across_collections(rng, roles[role])
         if asset:
             lane.sample = asset.ref
-            lane.round_robin_samples = _round_robin_variants(asset, roles[role])
+            if spec.phrase.round_robin_strategy == "cyclic":
+                lane.round_robin_samples = _round_robin_variants(
+                    asset, roles[role])
             lane.articulation = (asset.articulation or
                                  infer_articulation(asset.relative_path))
             lane.sound = f"sample:{asset.collection}"
@@ -274,18 +269,8 @@ def enrich_with_catalog_samples(
             "ocarina", "harmonica", "flute", "recorder", "pizz", "psaltery",
         ),
     }
-    palette_preferences = {
-        "airy": ("flute", "recorder", "ocarina", "harmonica", "vibraphone"),
-        "wooden": ("marimba", "xylophone", "mbira", "nyunga", "guitar",
-                   "psaltery"),
-        "warm": ("piano", "guitar", "organ", "harmonica", "cello"),
-        "shimmering": ("vibraphone", "glockenspiel", "celesta", "harp"),
-        "plucked": ("guitar", "mbira", "nyunga", "psaltery", "pizz", "harp"),
-    }
     preferred_words = preferences.get(spec.lead.instrument, ())
-    if palette in palette_preferences:
-        preferred_words = palette_preferences[palette]
-    elif spec.phrase.family in family_preferences and rng.random() < 0.76:
+    if spec.phrase.family in family_preferences and rng.random() < 0.76:
         preferred_words = family_preferences[spec.phrase.family]
     compatible_by_word = {
         word: [
@@ -303,13 +288,12 @@ def enrich_with_catalog_samples(
     ]
     probability = (
         0.90 if palette == "acoustic"
-        else 0.88 if palette in palette_preferences
         else 0.50 if spec.lead.instrument == "piano"
         else 0.76 if spec.phrase.family in family_preferences
         else 0.64
     )
     if compatible and rng.random() < probability:
-        if palette in palette_preferences or spec.phrase.family in family_preferences:
+        if spec.phrase.family in family_preferences:
             timbres = sorted(compatible_by_word)
             choices = compatible_by_word[
                 timbres[int(rng.integers(0, len(timbres)))]
@@ -330,12 +314,7 @@ def enrich_with_catalog_samples(
         instrument for instrument in instruments
         if "fashionbass" in instrument.name.lower()
     ]
-    bass_probability = (
-        0.58 if palette in ("acoustic", "warm")
-        else 0.48 if palette in ("wooden", "plucked")
-        else 0.20 if palette in ("airy", "shimmering")
-        else 0.34
-    )
+    bass_probability = 0.58 if palette == "acoustic" else 0.34
     if natural_basses and rng.random() < bass_probability:
         spec.phrase.bass_instrument = natural_basses[
             int(rng.integers(0, len(natural_basses)))
@@ -365,34 +344,7 @@ def _apply_request(spec: BedSpec, request: MusicRequest, profile: GenerationProf
     spec.swing = min(spec.swing, profile.max_swing)
     if spec.phrase:
         spec.phrase.palette = request.palette
-        if request.palette == "airy":
-            spec.phrase.pad_timbre = "sine"
-            spec.phrase.bass_timbre = "round"
-            spec.drums.level *= 0.86
-            spec.space.reverb_mix = min(spec.space.reverb_mix * 1.12, 0.62)
-        elif request.palette == "wooden":
-            spec.phrase.pad_timbre = "triangle"
-            spec.phrase.bass_timbre = "pluck"
-            spec.space.reverb_mix *= 0.90
-        elif request.palette == "warm":
-            spec.phrase.pad_timbre = "sine"
-            spec.phrase.bass_timbre = "round"
-            spec.pad.cutoff_base *= 0.86
-            spec.lead.level *= 0.94
-        elif request.palette == "shimmering":
-            spec.phrase.pad_timbre = "triangle"
-            spec.pad.cutoff_base *= 1.12
-            spec.drums.level *= 0.88
-            spec.lead.level *= 0.90
-        elif request.palette == "plucked":
-            spec.phrase.pad_timbre = "triangle"
-            spec.phrase.bass_timbre = "pluck"
-        elif request.palette == "soft-electronic":
-            spec.phrase.pad_timbre = "sine"
-            spec.phrase.bass_timbre = "round"
-            spec.drums.level *= 0.86
-            spec.pad.cutoff_base *= 0.90
-    if request.palette in ("electronic", "soft-electronic"):
+    if request.palette == "electronic":
         spec.pad.instrument = "synth"
         spec.lead.instrument = "synth"
         if spec.phrase:
@@ -487,7 +439,7 @@ def build_candidates(
         spec.engine_version = ENGINE_VERSION
         spec.profile_version = profile.name
         _apply_request(spec, request, profile)
-        if assets and request.palette not in ("electronic", "soft-electronic"):
+        if assets and request.palette != "electronic":
             enrich_with_catalog_samples(
                 spec, assets, instruments or [], bed_seed, palette=request.palette
             )
@@ -579,24 +531,7 @@ def select_balanced(
             audio_features=tuple(float(value) for value in row.features),
             motif_features=tuple(float(value) for value in motif_features(row.spec)),
             instrument_families=instrument_families(row.spec),
-            grammar_features=grammar_features(row.spec),
         )
-
-    def structural_tags(index: int) -> tuple[str, ...]:
-        phrase = candidates[index].spec.phrase
-        if phrase is None:
-            return ("bass:legacy", "motif:legacy", "palette:legacy")
-        return (f"bass:{phrase.bass_grammar}",
-                f"motif:{phrase.motif_grammar}",
-                f"palette:{phrase.palette}")
-
-    def structural_bonus(index: int, chosen: list[int]) -> float:
-        counts: dict[str, int] = {}
-        for prior in chosen:
-            for tag in structural_tags(prior):
-                counts[tag] = counts.get(tag, 0) + 1
-        return sum(0.5 / (1 + counts.get(tag, 0))
-                   for tag in structural_tags(index))
 
     selected: list[int] = []
     while len(selected) < count:
@@ -622,8 +557,7 @@ def select_balanced(
                                 candidate_fingerprint(prior),
                             )
                             for prior in selected
-                        ) + 0.35 * candidate_score(index)
-                        + structural_bonus(index, selected),
+                        ) + 0.35 * candidate_score(index),
                         -candidates[index].seed,
                     ),
                 )
@@ -642,10 +576,6 @@ def select_balanced(
             if phrase and phrase.bass_instrument and "fashionbass" in \
                     phrase.bass_instrument.name.lower():
                 tags.add("natural-bass")
-            if phrase:
-                tags.add(f"bass:{phrase.bass_grammar}")
-                tags.add(f"motif:{phrase.motif_grammar}")
-                tags.add(f"palette:{phrase.palette}")
             lead_name = (phrase.lead_instrument.name.lower()
                          if phrase and phrase.lead_instrument else "")
             if any(word in lead_name for word in (
@@ -675,41 +605,6 @@ def select_balanced(
             break
         selected[best[1]] = best[2]
 
-    def batch_objective(indexes: list[int]) -> tuple[int, float, float, float]:
-        structures = {tag for index in indexes for tag in structural_tags(index)}
-        distances = [
-            fingerprint_distance(candidate_fingerprint(left),
-                                 candidate_fingerprint(right))
-            for position, left in enumerate(indexes)
-            for right in indexes[position + 1:]
-        ]
-        minimum = min(distances, default=0.0)
-        mean = sum(distances) / max(len(distances), 1)
-        quality = sum(candidate_score(index) for index in indexes) / len(indexes)
-        return len(structures), minimum, mean, quality
-
-    # A greedy family pass can still leave one near-duplicate pair. Improve the
-    # complete option set without changing its one-result-per-family contract.
-    while True:
-        current_objective = batch_objective(selected)
-        best_swap: tuple[tuple[int, float, float, float], int, int] | None = None
-        for position, old_index in enumerate(selected):
-            family = candidates[old_index].family
-            for new_index in by_family.get(family, ()):
-                if new_index in selected:
-                    continue
-                proposal = [*selected]
-                proposal[position] = new_index
-                objective = batch_objective(proposal)
-                if objective <= current_objective:
-                    continue
-                if best_swap is None or objective > best_swap[0] or (
-                        objective == best_swap[0] and
-                        candidates[new_index].seed < candidates[best_swap[2]].seed):
-                    best_swap = objective, position, new_index
-        if best_swap is None:
-            break
-        selected[best_swap[1]] = best_swap[2]
     return [candidates[index] for index in selected]
 
 
@@ -767,7 +662,7 @@ def resolve_request(
         profile.families
     )
     library = library or SampleLibrary()
-    if request.palette not in ("electronic", "soft-electronic"):
+    if request.palette != "electronic":
         if progress_callback:
             progress_callback(0.0, "Opening the production sample catalog")
         assets, instruments, inventory_cached = _safe_inventory(library)
