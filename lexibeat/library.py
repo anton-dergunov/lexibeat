@@ -295,6 +295,12 @@ class SampleLibrary:
                 if self.local_catalog_path.exists() or not self.use_bundled
                 else self.bundled_catalog_path)
 
+    @property
+    def uses_bundled_catalog(self) -> bool:
+        """Whether catalog rows come from the immutable production bundle."""
+        return (self.use_bundled and self.bundled_catalog_path.exists()
+                and self.catalog_path == self.bundled_catalog_path)
+
     def ensure_roots(self, *, require_external: bool = False) -> None:
         self.local.mkdir(parents=True, exist_ok=True)
         (self.local / "samples").mkdir(exist_ok=True)
@@ -543,6 +549,10 @@ class SampleLibrary:
         bundled = BUNDLED_ROOT / "samples" / ref.collection / f"{ref.asset_id}{suffix}"
         if self.use_bundled and bundled.exists():
             return bundled
+        if self.uses_bundled_catalog:
+            raise FileNotFoundError(
+                "The production sample bundle is incomplete: "
+                f"missing {bundled}. Repair or reattach the mounted bundle.")
         path = self.collection_path(ref.collection) / row[0]
         if not path.exists():
             raise FileNotFoundError(

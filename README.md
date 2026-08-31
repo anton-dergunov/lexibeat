@@ -58,8 +58,12 @@ Run the optional browser explorer locally with:
 It installs the explorer and local-TTS extras and opens a Gradio interface.
 **Lesson** accepts one to six Spanish/English pairs, synthesizes the established
 retrieval-practice sequence with Chatterbox, mixes it over the current music
-bed, and displays timed text in the audio player. The first local request may
-download model weights and create the language-specific reference cache.
+bed, and displays timed text in the audio player. A caption begins with its
+utterance and remains visible until the next utterance, so the English answer is
+never exposed before it is spoken. Lesson progress distinguishes validation,
+model allocation/loading, individual utterances, music rendering, and mixing.
+The first local request may download model weights and create the language-
+specific reference cache.
 
 **Music** exposes the safe product controls. **Lab** edits the resolved
 `BedSpec`, validates production safety, randomizes unlocked fields, renders WAV
@@ -102,6 +106,13 @@ with `LEXIBEAT_BUCKET_MOUNT`, or the complete bundle path can be selected with
 `LEXIBEAT_BUNDLE_ROOT`. If the bundle is not mounted, the hosted UI remains
 usable but offers only the sample-free electronic palette. Rendering and
 validation never perform implicit downloads.
+
+The production bundle catalog contains only checksum-verified files copied by
+the bundle builder. Music generation therefore trusts and caches that immutable
+inventory instead of issuing per-sample existence checks against the mounted
+bucket. Mutable local catalogs retain availability checks. If a cataloged bundle
+file is missing when selected, generation reports that the bundle must be
+repaired or reattached.
 
 The production bundle is currently about 1.8 GB. A private bucket is appropriate
 for the public Space: its visibility does not control the Space's visibility,

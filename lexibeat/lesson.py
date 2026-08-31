@@ -25,6 +25,7 @@ from .voice import Backend, Speaker
 
 LESSON_MODEL = "chatterbox-multilingual"
 LESSON_PATTERN = "retrieval"
+LESSON_ENGINE_VERSION = "2"
 MAX_LESSON_ITEMS = 6
 MAX_CELL_CHARACTERS = 120
 DEFAULT_LESSON_ROWS = [
@@ -153,6 +154,7 @@ def _speech_key(items: Sequence[Item], spec: BedSpec, model: str,
         "model": model,
         "voice_seed": voice_seed,
         "engine_version": ENGINE_VERSION,
+        "lesson_engine_version": LESSON_ENGINE_VERSION,
         "sample_rate": SR,
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"),
@@ -160,14 +162,18 @@ def _speech_key(items: Sequence[Item], spec: BedSpec, model: str,
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _subtitles(events: Sequence[Event]) -> list[dict[str, Any]]:
+def _subtitles(events: Sequence[Event], grid: Grid,
+               total_bars: int, *, outro_bars: int = 2) -> list[dict[str, Any]]:
     rows = []
-    for event in events:
+    final_hold = grid.bar_start(max(total_bars - outro_bars, 0))
+    for index, event in enumerate(events):
         language, _, text = event.label.partition(":")
+        spoken_end = float(event.start + len(event.audio) / SR)
+        next_start = (float(events[index + 1].start)
+                      if index + 1 < len(events) else float(final_hold))
         rows.append({
             "text": text,
-            "timestamp": [float(event.start),
-                          float(event.start + len(event.audio) / SR)],
+            "timestamp": [float(event.start), max(spoken_end, next_start)],
             "language": language,
         })
     return rows
@@ -182,12 +188,17 @@ def render_lesson_speech(
     config: ExplorerConfig | None = None,
     palette: str = "electronic",
     voice_seed: int | None = None,
+    progress: Callable[[float, str], None] | None = None,
 ) -> dict[str, Any]:
     """GPU phase: synthesize and cache a mono speech stem and timing metadata."""
+    if progress:
+        progress(0.03, "Validating vocabulary")
     if model != LESSON_MODEL:
         raise ValueError(f"Unsupported lesson model '{model}'.")
     config = config or ExplorerConfig.from_environment()
     items = normalize_lesson_rows(rows)
+    if progress:
+        progress(0.05, "Resolving the applied music bed")
     spec = resolve_lesson_spec(state, palette=palette)
     voice_seed = (int(spec.seed % (2**31 - 1)) if voice_seed is None
                   else int(voice_seed))
@@ -207,6 +218,8 @@ def render_lesson_speech(
     root.mkdir(parents=True, exist_ok=True)
     with _cache_lock(key):
         if speech_path.is_file() and metadata_path.is_file():
+            if progress:
+                progress(1.0, "Using cached speech")
             return artifact(True).to_dict()
         temporary_audio = root / f".{key}.{os.getpid()}.speech.partial.wav"
         temporary_metadata = root / f".{key}.{os.getpid()}.speech.partial.json"
@@ -215,8 +228,14 @@ def render_lesson_speech(
             voice_seed=voice_seed)
         try:
             grid = Grid.from_spec(spec)
+            if progress:
+                progress(0.08, "Preparing Chatterbox synthesis")
             events, total_bars = arrange(
-                items, speaker, grid, pattern=LESSON_PATTERN, progress=False)
+                items, speaker, grid, pattern=LESSON_PATTERN, progress=False,
+                progress_callback=(
+                    (lambda completed, total, message:
+                     progress(0.10 + 0.84 * completed / max(total, 1), message))
+                    if progress else None))
             speech = render_speech(events, total_bars, grid)
             if not len(speech) or not np.isfinite(speech).all():
                 raise RuntimeError("Speech renderer produced invalid audio.")
@@ -225,7 +244,7 @@ def render_lesson_speech(
                 "bed_spec": asdict(spec),
                 "items": [{"source": item.source, "target": item.target}
                           for item in items],
-                "subtitles": _subtitles(events),
+                "subtitles": _subtitles(events, grid, total_bars),
                 "total_bars": total_bars,
                 "voice_seed": voice_seed,
             }
@@ -237,6 +256,8 @@ def render_lesson_speech(
             _trim_lesson_cache(
                 root, keep={speech_path, metadata_path},
                 max_bytes=config.max_cache_bytes)
+            if progress:
+                progress(1.0, "Speech synthesis complete")
         finally:
             temporary_audio.unlink(missing_ok=True)
             temporary_metadata.unlink(missing_ok=True)

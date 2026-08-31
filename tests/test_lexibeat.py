@@ -18,6 +18,11 @@ from lexibeat.api import MusicRequest, render_music, resolve_music
 from lexibeat.bedspec import BedSpec
 from lexibeat.arrange import arrange
 from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
+from lexibeat.generator import (
+    _bundled_inventory_cache,
+    _safe_assets,
+    _safe_inventory,
+)
 from lexibeat.instruments import CatalogMultiSampleInstrument, SampledInstrument
 from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, SampleAsset,
                               SampleLibrary, SampleRef, directory_size,
@@ -27,6 +32,7 @@ from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
 from lexibeat.voice import (
     CAPABILITIES,
+    CHATTERBOX_TEMPERATURE,
     CloudflareAura2Backend,
     CloudflareMeloBackend,
     DEFAULT_MODELS,
@@ -471,6 +477,7 @@ class VoiceTests(unittest.TestCase):
         self.assertEqual(calls[1]["ref_audio"], "/en-Daniel.wav")
         self.assertEqual(calls[0]["lang_code"], "es")
         self.assertEqual(calls[1]["lang_code"], "en")
+        self.assertEqual(calls[0]["temperature"], CHATTERBOX_TEMPERATURE)
 
 
 class BedSpecTests(unittest.TestCase):
@@ -622,6 +629,32 @@ class TieredLibraryTests(unittest.TestCase):
             resolved = library.resolve(assets[0].ref)
             self.assertTrue(resolved.exists())
             self.assertIn("production-core", str(resolved))
+
+    def test_bundled_inventory_trusts_catalog_and_is_cached(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(
+                base / "missing-external", base / "empty-local",
+                use_bundled=True)
+            self.assertTrue(library.uses_bundled_catalog)
+            with mock.patch.object(library, "is_promoted") as availability:
+                assets = _safe_assets(library)
+            self.assertTrue(assets)
+            availability.assert_not_called()
+
+            _bundled_inventory_cache.clear()
+            with mock.patch("lexibeat.generator._safe_assets",
+                            wraps=_safe_assets) as load_assets:
+                first_assets, first_instruments, first_cached = \
+                    _safe_inventory(library)
+                second_assets, second_instruments, second_cached = \
+                    _safe_inventory(library)
+            self.assertFalse(first_cached)
+            self.assertTrue(second_cached)
+            self.assertEqual(first_assets, second_assets)
+            self.assertEqual(first_instruments, second_instruments)
+            self.assertEqual(load_assets.call_count, 1)
+            _bundled_inventory_cache.clear()
 
     def test_catalog_can_open_when_default_external_tier_is_offline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -865,6 +898,34 @@ class RenderAndMixTests(unittest.TestCase):
         self.assertTrue(all(event.start % grid.bar == 0 for event in events))
         self.assertTrue(all(value == grid.bar * 0.92
                             for value in speaker.targets))
+
+    def test_chatterbox_repeats_are_ordered_and_long_outlier_is_retried(self) -> None:
+        class FakeSpeaker:
+            prosody_strength = 1.0
+            backend = types.SimpleNamespace(name="chatterbox")
+
+            def __init__(self):
+                self.calls = []
+
+            def say(self, text, lang, prosody, emotion, target_seconds=None,
+                    *, retry=False):
+                del text, emotion, target_seconds
+                self.calls.append((lang, prosody.exaggeration_bias, retry))
+                if lang == "es" and prosody.exaggeration_bias == -0.04 and not retry:
+                    return np.ones(30_000, dtype=np.float32)
+                return np.ones(100, dtype=np.float32)
+
+        speaker = FakeSpeaker()
+        events, _ = arrange(
+            [Item("hola", "hello")], speaker,
+            Grid(bpm=60, beats_per_bar=4, beat_unit=4), progress=False)
+        spanish = [event for event in events if event.label.startswith("es:")]
+        self.assertEqual(
+            [bias for lang, bias, retry in speaker.calls
+             if lang == "es" and not retry],
+            [0.0, 0.04, -0.04])
+        self.assertEqual(len(spanish[-1].audio), 100)
+        self.assertEqual(sum(retry for _, _, retry in speaker.calls), 1)
 
 
 class BenchmarkTests(unittest.TestCase):

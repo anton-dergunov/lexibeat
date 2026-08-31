@@ -64,6 +64,8 @@ REFERENCE_TEXTS = {
            "Ready? Let's begin."),
 }
 DEFAULT_REFERENCES = {"es": "say:Paulina", "en": "say:Daniel"}
+CHATTERBOX_TEMPERATURE = 0.68
+CHATTERBOX_REPEAT_EXAGGERATION = (0.0, 0.04, -0.04)
 
 
 @dataclass(frozen=True)
@@ -152,6 +154,15 @@ class Prosody:
                    semitones=semitones * strength,
                    gain_db=gain * strength,
                    exaggeration_bias=exaggeration * strength)
+
+    @classmethod
+    def for_chatterbox_repeat(cls, index: int,
+                              strength: float = 1.0) -> "Prosody":
+        """Vary delivery conservatively: normal, emphasized, then restrained."""
+        result = cls.for_repeat(index, strength)
+        bias = CHATTERBOX_REPEAT_EXAGGERATION[
+            index % len(CHATTERBOX_REPEAT_EXAGGERATION)]
+        return replace(result, exaggeration_bias=bias * strength)
 
     def with_emotion(self, emotion: Emotion, strength: float = 1.0) -> "Prosody":
         return replace(
@@ -325,7 +336,7 @@ class MlxAudioBackend(_ReferenceBackend):
             ref_audio=self.ref_audios[lang],
             exaggeration=float(np.clip(
                 emotion.exaggeration + prosody.exaggeration_bias, 0.05, 1.0)),
-            cfg_weight=emotion.cfg_weight, temperature=0.8,
+            cfg_weight=emotion.cfg_weight, temperature=CHATTERBOX_TEMPERATURE,
         )
         started = time.perf_counter()
         with warnings.catch_warnings():
@@ -1161,9 +1172,10 @@ class Speaker:
 
     def say(self, text: str, lang: str, prosody: Prosody = Prosody(),
             emotion: Emotion = NEUTRAL,
-            target_seconds: float | None = None) -> np.ndarray:
+            target_seconds: float | None = None, *,
+            retry: bool = False) -> np.ndarray:
         key = (text, lang, prosody, emotion, target_seconds)
-        if key in self._cache:
+        if not retry and key in self._cache:
             return self._cache[key]
         seed = self.voice_seed + self._call_index
         self._call_index += 1
@@ -1207,6 +1219,12 @@ class Speaker:
         self.stats.append(metadata)
         self._cache[key] = audio
         return audio
+
+    def remember_take(self, text: str, lang: str, prosody: Prosody,
+                      emotion: Emotion, target_seconds: float | None,
+                      audio: np.ndarray) -> None:
+        """Restore or replace the cached take after comparative quality control."""
+        self._cache[(text, lang, prosody, emotion, target_seconds)] = audio
 
     def close(self) -> None:
         close = getattr(self.backend, "close", None)

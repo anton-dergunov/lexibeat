@@ -18,6 +18,8 @@ except ImportError:  # The package exists in ZeroGPU Spaces, not local installs.
 
     spaces = _LocalSpaces()
 
+import gradio as gr
+
 
 def _configure_attached_sample_bucket() -> None:
     """Use the conventional read-only bucket mount when it is available."""
@@ -56,13 +58,15 @@ if config.hosted:
 
 
 @spaces.GPU(duration=lesson_gpu_duration)
-def generate_hosted_lesson(rows: object, model: str, state: dict) -> dict:
+def generate_hosted_lesson(rows: object, model: str, state: dict,
+                           progress=gr.Progress()) -> dict:
     """The directly registered ZeroGPU boundary for Chatterbox synthesis."""
     if _hosted_backend is None:
         raise RuntimeError("The hosted CUDA voice backend is unavailable.")
     return render_lesson_speech(
         rows, model, state, backend=_hosted_backend, config=config,
-        palette=lesson_palette)
+        palette=lesson_palette,
+        progress=lambda value, message: progress(value, desc=message))
 
 
 demo = build_demo(

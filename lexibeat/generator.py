@@ -6,6 +6,7 @@ import hashlib
 import math
 import random
 import secrets
+import threading
 from dataclasses import replace
 from pathlib import Path
 from typing import Callable, Sequence
@@ -47,6 +48,12 @@ CancelCheck = Callable[[], bool]
 
 class GenerationCancelledError(RuntimeError):
     """Raised at a safe boundary when a caller cancels candidate generation."""
+
+
+_inventory_lock = threading.Lock()
+_bundled_inventory_cache: dict[
+    tuple[str, int, int], tuple[tuple[SampleAsset, ...], tuple[InstrumentRef, ...]]
+] = {}
 
 _ORNAMENT_WORDS = (
     "sleigh", "jingle", "bell", "cowbell", "chime", "cymbal", "triangle",
@@ -310,9 +317,35 @@ def _safe_assets(library: SampleLibrary) -> list[SampleAsset]:
         name for name, source in COLLECTIONS.items() if source.safe_default
     )
     assets = library.assets(collections=safe_collections)
+    # The bundle builder removes every catalog row whose checksum-verified file
+    # was not copied. Trust that immutable catalog instead of issuing thousands
+    # of remote existence checks against an attached bucket.
+    if library.uses_bundled_catalog:
+        return assets
     if not library.external.exists():
         assets = [asset for asset in assets if library.is_promoted(asset)]
     return assets
+
+
+def _safe_inventory(
+    library: SampleLibrary,
+) -> tuple[list[SampleAsset], list[InstrumentRef], bool]:
+    """Load safe assets and instruments, caching immutable bundled metadata."""
+    if not library.uses_bundled_catalog:
+        assets = _safe_assets(library)
+        return assets, instrument_refs(assets), False
+    catalog = library.catalog_path
+    stat = catalog.stat()
+    key = (str(catalog.resolve()), stat.st_mtime_ns, stat.st_size)
+    with _inventory_lock:
+        cached = _bundled_inventory_cache.get(key)
+        if cached is not None:
+            return list(cached[0]), list(cached[1]), True
+        assets = _safe_assets(library)
+        instruments = instrument_refs(assets)
+        _bundled_inventory_cache.clear()
+        _bundled_inventory_cache[key] = (tuple(assets), tuple(instruments))
+    return assets, instruments, False
 
 
 def build_candidates(
@@ -345,9 +378,9 @@ def build_candidates(
             if stop_after_valid is not None:
                 accepted_target = max(stop_after_valid, 1)
                 progress_callback(
-                    min(len(candidates) / accepted_target, 0.99),
-                    f"Finding variation {min(len(candidates) + 1, accepted_target)} "
-                    f"of {accepted_target}",
+                    index / max(resolved_pool_size, 1),
+                    f"Testing candidate {index + 1} of {resolved_pool_size} · "
+                    f"{len(candidates)} of {accepted_target} accepted",
                 )
             else:
                 progress_callback(index / max(resolved_pool_size, 1),
@@ -404,6 +437,13 @@ def build_candidates(
     if progress_callback:
         progress_callback(1.0, "Candidate analysis complete")
     if len(candidates) < count:
+        incomplete_bundle = next(
+            (row["reason"] for row in rejected
+             if "production sample bundle is incomplete" in row["reason"].lower()),
+            None,
+        )
+        if incomplete_bundle:
+            raise RuntimeError(incomplete_bundle)
         raise RuntimeError(
             f"Only {len(candidates)} valid candidates for requested count {count}; "
             "install the production sample bundle, choose the electronic palette, "
@@ -573,8 +613,18 @@ def resolve_request(
         profile.families
     )
     library = library or SampleLibrary()
-    assets = _safe_assets(library) if request.palette != "electronic" else []
-    instruments = instrument_refs(assets)
+    if request.palette != "electronic":
+        if progress_callback:
+            progress_callback(0.0, "Opening the production sample catalog")
+        assets, instruments, inventory_cached = _safe_inventory(library)
+        if progress_callback:
+            action = "Using cached" if inventory_cached else "Loaded"
+            progress_callback(
+                0.0,
+                f"{action} sample inventory: {len(assets):,} samples, "
+                f"{len(instruments)} instruments")
+    else:
+        assets, instruments = [], []
     candidates, _ = build_candidates(
         1,
         1,

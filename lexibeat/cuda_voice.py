@@ -8,7 +8,12 @@ import time
 import numpy as np
 
 from .emotion import Emotion
-from .voice import CAPABILITIES, Prosody, SynthesisResult
+from .voice import (
+    CAPABILITIES,
+    CHATTERBOX_TEMPERATURE,
+    Prosody,
+    SynthesisResult,
+)
 
 
 class CudaChatterboxBackend:
@@ -38,7 +43,7 @@ class CudaChatterboxBackend:
             "language_id": lang,
             "exaggeration": exaggeration,
             "cfg_weight": emotion.cfg_weight,
-            "temperature": 0.8,
+            "temperature": CHATTERBOX_TEMPERATURE,
         }
         started = time.perf_counter()
         wav = self._model.generate(text, **controls)

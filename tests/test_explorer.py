@@ -229,12 +229,18 @@ class LessonTests(unittest.TestCase):
                 [round(row["timestamp"][0] / grid.bar)
                  for row in first["subtitles"]],
                 [2, 4, 5, 6, 7, 8])
-            for row in first["subtitles"]:
+            self.assertEqual(
+                [round(row["timestamp"][1] / grid.bar)
+                 for row in first["subtitles"]],
+                [4, 5, 6, 7, 8, 10])
+            for index, row in enumerate(first["subtitles"]):
                 self.assertAlmostEqual(row["timestamp"][0] / grid.bar,
                                        round(row["timestamp"][0] / grid.bar))
-                caption_duration = row["timestamp"][1] - row["timestamp"][0]
-                self.assertGreater(caption_duration, 0)
-                self.assertLessEqual(caption_duration, 0.1 + 1e-9)
+                self.assertGreater(row["timestamp"][1], row["timestamp"][0])
+                if index + 1 < len(first["subtitles"]):
+                    self.assertEqual(
+                        row["timestamp"][1],
+                        first["subtitles"][index + 1]["timestamp"][0])
 
             mixed = finalize_lesson(first, config=config)
             audio, rate = sf.read(mixed["audio_path"], always_2d=True)
@@ -269,6 +275,18 @@ class LessonTests(unittest.TestCase):
                 {"bed_spec": asdict(other_bed)}, backend=self.FakeBackend(),
                 config=config)
             self.assertNotEqual(first["speech_path"], bed_changed["speech_path"])
+
+            progress_events: list[tuple[float, str]] = []
+            render_lesson_speech(
+                [["uno", "one"]], LESSON_MODEL, state,
+                backend=self.FakeBackend(), config=config,
+                progress=lambda value, message:
+                    progress_events.append((value, message)))
+            messages = [message for _, message in progress_events]
+            self.assertIn("Validating vocabulary", messages)
+            self.assertTrue(any("Synthesizing 1 of 6" in message
+                                for message in messages))
+            self.assertEqual(messages[-1], "Speech synthesis complete")
 
     def test_failed_speech_render_removes_partial_files(self) -> None:
         class BrokenBackend(self.FakeBackend):
@@ -409,6 +427,11 @@ class ExplorerHttpTests(unittest.TestCase):
             self.assertEqual(voice_model.value, LESSON_MODEL)
             self.assertEqual(voice_model.choices,
                              [("Chatterbox Multilingual", LESSON_MODEL)])
+            start_lesson = next(
+                block for block in demo.fns.values()
+                if block.fn is not None and block.fn.__name__ == "start_lesson")
+            self.assertIn("Waiting for local Chatterbox",
+                          start_lesson.fn(DEFAULT_LESSON_ROWS))
             tabs = next(block for block in demo.blocks.values()
                         if block.__class__.__name__ == "Tabs")
             self.assertEqual(tabs.selected, "lesson")
@@ -454,10 +477,11 @@ class ExplorerHttpTests(unittest.TestCase):
             self.assertNotIn("Generate another", button_values)
             self.assertNotIn("Play", button_values)
             self.assertNotIn("Stop", button_values)
-            self.assertTrue(any("variation 6 of 6" in message
+            self.assertTrue(any("Testing candidate" in message
+                                and "of 24" in message
                                 for _, message in progress_events))
-            self.assertFalse(any("of 24" in message
-                                 for _, message in progress_events))
+            self.assertTrue(any("of 6 accepted" in message
+                                for _, message in progress_events))
             fractions = [fraction for fraction, _ in progress_events]
             self.assertEqual(fractions, sorted(fractions))
 

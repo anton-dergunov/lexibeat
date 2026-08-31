@@ -34,6 +34,7 @@ from .lesson import (
     DEFAULT_LESSON_ROWS,
     LESSON_MODEL,
     finalize_lesson,
+    normalize_lesson_rows,
     render_lesson_speech,
 )
 
@@ -268,15 +269,18 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
     lesson_palette = "hybrid" if "hybrid" in palette_choices else "electronic"
 
     if lesson_generate is None:
-        def lesson_generate(rows: object, model: str, state: dict) -> dict:
+        def lesson_generate(rows: object, model: str, state: dict,
+                            progress=gr.Progress()) -> dict:
             global _LOCAL_VOICE_BACKEND
+            progress(0.01, desc="Loading local Chatterbox")
             with _LOCAL_VOICE_LOCK:
                 if _LOCAL_VOICE_BACKEND is None:
                     from .voice import MlxAudioBackend
                     _LOCAL_VOICE_BACKEND = MlxAudioBackend()
             return render_lesson_speech(
                 rows, model, state, backend=_LOCAL_VOICE_BACKEND,
-                config=config, palette=lesson_palette)
+                config=config, palette=lesson_palette,
+                progress=lambda value, message: progress(value, desc=message))
 
     with gr.Blocks(title="LexiBeat Lesson Generator", fill_width=True,
                    analytics_enabled=False) as demo:
@@ -644,7 +648,18 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                 subtitles=result["subtitles"])
             return [*values, status, lesson_value, result["audio_path"]]
 
-        lesson_event = lesson_button.click(
+        def start_lesson(rows: object) -> str:
+            count = len(normalize_lesson_rows(rows))
+            destination = ("ZeroGPU allocation" if config.hosted
+                           else "local Chatterbox")
+            return (
+                "### Preparing lesson\n"
+                f"Validated {count} vocabulary pair{'s' if count != 1 else ''}. "
+                f"Waiting for {destination}…")
+
+        lesson_start = lesson_button.click(
+            start_lesson, vocabulary, lesson_status, api_name=False)
+        lesson_event = lesson_start.then(
             lesson_generate, [vocabulary, voice_model, current], lesson_job,
             api_name=False)
         lesson_event.then(
