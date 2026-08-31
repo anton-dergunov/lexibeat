@@ -24,6 +24,50 @@ English—so the two languages are easy to distinguish. Kokoro remains available
 as a faster fallback. The public Hugging Face Space uses the official CUDA
 Chatterbox Multilingual runtime on ZeroGPU.
 
+## Demo
+
+A short example using **Spanish 🇦🇷 → English 🇬🇧**:
+12 words and phrases set to a generated rhythmic backing track.
+
+> [!TIP]
+> 🔊 Turn on your sound to hear the generated speech and music.
+
+https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
+
+<details>
+<summary><strong>🎵 More music styles — extended 20-pair demos</strong></summary>
+
+<br>
+
+The same set of 20 Spanish–English word and phrase pairs, rendered with
+different procedurally generated music styles.
+
+### ☀️ Sunlit
+
+Bright, relaxed, and lightly rhythmic.
+
+https://github.com/user-attachments/assets/16cc6764-1d06-4a05-8fd3-048f46eb22b6
+
+### 🌊 Warm Motion
+
+Warm, flowing, and gently propulsive.
+
+https://github.com/user-attachments/assets/8f97331a-703a-415f-8b18-cbf02fb5be49
+
+### 🌙 Nocturnal
+
+Slower, darker, and more atmospheric.
+
+https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
+
+</details>
+
+### Try it yourself
+
+Generate your own tracks with any language pair, vocabulary, and music style:
+
+**[▶ Open LexiBeat on Hugging Face Spaces](https://huggingface.co/spaces/AntonDergunov/LexiBeat)**
+
 ## Setup
 
 Install [`uv`](https://docs.astral.sh/uv/), then:
