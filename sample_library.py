@@ -30,8 +30,10 @@ def _markdown(report: dict) -> str:
     lines = ["# LexiBeat sample-library report", "", "## Storage", ""]
     for tier, row in report["storage"].items():
         state = "available" if row.get("available", True) else "offline"
-        lines.append(f"- {tier}: {row['bytes'] / 1e9:.2f} GB / "
-                     f"{row['limit_bytes'] / 1e9:.0f} GB ({state}) — `{row['path']}`")
+        limit = (f" / {row['limit_bytes'] / 1e9:.0f} GB"
+                 if row.get("limit_bytes") else "")
+        lines.append(f"- {tier}: {row['bytes'] / 1e9:.2f} GB{limit} "
+                     f"({state}) — `{row['path']}`")
     assets = report["assets"]
     lines += ["", "## Provenance and licenses", "",
               "| Collection | Revision | License | Attribution |",
@@ -48,6 +50,29 @@ def _markdown(report: dict) -> str:
         lines.append(f"| {row['collection']} | {row['category']} | {row['assets']} | "
                      f"{row['duration_seconds'] / 60:.1f} min |")
     unsupported = report["sfz_with_unsupported_opcodes"]
+    coverage = report["coverage"]
+    utilization = report["utilization"]
+    lines += ["", "## Production coverage", "",
+              f"{len(report['instrument_banks'])} coherent instrument banks; "
+              f"{coverage['round_robin_groups']} round-robin groups with up to "
+              f"{coverage['max_round_robins']} takes.", "",
+              f"{utilization['production_pool_assets']} assets are eligible for "
+              "production pools, including "
+              f"{utilization['mapped_instrument_assets']} mapped instrument assets "
+              f"and {utilization['percussion_pool_assets']} percussion assets.", "",
+              "### Articulations", ""]
+    lines.extend(f"- {name}: {count}" for name, count in
+                 coverage["articulations"].items())
+    lines += ["", "### Timbre clusters", ""]
+    lines.extend(f"- {name}: {count}" for name, count in
+                 coverage["timbre_clusters"].items())
+    rejection_counts = report["rejections"]["counts"]
+    lines += ["", "## Rejections", ""]
+    if rejection_counts:
+        lines.extend(f"- {name}: {count}" for name, count in
+                     rejection_counts.items())
+    else:
+        lines.append("No catalog records were rejected.")
     lines += ["", "## SFZ compatibility", "",
               f"{len(unsupported)} documents use unsupported opcodes; inspect the JSON "
               "report before treating those instruments as fully supported.", ""]

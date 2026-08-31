@@ -57,10 +57,12 @@ class ExplorerCoreTests(unittest.TestCase):
     def test_schema_reports_versions_controls_and_hosted_limits(self) -> None:
         schema = explorer_schema(ExplorerConfig(hosted=True))
         self.assertEqual(schema["api_version"], "explorer-v1")
-        self.assertEqual(schema["engine_version"], "1.0.0")
+        self.assertEqual(schema["engine_version"], "1.1.0")
         self.assertEqual(schema["limits"]["render_seconds"], 30.0)
         self.assertFalse(schema["capabilities"]["sample_promotion"])
         self.assertIn("/bpm", schema["lockable_paths"])
+        self.assertTrue(any(control["path"] == "/phrase/round_robin_strategy"
+                            for control in schema["controls"]))
 
     def test_schema_offers_only_electronic_without_production_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as tmp, mock.patch(
@@ -81,6 +83,12 @@ class ExplorerCoreTests(unittest.TestCase):
         _, report = validate_bed_spec(invalid, analyze=False)
         self.assertEqual(report.state, "invalid")
         self.assertTrue(any(issue.code == "pattern_length" for issue in report.issues))
+
+        invalid_variation = copy.deepcopy(self.data)
+        invalid_variation["phrase"]["lead"][0]["sample_variation"] = -1
+        _, report = validate_bed_spec(invalid_variation, analyze=False)
+        self.assertEqual(report.state, "invalid")
+        self.assertTrue(any(issue.code == "round_robin" for issue in report.issues))
 
     def test_experimental_value_has_explicit_repair(self) -> None:
         experimental = copy.deepcopy(self.data)

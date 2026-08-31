@@ -20,13 +20,15 @@ from lexibeat.arrange import arrange
 from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from lexibeat.generator import (
     _bundled_inventory_cache,
+    _round_robin_variants,
     _safe_assets,
     _safe_inventory,
 )
 from lexibeat.instruments import CatalogMultiSampleInstrument, SampledInstrument
 from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, SampleAsset,
                               SampleLibrary, SampleRef, directory_size,
-                              instrument_refs)
+                              infer_articulation, infer_round_robin,
+                              instrument_refs, timbre_clusters)
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
@@ -488,6 +490,18 @@ class BedSpecTests(unittest.TestCase):
         self.assertEqual(spec.pad.instrument, "synth")
         self.assertEqual(spec.pad.duck_db, 5.0)
 
+    def test_legacy_resolved_phrase_gets_sample_variation_defaults(self) -> None:
+        data = json.loads(BedSpec.from_style("radiant", 4).to_json())
+        data["phrase"].pop("round_robin_strategy")
+        for event in data["phrase"]["lead"]:
+            event.pop("articulation")
+            event.pop("sample_variation")
+        rebuilt = BedSpec.from_dict(data)
+        self.assertEqual(rebuilt.phrase.round_robin_strategy, "cyclic")
+        self.assertTrue(all(event.articulation == "natural"
+                            and event.sample_variation == 0
+                            for event in rebuilt.phrase.lead))
+
     def test_json_round_trip_preserves_new_fields(self) -> None:
         spec = BedSpec.from_style("nocturne", 9)
         rebuilt = BedSpec.from_dict(json.loads(spec.to_json()))
@@ -564,7 +578,7 @@ class PublicGenerationApiTests(unittest.TestCase):
     def test_fixed_request_is_fully_deterministic_and_versioned(self) -> None:
         self.assertEqual(self.first.bed_spec.to_json(), self.second.bed_spec.to_json())
         self.assertEqual(self.first.fingerprint, self.second.fingerprint)
-        self.assertEqual(self.first.engine_version, "1.0.0")
+        self.assertEqual(self.first.engine_version, "1.1.0")
         self.assertEqual(self.first.profile_version, "production-v1")
         self.assertEqual(self.first.bed_spec.profile_version, "production-v1")
         self.assertTrue(self.first.quality.accepted)
@@ -619,6 +633,117 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_round_robin_and_articulation_filename_metadata(self) -> None:
+        self.assertEqual(infer_round_robin("Piano_C4_v2_rr3_Main.wav"), 2)
+        self.assertEqual(
+            infer_articulation("Strings/Solo Violin/Pizz/Violin_C4_rr1.wav"),
+            "pizzicato")
+        self.assertEqual(
+            infer_articulation("Strings/Solo Violin/Non-Vibrato/Violin_C4.wav"),
+            "sustain-non-vibrato")
+
+    def test_unmarked_same_layer_siblings_are_not_assumed_to_be_round_robins(self) -> None:
+        assets = []
+        for note in range(60, 66):
+            for take in ("a", "b"):
+                assets.append(SampleAsset(
+                    "vcsl", f"piano-{note}-{take}", f"hash-{note}-{take}",
+                    f"Piano/Piano_{note}_{take}.wav", "CC0-1.0", "pitched",
+                    midi_note=note, duration_seconds=1.0))
+        instrument = instrument_refs(assets)[0]
+        self.assertEqual(len(instrument.zones), 6)
+        self.assertEqual({zone.round_robin for zone in instrument.zones}, {0})
+
+    def test_percussion_round_robins_require_explicit_coherent_takes(self) -> None:
+        selected = SampleAsset(
+            "vcsl", "main-1", "hash-main-1",
+            "Drums/Hit_v1_rr1_Main.wav", "CC0-1.0", "percussion")
+        candidates = [
+            selected,
+            SampleAsset("vcsl", "main-2", "hash-main-2",
+                        "Drums/Hit_v1_rr2_Main.wav", "CC0-1.0", "percussion"),
+            SampleAsset("vcsl", "room-1", "hash-room-1",
+                        "Drums/Hit_v1_rr1_Room.wav", "CC0-1.0", "percussion"),
+            SampleAsset("vcsl", "unmarked", "hash-unmarked",
+                        "Drums/Hit_v1_Main.wav", "CC0-1.0", "percussion"),
+        ]
+        self.assertEqual(
+            [ref.asset_id for ref in _round_robin_variants(selected, candidates)],
+            ["main-1", "main-2"],
+        )
+        self.assertEqual(_round_robin_variants(candidates[-1], candidates), ())
+
+    def test_round_robins_keep_velocity_articulation_and_microphone_coherent(self) -> None:
+        assets = []
+        for note in range(60, 66):
+            for velocity in (1, 2):
+                for take in (1, 2):
+                    assets.append(SampleAsset(
+                        "vcsl", f"pluck-{note}-{velocity}-{take}",
+                        f"hash-{note}-{velocity}-{take}",
+                        f"Mbira/Pluck/Mbira_C4_v{velocity}_rr{take}_Main.wav",
+                        "CC0-1.0", "pitched", midi_note=note,
+                        duration_seconds=1.0))
+            assets.append(SampleAsset(
+                "vcsl", f"stacc-room-{note}", f"hash-stacc-room-{note}",
+                "Mbira/Pluck/Mbira_Stacc_C4_v1_rr1_Room.wav",
+                "CC0-1.0", "pitched", midi_note=note,
+                duration_seconds=0.5))
+        instruments = instrument_refs(assets)
+        self.assertEqual(len(instruments), 2)
+        instrument = next(row for row in instruments if row.name.endswith("@main"))
+        self.assertEqual(len(instrument.zones), 24)
+        self.assertEqual({zone.articulation for zone in instrument.zones},
+                         {"plucked"})
+        low_first = CatalogMultiSampleInstrument.__new__(
+            CatalogMultiSampleInstrument)
+        low_first.ref = instrument
+        first = low_first._pick(62, 0.1, variation=0)
+        second = low_first._pick(62, 0.1, variation=1)
+        high = low_first._pick(62, 0.9, variation=0)
+        self.assertNotEqual(first.sample, second.sample)
+        self.assertEqual((first.round_robin, second.round_robin), (0, 1))
+        self.assertNotEqual((first.lo_velocity, first.hi_velocity),
+                            (high.lo_velocity, high.hi_velocity))
+        rebuilt = BedSpec.from_dict(json.loads(BedSpec.from_style(
+            "radiant", 4).to_json()))
+        rebuilt.phrase.lead_instrument = instrument
+        self.assertEqual(BedSpec.from_dict(json.loads(rebuilt.to_json())).phrase
+                         .lead_instrument, instrument)
+
+    def test_sampled_round_robin_pcm_is_deterministic_and_varies(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            library = SampleLibrary(base / "external", base / "local")
+            root = library.collection_path("vcsl") / "Mbira" / "Pluck"
+            root.mkdir(parents=True)
+            t = np.arange(SR // 5) / SR
+            sf.write(root / "Mbira_C4_v1_rr1_Main.wav",
+                     np.sin(2 * np.pi * 220 * t), SR)
+            sf.write(root / "Mbira_C4_v1_rr2_Main.wav",
+                     np.sin(2 * np.pi * 330 * t), SR)
+            library.index("vcsl", deep=True)
+            instrument = instrument_refs(library.assets(), min_notes=1)[0]
+            renderer = CatalogMultiSampleInstrument(instrument, library)
+            first = renderer.render(60, 0.5, 0.15, variation=0)
+            repeated = renderer.render(60, 0.5, 0.15, variation=0)
+            second = renderer.render(60, 0.5, 0.15, variation=1)
+            np.testing.assert_array_equal(first, repeated)
+            self.assertFalse(np.array_equal(first, second))
+
+    def test_catalog_report_exposes_mapping_and_timbre_coverage(self) -> None:
+        assets = [
+            SampleAsset("vcsl", "dark", "a", "Piano/C2.wav", "CC0-1.0",
+                        "pitched", midi_note=36, duration_seconds=3.0,
+                        spectral_centroid=300, transient_score=0.1),
+            SampleAsset("vcsl", "bright", "b", "Mbira/C6.wav", "CC0-1.0",
+                        "pitched", midi_note=84, duration_seconds=0.2,
+                        spectral_centroid=6000, transient_score=0.9),
+        ]
+        clusters = timbre_clusters(assets)
+        self.assertNotEqual(clusters[("vcsl", "dark")],
+                            clusters[("vcsl", "bright")])
+
     def test_shipped_bundle_resolves_without_local_or_external_tier(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -790,6 +915,11 @@ class TieredLibraryTests(unittest.TestCase):
                 65, 0.5, 0.15)
             self.assertEqual(len(audio), int(0.15 * SR))
             self.assertTrue(np.isfinite(audio).all())
+            report = library.report()
+            self.assertEqual(len(report["instrument_banks"]), 1)
+            self.assertEqual(report["utilization"]["mapped_instrument_assets"], 6)
+            self.assertIn("timbre_clusters", report["coverage"])
+            self.assertIn("counts", report["rejections"])
 
 
 class BedSelectionTests(unittest.TestCase):

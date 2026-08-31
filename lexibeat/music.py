@@ -303,7 +303,10 @@ def _resolved_pad(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         voice = np.zeros(n)
         if instrument is not None:
             for note in event.midi_notes:
-                _add(voice, instrument.render(note, event.velocity, seconds), 0)
+                _add(voice, instrument.render(
+                    note, event.velocity, seconds,
+                    variation=event.sample_variation + step // max(
+                        phrase.loop_bars * grid.steps_per_bar, 1)), 0)
             voice /= max(len(event.midi_notes), 1)
         else:
             for note in event.midi_notes:
@@ -335,7 +338,10 @@ def _resolved_bass(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         assert isinstance(event, NoteEvent)
         seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.04)
         if instrument is not None:
-            tone = instrument.render(event.midi_note, event.velocity, seconds) * 0.68
+            tone = instrument.render(
+                event.midi_note, event.velocity, seconds,
+                variation=event.sample_variation + step // max(
+                    phrase.loop_bars * grid.steps_per_bar, 1)) * 0.68
         else:
             n = grid.samples(seconds)
             t = np.arange(n) / grid.sr
@@ -400,14 +406,17 @@ def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
         if len(lane.pattern) != phrase_steps:
             raise ValueError(f"Percussion lane '{lane.sound}' has {len(lane.pattern)} "
                              f"steps; expected {phrase_steps}.")
-        hit = (load_one_shot(lane.sample) if lane.sample else
-               _synth_percussion(lane.sound.removeprefix("synth:"), grid,
-                                  np.random.default_rng(spec.seed + 100 + lane_index)))
+        refs = lane.round_robin_samples or ((lane.sample,) if lane.sample else ())
+        hits = ([load_one_shot(ref) for ref in refs] if refs else [
+            _synth_percussion(lane.sound.removeprefix("synth:"), grid,
+                              np.random.default_rng(spec.seed + 100 + lane_index))
+        ])
+        hit_index = 0
         for step in range(total_steps):
             if lane.pattern[step % phrase_steps] != "x":
                 continue
-            # Probability and velocity variation are tied to phrase position, so
-            # every repetition is musically identical.
+            # Probability, timing and velocity are tied to phrase position. The
+            # chosen sample take advances separately through the resolved group.
             phrase_position = step % phrase_steps
             local_rng = np.random.default_rng(
                 spec.seed * 1009 + lane_index * 9176 + phrase_position)
@@ -416,6 +425,8 @@ def _resolved_drums(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
             jitter = local_rng.uniform(-lane.humanize, lane.humanize) \
                 if lane.humanize else 0.0
             at = grid.samples(max(0.0, _event_time(grid, step) + jitter))
+            hit = hits[hit_index % len(hits)]
+            hit_index += 1
             _add(out, hit * lane.level * local_rng.uniform(0.84, 1.12), at)
     hits_per_bar = sum(lane.pattern.count("x") for lane in phrase.percussion) / max(
         phrase.loop_bars, 1)
@@ -437,7 +448,10 @@ def _resolved_lead(spec: BedSpec, phrase: ResolvedPhrase, grid: Grid,
     for step, event in _repeat_events(phrase.lead, phrase, grid, n_bars):
         assert isinstance(event, NoteEvent)
         seconds = max(event.duration_steps * grid.bar / grid.steps_per_bar, 0.08)
-        audio = instrument.render(event.midi_note, event.velocity, seconds)
+        audio = instrument.render(
+            event.midi_note, event.velocity, seconds,
+            variation=event.sample_variation + step // max(
+                phrase.loop_bars * grid.steps_per_bar, 1))
         _add(out, audio, grid.samples(_event_time(grid, step)))
     lead_gain = 0.135 if spec.lead.instrument == "piano" else 0.11
     return out * spec.lead.level * lead_gain

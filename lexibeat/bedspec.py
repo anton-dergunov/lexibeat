@@ -99,6 +99,8 @@ class NoteEvent:
     duration_steps: float
     midi_note: int
     velocity: float
+    articulation: str = "natural"
+    sample_variation: int = 0
 
 
 @dataclass
@@ -107,6 +109,8 @@ class ChordEvent:
     duration_steps: float
     midi_notes: list[int]
     velocity: float = 0.55
+    articulation: str = "sustain"
+    sample_variation: int = 0
 
 
 @dataclass
@@ -121,6 +125,8 @@ class PercussionLane:
     pan: float = 0.0
     sample: SampleRef | None = None
     role: str = ""  # low, mid or high; empty keeps legacy JSON compatible
+    articulation: str = "natural"
+    round_robin_samples: tuple[SampleRef, ...] = ()
 
 
 @dataclass
@@ -132,6 +138,7 @@ class ResolvedPhrase:
     harmony_texture: str
     pad_timbre: str
     bass_timbre: str
+    round_robin_strategy: str = "cyclic"
     chords: list[ChordEvent] = field(default_factory=list)
     bass: list[NoteEvent] = field(default_factory=list)
     lead: list[NoteEvent] = field(default_factory=list)
@@ -161,7 +168,7 @@ class BedSpec:
     space: Space = field(default_factory=Space)
     phrase: ResolvedPhrase | None = None
     schema_version: int = 2
-    engine_version: str = "1.0.0"
+    engine_version: str = "1.1.0"
     profile_version: str = "legacy"
 
     # -- harmony helpers -------------------------------------------------
@@ -291,7 +298,9 @@ def _instrument_ref(data: dict | None) -> InstrumentRef | None:
             lo_note=zone.get("lo_note", 0), hi_note=zone.get("hi_note", 127),
             lo_velocity=zone.get("lo_velocity", 0),
             hi_velocity=zone.get("hi_velocity", 127),
-            gain_db=zone.get("gain_db", 0.0))
+            gain_db=zone.get("gain_db", 0.0),
+            round_robin=zone.get("round_robin", 0),
+            articulation=zone.get("articulation", "natural"))
         for zone in data.get("zones", [])))
 
 
@@ -300,6 +309,7 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
         family=data["family"], loop_bars=int(data["loop_bars"]),
         harmony_texture=data["harmony_texture"], pad_timbre=data["pad_timbre"],
         bass_timbre=data["bass_timbre"],
+        round_robin_strategy=data.get("round_robin_strategy", "cyclic"),
         chords=[ChordEvent(**event) for event in data.get("chords", [])],
         bass=[NoteEvent(**event) for event in data.get("bass", [])],
         lead=[NoteEvent(**event) for event in data.get("lead", [])],
@@ -307,7 +317,11 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
             sound=lane["sound"], pattern=lane["pattern"], level=lane["level"],
             probability=lane.get("probability", 1.0),
             humanize=lane.get("humanize", 0.0), pan=lane.get("pan", 0.0),
-            sample=_sample_ref(lane.get("sample")), role=lane.get("role", ""))
+            sample=_sample_ref(lane.get("sample")), role=lane.get("role", ""),
+            articulation=lane.get("articulation", "natural"),
+            round_robin_samples=tuple(
+                _sample_ref(ref) for ref in lane.get("round_robin_samples", [])
+                if ref))
             for lane in data.get("percussion", [])],
         lead_sample=_sample_ref(data.get("lead_sample")),
         pad_sample=_sample_ref(data.get("pad_sample")),
@@ -858,13 +872,20 @@ def _resolve_phrase(spec: BedSpec, family: str, rng: random.Random,
     lanes = _percussion_lanes(spec, rng, bars, density)
     if family in ("meditative", "nocturnal") and rng.random() < 0.55:
         lanes = lanes[:rng.choice([1, 2])]
+    bass = _note_events(spec, rng, bars, rng.choice(config["bass"]))
+    lead = _lead_events(spec, rng, bars, density)
+    for index, event in enumerate(chords):
+        event.sample_variation = index
+        event.articulation = "sustain" if texture != "arpeggio" else "plucked"
+    for index, event in enumerate(bass):
+        event.sample_variation = index
+    for index, event in enumerate(lead):
+        event.sample_variation = index
     return ResolvedPhrase(
         family=family, loop_bars=bars, harmony_texture=texture,
         pad_timbre=rng.choice(config["pads"]),
         bass_timbre=rng.choice(["sine", "round", "triangle", "pluck"]),
-        chords=chords,
-        bass=_note_events(spec, rng, bars, rng.choice(config["bass"])),
-        lead=_lead_events(spec, rng, bars, density), percussion=lanes,
+        chords=chords, bass=bass, lead=lead, percussion=lanes,
     )
 
 

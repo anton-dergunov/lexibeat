@@ -257,9 +257,12 @@ uv run sample_library.py playlist vcsl --category pitched --out out/vcsl.m3u8
 ```
 
 The catalog also groups pitch-labelled directories into resolved multisample
-instruments with note and velocity zones. This keeps pianos, guitars, natural
-bass, harps, mallets, mbiras, plucked strings and winds coherent instead of
-transposing one arbitrary sample across the entire register.
+instruments with note, velocity, articulation, microphone and round-robin zones.
+The renderer keeps those dimensions coherent and cycles alternate takes
+deterministically. This keeps pianos, guitars, natural bass, harps, mallets,
+mbiras, plucked strings and winds expressive without transposing one arbitrary
+sample across the entire register. Every selected take is represented in the
+saved BedSpec, so a fixed seed remains replayable.
 
 Generate a controlled listening set with:
 
@@ -274,6 +277,15 @@ uses audio plus melodic-interval distance to choose the requested count. Every f
 same two bilingual items, so timbre, rhythm and speech masking can be compared
 directly. It writes WAV/BedSpec pairs, a complete manifest, a listening guide
 and a rating CSV.
+
+An earlier manifest can be replayed after an engine change to render the same
+family/seed pairs for a controlled A/B comparison:
+
+```bash
+uv run compare_beds.py --count 5 --voice-backend none \
+  --replay-manifest out/music-before/manifest.json \
+  --out-dir out/music-after
+```
 
 The feedback-focused profile adds `radiant`, `acoustic-flow`,
 `playful-minimal`, `warm-motion`, `bright-organic`, `gentle-game`,

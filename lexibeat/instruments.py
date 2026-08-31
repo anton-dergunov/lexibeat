@@ -24,7 +24,7 @@ SR = 44100
 
 class Instrument(Protocol):
     def render(self, midi_note: float, velocity: float,
-               seconds: float) -> np.ndarray: ...
+               seconds: float, *, variation: int = 0) -> np.ndarray: ...
 
 
 def _midi_hz(note: float) -> float:
@@ -37,7 +37,8 @@ class SynthInstrument:
     name = "synth"
 
     def render(self, midi_note: float, velocity: float,
-               seconds: float) -> np.ndarray:
+               seconds: float, *, variation: int = 0) -> np.ndarray:
+        del variation
         n = int(seconds * SR)
         t = np.arange(n) / SR
         f = _midi_hz(midi_note)
@@ -94,7 +95,8 @@ class SampledInstrument:
         return path, midi_note - note
 
     def render(self, midi_note: float, velocity: float,
-               seconds: float) -> np.ndarray:
+               seconds: float, *, variation: int = 0) -> np.ndarray:
+        del variation
         path, semitones = self._pick(midi_note, velocity)
         # Read a little extra, since shifting up shortens the sample.
         audio, rate = _load_sample(path, seconds * 1.4 + 0.5)
@@ -134,7 +136,8 @@ class CatalogSampleInstrument:
         self.name = f"{ref.collection}:{ref.asset_id}"
 
     def render(self, midi_note: float, velocity: float,
-               seconds: float) -> np.ndarray:
+               seconds: float, *, variation: int = 0) -> np.ndarray:
+        del variation
         root = self.asset.midi_note if self.asset.midi_note is not None else midi_note
         audio, rate = _load_sample(str(self.path), seconds * 1.5 + 0.5)
         ratio = 2 ** ((midi_note - root) / 12.0)
@@ -161,20 +164,32 @@ class CatalogMultiSampleInstrument:
         self.library = library or SampleLibrary()
         self.name = ref.name
 
-    def _pick(self, midi_note: float, velocity: float):
+    def _pick(self, midi_note: float, velocity: float, variation: int = 0):
         midi_velocity = int(np.clip(round(velocity * 127), 0, 127))
         matching = [zone for zone in self.ref.zones
                     if zone.lo_note <= midi_note <= zone.hi_note and
                     zone.lo_velocity <= midi_velocity <= zone.hi_velocity]
         choices = matching or list(self.ref.zones)
-        return min(choices, key=lambda zone: (
+        distance = lambda zone: (
             abs(zone.root_note - midi_note),
             abs((zone.lo_velocity + zone.hi_velocity) / 2 - midi_velocity),
-            zone.sample.asset_id))
+        )
+        base = min(choices, key=lambda zone: (
+            distance(zone), zone.round_robin, zone.sample.asset_id))
+        variants = sorted(
+            (zone for zone in choices
+             if zone.root_note == base.root_note and
+             zone.lo_note == base.lo_note and zone.hi_note == base.hi_note and
+             zone.lo_velocity == base.lo_velocity and
+             zone.hi_velocity == base.hi_velocity and
+             zone.articulation == base.articulation),
+            key=lambda zone: (zone.round_robin, zone.sample.asset_id),
+        )
+        return variants[variation % len(variants)]
 
     def render(self, midi_note: float, velocity: float,
-               seconds: float) -> np.ndarray:
-        zone = self._pick(midi_note, velocity)
+               seconds: float, *, variation: int = 0) -> np.ndarray:
+        zone = self._pick(midi_note, velocity, variation)
         path = self.library.resolve(zone.sample)
         audio, rate = _load_sample(str(path), seconds * 1.5 + 0.5)
         ratio = 2 ** ((midi_note - zone.root_note) / 12.0)

@@ -65,6 +65,8 @@ class InstrumentZoneRef:
     lo_velocity: int = 0
     hi_velocity: int = 127
     gain_db: float = 0.0
+    round_robin: int = 0
+    articulation: str = "natural"
 
 
 @dataclass(frozen=True)
@@ -199,6 +201,59 @@ def _velocity_from_name(path: str) -> int:
         dynamic.group(1) if dynamic else "", 1)
 
 
+def infer_round_robin(path: str | Path) -> int | None:
+    """Return a zero-based take number from an explicit filename marker."""
+    stem = Path(path).stem.lower()
+    match = re.search(
+        r"(?:^|[_ .-])(?:rr|round[_ -]?robin|take)(\d+)(?=$|[_ .-])",
+        stem,
+    )
+    return max(int(match.group(1)) - 1, 0) if match else None
+
+
+def infer_articulation(path: str | Path) -> str:
+    """Infer a conservative articulation label without crossing bank folders."""
+    value = str(path).replace("\\", "/").lower()
+    labels = (
+        (("pizz", "pizzicato"), "pizzicato"),
+        (("spic", "spiccato"), "spiccato"),
+        (("stacc", " stac", "_stac"), "staccato"),
+        (("susnv", "non-vibrato", "nonvibrato"), "sustain-non-vibrato"),
+        (("susvib", "sustain vibrato", "vibrato"), "sustain-vibrato"),
+        (("trem", "tremolo"), "tremolo"),
+        (("muted", " mute"), "muted"),
+        (("bowed", "arco"), "bowed"),
+        (("pluck", "finger"), "plucked"),
+        (("hard mallet", "/hard/", "_hard_"), "hard-mallet"),
+        (("soft mallet", "/soft/", "_soft_"), "soft-mallet"),
+        (("sustain", "sustains", "_sus_", "suslong"), "sustain"),
+        ((" hit", "_hit", "-hit"), "hit"),
+    )
+    return next((label for markers, label in labels
+                 if any(marker in value for marker in markers)), "natural")
+
+
+def infer_microphone(path: str | Path) -> str:
+    """Return a microphone/render perspective when the name declares one."""
+    stem = Path(path).stem.lower()
+    for label in ("main", "room", "player", "close", "mid", "sum",
+                  "stereo", "mono", "outrigger"):
+        if re.search(rf"(?:^|[_ .-]){label}(?=$|[_ .-])", stem):
+            return label
+    return "default"
+
+
+def round_robin_group_key(asset: SampleAsset) -> tuple[str, str, str, str]:
+    """Identify takes that differ only by an explicit round-robin marker."""
+    relative = Path(asset.relative_path)
+    stem = re.sub(
+        r"(?:^|[_ .-])(?:rr|round[_ -]?robin|take)\d+(?=$|[_ .-])",
+        "_rr", relative.stem.lower(),
+    )
+    return (asset.collection, relative.parent.as_posix().lower(), stem,
+            infer_articulation(asset.relative_path))
+
+
 def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
                     include: tuple[str, ...] | None = None) -> list[InstrumentRef]:
     """Group catalog samples into playable directory-level multisample banks.
@@ -215,7 +270,7 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
                          "harpsichord", "organ", "celesta", "xylophone",
                          "violin", "viola", "cello", "contrabass")
     excluded = ("release", "/rel", "noise", "demo", "loop")
-    groups: dict[tuple[str, str], list[SampleAsset]] = defaultdict(list)
+    groups: dict[tuple[str, str, str, str], list[SampleAsset]] = defaultdict(list)
     for asset in assets:
         parent = Path(asset.relative_path).parent.as_posix()
         lowered = parent.lower()
@@ -229,18 +284,20 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
                 (string_front and not any(word in lowered for word in
                                           ("pizz", "spic")))):
             continue
-        groups[(asset.collection, parent)].append(asset)
+        articulation = asset.articulation or infer_articulation(asset.relative_path)
+        groups[(asset.collection, parent, articulation,
+                infer_microphone(asset.relative_path))].append(asset)
 
     instruments: list[InstrumentRef] = []
-    for (collection, parent), values in sorted(groups.items()):
+    for (collection, parent, articulation, microphone), values in sorted(groups.items()):
         notes = sorted({asset.midi_note for asset in values if asset.midi_note is not None})
         if len(notes) < min_notes:
             continue
-        by_note_velocity: dict[tuple[int, int], SampleAsset] = {}
+        by_note_velocity: dict[tuple[int, int], list[SampleAsset]] = defaultdict(list)
         for asset in sorted(values, key=lambda row: row.relative_path):
             assert asset.midi_note is not None
             key = (asset.midi_note, _velocity_from_name(asset.relative_path))
-            by_note_velocity.setdefault(key, asset)  # stable first round robin
+            by_note_velocity[key].append(asset)
         velocity_values = sorted({velocity for _, velocity in by_note_velocity})
         velocity_centers = {
             value: (64 if len(velocity_values) == 1 else
@@ -248,7 +305,7 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
             for index, value in enumerate(velocity_values)
         }
         zones: list[InstrumentZoneRef] = []
-        for (note, velocity), asset in by_note_velocity.items():
+        for (note, velocity), layer_assets in by_note_velocity.items():
             note_index = notes.index(note)
             lo_note = 0 if note_index == 0 else (notes[note_index - 1] + note + 1) // 2
             hi_note = 127 if note_index == len(notes) - 1 else (note + notes[note_index + 1]) // 2
@@ -260,14 +317,106 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
             hi_velocity = (127 if velocity_index == len(velocity_values) - 1 else
                            (center + velocity_centers[
                                velocity_values[velocity_index + 1]]) // 2)
-            zones.append(InstrumentZoneRef(
-                asset.ref, note, lo_note, hi_note,
-                max(0, min(127, lo_velocity)), max(0, min(127, hi_velocity))))
-        name = f"{collection}:{parent}"
+            ordered_assets = sorted(layer_assets, key=lambda row: row.relative_path)
+            explicit = [
+                asset for asset in ordered_assets
+                if (asset.round_robin is not None or
+                    infer_round_robin(asset.relative_path) is not None)
+            ]
+            # Ambiguous same-layer siblings are not automatically alternate takes.
+            # Retain all files only when every sibling declares an RR index.
+            selected_assets = (ordered_assets if len(explicit) >= 2 and
+                               len(explicit) == len(ordered_assets)
+                               else ordered_assets[:1])
+            used_round_robins: set[int] = set()
+            for asset in selected_assets:
+                inferred = (asset.round_robin if asset.round_robin is not None
+                            else infer_round_robin(asset.relative_path))
+                round_robin = inferred if inferred is not None else 0
+                while round_robin in used_round_robins:
+                    round_robin += 1
+                used_round_robins.add(round_robin)
+                zones.append(InstrumentZoneRef(
+                    asset.ref, note, lo_note, hi_note,
+                    max(0, min(127, lo_velocity)),
+                    max(0, min(127, hi_velocity)),
+                    round_robin=round_robin, articulation=articulation))
+        name = f"{collection}:{parent}#{articulation}@{microphone}"
         instruments.append(InstrumentRef(name, tuple(sorted(
             zones, key=lambda zone: (zone.root_note, zone.lo_velocity,
-                                    zone.sample.asset_id)))))
+                                    zone.round_robin, zone.sample.asset_id)))))
     return instruments
+
+
+def timbre_clusters(assets: list[SampleAsset]) -> dict[tuple[str, str], str]:
+    """Cluster catalog descriptors with transparent standardized thresholds."""
+    if not assets:
+        return {}
+    rows = np.asarray([
+        [asset.spectral_centroid if asset.spectral_centroid is not None else np.nan,
+         asset.transient_score if asset.transient_score is not None else np.nan,
+         np.log1p(asset.duration_seconds) if asset.duration_seconds is not None else np.nan]
+        for asset in assets
+    ], dtype=np.float64)
+    medians = np.nanmedian(rows, axis=0)
+    medians = np.where(np.isfinite(medians), medians, 0.0)
+    rows = np.where(np.isnan(rows), medians, rows)
+    means = rows.mean(axis=0)
+    scales = rows.std(axis=0)
+    scales = np.where(scales > 1e-9, scales, 1.0)
+    standardized = (rows - means) / scales
+
+    def label(value: float, low: str, middle: str, high: str) -> str:
+        return low if value < -0.55 else high if value > 0.55 else middle
+
+    result: dict[tuple[str, str], str] = {}
+    for asset, values in zip(assets, standardized, strict=True):
+        brightness = label(values[0], "dark", "balanced", "bright")
+        attack = label(values[1], "soft", "rounded", "crisp")
+        length = label(values[2], "short", "medium", "long")
+        result[(asset.collection, asset.asset_id)] = \
+            f"{brightness}/{attack}/{length}"
+    return result
+
+
+def _asset_family(asset: SampleAsset) -> str:
+    value = asset.relative_path.lower()
+    families = (
+        "piano", "guitar", "bass", "harp", "marimba", "vibraphone",
+        "xylophone", "glockenspiel", "mbira", "kalimba", "strings",
+        "winds", "organ", "percussion", "texture",
+    )
+    aliases = {
+        "bass": ("fashionbass", "contrabass", "bass guitar"),
+        "strings": ("violin", "viola", "cello", "string"),
+        "winds": ("flute", "recorder", "clarinet", "oboe", "bassoon",
+                  "ocarina", "harmonica"),
+        "percussion": ("drum", "snare", "kick", "shaker", "cajon",
+                       "conga", "bongo", "darbuka", "clave", "tamb"),
+        "texture": ("ambient", "texture", "drone", "field"),
+    }
+    for family in families:
+        markers = aliases.get(family, (family,))
+        if any(marker in value for marker in markers):
+            return family
+    return asset.category
+
+
+def _rejection_reasons(asset: SampleAsset) -> tuple[str, ...]:
+    reasons: list[str] = []
+    if not asset.license:
+        reasons.append("missing_license")
+    if asset.quarantined:
+        reasons.append("quarantined")
+    if asset.category == "pitched" and asset.midi_note is None:
+        reasons.append("missing_pitch_metadata")
+    if asset.duration_seconds is None:
+        reasons.append("missing_duration")
+    elif not 0.015 <= asset.duration_seconds <= 24.0:
+        reasons.append("unsuitable_duration")
+    if asset.peak is not None and asset.peak <= 1e-6:
+        reasons.append("silence")
+    return tuple(reasons)
 
 
 class SampleLibrary:
@@ -464,7 +613,10 @@ class SampleLibrary:
                     asset = SampleAsset(
                         collection=name, asset_id=digest[:20], sha256=digest,
                         relative_path=relative, license=spec.license,
-                        category=_category(path), midi_note=_note_from_name(path),
+                        category=_category(path),
+                        articulation=infer_articulation(relative),
+                        midi_note=_note_from_name(path),
+                        round_robin=infer_round_robin(relative),
                         quarantined=(not bool(spec.license) or
                                      "demo" in relative.lower()), **metadata)
                     values = asdict(asset)
@@ -662,7 +814,106 @@ class SampleLibrary:
             "SELECT COUNT(*),SUM(quarantined),COUNT(DISTINCT sha256) FROM assets"
         ).fetchone()
         db.close()
+        all_assets = self.assets(usable_only=False)
+        usable_assets = [asset for asset in all_assets if not asset.quarantined]
+        clusters = timbre_clusters(usable_assets)
+        instruments = instrument_refs(usable_assets)
+
+        def counts(values) -> dict[str, int]:
+            result: dict[str, int] = defaultdict(int)
+            for value in values:
+                result[str(value)] += 1
+            return dict(sorted(result.items()))
+
+        explicit_round_robins = [asset for asset in usable_assets
+                                 if (asset.round_robin is not None or
+                                     infer_round_robin(asset.relative_path) is not None)]
+        round_robin_groups: dict[tuple[str, str, str, str], list[SampleAsset]] = \
+            defaultdict(list)
+        for asset in explicit_round_robins:
+            round_robin_groups[round_robin_group_key(asset)].append(asset)
+        coherent_round_robins = [values for values in round_robin_groups.values()
+                                 if len(values) > 1]
+
+        bank_rows = []
+        mapped_ids: set[tuple[str, str]] = set()
+        for instrument in instruments:
+            for zone in instrument.zones:
+                mapped_ids.add((zone.sample.collection, zone.sample.asset_id))
+            by_layer: dict[tuple[int, int, int], int] = defaultdict(int)
+            for zone in instrument.zones:
+                by_layer[(zone.root_note, zone.lo_velocity,
+                          zone.hi_velocity)] += 1
+            bank_rows.append({
+                "name": instrument.name,
+                "zones": len(instrument.zones),
+                "register": [min(zone.root_note for zone in instrument.zones),
+                             max(zone.root_note for zone in instrument.zones)],
+                "velocity_layers": len({(zone.lo_velocity, zone.hi_velocity)
+                                        for zone in instrument.zones}),
+                "max_round_robins": max(by_layer.values()),
+                "articulations": sorted({zone.articulation
+                                         for zone in instrument.zones}),
+            })
+
+        percussion_pool = {
+            (asset.collection, asset.asset_id) for asset in usable_assets
+            if asset.category == "percussion" and
+            asset.duration_seconds is not None and
+            0.015 <= asset.duration_seconds <= 3.0
+        }
+        production_pool = mapped_ids | percussion_pool
+        promoted = {(asset.collection, asset.asset_id) for asset in usable_assets
+                    if self.is_promoted(asset)}
+        rejection_counts: dict[str, int] = defaultdict(int)
+        rejected_assets = []
+        for asset in all_assets:
+            reasons = list(_rejection_reasons(asset))
+            if (not reasons and
+                    (asset.collection, asset.asset_id) not in production_pool):
+                reasons.append("not_mapped_to_production_pool")
+            if reasons:
+                for reason in reasons:
+                    rejection_counts[reason] += 1
+                rejected_assets.append({
+                    "collection": asset.collection,
+                    "asset_id": asset.asset_id,
+                    "relative_path": asset.relative_path,
+                    "reasons": reasons,
+                })
         return {"storage": self.status(), "collections": self.collection_metadata(),
                 "assets": {"total": total, "quarantined": quarantined or 0,
                            "unique_sha256": unique}, "groups": groups,
+                "coverage": {
+                    "families": counts(_asset_family(asset)
+                                       for asset in usable_assets),
+                    "articulations": counts(
+                        asset.articulation or infer_articulation(asset.relative_path)
+                        for asset in usable_assets),
+                    "registers": counts(
+                        "unknown" if asset.midi_note is None else
+                        "low" if asset.midi_note < 48 else
+                        "middle" if asset.midi_note < 72 else "high"
+                        for asset in usable_assets),
+                    "timbre_clusters": counts(clusters.values()),
+                    "round_robin_assets": len(explicit_round_robins),
+                    "round_robin_groups": len(coherent_round_robins),
+                    "max_round_robins": max(
+                        (len(values) for values in coherent_round_robins), default=1),
+                },
+                "instrument_banks": bank_rows,
+                "utilization": {
+                    "production_pool_assets": len(production_pool),
+                    "mapped_instrument_assets": len(mapped_ids),
+                    "percussion_pool_assets": len(percussion_pool),
+                    "promoted_assets": len(promoted),
+                    "promoted_not_in_production_pool": [
+                        {"collection": collection, "asset_id": asset_id}
+                        for collection, asset_id in sorted(promoted - production_pool)
+                    ],
+                },
+                "rejections": {
+                    "counts": dict(sorted(rejection_counts.items())),
+                    "assets": rejected_assets,
+                },
                 "sfz_with_unsupported_opcodes": unsupported}

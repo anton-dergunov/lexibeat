@@ -21,7 +21,10 @@ from lexibeat.api import MusicRequest
 from lexibeat.bedspec import BedSpec
 from lexibeat.emotion import NEUTRAL
 from lexibeat.generator import (
+    ENGINE_VERSION,
+    _apply_request,
     build_candidates,
+    enrich_with_catalog_samples,
     named_pack_names as _named_pack_names,
     sample_refs as _refs,
     select_balanced,
@@ -29,8 +32,8 @@ from lexibeat.generator import (
 from lexibeat.library import COLLECTIONS, SampleAsset, SampleLibrary, instrument_refs
 from lexibeat.mix import mix_stems
 from lexibeat.music import Grid, SR, render_stems
-from lexibeat.profiles import BROAD_FAMILIES, POSITIVE_FAMILIES
-from lexibeat.quality import Candidate
+from lexibeat.profiles import BROAD_FAMILIES, POSITIVE_FAMILIES, get_profile
+from lexibeat.quality import Candidate, evaluate_preview
 from lexibeat import samples as sample_packs
 from lexibeat.voice import Prosody, Speaker, fit
 
@@ -199,6 +202,8 @@ def main() -> None:
     parser.add_argument("--fallback-backend", default="chatterbox")
     parser.add_argument("--speech-cache-from", type=Path,
                         help="reuse a validated speech/ directory from another bake-off")
+    parser.add_argument("--replay-manifest", type=Path,
+                        help="re-resolve the exact family/seed pairs from an earlier bake-off")
     args = parser.parse_args()
     if args.count < 1 or args.candidate_multiplier < 1:
         raise SystemExit("--count and --candidate-multiplier must be positive")
@@ -215,17 +220,58 @@ def main() -> None:
                 f"{len(assets)} locally promoted catalog assets.", RuntimeWarning)
     families = POSITIVE_FAMILIES if args.family_profile == "positive" else BROAD_FAMILIES
     instruments = instrument_refs(assets)
-    pool_size = max(args.count * args.candidate_multiplier, len(families) * 2)
-    print(f"Building {pool_size} candidates across "
-          f"{len(families)} families using {len(assets)} catalog assets and "
-          f"{len(instruments)} multisample instruments…", flush=True)
     profile_name = ("production-v1" if args.family_profile == "positive"
                     else "exploration-v1")
     request = MusicRequest(seed=args.seed, profile=profile_name)
-    candidates, rejected = build_candidates(
-        args.count, args.candidate_multiplier, args.seed, assets, instruments,
-        families, request=request)
-    selected = select_balanced(candidates, args.count, families)
+    if args.replay_manifest:
+        source_manifest = json.loads(args.replay_manifest.read_text(encoding="utf-8"))
+        source_clips = source_manifest["clips"]
+        if len(source_clips) != args.count:
+            raise ValueError(
+                f"Replay manifest has {len(source_clips)} clips; expected {args.count}.")
+        print(f"Replaying {len(source_clips)} exact family/seed pairs using "
+              f"{len(assets)} catalog assets and {len(instruments)} instruments…",
+              flush=True)
+        selected = []
+        rejected = []
+        for row in source_clips:
+            bed_seed = int(row["seed"])
+            spec = BedSpec.from_style(row["family"], bed_seed)
+            spec.engine_version = ENGINE_VERSION
+            spec.profile_version = profile_name
+            profile = get_profile(profile_name)
+            _apply_request(spec, request, profile)
+            enrich_with_catalog_samples(
+                spec, assets, instruments, bed_seed, palette=request.palette)
+            preview_stems = render_stems(
+                spec, max(spec.phrase.loop_bars if spec.phrase else 4, 4))
+            preview = sum(preview_stems.values(),
+                          np.zeros_like(next(iter(preview_stems.values()))))
+            quality, fingerprint = evaluate_preview(
+                preview, preview_stems, spec, profile)
+            collections = tuple(sorted(
+                {ref.collection for ref in _refs(spec)} |
+                {f"pack:{name}" for name in _named_pack_names(spec)}))
+            selected.append(Candidate(
+                row["family"], bed_seed, spec,
+                np.asarray(fingerprint.audio_features), len(preview) / SR,
+                collections, fingerprint=fingerprint, quality=quality))
+            if not quality.accepted:
+                rejected.append({
+                    "family": row["family"], "seed": bed_seed,
+                    "reason": "; ".join(quality.rejection_reasons),
+                    "retained_for_paired_replay": True,
+                })
+        pool_size = len(source_clips)
+    else:
+        pool_size = max(args.count * args.candidate_multiplier, len(families) * 2)
+        print(f"Building {pool_size} candidates across "
+              f"{len(families)} families using {len(assets)} catalog assets and "
+              f"{len(instruments)} multisample instruments…", flush=True)
+        candidates, rejected = build_candidates(
+            args.count, args.candidate_multiplier, args.seed, assets, instruments,
+            families, request=request)
+        selected = select_balanced(candidates, args.count, families)
     refs = list({(ref.collection, ref.asset_id): ref
                  for candidate in selected for ref in _refs(candidate.spec)}.values())
     if refs:
@@ -298,6 +344,7 @@ def main() -> None:
                 "candidate_multiplier": args.candidate_multiplier,
                 "sample_policy": args.sample_policy,
                 "family_profile": args.family_profile,
+                "replay_manifest": str(args.replay_manifest) if args.replay_manifest else None,
                 "storage": library.status(),
                 "voice": speech_metadata, "items": ITEMS,
                 "sample_assets": used_assets,
@@ -316,12 +363,17 @@ def main() -> None:
                              "", "", "", ""])
     guide = [
         "# Music bake-off listening guide", "",
-        "All clips use `el cava — sparkling wine` and `la salchicha — sausage` "
-        "with the same three-repetition retrieval pattern and shared Gemini speech. "
-        "Rate the music, not the vocabulary.", "",
-        "Listen for distinct musical identity, pleasant repetition, a useful pulse, "
-        "clear pronunciation, unobtrusive transitions, and any sample or alignment "
-        "artifacts. Record scores in `ratings.csv`.", "",
+        ("All clips use `el cava — sparkling wine` and `la salchicha — sausage` "
+         "with the same three-repetition retrieval pattern and shared speech. "
+         "Rate the music, not the vocabulary." if speech_segments else
+         "These clips contain music only. Rate natural repetition, musical identity, "
+         "pulse clarity, balance, and any sample artifacts."), "",
+        (("Listen for distinct musical identity, pleasant repetition, a useful pulse, "
+          "clear pronunciation, unobtrusive transitions, and any sample or alignment "
+          "artifacts." if speech_segments else
+          "Listen for distinct musical identity, pleasant repetition, a useful pulse, "
+          "coherent articulation and any repeated-sample or microphone-switching "
+          "artifacts.") + " Record scores in `ratings.csv`."), "",
         "| # | File | Family | BPM | Meter | Harmony | Bass | Percussion | Sources |",
         "|---:|---|---|---:|---|---|---|---|---|",
     ]

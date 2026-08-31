@@ -243,6 +243,26 @@ spiccato strings, classical guitar and natural electric bass. Coverage-aware
 selection ensures the targeted guitar, bass and expanded foreground families
 appear in comparison sets while retaining one result per procedural family.
 
+### Iteration 6 — deterministic natural sample variation
+
+The catalog previously collapsed same-note alternatives to one file. A resolved
+multisample bank now preserves coherent note, velocity, articulation and
+microphone groups, then labels explicit alternate takes with stable round-robin
+indexes. Conservative filename inference avoids combining ambiguous siblings or
+switching microphone perspectives during a phrase.
+
+BedSpec 1.1 serializes event articulation, sample-variation indexes, percussion
+take groups and the cyclic selection strategy. Pitched parts offset that saved
+choice on each phrase repetition, while percussion advances through its resolved
+take group per hit. Replaying the same BedSpec is byte-deterministic; older JSON
+receives compatible natural-articulation and first-take defaults.
+
+Catalog reports now expose register, articulation and timbre-cluster coverage,
+round-robin depth, instrument-bank utilization and explicit rejection reasons.
+The bake-off tool can replay an earlier manifest's exact family/seed pairs, so
+intentional engine-level PCM changes can be evaluated with controlled before and
+after renders.
+
 ---
 
 ## 4. Voice — options

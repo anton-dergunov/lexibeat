@@ -28,7 +28,8 @@ import soundfile as sf
 from .api import MusicGenerationResult, MusicRequest, resolve_music
 from .bedspec import BedSpec, SCALES, STYLES
 from .generator import ENGINE_VERSION
-from .library import BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary, SampleRef
+from .library import (BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary,
+                      SampleRef, infer_articulation, infer_round_robin)
 from .music import Grid, SR, render_bed, render_stems
 from .profiles import PROFILES, get_profile
 from .quality import evaluate_preview
@@ -241,6 +242,8 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
                  choices=("sine", "triangle", "strings", "soft_saw")),
     ControlField("/phrase/bass_timbre", "Resolved phrase", "Bass timbre", "enum",
                  choices=("sine", "round", "triangle", "pluck")),
+    ControlField("/phrase/round_robin_strategy", "Resolved phrase",
+                 "Sample variation", "enum", choices=("cyclic",), read_only=True),
     ControlField("/phrase/chords", "Resolved phrase", "Chord events", "table"),
     ControlField("/phrase/bass", "Resolved phrase", "Bass events", "table"),
     ControlField("/phrase/lead", "Resolved phrase", "Lead events", "table"),
@@ -312,15 +315,18 @@ _PHRASE_KEYS = {
     "family", "loop_bars", "harmony_texture", "pad_timbre", "bass_timbre",
     "chords", "bass", "lead", "percussion", "lead_sample", "pad_sample",
     "lead_instrument", "pad_instrument", "bass_instrument",
+    "round_robin_strategy",
 }
-_NOTE_KEYS = {"step", "duration_steps", "midi_note", "velocity"}
-_CHORD_KEYS = {"step", "duration_steps", "midi_notes", "velocity"}
+_NOTE_KEYS = {"step", "duration_steps", "midi_note", "velocity",
+              "articulation", "sample_variation"}
+_CHORD_KEYS = {"step", "duration_steps", "midi_notes", "velocity",
+               "articulation", "sample_variation"}
 _LANE_KEYS = {"sound", "pattern", "level", "probability", "humanize", "pan",
-              "sample", "role"}
+              "sample", "role", "articulation", "round_robin_samples"}
 _SAMPLE_KEYS = {"collection", "asset_id", "sha256"}
 _INSTRUMENT_KEYS = {"name", "zones"}
 _ZONE_KEYS = {"sample", "root_note", "lo_note", "hi_note", "lo_velocity",
-              "hi_velocity", "gain_db"}
+              "hi_velocity", "gain_db", "round_robin", "articulation"}
 _LOGICAL_PART = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
@@ -376,6 +382,20 @@ def _validate_instrument(value: object, path: str,
         _unknown_keys(zone, _ZONE_KEYS, zone_path, issues)
         if isinstance(zone, dict):
             _validate_sample(zone.get("sample"), f"{zone_path}/sample", issues)
+            for low_name, high_name in (("lo_note", "hi_note"),
+                                        ("lo_velocity", "hi_velocity")):
+                low = zone.get(low_name, 0)
+                high = zone.get(high_name, 127)
+                if (not isinstance(low, int) or isinstance(low, bool) or
+                        not isinstance(high, int) or isinstance(high, bool) or
+                        not 0 <= low <= high <= 127):
+                    _issue(issues, "error", zone_path, "zone_range",
+                           f"{low_name}/{high_name} must be ordered MIDI values from 0 to 127.")
+            round_robin = zone.get("round_robin", 0)
+            if (not isinstance(round_robin, int) or isinstance(round_robin, bool)
+                    or not 0 <= round_robin <= 1024):
+                _issue(issues, "error", f"{zone_path}/round_robin",
+                       "round_robin", "Round-robin index must be an integer from 0 to 1024.")
 
 
 def _validate_shape(data: object) -> list[ValidationIssue]:
@@ -404,6 +424,14 @@ def _validate_shape(data: object) -> list[ValidationIssue]:
             _unknown_keys(row, allowed, row_path, issues)
             if collection == "percussion" and isinstance(row, dict):
                 _validate_sample(row.get("sample"), f"{row_path}/sample", issues)
+                variations = row.get("round_robin_samples", [])
+                if not isinstance(variations, (list, tuple)) or len(variations) > 32:
+                    _issue(issues, "error", f"{row_path}/round_robin_samples",
+                           "size", "Round-robin sample groups may contain at most 32 takes.")
+                else:
+                    for variation, sample in enumerate(variations):
+                        _validate_sample(
+                            sample, f"{row_path}/round_robin_samples/{variation}", issues)
     for name in ("lead_sample", "pad_sample"):
         _validate_sample(phrase.get(name), f"/phrase/{name}", issues)
     for name in ("lead_instrument", "pad_instrument", "bass_instrument"):
@@ -542,6 +570,9 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
                "Loop bars must be an integer between 1 and 32.")
         return
     phrase_steps = phrase.loop_bars * steps_per_bar
+    if phrase.round_robin_strategy != "cyclic":
+        _issue(issues, "error", "/phrase/round_robin_strategy", "enum",
+               "Resolved sample variation strategy must be 'cyclic'.")
     for name, events in (("chords", phrase.chords), ("bass", phrase.bass),
                          ("lead", phrase.lead)):
         for index, event in enumerate(events):
@@ -555,6 +586,14 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
             if not _number(event.velocity) or not 0 <= event.velocity <= 1.5:
                 _issue(issues, "error", f"{base}/velocity", "velocity",
                        "Velocity must be between 0 and 1.5.")
+            if (not isinstance(event.sample_variation, int) or
+                    isinstance(event.sample_variation, bool) or
+                    event.sample_variation < 0):
+                _issue(issues, "error", f"{base}/sample_variation",
+                       "round_robin", "Sample variation must be a non-negative integer.")
+            if not isinstance(event.articulation, str) or not event.articulation:
+                _issue(issues, "error", f"{base}/articulation", "articulation",
+                       "Articulation must be a non-empty label.")
             notes = event.midi_notes if name == "chords" else [event.midi_note]
             if not notes or any(not isinstance(note, int) or isinstance(note, bool) or
                                 not 0 <= note <= 127 for note in notes):
@@ -898,8 +937,14 @@ class SampleService:
         except FileNotFoundError:
             availability = "unavailable"
         source = COLLECTIONS.get(asset.collection)
+        metadata = asdict(asset)
+        metadata["articulation"] = (asset.articulation or
+                                    infer_articulation(asset.relative_path))
+        metadata["round_robin"] = (asset.round_robin
+                                    if asset.round_robin is not None else
+                                    infer_round_robin(asset.relative_path))
         return {
-            **asdict(asset), "logical_id": logical_id(asset.ref),
+            **metadata, "logical_id": logical_id(asset.ref),
             "availability": availability,
             "promoted": self.library.is_promoted(asset),
             "source_name": source.name if source else asset.collection,

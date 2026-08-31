@@ -27,7 +27,10 @@ from .library import (
     SampleAsset,
     SampleLibrary,
     SampleRef,
+    infer_articulation,
+    infer_round_robin,
     instrument_refs,
+    round_robin_group_key,
 )
 from .music import Grid, render_bed, render_stems
 from .profiles import GenerationProfile, get_profile
@@ -40,7 +43,7 @@ from .quality import (
     preference_score,
 )
 
-ENGINE_VERSION = "1.0.0"
+ENGINE_VERSION = "1.1.0"
 SEED_STEP = 104_729
 ProgressCallback = Callable[[float, str], None]
 CancelCheck = Callable[[], bool]
@@ -73,6 +76,9 @@ def sample_refs(spec: BedSpec) -> list[SampleRef]:
     if spec.phrase is None:
         return []
     refs = [lane.sample for lane in spec.phrase.percussion if lane.sample]
+    refs.extend(
+        ref for lane in spec.phrase.percussion for ref in lane.round_robin_samples
+    )
     refs.extend(
         ref for ref in (spec.phrase.lead_sample, spec.phrase.pad_sample) if ref
     )
@@ -172,6 +178,34 @@ def _role_assets(assets: list[SampleAsset], role: str) -> list[SampleAsset]:
     return matched
 
 
+def _round_robin_variants(
+    selected: SampleAsset,
+    candidates: list[SampleAsset],
+) -> tuple[SampleRef, ...]:
+    """Return one coherent take group, keeping the seeded choice first."""
+    selected_round_robin = (
+        selected.round_robin if selected.round_robin is not None
+        else infer_round_robin(selected.relative_path)
+    )
+    if selected_round_robin is None:
+        return ()
+    key = round_robin_group_key(selected)
+    matches = [asset for asset in candidates
+               if round_robin_group_key(asset) == key and
+               (asset.round_robin is not None or
+                infer_round_robin(asset.relative_path) is not None)]
+    matches.sort(key=lambda asset: (
+        asset.round_robin if asset.round_robin is not None
+        else infer_round_robin(asset.relative_path),
+        asset.relative_path,
+    ))
+    if len(matches) < 2:
+        return ()
+    start = matches.index(selected)
+    ordered = matches[start:] + matches[:start]
+    return tuple(asset.ref for asset in ordered)
+
+
 def enrich_with_catalog_samples(
     spec: BedSpec,
     assets: list[SampleAsset],
@@ -204,6 +238,9 @@ def enrich_with_catalog_samples(
         asset = _choose_across_collections(rng, roles[role])
         if asset:
             lane.sample = asset.ref
+            lane.round_robin_samples = _round_robin_variants(asset, roles[role])
+            lane.articulation = (asset.articulation or
+                                 infer_articulation(asset.relative_path))
             lane.sound = f"sample:{asset.collection}"
 
     preferences = {
@@ -267,6 +304,9 @@ def enrich_with_catalog_samples(
             collection = sorted(by_collection)[int(rng.integers(0, len(by_collection)))]
             choices = by_collection[collection]
         spec.phrase.lead_instrument = choices[int(rng.integers(0, len(choices)))]
+        articulation = spec.phrase.lead_instrument.zones[0].articulation
+        for event in spec.phrase.lead:
+            event.articulation = articulation
 
     natural_basses = [
         instrument for instrument in instruments
@@ -277,6 +317,9 @@ def enrich_with_catalog_samples(
         spec.phrase.bass_instrument = natural_basses[
             int(rng.integers(0, len(natural_basses)))
         ]
+        articulation = spec.phrase.bass_instrument.zones[0].articulation
+        for event in spec.phrase.bass:
+            event.articulation = articulation
 
 
 def _apply_request(spec: BedSpec, request: MusicRequest, profile: GenerationProfile) -> None:
@@ -308,6 +351,7 @@ def _apply_request(spec: BedSpec, request: MusicRequest, profile: GenerationProf
             spec.phrase.lead_sample = None
             for lane in spec.phrase.percussion:
                 lane.sample = None
+                lane.round_robin_samples = ()
 
 
 def _safe_assets(library: SampleLibrary) -> list[SampleAsset]:
