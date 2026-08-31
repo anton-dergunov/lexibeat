@@ -25,12 +25,15 @@ https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
 **Other music styles, extended 20 pairs**:
 
 Sunlit:
+
 https://github.com/user-attachments/assets/16cc6764-1d06-4a05-8fd3-048f46eb22b6
 
 Warm motion:
+
 https://github.com/user-attachments/assets/8f97331a-703a-415f-8b18-cbf02fb5be49
 
 Nocturnal:
+
 https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
 
 The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate
