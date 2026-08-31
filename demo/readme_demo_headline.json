@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "title": "LexiBeat",
+  "pattern": "retrieval",
+  "bpm": 78,
+  "meter": "4/4",
+  "items": [
+    {"source": "¿arrancamos?", "target": "shall we start?", "emoji": "🚀"},
+    {"source": "espectacular", "target": "spectacular", "emoji": "🤩"},
+    {"source": "preciosa", "target": "precious", "emoji": "🥰"},
+    {"source": "asombroso", "target": "amazing", "emoji": "😲"},
+    {"source": "asco", "target": "disgust", "emoji": "🤮"},
+    {"source": "dar bronca", "target": "to upset", "emoji": "😠"},
+    {"source": "¡Qué susto!", "target": "What a scare!", "emoji": "😨"},
+    {"source": "la pesadilla", "target": "nightmare", "emoji": "😨"},
+    {"source": "qué lástima", "target": "what a shame", "emoji": "😔"},
+    {"source": "estar envuelto en sus pensamientos", "target": "to be lost in thought", "emoji": "💭", "bars_per_utterance": 2},
+    {"source": "vencer tus miedos", "target": "overcome your fears", "emoji": "💪"},
+    {"source": "descansar", "target": "to rest", "emoji": "😴"}
+  ],
+  "variants": [
+    {"name": "acoustic", "style": "acoustic", "seed": 9}
+  ]
+}

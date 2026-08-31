@@ -29,19 +29,47 @@ from lexibeat.voice import Prosody, Speaker, SynthesisResult
 
 ROOT = Path(__file__).parents[1]
 MANIFEST = ROOT / "demo" / "readme_demo.json"
+HEADLINE_MANIFEST = ROOT / "demo" / "readme_demo_headline.json"
 
 
 class DemoConfigTests(unittest.TestCase):
+    def test_headline_manifest_uses_selected_story_and_acoustic_bed(self) -> None:
+        config = load_demo_config(HEADLINE_MANIFEST)
+        self.assertEqual([item.source for item in config.items], [
+            "¿arrancamos?", "espectacular", "preciosa", "asombroso",
+            "asco", "dar bronca", "¡Qué susto!", "la pesadilla",
+            "qué lástima", "estar envuelto en sus pensamientos",
+            "vencer tus miedos", "descansar",
+        ])
+        self.assertEqual(
+            [(variant.name, variant.style, variant.seed)
+             for variant in config.variants],
+            [("acoustic", "acoustic", 9)],
+        )
+        specs = resolve_demo_specs(config)
+        self.assertEqual(
+            {(spec.bpm, spec.beats_per_bar, spec.beat_unit)
+             for spec in specs.values()},
+            {(78, 4, 4)},
+        )
+
     def test_manifest_has_experiment_items_and_matching_beds(self) -> None:
         config = load_demo_config(MANIFEST)
-        self.assertEqual(len(config.items), 13)
-        self.assertEqual(config.items[0].source, "¡Qué susto!")
-        self.assertEqual(config.items[-1].source, "descansar")
-        self.assertEqual(config.bars_per_utterance[2], 2)
+        self.assertEqual(len(config.items), 20)
+        self.assertEqual(config.items[0].source, "¿arrancamos?")
+        self.assertEqual(config.items[1].source, "¡Que cante!")
+        self.assertEqual(config.items[-2].source, "descansar")
+        self.assertEqual(config.items[-1].source, "tranquilizarse")
+        spans = dict(zip((item.source for item in config.items),
+                         config.bars_per_utterance))
+        self.assertEqual(spans["estar envuelto en sus pensamientos"], 2)
         self.assertEqual(for_item("descansar", "😴").name, "calm")
+        self.assertEqual(for_item("tranquilizarse", "😌").name, "calm")
         specs = resolve_demo_specs(config)
         self.assertEqual(list(specs), [
-            "gentle-movement", "playful-plucked", "sunlit"])
+            "gentle-movement", "playful-plucked", "sunlit", "lofi-wide",
+            "nocturnal", "meditative", "acoustic", "radiant",
+            "warm-motion", "bright-pastoral"])
         grids = {(spec.bpm, spec.beats_per_bar, spec.beat_unit)
                  for spec in specs.values()}
         self.assertEqual(grids, {(78, 4, 4)})
@@ -70,8 +98,8 @@ class DemoConfigTests(unittest.TestCase):
         events, total_bars = arrange_demo(config, DemoFakeSpeaker(), grid)
         timeline = build_timeline(config.items, events, grid, total_bars,
                                   config.pattern)
-        self.assertEqual(len(events), 78)
-        self.assertEqual(total_bars, 114)
+        self.assertEqual(len(events), 120)
+        self.assertEqual(total_bars, 170)
         self.assertTrue(all(abs(event.start / grid.bar -
                                 round(event.start / grid.bar)) < 1e-8
                             for event in events))

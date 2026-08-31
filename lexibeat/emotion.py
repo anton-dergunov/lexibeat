@@ -55,7 +55,7 @@ _VECTOR_NAME = {
 
 # Emoji that name a feeling. Everything else falls through to neutral.
 _EMOJI = {
-    "happy": "😀😃😄😁😆😊🙂😌🤩🥳🎉😸👏🌞🌈",
+    "happy": "😀😃😄😁😆😊🙂🤩🥳🎉😸👏🌞🌈",
     "delighted": "🤤😋😍🥰😘💖❤️🧡💛💚💙💜🍰🍫",
     "emphatic": "💪🔥⚡‼️❗💥🚀🏆✅👊🗣",
     "surprised": "😮😲😯🤯😱🙀❓⁉️😳",
@@ -64,7 +64,7 @@ _EMOJI = {
     "afraid": "😨😰😧🥶👻⚠️🆘",
     "disgusted": "🤢🤮😖😣🤧🦠🚫",
     "thoughtful": "🤔🧐💭📚🎓🧠💡❔",
-    "calm": "😐😑🧘🌙💤😴🕊️🌿🍃",
+    "calm": "😐😑😌🧘🌙💤😴🕊️🌿🍃",
 }
 
 EMOJI_TO_EMOTION = {ch: name for name, chars in _EMOJI.items() for ch in chars}

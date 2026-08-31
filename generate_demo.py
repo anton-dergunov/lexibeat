@@ -41,6 +41,8 @@ def parse_args() -> argparse.Namespace:
                         default="gemini")
     parser.add_argument("--model", default="gemini-3.1-flash-tts-preview")
     parser.add_argument("--font", type=Path)
+    parser.add_argument("--speech-cache", type=Path,
+                        help="reuse takes across output directories")
     parser.add_argument("--refresh-speech", action="store_true")
     return parser.parse_args()
 
@@ -65,7 +67,8 @@ def main() -> None:
     started = time.perf_counter()
     speaker = Speaker(backend=args.backend, model=args.model, voice_seed=7)
     cached = PersistentSpeaker(
-        speaker, args.out_dir / "speech-cache", refresh=args.refresh_speech)
+        speaker, args.speech_cache or args.out_dir / "speech-cache",
+        refresh=args.refresh_speech)
     try:
         print("Synthesizing or loading speech takes…")
         events, total_bars = arrange_demo(config, cached, grid)

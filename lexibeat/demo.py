@@ -40,6 +40,9 @@ class DemoVariant:
 class DemoConfig:
     title: str
     pattern: str
+    bpm: float
+    beats_per_bar: int
+    beat_unit: int
     items: tuple[Item, ...]
     bars_per_utterance: tuple[int, ...]
     variants: tuple[DemoVariant, ...]
@@ -56,6 +59,16 @@ def load_demo_config(path: Path) -> DemoConfig:
     pattern = str(data.get("pattern") or "")
     if pattern not in PATTERNS:
         raise ValueError(f"Unknown demo pattern '{pattern}'.")
+    bpm = float(data.get("bpm") or 0)
+    if bpm <= 0:
+        raise ValueError("Demo manifest bpm must be positive.")
+    try:
+        beats_text, unit_text = str(data.get("meter") or "").split("/", 1)
+        beats_per_bar, beat_unit = int(beats_text), int(unit_text)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Demo manifest meter must look like '4/4'.") from exc
+    if beats_per_bar <= 0 or beat_unit <= 0:
+        raise ValueError("Demo manifest meter values must be positive.")
     raw_items = data.get("items")
     if not isinstance(raw_items, list) or not raw_items:
         raise ValueError("Demo manifest needs at least one vocabulary item.")
@@ -91,16 +104,25 @@ def load_demo_config(path: Path) -> DemoConfig:
             raise ValueError(f"Unknown bed style '{variant.style}'.")
         names.add(variant.name)
         variants.append(variant)
-    return DemoConfig(title, pattern, tuple(items), tuple(bars_per_utterance),
-                      tuple(variants))
+    return DemoConfig(title, pattern, bpm, beats_per_bar, beat_unit,
+                      tuple(items), tuple(bars_per_utterance), tuple(variants))
 
 
 def resolve_demo_specs(config: DemoConfig) -> dict[str, BedSpec]:
     """Resolve deterministic beds and require one shared speech grid."""
-    specs = {
-        variant.name: BedSpec.from_style(variant.style, variant.seed)
-        for variant in config.variants
-    }
+    specs: dict[str, BedSpec] = {}
+    for variant in config.variants:
+        spec = BedSpec.from_style(variant.style, variant.seed)
+        if (spec.beats_per_bar, spec.beat_unit) != (
+                config.beats_per_bar, config.beat_unit):
+            raise ValueError(
+                f"Demo bed '{variant.name}' resolves to "
+                f"{spec.beats_per_bar}/{spec.beat_unit}; choose a seed that "
+                f"naturally resolves to {config.beats_per_bar}/{config.beat_unit}.")
+        # Phrase events are step-based, so tempo can be safely unified after the
+        # meter-compatible phrase has been completely resolved.
+        spec.bpm = config.bpm
+        specs[variant.name] = spec
     grids = {
         (spec.bpm, spec.beats_per_bar, spec.beat_unit) for spec in specs.values()
     }
