@@ -29,6 +29,9 @@ Chatterbox Multilingual runtime on ZeroGPU.
 A short example using **Argentine Spanish 🇦🇷 → English 🇬🇧**:
 12 words and phrases set to a generated rhythmic backing track.
 
+> [!TIP]
+> 🔊 Turn on your sound to hear the generated speech and music.
+
 https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
 
 <details>
@@ -58,6 +61,12 @@ Slower, darker, and more atmospheric.
 https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
 
 </details>
+
+### Try it yourself
+
+Generate your own tracks with any language pair, vocabulary, and music style:
+
+**[▶ Open LexiBeat on Hugging Face Spaces](https://huggingface.co/spaces/AntonDergunov/LexiBeat)**
 
 ## Setup
 
