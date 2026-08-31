@@ -26,7 +26,7 @@ Chatterbox Multilingual runtime on ZeroGPU.
 
 ## Demo
 
-A short example using **Argentine Spanish 🇦🇷 → English 🇬🇧**:
+A short example using **Spanish 🇦🇷 → English 🇬🇧**:
 12 words and phrases set to a generated rhythmic backing track.
 
 > [!TIP]
