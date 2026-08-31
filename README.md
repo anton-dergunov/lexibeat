@@ -18,29 +18,46 @@ over a calm procedural music bed. Speech lands on a known beat grid, repeats use
 slightly different delivery, and the music ducks gently while either speaker is
 talking.
 
-> Spanish 🇦🇷 → English 🇬🇧 · generated music + generated speech
-
-https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
-
-**Other music styles, extended 20 pairs**:
-
-Sunlit:
-
-https://github.com/user-attachments/assets/16cc6764-1d06-4a05-8fd3-048f46eb22b6
-
-Warm motion:
-
-https://github.com/user-attachments/assets/8f97331a-703a-415f-8b18-cbf02fb5be49
-
-Nocturnal:
-
-https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
-
 The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate
 native references by default—Paulina for Mexican Spanish and Daniel for British
 English—so the two languages are easy to distinguish. Kokoro remains available
 as a faster fallback. The public Hugging Face Space uses the official CUDA
 Chatterbox Multilingual runtime on ZeroGPU.
+
+## Demo
+
+A short example using **Argentine Spanish 🇦🇷 → English 🇬🇧**:
+12 words and phrases set to a generated rhythmic backing track.
+
+https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
+
+<details>
+<summary><strong>🎵 More music styles — extended 20-pair demos</strong></summary>
+
+<br>
+
+The same set of 20 Spanish–English word and phrase pairs, rendered with
+different procedurally generated music styles.
+
+### ☀️ Sunlit
+
+Bright, relaxed, and lightly rhythmic.
+
+https://github.com/user-attachments/assets/16cc6764-1d06-4a05-8fd3-048f46eb22b6
+
+### 🌊 Warm Motion
+
+Warm, flowing, and gently propulsive.
+
+https://github.com/user-attachments/assets/8f97331a-703a-415f-8b18-cbf02fb5be49
+
+### 🌙 Nocturnal
+
+Slower, darker, and more atmospheric.
+
+https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
+
+</details>
 
 ## Setup
 
