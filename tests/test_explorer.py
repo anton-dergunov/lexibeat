@@ -416,6 +416,14 @@ class ExplorerHttpTests(unittest.TestCase):
                 samples=SampleService(config), lesson_generate=lesson_generate)
             handlers = [block.fn for block in demo.fns.values()]
             self.assertIn(lesson_generate, handlers)
+            lesson_handler_id = next(
+                block_id for block_id, block in demo.fns.items()
+                if block.fn is lesson_generate)
+            lesson_dependency = next(
+                dependency for dependency in demo.config["dependencies"]
+                if dependency["id"] == lesson_handler_id)
+            self.assertIsNone(lesson_dependency["trigger_after"])
+            self.assertEqual(lesson_dependency["targets"][0][1], "click")
             labels = {getattr(block, "label", None) for block in demo.blocks.values()}
             self.assertIn("Vocabulary", labels)
             self.assertIn("Voice model", labels)

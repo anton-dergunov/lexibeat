@@ -34,6 +34,7 @@ from .lesson import (
     DEFAULT_LESSON_ROWS,
     LESSON_MODEL,
     finalize_lesson,
+    lesson_gpu_duration,
     normalize_lesson_rows,
     render_lesson_speech,
 )
@@ -652,14 +653,21 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             count = len(normalize_lesson_rows(rows))
             destination = ("ZeroGPU allocation" if config.hosted
                            else "local Chatterbox")
+            reservation = lesson_gpu_duration(rows)
+            quota_note = (f" Requested GPU reservation: {reservation} seconds."
+                          if config.hosted else "")
             return (
                 "### Preparing lesson\n"
                 f"Validated {count} vocabulary pair{'s' if count != 1 else ''}. "
-                f"Waiting for {destination}…")
+                f"Waiting for {destination}…{quota_note}")
 
-        lesson_start = lesson_button.click(
-            start_lesson, vocabulary, lesson_status, api_name=False)
-        lesson_event = lesson_start.then(
+        # Keep this lightweight status update independent and unqueued. ZeroGPU
+        # must see the decorated inference callback directly on the click event;
+        # putting it behind `.then(...)` can leave the scheduler uninvoked.
+        lesson_button.click(
+            start_lesson, vocabulary, lesson_status, api_name=False,
+            queue=False, show_progress="hidden")
+        lesson_event = lesson_button.click(
             lesson_generate, [vocabulary, voice_model, current], lesson_job,
             api_name=False)
         lesson_event.then(

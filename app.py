@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -47,6 +49,7 @@ artifacts = ArtifactStore(config)
 samples = SampleService(config)
 palette_choices = explorer_schema(config)["simple"]["palette"]
 lesson_palette = "hybrid" if "hybrid" in palette_choices else "electronic"
+logger = logging.getLogger("lexibeat.space")
 
 _hosted_backend = None
 if config.hosted:
@@ -54,7 +57,13 @@ if config.hosted:
     sys.path.insert(0, str(vendor_root))
     from lexibeat.cuda_voice import CudaChatterboxBackend, load_cuda_chatterbox
 
+    model_load_started = time.perf_counter()
+    logger.warning("Loading Chatterbox Multilingual onto ZeroGPU's emulated CUDA device")
     _hosted_backend = CudaChatterboxBackend(load_cuda_chatterbox())
+    logger.warning(
+        "Chatterbox Multilingual startup load completed in %.1fs",
+        time.perf_counter() - model_load_started,
+    )
 
 
 @spaces.GPU(duration=lesson_gpu_duration)
@@ -63,10 +72,25 @@ def generate_hosted_lesson(rows: object, model: str, state: dict,
     """The directly registered ZeroGPU boundary for Chatterbox synthesis."""
     if _hosted_backend is None:
         raise RuntimeError("The hosted CUDA voice backend is unavailable.")
-    return render_lesson_speech(
-        rows, model, state, backend=_hosted_backend, config=config,
-        palette=lesson_palette,
-        progress=lambda value, message: progress(value, desc=message))
+    reservation = lesson_gpu_duration(rows, model, state)
+    logger.warning(
+        "ZeroGPU callback entered; requested reservation=%ss", reservation,
+    )
+    try:
+        import torch
+
+        device_name = torch.cuda.get_device_name(torch.cuda.current_device())
+        logger.warning("ZeroGPU CUDA device is available: %s", device_name)
+        progress(0.01, desc=f"ZeroGPU allocated on {device_name}")
+        result = render_lesson_speech(
+            rows, model, state, backend=_hosted_backend, config=config,
+            palette=lesson_palette,
+            progress=lambda value, message: progress(value, desc=message))
+    except Exception:
+        logger.exception("Hosted Chatterbox lesson generation failed")
+        raise
+    logger.warning("ZeroGPU speech phase completed successfully")
+    return result
 
 
 demo = build_demo(
