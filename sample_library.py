@@ -18,6 +18,7 @@ from lexibeat.library import (COLLECTIONS, LIBRARY_TARGETS, SampleLibrary,
 from lexibeat.library_audit import (audit_markdown, build_expansion_audit,
                                     build_secondary_manifest,
                                     render_bank_audition)
+from lexibeat.library_bundle import build_candidate_bundle
 
 
 def _refs(value) -> list[SampleRef]:
@@ -119,6 +120,18 @@ def main() -> None:
     audition.add_argument("--out-dir", type=Path)
     audition.add_argument("--wave", choices=("primary", "secondary"),
                           default="primary")
+    integrate = sub.add_parser(
+        "integrate-expansion",
+        help="build a separate candidate bundle from accepted audition banks")
+    integrate.add_argument("--workspace", type=Path,
+                           default=Path("out/library-expansion"))
+    integrate.add_argument("--out", type=Path,
+                           default=Path("out/library-expansion/candidate-v2"))
+    integrate.add_argument("--accept-all", action="store_true",
+                           help="confirm that every auditioned bank was accepted")
+    integrate.add_argument(
+        "--caution", action="append", default=[], metavar="CLIP_ID:GAIN_DB",
+        help="record a retained clip with conservative gain, e.g. S21:-5")
     promote = sub.add_parser("promote")
     promote.add_argument("bed_specs", type=Path, nargs="+")
     playlist = sub.add_parser("playlist")
@@ -320,6 +333,35 @@ def main() -> None:
             "finite": all(row["finite"] for row in rows),
             "max_peak": max((row["peak"] for row in rows), default=0.0),
             "copied_audio": False,
+        }
+    elif args.command == "integrate-expansion":
+        if not args.accept_all:
+            raise ValueError(
+                "integrate-expansion requires --accept-all; partial decisions "
+                "must be recorded explicitly before building a bundle.")
+        caution_gains = {}
+        for value in args.caution:
+            try:
+                clip_id, gain = value.rsplit(":", 1)
+                caution_gains[clip_id.upper()] = float(gain)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Invalid --caution '{value}'; expected CLIP_ID:GAIN_DB.") from exc
+        if any(gain >= 0 for gain in caution_gains.values()):
+            raise ValueError("Caution gains must be negative decibel values.")
+        manifest = build_candidate_bundle(
+            args.workspace, args.out, caution_gains)
+        policy = manifest["expansion_policy"]
+        result = {
+            "bundle": str(args.out), "version": manifest["version"],
+            "accepted_banks": len(policy["accepted_banks"]),
+            "caution_banks": sum(
+                bank["listener_decision"] == "keep-with-caution"
+                for bank in policy["accepted_banks"]),
+            "catalog_assets": len(manifest["catalog_assets"]),
+            "asset_count": manifest["asset_count"],
+            "total_audio_bytes": manifest["total_audio_bytes"],
+            "production_v1_replaced": False,
         }
     else:
         result = library.report()

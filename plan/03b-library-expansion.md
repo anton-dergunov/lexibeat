@@ -135,3 +135,44 @@ A separate secondary wave covers the remaining non-rejected banks without
 changing or overwriting the primary audition. Exact audio aliases are removed by
 SHA-256 before rendering. Secondary clips use `S01`, `S02`, and so on, and are
 written under `out/library-expansion/secondary-auditions/`.
+
+## Listener decision and candidate-v2 integration
+
+All 16 primary banks and all 23 checksum-distinct secondary banks were accepted.
+Primary clip 04 is retained with 2 dB additional attenuation. Secondary clips
+S17 and S20 are retained with 4 dB attenuation; bright high-percussion clips S21
+and S22 are retained with 5 dB attenuation. These constraints are applied when
+the bank is selected and serialized into the resolved BedSpec.
+
+The accepted set is integrated in the separate checksum-locked bundle at
+`out/library-expansion/candidate-v2/`. It combines production v1 with 976 new
+catalog assets, for 2,088 catalog assets and 2,183 total assets (2.58 GB). Bundle
+verification reports no missing files, checksum mismatches or catalog-count
+mismatches. Production v1 remains unchanged.
+
+Candidate generation can now select all 39 accepted banks across lead, pad,
+bass and percussion roles. Pitched banks are restricted to their audited safe
+registers and use the audit's bank/high-register gain recommendations. Sustained
+strings can serve as restrained pads; accepted contrabasses can replace synth
+bass; cajon, frame drum, conga, darbuka, bongo, clave, shaker and tambourine
+banks enter their compatible rhythmic roles.
+
+The paired treatment in `out/library-expansion/paired-treatment/` replays the 14
+family/seed pairs from `out/music-bakeoff-3/` with byte-identical speech and
+identical composition events. It exercises 16 distinct accepted banks across 23
+placements. Stage 4 remains gated on listening to this control/treatment pair.
+
+## Proposed Wave 3 — broader natural instruments
+
+The next audit should be more inclusive while retaining role-specific speech
+safety. The attached catalog already has 64 mapped banks across classical
+guitar, flute, recorder, ocarina, clarinet, oboe, bassoon, harmonica, harp,
+strumstick, quiet organ, harpsichord, kalimba, mbira and marimba. These should be
+screened in low/middle registers and auditioned in actual musical roles rather
+than rejected merely for being outside the first-wave family list.
+
+Accordion and bandoneon are not present as coherent mapped banks in the current
+catalog, so adding them requires new redistributable sources. Wave 3 can research
+those sources after the existing 64-bank broader-instrument audit, prioritizing
+dry or restrained recordings, complete note coverage and at least two useful
+velocity layers where available.

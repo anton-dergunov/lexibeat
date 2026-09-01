@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import random
 import secrets
@@ -55,7 +56,7 @@ class GenerationCancelledError(RuntimeError):
 
 _inventory_lock = threading.Lock()
 _bundled_inventory_cache: dict[
-    tuple[str, int, int], tuple[tuple[SampleAsset, ...], tuple[InstrumentRef, ...]]
+    tuple[str, int, int, int], tuple[tuple[SampleAsset, ...], tuple[InstrumentRef, ...]]
 ] = {}
 
 _ORNAMENT_WORDS = (
@@ -150,9 +151,13 @@ def _instrument_matches(name: str, word: str) -> bool:
     return word in lowered
 
 
-def _role_assets(assets: list[SampleAsset], role: str) -> list[SampleAsset]:
+def _role_assets(assets: list[SampleAsset], role: str, *,
+                 expanded: bool = False) -> list[SampleAsset]:
     words = {
-        "low": ("kick", "bass drum", "bassdrum", "low tom", "bass cajon"),
+        "low": (("kick", "bass drum", "bassdrum", "low tom", "bass cajon",
+                 "cajon", "frame drum", "low conga", "low bongo")
+                if expanded else
+                ("kick", "bass drum", "bassdrum", "low tom", "bass cajon")),
         "mid": (
             "snare", "rim", "wood", "clave", "castanet", "clap", "stick",
             "cardboard", "porcelain", "darbuka", "bongo", "conga", "cajon",
@@ -213,11 +218,20 @@ def enrich_with_catalog_samples(
     seed: int,
     *,
     palette: str = "hybrid",
+    expansion_policy: dict | None = None,
 ) -> None:
     """Resolve safe catalog choices without consulting network availability."""
     if spec.phrase is None or not assets or palette == "electronic":
         return
     rng = np.random.default_rng(seed * 7919 + 17)
+    expansion_policy = expansion_policy or {}
+    accepted_banks = {
+        bank["name"]: bank for bank in expansion_policy.get("accepted_banks", [])
+    }
+    asset_policy = {
+        (ref["collection"], ref["asset_id"]): bank
+        for bank in accepted_banks.values() for ref in bank["asset_refs"]
+    }
     short = [
         asset for asset in assets
         if asset.category == "percussion"
@@ -225,7 +239,9 @@ def enrich_with_catalog_samples(
         and 0.015 <= asset.duration_seconds <= 3.0
         and not any(word in asset.relative_path.lower() for word in _ORNAMENT_WORDS)
     ]
-    roles = {role: _role_assets(short, role) for role in ("low", "mid", "high")}
+    roles = {role: _role_assets(
+        short, role, expanded=bool(expansion_policy))
+        for role in ("low", "mid", "high")}
     percussion_probability = 0.86 if palette == "acoustic" else 0.66
     for lane in spec.phrase.percussion:
         if rng.random() > percussion_probability:
@@ -244,6 +260,11 @@ def enrich_with_catalog_samples(
             lane.articulation = (asset.articulation or
                                  infer_articulation(asset.relative_path))
             lane.sound = f"sample:{asset.collection}"
+            bank = asset_policy.get((asset.collection, asset.asset_id))
+            if bank:
+                gain_db = (float(bank["metrics"]["recommended_bank_gain_db"]) +
+                           float(bank.get("listener_gain_db", 0.0)))
+                lane.level *= 10 ** (gain_db / 20)
 
     preferences = {
         "piano": ("piano",),
@@ -309,10 +330,35 @@ def enrich_with_catalog_samples(
         articulation = spec.phrase.lead_instrument.zones[0].articulation
         for event in spec.phrase.lead:
             event.articulation = articulation
+            event.midi_note = _fit_instrument_note(
+                event.midi_note, spec.phrase.lead_instrument)
+
+    sustained_strings = [
+        instrument for instrument in instruments
+        if instrument.name in accepted_banks and
+        accepted_banks[instrument.name]["family"] == "strings" and
+        any(word in instrument.name.lower()
+            for word in ("#bowed", "#sustain", "sustain-non-vibrato"))
+    ]
+    pad_rng = np.random.default_rng(seed * 3571 + 101)
+    pad_probability = 0.46 if palette == "acoustic" else 0.28
+    if sustained_strings and pad_rng.random() < pad_probability:
+        choices = sorted(sustained_strings, key=lambda value: value.name)
+        spec.phrase.pad_instrument = choices[
+            int(pad_rng.integers(0, len(choices)))]
+        articulation = spec.phrase.pad_instrument.zones[0].articulation
+        for event in spec.phrase.chords:
+            event.articulation = articulation
+            event.midi_notes = [
+                _fit_instrument_note(note, spec.phrase.pad_instrument)
+                for note in event.midi_notes
+            ]
 
     natural_basses = [
         instrument for instrument in instruments
-        if "fashionbass" in instrument.name.lower()
+        if ("fashionbass" in instrument.name.lower() or
+            (instrument.name in accepted_banks and
+             accepted_banks[instrument.name]["family"] == "bass"))
     ]
     bass_probability = 0.58 if palette == "acoustic" else 0.34
     if natural_basses and rng.random() < bass_probability:
@@ -322,6 +368,51 @@ def enrich_with_catalog_samples(
         articulation = spec.phrase.bass_instrument.zones[0].articulation
         for event in spec.phrase.bass:
             event.articulation = articulation
+            event.midi_note = _fit_instrument_note(
+                event.midi_note, spec.phrase.bass_instrument)
+
+
+def _fit_instrument_note(note: int, instrument: InstrumentRef) -> int:
+    """Octave-fold a resolved event into the explicitly mapped safe zone."""
+    lo = min(zone.lo_note for zone in instrument.zones)
+    hi = max(zone.hi_note for zone in instrument.zones)
+    while note < lo and note + 12 <= hi:
+        note += 12
+    while note > hi and note - 12 >= lo:
+        note -= 12
+    return min(max(note, lo), hi)
+
+
+def _apply_expansion_instrument_policy(
+    instruments: list[InstrumentRef], policy: dict,
+) -> list[InstrumentRef]:
+    """Apply audited registers and gains before choices enter a BedSpec."""
+    by_name = {bank["name"]: bank for bank in policy.get("accepted_banks", [])}
+    resolved = []
+    for instrument in instruments:
+        bank = by_name.get(instrument.name)
+        if not bank:
+            resolved.append(instrument)
+            continue
+        safe_register = bank.get("safe_register")
+        lo, hi = safe_register if safe_register else (0, 127)
+        bank_gain = (float(bank["metrics"]["recommended_bank_gain_db"]) +
+                     float(bank.get("listener_gain_db", 0.0)))
+        high_gain = float(
+            bank["metrics"].get("recommended_high_register_gain_db", 0.0))
+        zones = []
+        for zone in instrument.zones:
+            if not lo <= zone.root_note <= hi:
+                continue
+            gain_db = zone.gain_db + bank_gain
+            if zone.root_note >= 72:
+                gain_db += high_gain
+            zones.append(replace(
+                zone, lo_note=max(zone.lo_note, lo), hi_note=min(zone.hi_note, hi),
+                gain_db=gain_db))
+        if zones:
+            resolved.append(InstrumentRef(instrument.name, tuple(zones)))
+    return resolved
 
 
 def _apply_request(spec: BedSpec, request: MusicRequest, profile: GenerationProfile) -> None:
@@ -384,13 +475,20 @@ def _safe_inventory(
         return assets, instrument_refs(assets), False
     catalog = library.catalog_path
     stat = catalog.stat()
-    key = (str(catalog.resolve()), stat.st_mtime_ns, stat.st_size)
+    policy = library.expansion_policy()
+    policy_digest = int.from_bytes(hashlib.sha256(
+        json.dumps(policy, sort_keys=True).encode("utf-8")).digest()[:8])
+    key = (str(catalog.resolve()), stat.st_mtime_ns, stat.st_size, policy_digest)
     with _inventory_lock:
         cached = _bundled_inventory_cache.get(key)
         if cached is not None:
             return list(cached[0]), list(cached[1]), True
         assets = _safe_assets(library)
-        instruments = instrument_refs(assets)
+        instruments = instrument_refs(
+            assets,
+            include_sustained_strings=bool(
+                policy.get("include_sustained_strings", False)))
+        instruments = _apply_expansion_instrument_policy(instruments, policy)
         _bundled_inventory_cache.clear()
         _bundled_inventory_cache[key] = (tuple(assets), tuple(instruments))
     return assets, instruments, False
@@ -410,6 +508,7 @@ def build_candidates(
     stop_after_valid: int | None = None,
     progress_callback: ProgressCallback | None = None,
     cancel_check: CancelCheck | None = None,
+    expansion_policy: dict | None = None,
 ) -> tuple[list[Candidate], list[dict]]:
     """Build and validate a deterministic candidate pool."""
     request = request or MusicRequest(seed=seed)
@@ -441,7 +540,8 @@ def build_candidates(
         _apply_request(spec, request, profile)
         if assets and request.palette != "electronic":
             enrich_with_catalog_samples(
-                spec, assets, instruments or [], bed_seed, palette=request.palette
+                spec, assets, instruments or [], bed_seed, palette=request.palette,
+                expansion_policy=expansion_policy,
             )
         grid = Grid.from_spec(spec)
         if 20 * grid.bar + 1.0 > 90.0:
@@ -665,6 +765,7 @@ def resolve_request(
     if request.palette != "electronic":
         if progress_callback:
             progress_callback(0.0, "Opening the production sample catalog")
+        expansion_policy = library.expansion_policy()
         assets, instruments, inventory_cached = _safe_inventory(library)
         if progress_callback:
             action = "Using cached" if inventory_cached else "Loaded"
@@ -674,6 +775,7 @@ def resolve_request(
                 f"{len(instruments)} instruments")
     else:
         assets, instruments = [], []
+        expansion_policy = {}
     candidates, _ = build_candidates(
         1,
         1,
@@ -687,6 +789,7 @@ def resolve_request(
         stop_after_valid=profile.candidate_count,
         progress_callback=progress_callback,
         cancel_check=cancel_check,
+        expansion_policy=expansion_policy,
     )
     ranked = sorted(
         candidates,

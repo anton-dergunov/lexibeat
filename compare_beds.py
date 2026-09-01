@@ -23,6 +23,7 @@ from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.emotion import NEUTRAL
 from lexibeat.generator import (
     ENGINE_VERSION,
+    _apply_expansion_instrument_policy,
     _apply_request,
     build_candidates,
     enrich_with_catalog_samples,
@@ -215,6 +216,7 @@ def main() -> None:
 
     library = SampleLibrary()
     assets: list[SampleAsset] = []
+    expansion_policy = library.expansion_policy()
     if args.sample_policy != "none" and library.catalog_path.exists():
         assets = library.assets(collections=tuple(COLLECTIONS))
         if not library.external.exists():
@@ -223,7 +225,11 @@ def main() -> None:
                 f"External sample tier is offline; candidate generation is limited to "
                 f"{len(assets)} locally promoted catalog assets.", RuntimeWarning)
     families = POSITIVE_FAMILIES if args.family_profile == "positive" else BROAD_FAMILIES
-    instruments = instrument_refs(assets)
+    instruments = instrument_refs(
+        assets, include_sustained_strings=bool(
+            expansion_policy.get("include_sustained_strings", False)))
+    instruments = _apply_expansion_instrument_policy(
+        instruments, expansion_policy)
     profile_name = ("production-v1" if args.family_profile == "positive"
                     else "exploration-v1")
     requests = [MusicRequest(seed=args.seed, profile=profile_name, palette=palette)
@@ -252,7 +258,8 @@ def main() -> None:
                 seed=args.seed, profile=profile_name, palette=palette)
             _apply_request(spec, request, profile)
             enrich_with_catalog_samples(
-                spec, assets, instruments, bed_seed, palette=request.palette)
+                spec, assets, instruments, bed_seed, palette=request.palette,
+                expansion_policy=expansion_policy)
             preview_stems = render_stems(
                 spec, max(spec.phrase.loop_bars if spec.phrase else 4, 4))
             preview = sum(preview_stems.values(),
@@ -286,7 +293,8 @@ def main() -> None:
             palette_seed = args.seed + palette_index * 1_000_003
             palette_candidates, palette_rejected = build_candidates(
                 1, 1, palette_seed, assets, instruments, families,
-                request=request, pool_size=per_palette)
+                request=request, pool_size=per_palette,
+                expansion_policy=expansion_policy)
             candidates.extend(palette_candidates)
             rejected.extend({**row, "palette": request.palette}
                             for row in palette_rejected)

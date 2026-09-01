@@ -19,6 +19,7 @@ from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
 from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from lexibeat.generator import (
+    _apply_expansion_instrument_policy,
     _bundled_inventory_cache,
     _round_robin_variants,
     _safe_assets,
@@ -33,6 +34,7 @@ from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
 from lexibeat.library_audit import (build_expansion_audit,
                                     build_secondary_manifest,
                                     evaluate_instrument_bank)
+from lexibeat.library_bundle import accepted_expansion_policy
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
@@ -685,6 +687,59 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_listener_decisions_record_all_banks_and_caution_gain(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "auditions").mkdir()
+            (workspace / "secondary-auditions").mkdir()
+            bank = {
+                "name": "primary-bank", "kind": "percussion",
+                "family": "percussion", "asset_refs": [],
+                "metrics": {"recommended_bank_gain_db": 0.0},
+            }
+            secondary = {**bank, "name": "secondary-bank"}
+            (workspace / "candidate-manifest.json").write_text(json.dumps({
+                "banks": [bank], "assets": [],
+            }))
+            (workspace / "secondary-candidate-manifest.json").write_text(
+                json.dumps({"banks": [secondary], "assets": []}))
+            (workspace / "auditions" / "manifest.json").write_text(json.dumps({
+                "clips": [{"number": 4, "bank": "primary-bank"}],
+            }))
+            (workspace / "secondary-auditions" / "manifest.json").write_text(
+                json.dumps({
+                    "clips": [{"number": 1, "clip_id": "S01",
+                               "bank": "secondary-bank"}],
+                }))
+            policy, assets = accepted_expansion_policy(
+                workspace, {"04": -2.0})
+            self.assertEqual(assets, [])
+            self.assertEqual(len(policy["accepted_banks"]), 2)
+            self.assertEqual(policy["accepted_banks"][0]["listener_decision"],
+                             "keep-with-caution")
+            self.assertEqual(policy["accepted_banks"][0]["listener_gain_db"], -2.0)
+            self.assertEqual(policy["accepted_banks"][1]["listener_decision"],
+                             "keep")
+
+    def test_expansion_policy_caps_register_and_serializes_zone_gain(self) -> None:
+        instrument = InstrumentRef("accepted-piano", (
+            InstrumentZoneRef(SampleRef("vcsl", "low"), 40, 0, 49),
+            InstrumentZoneRef(SampleRef("vcsl", "middle"), 60, 50, 74),
+            InstrumentZoneRef(SampleRef("vcsl", "high"), 80, 75, 127),
+        ))
+        policy = {"accepted_banks": [{
+            "name": "accepted-piano", "safe_register": [48, 72],
+            "listener_gain_db": -1.0,
+            "metrics": {"recommended_bank_gain_db": -2.0,
+                        "recommended_high_register_gain_db": -3.0},
+        }]}
+        resolved = _apply_expansion_instrument_policy([instrument], policy)
+        self.assertEqual(len(resolved), 1)
+        self.assertEqual([zone.root_note for zone in resolved[0].zones], [60])
+        self.assertEqual((resolved[0].zones[0].lo_note,
+                          resolved[0].zones[0].hi_note), (50, 72))
+        self.assertEqual(resolved[0].zones[0].gain_db, -3.0)
+
     def test_secondary_expansion_skips_primary_and_checksum_aliases(self) -> None:
         def asset(collection: str, asset_id: str, digest: str) -> SampleAsset:
             return SampleAsset(

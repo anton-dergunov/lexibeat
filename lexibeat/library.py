@@ -457,6 +457,16 @@ class SampleLibrary:
         return (self.use_bundled and self.bundled_catalog_path.exists()
                 and self.catalog_path == self.bundled_catalog_path)
 
+    def expansion_policy(self) -> dict:
+        """Return explicit candidate-bundle policy, or an empty control policy."""
+        if not self.uses_bundled_catalog:
+            return {}
+        path = BUNDLED_ROOT / "manifest.json"
+        if not path.exists():
+            return {}
+        return json.loads(path.read_text(encoding="utf-8")).get(
+            "expansion_policy", {})
+
     def ensure_roots(self, *, require_external: bool = False) -> None:
         self.local.mkdir(parents=True, exist_ok=True)
         (self.local / "samples").mkdir(exist_ok=True)

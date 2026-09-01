@@ -240,6 +240,8 @@ uv run sample_library.py audit-expansion --refresh-index \
   --workspace out/library-expansion --target-gb 10
 uv run sample_library.py audition-expansion \
   --workspace out/library-expansion
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion --wave secondary
 ```
 
 The audit prioritizes natural piano, restrained strings, acoustic guitar,
@@ -247,6 +249,27 @@ natural bass and soft organic percussion. It records safe-register coverage,
 velocity and round-robin depth, normalized perceived-level spread, spectral
 brightness and transient risk. Its candidate manifest is a listening shortlist,
 not permission to promote the files.
+
+The secondary wave is written separately under `secondary-auditions/`. It
+contains the remaining non-rejected banks after checksum-identical aliases are
+removed, and never overwrites an existing ratings sheet.
+
+After recording an all-accepted listening decision, build and verify the
+separate candidate-v2 bundle with explicit attenuation for retained caution
+clips:
+
+```bash
+uv run sample_library.py integrate-expansion --accept-all \
+  --caution 04:-2 --caution S17:-4 --caution S20:-4 \
+  --caution S21:-5 --caution S22:-5
+LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v2 \
+  uv run sample_bundle.py verify
+```
+
+Selecting this bundle through `LEXIBEAT_BUNDLE_ROOT` enables its audited safe
+registers, per-bank gains, sustained-string pads, natural contrabasses and
+expanded organic percussion. Every resolved choice and gain remains serialized
+in the saved BedSpec. The existing production-v1 bundle is not modified.
 
 The library contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
 Spanish Classical Guitar, Karoryfer Fashionbass and the Stargate public-domain
