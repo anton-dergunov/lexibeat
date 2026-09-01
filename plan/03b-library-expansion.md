@@ -103,6 +103,8 @@ uv run sample_library.py audit-expansion --refresh-index \
   --workspace out/library-expansion --target-gb 10
 uv run sample_library.py audition-expansion \
   --workspace out/library-expansion
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion --wave secondary
 ```
 
 The first command deep-indexes the attached SSD into a metadata-only workspace,
@@ -128,3 +130,8 @@ Stage 3 is intentionally waiting at the human listening gate. Rate the complete
 isolated set in `out/library-expansion/auditions/ratings.csv` before any audio is
 promoted or integrated into the production candidate path. Only retained banks
 will be rendered with identical speech for the final paired A/B test.
+
+A separate secondary wave covers the remaining non-rejected banks without
+changing or overwriting the primary audition. Exact audio aliases are removed by
+SHA-256 before rendering. Secondary clips use `S01`, `S02`, and so on, and are
+written under `out/library-expansion/secondary-auditions/`.

@@ -16,6 +16,7 @@ import soundfile as sf
 from lexibeat.library import (COLLECTIONS, LIBRARY_TARGETS, SampleLibrary,
                              SampleRef, external_root, instrument_refs)
 from lexibeat.library_audit import (audit_markdown, build_expansion_audit,
+                                    build_secondary_manifest,
                                     render_bank_audition)
 
 
@@ -116,6 +117,8 @@ def main() -> None:
     audition.add_argument("--workspace", type=Path,
                           default=Path("out/library-expansion"))
     audition.add_argument("--out-dir", type=Path)
+    audition.add_argument("--wave", choices=("primary", "secondary"),
+                          default="primary")
     promote = sub.add_parser("promote")
     promote.add_argument("bed_specs", type=Path, nargs="+")
     playlist = sub.add_parser("playlist")
@@ -209,29 +212,56 @@ def main() -> None:
             "report": str(report_md),
         }
     elif args.command == "audition-expansion":
-        manifest_path = args.workspace / "candidate-manifest.json"
-        if not manifest_path.exists():
+        primary_path = args.workspace / "candidate-manifest.json"
+        if not primary_path.exists():
             raise FileNotFoundError(
-                f"Missing {manifest_path}; run audit-expansion first.")
-        proposal = json.loads(manifest_path.read_text(encoding="utf-8"))
+                f"Missing {primary_path}; run audit-expansion first.")
         external_library = SampleLibrary(
             external=external_root(), local=args.workspace, use_bundled=False)
         assets = external_library.assets()
+        primary = json.loads(primary_path.read_text(encoding="utf-8"))
+        if args.wave == "secondary":
+            audit_path = args.workspace / "audit.json"
+            if not audit_path.exists():
+                raise FileNotFoundError(
+                    f"Missing {audit_path}; run audit-expansion first.")
+            sizes = {}
+            for asset in assets:
+                source = external_library.collection_path(
+                    asset.collection) / asset.relative_path
+                sizes[(asset.collection, asset.asset_id)] = (
+                    source.stat().st_size if source.exists() else 0)
+            proposal = build_secondary_manifest(
+                json.loads(audit_path.read_text(encoding="utf-8")), primary,
+                assets, SampleLibrary().assets(usable_only=False), sizes)
+            manifest_path = args.workspace / "secondary-candidate-manifest.json"
+            manifest_path.write_text(json.dumps(proposal, indent=2) + "\n",
+                                     encoding="utf-8")
+        else:
+            proposal = primary
+            manifest_path = primary_path
         instruments = instrument_refs(
             assets, include_sustained_strings=True)
         instruments_by_name = {instrument.name: instrument
                                for instrument in instruments}
-        out_dir = args.out_dir or args.workspace / "auditions"
+        default_dir = ("secondary-auditions" if args.wave == "secondary"
+                       else "auditions")
+        out_dir = args.out_dir or args.workspace / default_dir
         out_dir.mkdir(parents=True, exist_ok=True)
         rows = []
         for number, bank in enumerate(proposal["banks"], 1):
+            clip_id = (f"S{number:02d}" if args.wave == "secondary"
+                       else str(number))
             slug = re.sub(r"[^a-z0-9]+", "-", bank["family"].lower()).strip("-")
-            path = out_dir / f"{number:02d}-{slug}.wav"
+            filename_number = (f"s{number:02d}" if args.wave == "secondary"
+                               else f"{number:02d}")
+            path = out_dir / f"{filename_number}-{slug}.wav"
             audio = render_bank_audition(
                 bank, external_library, instruments_by_name)
             sf.write(path, audio, 44_100)
             rows.append({
-                "number": number, "file": path.name, "bank": bank["name"],
+                "number": number, "clip_id": clip_id, "file": path.name,
+                "bank": bank["name"],
                 "family": bank["family"], "role": bank.get("role"),
                 "status": bank["status"],
                 "warnings": bank["review_warnings"],
@@ -242,24 +272,30 @@ def main() -> None:
             })
         audition_manifest = {
             "schema_version": 1, "source_proposal": str(manifest_path),
+            "wave": args.wave,
             "purpose": "isolated pre-promotion speech-safety screening",
             "clips": rows,
         }
         (out_dir / "manifest.json").write_text(
             json.dumps(audition_manifest, indent=2) + "\n", encoding="utf-8")
-        with (out_dir / "ratings.csv").open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.writer(handle)
-            writer.writerow([
-                "number", "file", "family", "bank",
-                "piercing_or_high_pitch_1_5", "attack_distraction_1_5",
-                "perceived_level_consistency_1_5", "naturalness_1_5",
-                "background_suitability_1_5", "keep", "notes",
-            ])
-            for row in rows:
-                writer.writerow([row["number"], row["file"], row["family"],
-                                 row["bank"], "", "", "", "", "", "", ""])
+        ratings_path = out_dir / "ratings.csv"
+        if not ratings_path.exists():
+            with ratings_path.open("w", newline="", encoding="utf-8") as handle:
+                writer = csv.writer(handle)
+                writer.writerow([
+                    "clip_id", "file", "family", "bank",
+                    "piercing_or_high_pitch_1_5", "attack_distraction_1_5",
+                    "perceived_level_consistency_1_5", "naturalness_1_5",
+                    "background_suitability_1_5", "keep", "notes",
+                ])
+                for row in rows:
+                    writer.writerow([
+                        row["clip_id"], row["file"], row["family"], row["bank"],
+                        "", "", "", "", "", "", "",
+                    ])
+        wave_title = "Secondary (Wave 2)" if args.wave == "secondary" else "Primary"
         guide = [
-            "# Expansion-bank audition guide", "",
+            f"# {wave_title} expansion-bank audition guide", "",
             "These are isolated, level-preserving probes read directly from the "
             "external library. No samples have been promoted.", "",
             "Listen to the complete set independently before comparing individual "
@@ -275,12 +311,12 @@ def main() -> None:
             family = row["family"] + (f"/{row['role']}" if row["role"] else "")
             flags = [*row["warnings"], *row["mapping_limitations"]]
             guide.append(
-                f"| {row['number']} | `{row['file']}` | {family} | "
+                f"| {row['clip_id']} | `{row['file']}` | {family} | "
                 f"{row['status']} | `{row['bank']}` | {', '.join(flags) or 'none'} |")
         (out_dir / "listening-guide.md").write_text(
             "\n".join(guide) + "\n", encoding="utf-8")
         result = {
-            "clips": len(rows), "out_dir": str(out_dir),
+            "wave": args.wave, "clips": len(rows), "out_dir": str(out_dir),
             "finite": all(row["finite"] for row in rows),
             "max_peak": max((row["peak"] for row in rows), default=0.0),
             "copied_audio": False,

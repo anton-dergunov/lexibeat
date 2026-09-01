@@ -418,6 +418,73 @@ def build_expansion_audit(
     return audit, manifest
 
 
+def build_secondary_manifest(
+    audit: dict,
+    primary_manifest: dict,
+    external_assets: list[SampleAsset],
+    production_assets: list[SampleAsset],
+    asset_sizes: dict[tuple[str, str], int],
+) -> dict:
+    """Select the remaining unique reviewable banks for a second audition wave."""
+    assets_by_key = {(asset.collection, asset.asset_id): asset
+                     for asset in external_assets}
+    primary_names = {bank["name"] for bank in primary_manifest["banks"]}
+    occupied_sha256 = {asset.sha256 for asset in production_assets}
+    seen_signatures: set[frozenset[str]] = set()
+
+    for bank in primary_manifest["banks"]:
+        signature = frozenset(
+            assets_by_key[(ref["collection"], ref["asset_id"])].sha256
+            for ref in bank["asset_refs"]
+            if (ref["collection"], ref["asset_id"]) in assets_by_key
+        )
+        if signature:
+            seen_signatures.add(signature)
+            occupied_sha256.update(signature)
+
+    banks: list[dict] = []
+    manifest_assets: list[dict] = []
+    skipped_aliases: list[str] = []
+    selected_bytes = 0
+    for bank in audit["banks"]:
+        if (bank["status"] not in ("candidate", "review") or
+                bank["name"] in primary_names):
+            continue
+        values = [assets_by_key[(ref["collection"], ref["asset_id"])]
+                  for ref in bank["asset_refs"]
+                  if (ref["collection"], ref["asset_id"]) in assets_by_key]
+        signature = frozenset(asset.sha256 for asset in values)
+        additions = [asset for asset in values
+                     if asset.sha256 not in occupied_sha256]
+        if not signature or signature in seen_signatures or not additions:
+            skipped_aliases.append(bank["name"])
+            continue
+        seen_signatures.add(signature)
+        banks.append(bank)
+        for asset in additions:
+            if asset.sha256 in occupied_sha256:
+                continue
+            occupied_sha256.add(asset.sha256)
+            key = (asset.collection, asset.asset_id)
+            size = asset_sizes.get(key, 0)
+            selected_bytes += size
+            manifest_assets.append({
+                **asdict(asset.ref), "relative_path": asset.relative_path,
+                "license": asset.license, "bytes": size,
+            })
+
+    return {
+        "schema_version": 1,
+        "status": "secondary-proposed-not-promoted",
+        "source_primary_status": primary_manifest["status"],
+        "selected_bytes": selected_bytes,
+        "banks": banks,
+        "assets": manifest_assets,
+        "skipped_audio_aliases": skipped_aliases,
+        "requires_paired_speech_listening": True,
+    }
+
+
 def audit_markdown(audit: dict, manifest: dict) -> str:
     catalogs = audit["catalogs"]
     lines = [
@@ -504,7 +571,10 @@ def render_bank_audition(
         mono = _sequence(clips, int(0.13 * SR))
     else:
         refs = [SampleRef(row["collection"], row["asset_id"])
-                for row in bank["asset_refs"][:8]]
+                for row in sorted(
+                    bank["asset_refs"],
+                    key=lambda value: (value["collection"], value["asset_id"]),
+                )[:8]]
         clips = [CatalogSampleInstrument(ref, library).render(
             60, 0.34, 0.42) * bank_gain for ref in refs]
         mono = _sequence([*clips, *clips[:4]], int(0.11 * SR))

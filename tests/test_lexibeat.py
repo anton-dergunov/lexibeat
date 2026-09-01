@@ -31,6 +31,7 @@ from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
                               infer_round_robin, instrument_refs,
                               timbre_clusters)
 from lexibeat.library_audit import (build_expansion_audit,
+                                    build_secondary_manifest,
                                     evaluate_instrument_bank)
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
@@ -684,6 +685,33 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_secondary_expansion_skips_primary_and_checksum_aliases(self) -> None:
+        def asset(collection: str, asset_id: str, digest: str) -> SampleAsset:
+            return SampleAsset(
+                collection, asset_id, digest, f"Percussion/{asset_id}.wav",
+                "CC0-1.0", "percussion", duration_seconds=0.2)
+
+        values = [asset("vcsl", "primary", "sha-primary"),
+                  asset("mirror", "primary-copy", "sha-primary"),
+                  asset("vcsl", "secondary", "sha-secondary")]
+        row = lambda name, ref: {
+            "name": name, "status": "candidate", "family": "percussion",
+            "asset_refs": [{"collection": ref.collection,
+                            "asset_id": ref.asset_id}],
+        }
+        audit = {"banks": [row("primary", values[0].ref),
+                            row("alias", values[1].ref),
+                            row("secondary", values[2].ref)]}
+        primary = {"status": "proposed-not-promoted",
+                   "banks": [row("primary", values[0].ref)]}
+        manifest = build_secondary_manifest(
+            audit, primary, values, [],
+            {(value.collection, value.asset_id): 100 for value in values})
+        self.assertEqual([bank["name"] for bank in manifest["banks"]],
+                         ["secondary"])
+        self.assertEqual(manifest["selected_bytes"], 100)
+        self.assertEqual(manifest["skipped_audio_aliases"], ["alias"])
+
     def test_expansion_audit_prioritizes_complete_natural_piano(self) -> None:
         assets = []
         zones = []
