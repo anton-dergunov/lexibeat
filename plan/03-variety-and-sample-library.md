@@ -26,8 +26,9 @@ Step 3 is complete as an experiment, with only the successful parts retained:
 - Production generation therefore uses the control bass patterns, random-walk
   motif, original acoustic/hybrid/electronic palettes and control candidate
   selection policy. Experimental BedSpecs remain replayable.
-- Workstream 4 continues as a separate staged library-expansion follow-up,
-  prioritizing natural piano, strings, guitar, bass and speech-safe percussion.
+- Workstream 4 is complete as the staged library-expansion follow-up. Its final
+  listener-approved Wave 3 retains harp, lamellophone, marimba, ocarina, organ
+  and strumstick, and removes the eight rejected families from the final bundle.
   See `plan/03b-library-expansion.md`.
 
 For this product, greater distinctiveness is not sufficient on its own. An
@@ -111,7 +112,7 @@ transient, pitch, width, duration, and source/category features can establish a
 transparent baseline. Introduce embeddings only if listening tests show a clear
 benefit.
 
-## Workstream 4: Use more of the downloaded library (next follow-up)
+## Workstream 4: Use more of the downloaded library (completed follow-up)
 
 First produce a gap and utilization report for the safe catalog:
 
@@ -226,3 +227,7 @@ and maintain exact speech downbeats and bar boundaries.
   original external repositories.
 - The API and explorer can select, explain, reproduce, and compare every new
   variation.
+
+These criteria are complete for the accepted scope. Further library growth is
+not part of Step 3; it should begin as a new plan only if later product
+listening identifies a concrete missing role.

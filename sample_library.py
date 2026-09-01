@@ -151,6 +151,12 @@ def main() -> None:
                                  default=Path("out/library-expansion/candidate-v3"))
     integrate_wave3.add_argument("--accept-all", action="store_true")
     integrate_wave3.add_argument(
+        "--keep-family", action="append", default=[], metavar="FAMILY",
+        help="retain one listener-approved family in a finalized Wave 3 bundle")
+    integrate_wave3.add_argument(
+        "--reject-family", action="append", default=[], metavar="FAMILY",
+        help="exclude one listener-rejected family from a finalized Wave 3 bundle")
+    integrate_wave3.add_argument(
         "--caution-family", action="append", default=[],
         metavar="FAMILY:GAIN_DB",
         help="attenuate an approved family, e.g. harpsichord:-8")
@@ -465,9 +471,14 @@ def main() -> None:
             "production_v1_replaced": False,
         }
     elif args.command == "integrate-wave3":
-        if not args.accept_all:
+        if args.accept_all and (args.keep_family or args.reject_family):
             raise ValueError(
-                "integrate-wave3 requires --accept-all to record the listener gate.")
+                "Use either --accept-all or explicit --keep-family/--reject-family "
+                "decisions, not both.")
+        if not args.accept_all and not (args.keep_family or args.reject_family):
+            raise ValueError(
+                "integrate-wave3 requires --accept-all or a complete set of "
+                "--keep-family/--reject-family decisions.")
         family_gains = {}
         for value in args.caution_family:
             try:
@@ -481,14 +492,20 @@ def main() -> None:
             raise ValueError("Caution-family gains must be negative decibel values.")
         manifest = build_candidate_bundle(
             args.workspace, args.out, {}, base_bundle=args.base_bundle,
-            wave3=True, family_gains=family_gains)
+            wave3=True, family_gains=family_gains,
+            keep_families=(set(args.keep_family) if not args.accept_all else None),
+            reject_families=(set(args.reject_family) if not args.accept_all else None))
         policy = manifest["expansion_policy"]
+        accepted_wave3 = policy.get("accepted_wave3_families", [])
+        rejected_wave3 = policy.get("rejected_wave3_families", [])
         result = {
             "bundle": str(args.out), "version": manifest["version"],
             "accepted_banks": len(policy["accepted_banks"]),
-            "wave3_banks": len(json.loads(
-                (args.workspace / "wave3" / "candidate-manifest.json").read_text(
-                    encoding="utf-8"))["banks"]),
+            "accepted_wave3_families": accepted_wave3,
+            "rejected_wave3_families": rejected_wave3,
+            "wave3_banks": sum(
+                bank["family"] in accepted_wave3
+                for bank in policy["accepted_banks"]),
             "caution_banks": sum(
                 bank["listener_decision"] == "keep-with-caution"
                 for bank in policy["accepted_banks"]),

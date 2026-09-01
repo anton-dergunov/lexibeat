@@ -43,6 +43,24 @@ ROLE_LEAD_LEVEL = {
     "plucked-string": 2.5,
     "recorder": 4.0,
 }
+FINAL_ACCEPTED_FAMILIES = frozenset({
+    "harp", "lamellophone", "marimba", "ocarina", "organ", "plucked-string",
+})
+FINAL_SELECTION_WEIGHTS = {
+    "harp": 0.35,
+    "lamellophone": 0.75,
+    "marimba": 0.70,
+    "ocarina": 0.55,
+    "organ": 0.55,
+    "plucked-string": 0.70,
+}
+FINAL_LEAD_LEVEL = {
+    "harp": 2.4,
+    "lamellophone": 2.8,
+    "marimba": 4.8,
+    "ocarina": 4.0,
+    "plucked-string": 2.5,
+}
 
 
 def _raise_to_gain(instrument: InstrumentRef, target_max_db: float) -> InstrumentRef:
@@ -163,6 +181,8 @@ def apply_wave3_role_profile(
     if family == "organ":
         spec.phrase.pad_instrument = instrument
         spec.phrase.pad_sample = None
+        spec.phrase.lead_instrument = None
+        spec.phrase.lead_sample = None
         spec.phrase.chords = _organ_chords(spec, instrument)
         spec.phrase.motif_grammar = "organ-held-pad-v1"
         spec.pad.level = max(spec.pad.level, 0.62)
@@ -201,3 +221,39 @@ def apply_wave3_role_profile(
         "reverb_seconds": spec.space.reverb_seconds,
         "reverb_mix": spec.space.reverb_mix,
     }
+
+
+def apply_final_wave3_role_profile(
+    spec: BedSpec,
+    family: str,
+    instrument: InstrumentRef,
+) -> dict:
+    """Apply one listener-approved Wave 3 role to a production candidate."""
+    if family not in FINAL_ACCEPTED_FAMILIES:
+        raise ValueError(f"Wave 3 family was not accepted: '{family}'.")
+    profile = apply_wave3_role_profile(spec, family, instrument)
+    if family != "organ":
+        spec.lead.level = FINAL_LEAD_LEVEL[family]
+        spec.lead.duck_db = max(spec.lead.duck_db, 7.0)
+
+    if family == "harp":
+        spec.phrase.motif_grammar = "harp-arpeggio-v1"
+        profile["role"] = "arpeggiated-lead"
+    elif family == "lamellophone":
+        spec.phrase.motif_grammar = "lamellophone-percussive-backing-v1"
+        spec.lead.duck_db = 8.0
+        profile["role"] = "percussive-backing"
+    elif family == "marimba":
+        spec.phrase.motif_grammar = "marimba-soft-mallet-v1"
+        profile["role"] = "soft-mallet-accent"
+    elif family == "plucked-string":
+        spec.phrase.motif_grammar = "strumstick-rhythmic-pluck-v1"
+        profile["role"] = "rhythmic-pluck"
+
+    profile.update({
+        "lead_level": None if family == "organ" else spec.lead.level,
+        "duck_db": spec.pad.duck_db if family == "organ" else spec.lead.duck_db,
+        "selection_weight": FINAL_SELECTION_WEIGHTS[family],
+        "production_status": "listener-approved",
+    })
+    return profile

@@ -502,7 +502,7 @@ def build_secondary_manifest(
     }
 
 
-def _wave3_family(name: str) -> str | None:
+def wave3_family(name: str) -> str | None:
     lowered = name.lower()
     for family in ("accordion", "recorder", "ocarina", "flute", "clarinet", "oboe",
                    "bassoon", "harmonica", "organ", "harpsichord",
@@ -525,7 +525,7 @@ def evaluate_wave3_bank(
     asset_sizes: dict[tuple[str, str], int],
 ) -> dict | None:
     """Evaluate a broader natural bank with warnings rather than narrow taste gates."""
-    family = _wave3_family(instrument.name)
+    family = wave3_family(instrument.name)
     if family is None:
         return None
     keys = list(dict.fromkeys(

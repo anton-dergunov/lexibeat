@@ -10,7 +10,9 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
+from .instrument_roles import FINAL_SELECTION_WEIGHTS
 from .library import SampleLibrary
+from .library_audit import wave3_family
 from .paths import BUNDLED_ROOT
 
 
@@ -94,8 +96,11 @@ def accepted_wave3_policy(
     workspace: Path,
     base_policy: dict,
     family_gains: dict[str, float],
+    *,
+    keep_families: set[str] | None = None,
+    reject_families: set[str] | None = None,
 ) -> tuple[dict, list[dict]]:
-    """Merge the all-approved Wave 3 banks with the accepted v2 policy."""
+    """Merge the listener-approved Wave 3 subset with the accepted v2 policy."""
     proposal = json.loads(
         (workspace / "wave3" / "candidate-manifest.json").read_text(
             encoding="utf-8"))
@@ -110,19 +115,40 @@ def accepted_wave3_policy(
         raise ValueError(
             f"Wave 3 proposal/audition mismatch; missing={missing}, extra={extra}")
     families = {bank["family"] for bank in proposal["banks"]}
-    unknown = sorted(set(family_gains) - families)
+    finalized = keep_families is not None or reject_families is not None
+    if finalized:
+        keep_families = set(keep_families or ())
+        reject_families = set(reject_families or ())
+        overlap = sorted(keep_families & reject_families)
+        unknown_decisions = sorted((keep_families | reject_families) - families)
+        missing_decisions = sorted(families - keep_families - reject_families)
+        if overlap or unknown_decisions or missing_decisions:
+            raise ValueError(
+                "Wave 3 family decisions must partition the proposal; "
+                f"overlap={overlap}, unknown={unknown_decisions}, "
+                f"missing={missing_decisions}")
+    else:
+        keep_families = set(families)
+        reject_families = set()
+    unknown = sorted(set(family_gains) - keep_families)
     if unknown:
-        raise ValueError(f"Unknown Wave 3 caution families: {', '.join(unknown)}")
+        raise ValueError(
+            f"Unknown or rejected Wave 3 caution families: {', '.join(unknown)}")
 
     wave3_banks = []
     for bank in proposal["banks"]:
+        if bank["family"] not in keep_families:
+            continue
         listener_gain = float(family_gains.get(bank["family"], 0.0))
         wave3_banks.append({
             **bank,
             "listener_decision": (
                 "keep-with-caution" if listener_gain < 0 else "keep"),
             "listener_gain_db": listener_gain,
-            "selection_weight": 0.35 if bank["family"] == "harpsichord" else 1.0,
+            "selection_weight": (
+                FINAL_SELECTION_WEIGHTS.get(bank["family"], 1.0)
+                if finalized else
+                0.35 if bank["family"] == "harpsichord" else 1.0),
         })
     accepted = list(base_policy.get("accepted_banks", []))
     accepted_names = {bank["name"] for bank in accepted}
@@ -130,15 +156,28 @@ def accepted_wave3_policy(
                     if bank["name"] not in accepted_names)
     policy = {
         "schema_version": 1,
-        "name": "library-expansion-v3-candidate",
-        "listener_decision": "accept-all-wave3-auditioned-banks",
+        "name": ("library-expansion-v3-final" if finalized
+                 else "library-expansion-v3-candidate"),
+        "listener_decision": ("accept-selected-wave3-families" if finalized
+                              else "accept-all-wave3-auditioned-banks"),
         "include_sustained_strings": bool(
             base_policy.get("include_sustained_strings", True)),
         "accepted_banks": accepted,
+        "accepted_wave3_families": sorted(keep_families),
+        "rejected_wave3_families": sorted(reject_families),
         "caution_family_gains_db": dict(sorted(family_gains.items())),
-        "production_status": "candidate-awaiting-wave3-speech-test",
+        "production_status": ("listener-approved" if finalized
+                              else "candidate-awaiting-wave3-speech-test"),
     }
-    return policy, proposal["assets"]
+    accepted_refs = {
+        (ref["collection"], ref["asset_id"])
+        for bank in wave3_banks for ref in bank["asset_refs"]
+    }
+    assets = [
+        asset for asset in proposal["assets"]
+        if (asset["collection"], asset["asset_id"]) in accepted_refs
+    ]
+    return policy, assets
 
 
 def build_candidate_bundle(
@@ -149,6 +188,8 @@ def build_candidate_bundle(
     base_bundle: Path | None = None,
     wave3: bool = False,
     family_gains: dict[str, float] | None = None,
+    keep_families: set[str] | None = None,
+    reject_families: set[str] | None = None,
 ) -> dict:
     """Merge production v1 with accepted expansion assets without replacing v1."""
     if output.exists():
@@ -165,7 +206,8 @@ def build_candidate_bundle(
     production = json.loads(production_manifest_path.read_text(encoding="utf-8"))
     if wave3:
         policy, expansion_assets = accepted_wave3_policy(
-            workspace, production.get("expansion_policy", {}), family_gains or {})
+            workspace, production.get("expansion_policy", {}), family_gains or {},
+            keep_families=keep_families, reject_families=reject_families)
     else:
         policy, expansion_assets = accepted_expansion_policy(
             workspace, {key.upper(): value for key, value in caution_gains.items()})
@@ -177,6 +219,15 @@ def build_candidate_bundle(
         (row["collection"], row["asset_id"]): row
         for row in expansion_assets
     }
+    if reject_families:
+        production_by_key = {
+            key: row for key, row in production_by_key.items()
+            if wave3_family(row["relative_path"]) not in reject_families
+        }
+        expansion_by_key = {
+            key: row for key, row in expansion_by_key.items()
+            if wave3_family(row["relative_path"]) not in reject_families
+        }
     selected_keys = set(production_by_key) | set(expansion_by_key)
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(
@@ -262,7 +313,8 @@ def build_candidate_bundle(
         manifest = {
             "schema_version": 2,
             "bundle": "lexibeat-production-core",
-            "version": "3-candidate" if wave3 else "2-candidate",
+            "version": ("3-final" if wave3 and keep_families is not None
+                        else "3-candidate" if wave3 else "2-candidate"),
             "based_on": production["version"],
             "catalog_assets": catalog_rows,
             "named_pack_assets": named_rows,

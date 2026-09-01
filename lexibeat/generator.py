@@ -22,6 +22,8 @@ from .api import (
     SampleUsage,
 )
 from .bedspec import BedSpec
+from .instrument_roles import (FINAL_ACCEPTED_FAMILIES,
+                               apply_final_wave3_role_profile)
 from .library import (
     COLLECTIONS,
     InstrumentRef,
@@ -283,12 +285,13 @@ def enrich_with_catalog_samples(
     }
     family_preferences = {
         "sunlit-acoustic": ("guitar", "psaltery", "pizz", "harp", "mbira"),
-        "gentle-movement": ("piano", "vibraphone", "ocarina", "recorder", "pizz"),
+        "gentle-movement": ("piano", "vibraphone", "ocarina", "organ", "pizz"),
         "playful-plucked": (
-            "mbira", "nyunga", "kalimba", "psaltery", "guitar", "pizz",
+            "mbira", "nyunga", "kalimba", "marimba", "strumstick",
+            "psaltery", "guitar", "pizz",
         ),
         "bright-pastoral": (
-            "ocarina", "harmonica", "flute", "recorder", "pizz", "psaltery",
+            "ocarina", "pizz", "psaltery",
         ),
     }
     preferred_words = preferences.get(spec.lead.instrument, ())
@@ -335,11 +338,17 @@ def enrich_with_catalog_samples(
         weights /= weights.sum()
         spec.phrase.lead_instrument = choices[int(rng.choice(
             len(choices), p=weights))]
-        articulation = spec.phrase.lead_instrument.zones[0].articulation
-        for event in spec.phrase.lead:
-            event.articulation = articulation
-            event.midi_note = _fit_instrument_note(
-                event.midi_note, spec.phrase.lead_instrument)
+        selected_bank = accepted_banks.get(spec.phrase.lead_instrument.name, {})
+        selected_family = selected_bank.get("family")
+        if selected_family in FINAL_ACCEPTED_FAMILIES:
+            apply_final_wave3_role_profile(
+                spec, selected_family, spec.phrase.lead_instrument)
+        else:
+            articulation = spec.phrase.lead_instrument.zones[0].articulation
+            for event in spec.phrase.lead:
+                event.articulation = articulation
+                event.midi_note = _fit_instrument_note(
+                    event.midi_note, spec.phrase.lead_instrument)
 
     sustained_strings = [
         instrument for instrument in instruments

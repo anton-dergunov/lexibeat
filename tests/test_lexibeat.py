@@ -27,7 +27,8 @@ from lexibeat.generator import (
 )
 from lexibeat.instruments import (CatalogMultiSampleInstrument, SampledInstrument,
                                   load_one_shot)
-from lexibeat.instrument_roles import apply_wave3_role_profile
+from lexibeat.instrument_roles import (apply_final_wave3_role_profile,
+                                       apply_wave3_role_profile)
 from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
                               SampleAsset, SampleLibrary, SampleRef,
                               directory_size, infer_articulation,
@@ -764,6 +765,24 @@ class TieredLibraryTests(unittest.TestCase):
         self.assertEqual(spec.lead.level, 4.0)
         self.assertEqual(spec.phrase.motif_grammar, "harpsichord-plucked-v1")
 
+    def test_final_wave3_role_keeps_only_approved_families_and_lifts_marimba(
+            self) -> None:
+        instrument = InstrumentRef("test-marimba", tuple(
+            InstrumentZoneRef(
+                SampleRef("vcsl", f"marimba-{note}"), note, note, note,
+                gain_db=-10.0, articulation="soft-mallet")
+            for note in range(48, 80, 4)
+        ))
+        spec = BedSpec.from_style("gentle-game", 47)
+        profile = apply_final_wave3_role_profile(
+            spec, "marimba", instrument)
+        self.assertEqual(profile["production_status"], "listener-approved")
+        self.assertEqual(profile["role"], "soft-mallet-accent")
+        self.assertEqual(spec.lead.level, 4.8)
+        self.assertEqual(spec.phrase.motif_grammar, "marimba-soft-mallet-v1")
+        with self.assertRaisesRegex(ValueError, "not accepted"):
+            apply_final_wave3_role_profile(spec, "flute", instrument)
+
     def test_wave3_recognizes_explicit_accordion_collection(self) -> None:
         assets = [SampleAsset(
             "freepats-accordion", f"accordion-{note}",
@@ -891,6 +910,32 @@ class TieredLibraryTests(unittest.TestCase):
             self.assertEqual(cautious["listener_decision"], "keep-with-caution")
             self.assertEqual(cautious["listener_gain_db"], -8.0)
             self.assertEqual(cautious["selection_weight"], 0.35)
+
+    def test_final_wave3_policy_removes_rejected_family_assets(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "wave3" / "auditions").mkdir(parents=True)
+            banks = [{
+                "name": f"{family}-bank", "kind": "pitched", "family": family,
+                "asset_refs": [{"collection": "vcsl", "asset_id": family}],
+                "metrics": {"recommended_bank_gain_db": 0.0},
+            } for family in ("harp", "flute")]
+            assets = [{"collection": "vcsl", "asset_id": family}
+                      for family in ("harp", "flute")]
+            (workspace / "wave3" / "candidate-manifest.json").write_text(
+                json.dumps({"banks": banks, "assets": assets}))
+            (workspace / "wave3" / "auditions" / "manifest.json").write_text(
+                json.dumps({"clips": [{"bank": bank["name"]}
+                                       for bank in banks]}))
+            policy, retained_assets = accepted_wave3_policy(
+                workspace, {"accepted_banks": []}, {},
+                keep_families={"harp"}, reject_families={"flute"})
+            self.assertEqual(policy["production_status"], "listener-approved")
+            self.assertEqual(policy["accepted_wave3_families"], ["harp"])
+            self.assertEqual(policy["rejected_wave3_families"], ["flute"])
+            self.assertEqual([bank["family"]
+                              for bank in policy["accepted_banks"]], ["harp"])
+            self.assertEqual(retained_assets, [assets[0]])
 
     def test_expansion_policy_caps_register_and_serializes_zone_gain(self) -> None:
         instrument = InstrumentRef("accepted-piano", (

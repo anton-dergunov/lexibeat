@@ -251,3 +251,29 @@ lamellophone, marimba, oboe, ocarina, organ, recorder and strumstick. The
 listening gate decides which role treatments, if any, should later become
 production policy; creating this experiment does not alter production-v1 or
 candidate-v3 selection behavior.
+
+## Final listener decision and closure
+
+The final role-aware listening gate accepts six Wave 3 families: harp,
+lamellophone, marimba, ocarina, organ and plucked-string/strumstick. Accordion,
+bassoon, clarinet, flute, harmonica, harpsichord, oboe and recorder are rejected.
+Ocarina is treated as accepted because both the detailed clip note and the
+listener's accepted list approve clip 11; its duplicate appearance in the
+rejected list is recorded as a transcription slip.
+
+The accepted production treatments are resolved into each BedSpec: harp uses a
+restrained arpeggio and low selection weight; lamellophone uses a strongly
+ducked percussive-backing pattern; marimba uses a louder soft-mallet accent;
+ocarina uses sparse sustained notes; organ replaces the lead with held pad
+chords; and strumstick uses a rhythmic plucked pattern. Rejected families are
+absent from both the accepted-bank policy and the final catalog, including 76
+stray inherited catalog assets that predated the Wave 3 proposal.
+
+The final checksum-locked bundle is
+`out/library-expansion/final-v3/`. It contains 57 accepted banks, including 18
+Wave 3 banks, with 2,345 catalog assets and 2,440 total assets. Its logical audio
+size is 3,061,928,345 bytes (3.062 GB / 2.852 GiB). Bundle verification reports
+no missing files, checksum mismatches, LFS pointers or catalog-count mismatch.
+All six accepted roles pass normal candidate generation and deterministic
+sampled rendering. This closes Steps 3 and 3B; further library expansion is
+deferred unless a later product requirement identifies a specific gap.

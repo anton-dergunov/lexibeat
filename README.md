@@ -294,6 +294,28 @@ Targeted replay rows name both the exact bank and its instrument family. Their
 family-specific notes, levels and role are written into the resulting BedSpec;
 ordinary replay manifests and production generation are unaffected.
 
+The completed listener gate retains six families and removes every rejected
+family from the final catalog. Rebuild and verify the finalized bundle with:
+
+```bash
+uv run sample_library.py integrate-wave3 \
+  --base-bundle out/library-expansion/candidate-v2 \
+  --out out/library-expansion/final-v3 \
+  --keep-family harp --keep-family lamellophone --keep-family marimba \
+  --keep-family ocarina --keep-family organ --keep-family plucked-string \
+  --reject-family accordion --reject-family bassoon \
+  --reject-family clarinet --reject-family flute \
+  --reject-family harmonica --reject-family harpsichord \
+  --reject-family oboe --reject-family recorder
+LEXIBEAT_BUNDLE_ROOT=out/library-expansion/final-v3 \
+  uv run sample_bundle.py verify
+```
+
+The final bundle is the Step 3B production candidate. Its policy automatically
+applies the approved role treatment whenever one of these banks is selected;
+rejected source collections may remain on the external archive, but none of
+their assets or catalog rows are shipped in this bundle.
+
 After recording an all-accepted listening decision, build and verify the
 separate candidate-v2 bundle with explicit attenuation for retained caution
 clips:
