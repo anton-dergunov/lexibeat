@@ -267,6 +267,17 @@ its isolated probes under `wave3/auditions/`. The explicitly downloadable CC0
 sources now include FreePats Button Accordion HN; normal generation still never
 downloads samples.
 
+After the Wave 3 listening gate, build its separate candidate on top of
+candidate-v2. Family cautions are serialized into every affected instrument;
+this accepted configuration keeps harpsichords occasional and 8 dB lower:
+
+```bash
+uv run sample_library.py integrate-wave3 --accept-all \
+  --caution-family harpsichord:-8
+LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v3 \
+  uv run sample_bundle.py verify
+```
+
 After recording an all-accepted listening decision, build and verify the
 separate candidate-v2 bundle with explicit attenuation for retained caution
 clips:

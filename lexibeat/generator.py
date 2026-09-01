@@ -276,8 +276,9 @@ def enrich_with_catalog_samples(
         ),
         "synth": (
             "recorder", "flute", "oboe", "clarinet", "strumstick", "guitar",
-            "harp", "organ", "ocarina", "harmonica", "bassoon", "pizz", "spic",
-            "mbira", "nyunga", "psaltery",
+            "harp", "organ", "ocarina", "harmonica", "bassoon", "accordion",
+            "harpsichord", "kalimba", "marimba", "pizz", "spic", "mbira",
+            "nyunga", "psaltery",
         ),
     }
     family_preferences = {
@@ -326,7 +327,14 @@ def enrich_with_catalog_samples(
                 by_collection.setdefault(collection, []).append(instrument)
             collection = sorted(by_collection)[int(rng.integers(0, len(by_collection)))]
             choices = by_collection[collection]
-        spec.phrase.lead_instrument = choices[int(rng.integers(0, len(choices)))]
+        weights = np.asarray([
+            float(accepted_banks.get(instrument.name, {}).get(
+                "selection_weight", 1.0))
+            for instrument in choices
+        ], dtype=np.float64)
+        weights /= weights.sum()
+        spec.phrase.lead_instrument = choices[int(rng.choice(
+            len(choices), p=weights))]
         articulation = spec.phrase.lead_instrument.zones[0].articulation
         for event in spec.phrase.lead:
             event.articulation = articulation

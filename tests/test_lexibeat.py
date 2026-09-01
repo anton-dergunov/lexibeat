@@ -36,7 +36,8 @@ from lexibeat.library_audit import (build_expansion_audit,
                                     build_wave3_expansion,
                                     evaluate_instrument_bank,
                                     evaluate_wave3_bank)
-from lexibeat.library_bundle import accepted_expansion_policy
+from lexibeat.library_bundle import (accepted_expansion_policy,
+                                     accepted_wave3_policy)
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
@@ -790,6 +791,32 @@ class TieredLibraryTests(unittest.TestCase):
             self.assertEqual(policy["accepted_banks"][0]["listener_gain_db"], -2.0)
             self.assertEqual(policy["accepted_banks"][1]["listener_decision"],
                              "keep")
+
+    def test_wave3_policy_merges_base_and_attenuates_harpsichords(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            (workspace / "wave3" / "auditions").mkdir(parents=True)
+            bank = {
+                "name": "harpsichord-bank", "kind": "pitched",
+                "family": "harpsichord", "asset_refs": [],
+                "metrics": {"recommended_bank_gain_db": 0.0},
+            }
+            (workspace / "wave3" / "candidate-manifest.json").write_text(
+                json.dumps({"banks": [bank], "assets": []}))
+            (workspace / "wave3" / "auditions" / "manifest.json").write_text(
+                json.dumps({"clips": [{"bank": "harpsichord-bank"}]}))
+            base = {"include_sustained_strings": True, "accepted_banks": [{
+                **bank, "name": "base-bank", "family": "piano",
+                "listener_decision": "keep", "listener_gain_db": 0.0,
+            }]}
+            policy, assets = accepted_wave3_policy(
+                workspace, base, {"harpsichord": -8.0})
+            self.assertEqual(assets, [])
+            self.assertEqual(len(policy["accepted_banks"]), 2)
+            cautious = policy["accepted_banks"][1]
+            self.assertEqual(cautious["listener_decision"], "keep-with-caution")
+            self.assertEqual(cautious["listener_gain_db"], -8.0)
+            self.assertEqual(cautious["selection_weight"], 0.35)
 
     def test_expansion_policy_caps_register_and_serializes_zone_gain(self) -> None:
         instrument = InstrumentRef("accepted-piano", (

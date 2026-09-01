@@ -212,3 +212,24 @@ No coherent bandoneon multisample bank with a sufficiently clear redistributable
 license was found in this source pass. Do not substitute a single demonstration
 recording or a bank with sample-repackaging restrictions; bandoneon remains an
 explicit acquisition gap for a later source search.
+
+## Wave 3 listener decision and candidate-v3 integration
+
+All 56 Wave 3 banks are accepted. Harpsichord is also accepted, but as an
+occasional baroque color: all six harpsichord banks receive 8 dB listener
+attenuation and a 0.35 selection weight. This is approximately 40% of the
+uncautioned amplitude before existing bank/high-register calibration. The
+resolved zone gains remain serialized in each BedSpec.
+
+Candidate-v3 is built separately at
+`out/library-expansion/candidate-v3/` on top of candidate-v2. It contains all 95
+accepted banks, 3,224 catalog assets, 3,319 total assets and 4.09 GB of audio.
+Verification reports no missing files, checksum mismatches, LFS pointers or
+catalog-count mismatches. Candidate-v2 and production-v1 remain unchanged.
+
+The eight-clip speech-context check in
+`out/library-expansion/wave3-integrated-listening/` contains two harpsichords
+(English Normal and the brighter Flemish High) followed by accordion, flute,
+vibrato recorder, harmonica, Renaissance organ and oboe. All clips reuse the
+same bilingual speech, start speech on downbeats, remain finite 44.1-kHz stereo
+audio and stay below the 0.97 peak ceiling.

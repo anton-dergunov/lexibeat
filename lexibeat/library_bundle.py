@@ -90,10 +90,65 @@ def accepted_expansion_policy(
     return policy, assets
 
 
+def accepted_wave3_policy(
+    workspace: Path,
+    base_policy: dict,
+    family_gains: dict[str, float],
+) -> tuple[dict, list[dict]]:
+    """Merge the all-approved Wave 3 banks with the accepted v2 policy."""
+    proposal = json.loads(
+        (workspace / "wave3" / "candidate-manifest.json").read_text(
+            encoding="utf-8"))
+    audition = json.loads(
+        (workspace / "wave3" / "auditions" / "manifest.json").read_text(
+            encoding="utf-8"))
+    proposed_names = {bank["name"] for bank in proposal["banks"]}
+    auditioned_names = {clip["bank"] for clip in audition["clips"]}
+    if proposed_names != auditioned_names:
+        missing = sorted(proposed_names - auditioned_names)
+        extra = sorted(auditioned_names - proposed_names)
+        raise ValueError(
+            f"Wave 3 proposal/audition mismatch; missing={missing}, extra={extra}")
+    families = {bank["family"] for bank in proposal["banks"]}
+    unknown = sorted(set(family_gains) - families)
+    if unknown:
+        raise ValueError(f"Unknown Wave 3 caution families: {', '.join(unknown)}")
+
+    wave3_banks = []
+    for bank in proposal["banks"]:
+        listener_gain = float(family_gains.get(bank["family"], 0.0))
+        wave3_banks.append({
+            **bank,
+            "listener_decision": (
+                "keep-with-caution" if listener_gain < 0 else "keep"),
+            "listener_gain_db": listener_gain,
+            "selection_weight": 0.35 if bank["family"] == "harpsichord" else 1.0,
+        })
+    accepted = list(base_policy.get("accepted_banks", []))
+    accepted_names = {bank["name"] for bank in accepted}
+    accepted.extend(bank for bank in wave3_banks
+                    if bank["name"] not in accepted_names)
+    policy = {
+        "schema_version": 1,
+        "name": "library-expansion-v3-candidate",
+        "listener_decision": "accept-all-wave3-auditioned-banks",
+        "include_sustained_strings": bool(
+            base_policy.get("include_sustained_strings", True)),
+        "accepted_banks": accepted,
+        "caution_family_gains_db": dict(sorted(family_gains.items())),
+        "production_status": "candidate-awaiting-wave3-speech-test",
+    }
+    return policy, proposal["assets"]
+
+
 def build_candidate_bundle(
     workspace: Path,
     output: Path,
     caution_gains: dict[str, float],
+    *,
+    base_bundle: Path | None = None,
+    wave3: bool = False,
+    family_gains: dict[str, float] | None = None,
 ) -> dict:
     """Merge production v1 with accepted expansion assets without replacing v1."""
     if output.exists():
@@ -102,13 +157,18 @@ def build_candidate_bundle(
     source_catalog = workspace / "catalog.sqlite3"
     if not source_catalog.exists():
         raise FileNotFoundError(f"Missing expansion catalog: {source_catalog}")
-    production_manifest_path = BUNDLED_ROOT / "manifest.json"
+    base_root = base_bundle or BUNDLED_ROOT
+    production_manifest_path = base_root / "manifest.json"
     if not production_manifest_path.exists():
         raise FileNotFoundError(
             f"Missing production bundle manifest: {production_manifest_path}")
     production = json.loads(production_manifest_path.read_text(encoding="utf-8"))
-    policy, expansion_assets = accepted_expansion_policy(
-        workspace, {key.upper(): value for key, value in caution_gains.items()})
+    if wave3:
+        policy, expansion_assets = accepted_wave3_policy(
+            workspace, production.get("expansion_policy", {}), family_gains or {})
+    else:
+        policy, expansion_assets = accepted_expansion_policy(
+            workspace, {key.upper(): value for key, value in caution_gains.items()})
     production_by_key = {
         (row["collection"], row["asset_id"]): row
         for row in production["catalog_assets"]
@@ -170,7 +230,7 @@ def build_candidate_bundle(
             key = (row["collection"], row["asset_id"])
             production_row = production_by_key.get(key)
             if production_row:
-                source = BUNDLED_ROOT / production_row["bundle_path"]
+                source = base_root / production_row["bundle_path"]
                 link = True
             else:
                 source = (external.collection_path(row["collection"]) /
@@ -192,17 +252,17 @@ def build_candidate_bundle(
         named_rows = []
         named_bytes = 0
         for row in production["named_pack_assets"]:
-            source = BUNDLED_ROOT / row["bundle_path"]
+            source = base_root / row["bundle_path"]
             target = staging / row["bundle_path"]
             _verified_copy(source, target, row["sha256"], link=True)
             named_rows.append(row)
             named_bytes += target.stat().st_size
-        if (BUNDLED_ROOT / "licenses").exists():
-            shutil.copytree(BUNDLED_ROOT / "licenses", staging / "licenses")
+        if (base_root / "licenses").exists():
+            shutil.copytree(base_root / "licenses", staging / "licenses")
         manifest = {
             "schema_version": 2,
             "bundle": "lexibeat-production-core",
-            "version": "2-candidate",
+            "version": "3-candidate" if wave3 else "2-candidate",
             "based_on": production["version"],
             "catalog_assets": catalog_rows,
             "named_pack_assets": named_rows,

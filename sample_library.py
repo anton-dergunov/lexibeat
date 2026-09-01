@@ -140,6 +140,20 @@ def main() -> None:
     integrate.add_argument(
         "--caution", action="append", default=[], metavar="CLIP_ID:GAIN_DB",
         help="record a retained clip with conservative gain, e.g. S21:-5")
+    integrate_wave3 = sub.add_parser(
+        "integrate-wave3",
+        help="build candidate v3 from candidate v2 and all approved Wave 3 banks")
+    integrate_wave3.add_argument("--workspace", type=Path,
+                                 default=Path("out/library-expansion"))
+    integrate_wave3.add_argument("--base-bundle", type=Path,
+                                 default=Path("out/library-expansion/candidate-v2"))
+    integrate_wave3.add_argument("--out", type=Path,
+                                 default=Path("out/library-expansion/candidate-v3"))
+    integrate_wave3.add_argument("--accept-all", action="store_true")
+    integrate_wave3.add_argument(
+        "--caution-family", action="append", default=[],
+        metavar="FAMILY:GAIN_DB",
+        help="attenuate an approved family, e.g. harpsichord:-8")
     promote = sub.add_parser("promote")
     promote.add_argument("bed_specs", type=Path, nargs="+")
     playlist = sub.add_parser("playlist")
@@ -449,6 +463,39 @@ def main() -> None:
             "asset_count": manifest["asset_count"],
             "total_audio_bytes": manifest["total_audio_bytes"],
             "production_v1_replaced": False,
+        }
+    elif args.command == "integrate-wave3":
+        if not args.accept_all:
+            raise ValueError(
+                "integrate-wave3 requires --accept-all to record the listener gate.")
+        family_gains = {}
+        for value in args.caution_family:
+            try:
+                family, gain = value.rsplit(":", 1)
+                family_gains[family.lower()] = float(gain)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Invalid --caution-family '{value}'; expected FAMILY:GAIN_DB."
+                ) from exc
+        if any(gain >= 0 for gain in family_gains.values()):
+            raise ValueError("Caution-family gains must be negative decibel values.")
+        manifest = build_candidate_bundle(
+            args.workspace, args.out, {}, base_bundle=args.base_bundle,
+            wave3=True, family_gains=family_gains)
+        policy = manifest["expansion_policy"]
+        result = {
+            "bundle": str(args.out), "version": manifest["version"],
+            "accepted_banks": len(policy["accepted_banks"]),
+            "wave3_banks": len(json.loads(
+                (args.workspace / "wave3" / "candidate-manifest.json").read_text(
+                    encoding="utf-8"))["banks"]),
+            "caution_banks": sum(
+                bank["listener_decision"] == "keep-with-caution"
+                for bank in policy["accepted_banks"]),
+            "catalog_assets": len(manifest["catalog_assets"]),
+            "asset_count": manifest["asset_count"],
+            "total_audio_bytes": manifest["total_audio_bytes"],
+            "base_bundle_replaced": False,
         }
     else:
         result = library.report()
