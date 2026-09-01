@@ -1,7 +1,8 @@
 """Tiered, explicitly managed sample-library storage and catalog.
 
 Normal music rendering never downloads data.  This module is used by the
-``sample_library.py`` maintenance command and by resolved ``SampleRef`` values
+``scripts.samples.sample_library`` maintenance command and by resolved
+``SampleRef`` values
 stored in new BedSpec JSON files.
 """
 

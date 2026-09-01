@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Generate a LexiBeat language-learning track from a vocabulary list.
 
-    uv run generate.py --words 12 --out out/spanish.wav
+    uv run python -m lexibeat.cli --words 12 --out out/spanish.wav
 
 The music bed is synthesised locally. Speech can come from the preferred local
 Chatterbox backend, fast Kokoro fallback, experimental local models, or explicit
-hosted Gemini and Cloudflare backends. See DESIGN.md for the trade-offs.
+hosted Gemini and Cloudflare backends. See docs/design.md for the trade-offs.
 """
 
 from __future__ import annotations

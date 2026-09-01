@@ -105,7 +105,8 @@ def run_backend(backend: str, args: argparse.Namespace, bed: Path,
     stats_path = args.out_dir / f"{backend}.stats.json"
     log_path = args.out_dir / f"{backend}.log"
     command = [
-        "uv", "run", "--extra", "experimental-tts", "generate.py",
+        "uv", "run", "--extra", "experimental-tts", "python", "-m",
+        "lexibeat.cli",
         "--backend", backend,
         "--words", str(args.words), "--seed", str(args.seed),
         "--voice-seed", str(args.voice_seed), "--pattern", "retrieval",
@@ -173,7 +174,7 @@ def run_backend(backend: str, args: argparse.Namespace, bed: Path,
         "license": CAPABILITIES[backend].license,
     })
     if return_code != 0:
-        stats["error"] = f"generate.py exited {return_code}; see {log_path}"
+        stats["error"] = f"lexibeat.cli exited {return_code}; see {log_path}"
     stats_path.write_text(json.dumps(stats, indent=2, ensure_ascii=False) + "\n",
                           encoding="utf-8")
     return stats

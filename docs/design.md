@@ -9,8 +9,8 @@ locally on an Apple Silicon Mac.
 ## 0. What was built
 
 ```
-generate.py            CLI entry point
-compare_voices.py      renders the same words through several voice setups
+lexibeat/cli.py        CLI entry point
+scripts/benchmarks/    listening, voice, and performance comparison commands
 lexibeat/vocab.py      parses the Obsidian notes into (Spanish, English, emoji) triples
 lexibeat/bedspec.py    every music parameter, as styles and as JSON
 lexibeat/music.py      renders a BedSpec into audio on a known beat grid
@@ -28,13 +28,13 @@ lexibeat/mix.py        LUFS normalisation, sidechain ducking, block limiter
 brew install espeak-ng          # required by Kokoro for Spanish G2P
 uv sync
 
-uv run generate.py --words 12 --out out/lesson.wav
-uv run generate.py --words 6 --dry-run              # show the plan only
-uv run generate.py --bed-only --bed-style lofi      # audition a bed in ~1 s
-uv run generate.py --download-samples               # fetch the piano (~88 MB)
-uv run generate.py --words 6                        # Chatterbox, expressive default
-uv run generate.py --words 6 --backend kokoro       # faster fallback
-uv run compare_voices.py --words 3                  # A/B the voice setups
+uv run python -m lexibeat.cli --words 12 --out out/lesson.wav
+uv run python -m lexibeat.cli --words 6 --dry-run              # show the plan only
+uv run python -m lexibeat.cli --bed-only --bed-style lofi      # audition a bed in ~1 s
+uv run python -m lexibeat.cli --download-samples               # fetch the piano (~88 MB)
+uv run python -m lexibeat.cli --words 6                        # Chatterbox, expressive default
+uv run python -m lexibeat.cli --words 6 --backend kokoro       # faster fallback
+uv run python -m scripts.benchmarks.compare_voices --words 3   # A/B the voice setups
 ```
 
 Flags worth knowing: `--bed-style yoga|nocturne|lofi|warm`, `--bed-seed`,

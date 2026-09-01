@@ -63,9 +63,14 @@ from lexibeat.voice import (
     reference_path,
 )
 from lexibeat.vocab import Item
-from benchmark_voices import pressure_snapshot, write_comparison
-from compare_gemini_batched import split_on_long_silences
-from compare_beds import Candidate, FAMILIES, POSITIVE_FAMILIES, select_balanced
+from scripts.benchmarks.benchmark_voices import pressure_snapshot, write_comparison
+from scripts.benchmarks.compare_gemini_batched import split_on_long_silences
+from scripts.benchmarks.compare_beds import (
+    Candidate,
+    FAMILIES,
+    POSITIVE_FAMILIES,
+    select_balanced,
+)
 from lexibeat.sfz import parse as parse_sfz
 
 
@@ -1479,7 +1484,7 @@ class BenchmarkTests(unittest.TestCase):
             "total = 4096.00M  used = 1536.50M  free = 2559.50M",
             "Pages free: 42.",
         ])
-        with mock.patch("benchmark_voices.command_output",
+        with mock.patch("scripts.benchmarks.benchmark_voices.command_output",
                         side_effect=lambda _: next(outputs)):
             snapshot = pressure_snapshot()
         self.assertEqual(snapshot["free_percent"], 27)

@@ -223,7 +223,7 @@ def _exports(spec: BedSpec) -> tuple[str, str, str]:
     text = spec.to_json()
     python = ("import json\nfrom lexibeat.bedspec import BedSpec\n\n"
               f"spec = BedSpec.from_dict(json.loads({text!r}))")
-    cli = ("uv run generate.py --bed-only --bed-spec bed.json "
+    cli = ("uv run python -m lexibeat.cli --bed-only --bed-spec bed.json "
            "--out out/bed.wav")
     return python, cli, text
 

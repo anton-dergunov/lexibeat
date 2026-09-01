@@ -15,11 +15,12 @@ network access—with:
 
 ```bash
 UV_CACHE_DIR=/tmp/lexibeat-uv-cache \
-  uv run python scripts/build_production_bundle.py
+  uv run python -m scripts.samples.build_production_bundle
 ```
 
 Verify the installed bundle with:
 
 ```bash
-UV_CACHE_DIR=/tmp/lexibeat-uv-cache uv run sample_bundle.py verify
+UV_CACHE_DIR=/tmp/lexibeat-uv-cache \
+  uv run python -m scripts.samples.sample_bundle verify
 ```

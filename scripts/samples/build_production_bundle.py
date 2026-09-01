@@ -12,10 +12,7 @@ import hashlib
 import json
 import shutil
 import sqlite3
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from lexibeat.library import COLLECTIONS, external_root, local_root
 from lexibeat.samples import PACKS, cache_dir as pack_cache_dir

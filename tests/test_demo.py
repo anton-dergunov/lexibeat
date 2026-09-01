@@ -28,8 +28,8 @@ from lexibeat.music import SR, Grid
 from lexibeat.voice import Prosody, Speaker, SynthesisResult
 
 ROOT = Path(__file__).parents[1]
-MANIFEST = ROOT / "demo" / "readme_demo.json"
-HEADLINE_MANIFEST = ROOT / "demo" / "readme_demo_headline.json"
+MANIFEST = ROOT / "examples" / "readme_demo" / "full.json"
+HEADLINE_MANIFEST = ROOT / "examples" / "readme_demo" / "headline.json"
 
 
 class DemoConfigTests(unittest.TestCase):

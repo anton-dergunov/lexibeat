@@ -167,7 +167,7 @@ class ExplorerCoreTests(unittest.TestCase):
             self.assertEqual(configured_bundle_root(), Path("/data/custom/v1"))
 
     def test_space_entrypoint_builds_a_local_gradio_demo(self) -> None:
-        import app as space_entrypoint
+        from deploy.huggingface import app as space_entrypoint
 
         self.assertFalse(space_entrypoint.config.hosted)
         self.assertIsNotNone(space_entrypoint.demo)

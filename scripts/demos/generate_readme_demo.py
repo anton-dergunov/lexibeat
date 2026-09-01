@@ -30,7 +30,12 @@ from lexibeat.mix import mix_stems
 from lexibeat.music import SR, Grid, render_stems
 from lexibeat.voice import DEFAULT_MODELS, Speaker
 
-DEFAULT_CONFIG = Path(__file__).parent / "demo" / "readme_demo.json"
+DEFAULT_CONFIG = (
+    Path(__file__).resolve().parents[2]
+    / "examples"
+    / "readme_demo"
+    / "full.json"
+)
 
 
 def parse_args() -> argparse.Namespace:

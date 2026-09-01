@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from compare_gemini_batched import split_on_long_silences
+from .compare_gemini_batched import split_on_long_silences
 from lexibeat.arrange import PATTERNS
 from lexibeat.api import MusicRequest
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec

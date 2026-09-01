@@ -8,7 +8,7 @@ rm -rf -- "$destination"
 mkdir -p "$destination/lexibeat"
 mkdir -p "$destination/third_party"
 
-cp "$repo_root/app.py" "$destination/app.py"
+cp "$repo_root/deploy/huggingface/app.py" "$destination/app.py"
 cp "$repo_root/README.md" "$destination/README.md"
 cp "$repo_root/NOTICE.md" "$destination/NOTICE.md"
 cp "$repo_root/pyproject.toml" "$destination/pyproject.toml"

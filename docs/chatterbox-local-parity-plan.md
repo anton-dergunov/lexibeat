@@ -1,4 +1,4 @@
-# Step 4: Chatterbox Local Parity and Runtime Evaluation
+# Chatterbox Local Parity and Runtime Evaluation
 
 ## Outcome
 

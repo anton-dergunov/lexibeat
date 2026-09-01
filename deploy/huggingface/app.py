@@ -53,7 +53,10 @@ logger = logging.getLogger("lexibeat.space")
 
 _hosted_backend = None
 if config.hosted:
-    vendor_root = Path(__file__).parent / "third_party" / "chatterbox"
+    app_root = Path(__file__).resolve().parent
+    vendor_root = app_root / "third_party" / "chatterbox"
+    if not vendor_root.is_dir():
+        vendor_root = app_root.parents[1] / "third_party" / "chatterbox"
     sys.path.insert(0, str(vendor_root))
     from lexibeat.cuda_voice import CudaChatterboxBackend, load_cuda_chatterbox
 

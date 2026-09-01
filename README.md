@@ -80,8 +80,8 @@ uv sync --extra local-tts
 uv sync --extra local-tts --extra experimental-tts
 # Optional hosted Gemini and Cloudflare speech backends
 uv sync --extra hosted-tts
-uv run generate.py --download-samples salamander  # piano
-uv run generate.py --download-samples vsco        # strings, marimba, glockenspiel
+uv run python -m lexibeat.cli --download-samples salamander  # piano
+uv run python -m lexibeat.cli --download-samples vsco        # strings, marimba, glockenspiel
 ```
 
 The repository includes a checksum-locked production sample bundle through Git
@@ -208,7 +208,7 @@ The CLI exposes the same production path while preserving the legacy style
 flags:
 
 ```bash
-uv run generate.py --bed-only --music-family auto \
+uv run python -m lexibeat.cli --bed-only --music-family auto \
   --music-energy bright --music-rhythm steady --music-palette acoustic \
   --out out/production-bed.wav
 ```
@@ -226,26 +226,26 @@ generation. On this workstation the defaults are a 500 GB external library and
 a 50 GB local working cache:
 
 ```bash
-uv run sample_library.py status
-uv run sample_library.py download library-core   # CC0 sources
-uv run sample_library.py index --deep
-uv run sample_library.py report
+uv run python -m scripts.samples.sample_library status
+uv run python -m scripts.samples.sample_library download library-core   # CC0 sources
+uv run python -m scripts.samples.sample_library index --deep
+uv run python -m scripts.samples.sample_library report
 ```
 
 To audit the complete attached library against the shipped production bundle
 without copying audio, then render isolated speech-safety probes:
 
 ```bash
-uv run sample_library.py audit-expansion --refresh-index \
+uv run python -m scripts.samples.sample_library audit-expansion --refresh-index \
   --workspace out/library-expansion --target-gb 10
-uv run sample_library.py audition-expansion \
+uv run python -m scripts.samples.sample_library audition-expansion \
   --workspace out/library-expansion
-uv run sample_library.py audition-expansion \
+uv run python -m scripts.samples.sample_library audition-expansion \
   --workspace out/library-expansion --wave secondary
-uv run sample_library.py audit-wave3 \
+uv run python -m scripts.samples.sample_library audit-wave3 \
   --workspace out/library-expansion \
   --baseline-bundle out/library-expansion/candidate-v2
-uv run sample_library.py audition-expansion \
+uv run python -m scripts.samples.sample_library audition-expansion \
   --workspace out/library-expansion --wave wave3
 ```
 
@@ -272,33 +272,17 @@ candidate-v2. Family cautions are serialized into every affected instrument;
 this accepted configuration keeps harpsichords occasional and 8 dB lower:
 
 ```bash
-uv run sample_library.py integrate-wave3 --accept-all \
+uv run python -m scripts.samples.sample_library integrate-wave3 --accept-all \
   --caution-family harpsichord:-8
 LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v3 \
-  uv run sample_bundle.py verify
+  uv run python -m scripts.samples.sample_bundle verify
 ```
-
-To reproduce the final role-aware listening gate with one exact candidate-v3
-bank per approved Wave 3 family:
-
-```bash
-LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v3 \
-  uv run compare_beds.py --count 14 --family-profile positive \
-  --palettes hybrid --voice-backend chatterbox \
-  --speech-cache-from out/music-bakeoff-3 \
-  --replay-manifest plan/03c-wave3-instrument-role-experiment.json \
-  --out-dir out/library-expansion/wave3-final-role-experiment
-```
-
-Targeted replay rows name both the exact bank and its instrument family. Their
-family-specific notes, levels and role are written into the resulting BedSpec;
-ordinary replay manifests and production generation are unaffected.
 
 The completed listener gate retains six families and removes every rejected
 family from the final catalog. Rebuild and verify the finalized bundle with:
 
 ```bash
-uv run sample_library.py integrate-wave3 \
+uv run python -m scripts.samples.sample_library integrate-wave3 \
   --base-bundle out/library-expansion/candidate-v2 \
   --out out/library-expansion/final-v3 \
   --keep-family harp --keep-family lamellophone --keep-family marimba \
@@ -308,7 +292,7 @@ uv run sample_library.py integrate-wave3 \
   --reject-family harmonica --reject-family harpsichord \
   --reject-family oboe --reject-family recorder
 LEXIBEAT_BUNDLE_ROOT=out/library-expansion/final-v3 \
-  uv run sample_bundle.py verify
+  uv run python -m scripts.samples.sample_bundle verify
 ```
 
 The final bundle is the Step 3B production candidate. Its policy automatically
@@ -321,11 +305,11 @@ separate candidate-v2 bundle with explicit attenuation for retained caution
 clips:
 
 ```bash
-uv run sample_library.py integrate-expansion --accept-all \
+uv run python -m scripts.samples.sample_library integrate-expansion --accept-all \
   --caution 04:-2 --caution S17:-4 --caution S20:-4 \
   --caution S21:-5 --caution S22:-5
 LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v2 \
-  uv run sample_bundle.py verify
+  uv run python -m scripts.samples.sample_bundle verify
 ```
 
 Selecting this bundle through `LEXIBEAT_BUNDLE_ROOT` enables its audited safe
@@ -342,7 +326,7 @@ Old extensionless promotions can be migrated or removed only after a matching
 catalog checksum is verified:
 
 ```bash
-uv run sample_library.py migrate-promotions
+uv run python -m scripts.samples.sample_library migrate-promotions
 ```
 
 When the external volume is offline, saved beds and bake-off candidates can use
@@ -354,7 +338,7 @@ files retain their WAV/FLAC/AIFF extensions. To make a Foobar2000-compatible
 audition list without copying the bulk library:
 
 ```bash
-uv run sample_library.py playlist vcsl --category pitched --out out/vcsl.m3u8
+uv run python -m scripts.samples.sample_library playlist vcsl --category pitched --out out/vcsl.m3u8
 ```
 
 The catalog also groups pitch-labelled directories into resolved multisample
@@ -374,7 +358,7 @@ BedSpec files, but is not used by production generation.
 Generate a controlled listening set with:
 
 ```bash
-uv run --extra hosted-tts --env-file .env compare_beds.py \
+uv run --extra hosted-tts --env-file .env python -m scripts.benchmarks.compare_beds \
   --count 30 --sample-policy safe --voice-backend gemini-vertex \
   --out-dir out/music-bakeoff
 ```
@@ -389,7 +373,7 @@ An earlier manifest can be replayed after an engine change to render the same
 family/seed pairs for a controlled A/B comparison:
 
 ```bash
-uv run compare_beds.py --count 5 --voice-backend none \
+uv run python -m scripts.benchmarks.compare_beds --count 5 --voice-backend none \
   --replay-manifest out/music-before/manifest.json \
   --out-dir out/music-after
 ```
@@ -397,7 +381,7 @@ uv run compare_beds.py --count 5 --voice-backend none \
 To compare the three production sample policies across an option set:
 
 ```bash
-uv run compare_beds.py --count 12 --family-profile positive \
+uv run python -m scripts.benchmarks.compare_beds --count 12 --family-profile positive \
   --voice-backend none --palettes acoustic hybrid electronic \
   --out-dir out/palette-bakeoff
 ```
@@ -410,7 +394,7 @@ percussion bus, broadens piano writing and excludes metallic ornaments from
 ordinary drum selection:
 
 ```bash
-uv run --extra hosted-tts compare_beds.py --count 14 \
+uv run --extra hosted-tts python -m scripts.benchmarks.compare_beds --count 14 \
   --family-profile positive --sample-policy safe \
   --speech-cache-from out/music-bakeoff-2 --out-dir out/music-bakeoff-3
 ```
@@ -419,36 +403,36 @@ uv run --extra hosted-tts compare_beds.py --count 14 \
 
 ```bash
 # Chatterbox is the default
-uv run generate.py --words 12 --out out/lesson.wav
+uv run python -m lexibeat.cli --words 12 --out out/lesson.wav
 
 # Audition only the music
-uv run generate.py --bed-only --bed-style nocturne --out out/nocturne.wav
+uv run python -m lexibeat.cli --bed-only --bed-style nocturne --out out/nocturne.wav
 
 # Choose a specific background, lead, meter and chord colour
-uv run generate.py --pad-instrument strings --instrument piano \
+uv run python -m lexibeat.cli --pad-instrument strings --instrument piano \
   --meter 4/4 --chord-extension add9 --out out/strings-and-piano.wav
 
 # Fast voice fallback
-uv run generate.py --backend kokoro --words 6 --out out/quick.wav
+uv run python -m lexibeat.cli --backend kokoro --words 6 --out out/quick.wav
 
 # Experimental expressive backends (weights download to the LexiBeat cache)
-uv run generate.py --backend indextts25 --words 1 --out out/index.wav
-uv run generate.py --backend voxcpm2 --words 1 --out out/voxcpm.wav
-uv run generate.py --backend qwen3 --words 1 --out out/qwen.wav
-uv run generate.py --backend tada --words 1 --out out/tada.wav
-uv run generate.py --backend fish-s2 --words 1 --out out/fish.wav
+uv run python -m lexibeat.cli --backend indextts25 --words 1 --out out/index.wav
+uv run python -m lexibeat.cli --backend voxcpm2 --words 1 --out out/voxcpm.wav
+uv run python -m lexibeat.cli --backend qwen3 --words 1 --out out/qwen.wav
+uv run python -m lexibeat.cli --backend tada --words 1 --out out/tada.wav
+uv run python -m lexibeat.cli --backend fish-s2 --words 1 --out out/fish.wav
 
 # Hosted backends read credentials from the environment
-uv run --extra hosted-tts --env-file .env generate.py \
+uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
   --backend gemini --words 1 --out out/gemini.wav
 # Paid Vertex AI via Application Default Credentials (no API key)
 GOOGLE_CLOUD_PROJECT=your-project-id \
 GOOGLE_CLOUD_LOCATION=global \
-uv run --extra hosted-tts generate.py --backend gemini-vertex \
+uv run --extra hosted-tts python -m lexibeat.cli --backend gemini-vertex \
   --words 1 --out out/gemini-vertex.wav
-uv run --extra hosted-tts --env-file .env generate.py \
+uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
   --backend cloudflare-aura2 --words 1 --out out/aura2.wav
-uv run --extra hosted-tts --env-file .env generate.py \
+uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
   --backend cloudflare-melotts --words 1 --out out/melotts.wav
 ```
 
@@ -481,7 +465,7 @@ Spanish and Ryan for English.
 Run the matched five-model review and resource benchmark with:
 
 ```bash
-uv run benchmark_voices.py --words 1 --out-dir out/tts-bakeoff
+uv run python -m scripts.benchmarks.benchmark_voices --words 1 --out-dir out/tts-bakeoff
 ```
 
 It runs models sequentially, writes one complete lesson WAV and `.stats.json`
@@ -512,7 +496,7 @@ A hosted listening comparison can be attempted with the command below. MeloTTS
 contributes English only, and its statistics record that language restriction.
 
 ```bash
-uv run --extra hosted-tts --env-file .env compare_voices.py \
+uv run --extra hosted-tts --env-file .env python -m scripts.benchmarks.compare_voices \
   --words 10 --reps 3 \
   --configs gemini cloudflare-aura2 cloudflare-melotts \
   --out-dir out/hosted-tts
@@ -535,7 +519,7 @@ still billed. Run it with:
 ```bash
 GOOGLE_CLOUD_PROJECT=your-project-id \
 GOOGLE_CLOUD_LOCATION=global \
-uv run --extra hosted-tts compare_gemini_batched.py \
+uv run --extra hosted-tts python -m scripts.benchmarks.compare_gemini_batched \
   --words 10 --reps 3 --out-dir out/hosted-tts-batched
 ```
 
@@ -548,5 +532,5 @@ IndexTTS weights use the bilibili Model Use License, TADA uses the Llama 3.2
 Community License, and Fish S2 Pro is research-only. See [NOTICE](NOTICE.md) before
 using these backends outside local research.
 
-See [DESIGN.md](DESIGN.md) for the research, musical design, measured behaviour,
+See [the design notes](docs/design.md) for the research, musical design, measured behaviour,
 and alternatives considered.

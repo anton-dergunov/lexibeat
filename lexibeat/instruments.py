@@ -80,7 +80,8 @@ class SampledInstrument:
         if not self.layers:
             raise FileNotFoundError(
                 f"No samples cached for '{pack.name}'. "
-                f"Run: uv run generate.py --download-samples {pack.name}")
+                "Run: uv run python -m lexibeat.cli "
+                f"--download-samples {pack.name}")
         for entries in self.layers.values():
             entries.sort()
         self._sorted_layers = sorted(self.layers)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the same words through several voice setups so they can be compared.
 
-    uv run compare_voices.py --words 4
+    uv run python -m scripts.benchmarks.compare_voices --words 4
 
 Writes one file per configuration into out/compare/, each containing every
 repeat of every word back to back — the repeats are the thing under test, since
