@@ -25,7 +25,9 @@ from lexibeat.generator import (
     _safe_assets,
     _safe_inventory,
 )
-from lexibeat.instruments import CatalogMultiSampleInstrument, SampledInstrument
+from lexibeat.instruments import (CatalogMultiSampleInstrument, SampledInstrument,
+                                  load_one_shot)
+from lexibeat.instrument_roles import apply_wave3_role_profile
 from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
                               SampleAsset, SampleLibrary, SampleRef,
                               directory_size, infer_articulation,
@@ -666,6 +668,21 @@ class PublicGenerationApiTests(unittest.TestCase):
 
 
 class SampleTests(unittest.TestCase):
+    def test_one_shot_loader_does_not_mutate_cached_pcm(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "hit.wav"
+            audio = np.linspace(-0.7, 0.7, SR, dtype=np.float32)
+            sf.write(path, audio, SR, subtype="FLOAT")
+            library = mock.Mock()
+            library.resolve.return_value = path
+            library.asset.return_value = mock.Mock(spectral_centroid=1200.0)
+            ref = SampleRef("test", "hit")
+
+            first = load_one_shot(ref, library=library)
+            second = load_one_shot(ref, library=library)
+
+            np.testing.assert_array_equal(first, second)
+
     def test_pack_manifests_cover_requested_instruments(self) -> None:
         self.assertEqual(midi("F#3"), 54)
         self.assertTrue({"salamander", "vsco-marimba", "vsco-glockenspiel",
@@ -690,6 +707,63 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_wave3_sustained_role_is_longer_louder_and_serialized(self) -> None:
+        instrument = InstrumentRef("test-flute", tuple(
+            InstrumentZoneRef(
+                SampleRef("vsco2", f"flute-{note}"), note, note, note,
+                gain_db=-15.0, articulation="sustain-non-vibrato")
+            for note in range(60, 85, 4)
+        ))
+        first = BedSpec.from_style("bright-pastoral", 44)
+        second = BedSpec.from_style("bright-pastoral", 44)
+        profile = apply_wave3_role_profile(first, "flute", instrument)
+        apply_wave3_role_profile(second, "flute", instrument)
+        self.assertEqual(profile["role"], "sustained-lead")
+        self.assertEqual(first.phrase.motif_grammar, "flute-sustained-v1")
+        self.assertTrue(all(
+            event.duration_steps >= first.steps_per_bar * 0.5
+            for event in first.phrase.lead))
+        self.assertEqual(max(
+            zone.gain_db for zone in first.phrase.lead_instrument.zones), -6.0)
+        self.assertEqual(first.lead.level, 4.0)
+        self.assertEqual(profile["lead_level"], 4.0)
+        self.assertLessEqual(first.space.reverb_mix, 0.28)
+        self.assertEqual(first.to_json(), second.to_json())
+
+    def test_wave3_organ_role_uses_held_pad_instead_of_lead(self) -> None:
+        instrument = InstrumentRef("test-organ", tuple(
+            InstrumentZoneRef(
+                SampleRef("vcsl", f"organ-{note}"), note, note, note,
+                gain_db=-16.0, articulation="natural")
+            for note in range(36, 80, 6)
+        ))
+        spec = BedSpec.from_style("gentle-movement", 45)
+        profile = apply_wave3_role_profile(spec, "organ", instrument)
+        self.assertEqual(profile["role"], "held-pad")
+        self.assertFalse(spec.lead.enabled)
+        self.assertEqual(spec.phrase.pad_instrument.name, "test-organ")
+        self.assertEqual(spec.phrase.motif_grammar, "organ-held-pad-v1")
+        self.assertTrue(all(
+            chord.duration_steps >= spec.steps_per_bar * 0.85
+            for chord in spec.phrase.chords))
+        self.assertEqual(max(
+            zone.gain_db for zone in spec.phrase.pad_instrument.zones), -6.0)
+
+    def test_wave3_harpsichord_role_raises_caution_gain_to_minus_four(self) -> None:
+        instrument = InstrumentRef("test-harpsichord", tuple(
+            InstrumentZoneRef(
+                SampleRef("vcsl", f"harpsichord-{note}"), note, note, note,
+                gain_db=-8.0, articulation="sustain")
+            for note in range(48, 80, 4)
+        ))
+        spec = BedSpec.from_style("bright-pastoral", 46)
+        profile = apply_wave3_role_profile(spec, "harpsichord", instrument)
+        self.assertEqual(profile["role"], "plucked-lead")
+        self.assertEqual(max(
+            zone.gain_db for zone in spec.phrase.lead_instrument.zones), -4.0)
+        self.assertEqual(spec.lead.level, 4.0)
+        self.assertEqual(spec.phrase.motif_grammar, "harpsichord-plucked-v1")
+
     def test_wave3_recognizes_explicit_accordion_collection(self) -> None:
         assets = [SampleAsset(
             "freepats-accordion", f"accordion-{note}",

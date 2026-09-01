@@ -233,3 +233,21 @@ The eight-clip speech-context check in
 vibrato recorder, harmonica, Renaissance organ and oboe. All clips reuse the
 same bilingual speech, start speech on downbeats, remain finite 44.1-kHz stereo
 audio and stay below the 0.97 peak ceiling.
+
+Listener feedback showed that generic short-note lead grammar did not reveal
+the character of several Wave 3 banks. The final role experiment therefore
+keeps candidate-v3 unchanged and applies explicit, replayable treatments only
+to the listening BedSpecs: sparse long notes for winds and harmonica, a
+cantabile accordion phrase, held organ chords, and short-note patterns reserved
+for genuinely plucked or struck instruments. Featured levels, bank gains,
+events and reduced reverb are all serialized; no renderer-only mix exception is
+used.
+
+The exact 14-family matrix is tracked in
+`plan/03c-wave3-instrument-role-experiment.json`. Its rendered speech-context
+set is in `out/library-expansion/wave3-final-role-experiment/`, with one clip
+each for accordion, bassoon, clarinet, flute, harmonica, harp, harpsichord,
+lamellophone, marimba, oboe, ocarina, organ, recorder and strumstick. The
+listening gate decides which role treatments, if any, should later become
+production policy; creating this experiment does not alter production-v1 or
+candidate-v3 selection behavior.

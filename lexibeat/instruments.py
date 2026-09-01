@@ -216,7 +216,9 @@ def load_one_shot(ref: SampleRef, max_seconds: float = 3.0,
     if rate != SR:
         audio = librosa.resample(audio, orig_sr=rate, target_sr=SR,
                                  res_type="soxr_hq")
-    audio = np.asarray(audio, dtype=np.float32)
+    # `_load_sample` is cached. Own this buffer before trimming/fading it so a
+    # later replay does not receive PCM mutated by an earlier render.
+    audio = np.asarray(audio, dtype=np.float32).copy()
     # Remove leading digital silence while retaining a tiny pre-transient margin.
     active = np.flatnonzero(np.abs(audio) > max(float(np.abs(audio).max()) * 0.002, 1e-5))
     if active.size:

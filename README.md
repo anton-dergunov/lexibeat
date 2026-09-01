@@ -278,6 +278,22 @@ LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v3 \
   uv run sample_bundle.py verify
 ```
 
+To reproduce the final role-aware listening gate with one exact candidate-v3
+bank per approved Wave 3 family:
+
+```bash
+LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v3 \
+  uv run compare_beds.py --count 14 --family-profile positive \
+  --palettes hybrid --voice-backend chatterbox \
+  --speech-cache-from out/music-bakeoff-3 \
+  --replay-manifest plan/03c-wave3-instrument-role-experiment.json \
+  --out-dir out/library-expansion/wave3-final-role-experiment
+```
+
+Targeted replay rows name both the exact bank and its instrument family. Their
+family-specific notes, levels and role are written into the resulting BedSpec;
+ordinary replay manifests and production generation are unaffected.
+
 After recording an all-accepted listening decision, build and verify the
 separate candidate-v2 bundle with explicit attenuation for retained caution
 clips:

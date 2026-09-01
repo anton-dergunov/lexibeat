@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "purpose": "One speech-context role treatment for every approved Wave 3 family",
+  "clips": [
+    {
+      "target_family": "accordion",
+      "target_bank": "freepats-accordion:.#natural@default",
+      "family": "warm-motion",
+      "seed": 33199309,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "bassoon",
+      "target_bank": "vsco2:Woodwinds/Bassoon/sus#natural@default",
+      "family": "meditative",
+      "seed": 41002001,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "clarinet",
+      "target_bank": "vsco2:Woodwinds/Clarinet/susLong#sustain@sum",
+      "family": "gentle-movement",
+      "seed": 41002002,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "flute",
+      "target_bank": "vsco2:Woodwinds/Flute/susNV#sustain-non-vibrato@default",
+      "family": "bright-pastoral",
+      "seed": 49955949,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "harmonica",
+      "target_bank": "vcsl:Aerophones/Free Aerophones/Harmonica-Hohner-Special20-F/Sustains/Normal#sustain@default",
+      "family": "warm-motion",
+      "seed": 41002004,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "harp",
+      "target_bank": "vcsl:Chordophones/Composite Chordophones/Concert Harp#natural@default",
+      "family": "sunlit-acoustic",
+      "seed": 41002005,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "harpsichord",
+      "target_bank": "vcsl:Chordophones/Zithers/Harpsichord, English/Sustains/Normal#sustain@default",
+      "family": "bright-pastoral",
+      "seed": 139394515,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "lamellophone",
+      "target_bank": "vcsl:Idiophones/Plucked Idiophones/Kalimba, Tanzania#plucked@main",
+      "family": "playful-plucked",
+      "seed": 41002007,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "marimba",
+      "target_bank": "vcsl:Idiophones/Struck Idiophones/Marimba#soft-mallet@outrigger",
+      "family": "gentle-game",
+      "seed": 41002008,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "oboe",
+      "target_bank": "vsco2:Woodwinds/Oboe/Sus#sustain@main",
+      "family": "meditative",
+      "seed": 99911682,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "ocarina",
+      "target_bank": "vcsl:Aerophones/Edge-blown Aerophones/Ocarina, Small/Sustain#sustain@default",
+      "family": "bright-pastoral",
+      "seed": 41002010,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "organ",
+      "target_bank": "vcsl:Aerophones/Edge-blown Aerophones/Renaissance Organ/8'#natural@room",
+      "family": "gentle-movement",
+      "seed": 32152019,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "recorder",
+      "target_bank": "vcsl:Aerophones/Edge-blown Aerophones/Baroque Tenor Recorder/Sustain#sustain@main",
+      "family": "bright-pastoral",
+      "seed": 41002012,
+      "phrase": {"palette": "hybrid"}
+    },
+    {
+      "target_family": "plucked-string",
+      "target_bank": "vcsl:Chordophones/Composite Chordophones/Strumstick/Finger#plucked@main",
+      "family": "playful-plucked",
+      "seed": 41002013,
+      "phrase": {"palette": "hybrid"}
+    }
+  ]
+}

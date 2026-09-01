@@ -31,6 +31,7 @@ from lexibeat.generator import (
     sample_refs as _refs,
     select_balanced,
 )
+from lexibeat.instrument_roles import apply_wave3_role_profile
 from lexibeat.library import COLLECTIONS, SampleAsset, SampleLibrary, instrument_refs
 from lexibeat.mix import mix_stems
 from lexibeat.music import Grid, SR, render_stems
@@ -234,6 +235,7 @@ def main() -> None:
                     else "exploration-v1")
     requests = [MusicRequest(seed=args.seed, profile=profile_name, palette=palette)
                 for palette in args.palettes]
+    role_profiles: dict[tuple[str, int], dict] = {}
     if args.replay_manifest:
         source_manifest = json.loads(args.replay_manifest.read_text(encoding="utf-8"))
         source_clips = source_manifest["clips"]
@@ -260,6 +262,18 @@ def main() -> None:
             enrich_with_catalog_samples(
                 spec, assets, instruments, bed_seed, palette=request.palette,
                 expansion_policy=expansion_policy)
+            target_family = row.get("target_family")
+            target_bank = row.get("target_bank")
+            if target_family or target_bank:
+                if not target_family or not target_bank:
+                    raise ValueError(
+                        "Targeted replay rows require target_family and target_bank.")
+                by_name = {instrument.name: instrument for instrument in instruments}
+                if target_bank not in by_name:
+                    raise ValueError(f"Target instrument is unavailable: {target_bank}")
+                role_profiles[(row["family"], bed_seed)] = \
+                    apply_wave3_role_profile(
+                        spec, target_family, by_name[target_bank])
             preview_stems = render_stems(
                 spec, max(spec.phrase.loop_bars if spec.phrase else 4, 4))
             preview = sum(preview_stems.values(),
@@ -355,7 +369,9 @@ def main() -> None:
                "sample_refs": [asdict(ref) for ref in _refs(spec)],
                "sample_collections": candidate.sample_collections,
                "features": candidate.features.tolist(), "events": events,
-               "validation": validation}
+               "validation": validation,
+               "instrument_experiment": role_profiles.get(
+                   (candidate.family, candidate.seed))}
         manifest_rows.append(row)
         print(f"[{number:02d}/{args.count}] {candidate.family:<11} "
               f"{spec.bpm:>3g} BPM -> {wav_path.name}", flush=True)
@@ -406,14 +422,17 @@ def main() -> None:
           "Listen for distinct musical identity, pleasant repetition, a useful pulse, "
           "coherent articulation and any repeated-sample or microphone-switching "
           "artifacts.") + " Record scores in `ratings.csv`."), "",
-        "| # | File | Family | Palette | BPM | Meter | Harmony | Bass | Motif | Sources |",
-        "|---:|---|---|---|---:|---|---|---|---|---|",
+        "| # | File | Family | Target role | Palette | BPM | Meter | Harmony | Bass | Motif | Sources |",
+        "|---:|---|---|---|---|---:|---|---|---|---|---|",
     ]
     for row in manifest_rows:
         phrase = row["phrase"]
         sources = ", ".join(row["sample_collections"]) or "synth"
+        experiment = row["instrument_experiment"]
+        target = (f"{experiment['family']}/{experiment['role']}"
+                  if experiment else "ordinary")
         guide.append(f"| {row['number']} | `{row['file']}` | {row['family']} | "
-                     f"{row['palette']} | {row['bpm']:g} | {row['meter']} | "
+                     f"{target} | {row['palette']} | {row['bpm']:g} | {row['meter']} | "
                      f"{phrase['harmony_texture']} | {phrase['bass_timbre']} | "
                      f"{phrase['motif_grammar']} | {sources} |")
     (args.out_dir / "listening-guide.md").write_text(
