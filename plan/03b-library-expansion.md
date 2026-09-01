@@ -93,3 +93,38 @@ clarity or rhythmic usefulness. Mere distinctiveness is not an acceptance goal.
 
 Only after this audit should new sample sources be researched. Prefer CC0;
 compatible attributed sources require complete NOTICE entries.
+
+## Implementation status
+
+Stages 1 and 2 are implemented as a non-destructive gate:
+
+```bash
+uv run sample_library.py audit-expansion --refresh-index \
+  --workspace out/library-expansion --target-gb 10
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion
+```
+
+The first command deep-indexes the attached SSD into a metadata-only workspace,
+compares it with the immutable production catalog, ranks coherent banks and
+writes `audit.json`, `candidate-manifest.json` and `report.md`. It does not copy
+or promote audio. The second command reads shortlisted samples directly from the
+SSD and creates isolated, level-preserving probes plus a rating sheet.
+
+The initial audit found 8,399 indexed assets (9.92 GB of audio), 6,617 payloads
+not present in production, and 256 coherent or percussion groups to evaluate.
+After natural-instrument and speech-safety screening, 16 banks containing 586
+new assets (0.40 GB) entered the audition shortlist. The result is deliberately
+far below the 10 GB ceiling: library size is not a quality target.
+
+The current external catalog has no immediately production-ready new piano bank.
+Two additional pianos are useful review candidates but have sparse note spacing;
+one also has a bright high-register warning. The shortlist therefore also tests
+section strings, natural contrabass, cajon, conga, bongos, frame drum and subdued
+shakers. Snare, marching, metallic, miscellaneous, tenor-drum, electronic/FM,
+glock/bell, bottle/cosmic/effect and unsupported foreground groups are excluded.
+
+Stage 3 is intentionally waiting at the human listening gate. Rate the complete
+isolated set in `out/library-expansion/auditions/ratings.csv` before any audio is
+promoted or integrated into the production candidate path. Only retained banks
+will be rendered with identical speech for the final paired A/B test.

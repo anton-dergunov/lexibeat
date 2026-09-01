@@ -18,6 +18,7 @@ import time
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Callable
 
 import numpy as np
 import soundfile as sf
@@ -255,7 +256,8 @@ def round_robin_group_key(asset: SampleAsset) -> tuple[str, str, str, str]:
 
 
 def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
-                    include: tuple[str, ...] | None = None) -> list[InstrumentRef]:
+                    include: tuple[str, ...] | None = None,
+                    include_sustained_strings: bool = False) -> list[InstrumentRef]:
     """Group catalog samples into playable directory-level multisample banks.
 
     Raw VCSL and VSCO collections do not always ship SFZ mappings. Their stable
@@ -277,12 +279,17 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
         searchable = f"{asset.collection}/{parent}".lower()
         string_front = any(word in lowered for word in
                            ("violin", "viola", "cello", "contrabass"))
+        string_articulation = infer_articulation(asset.relative_path)
+        safe_sustained_string = (
+            include_sustained_strings and string_articulation in
+            ("bowed", "natural", "sustain", "sustain-non-vibrato")
+        )
         if (asset.midi_note is None or
                 asset.duration_seconds is None or not 0.08 <= asset.duration_seconds <= 24 or
                 not any(word in searchable for word in wanted) or
                 any(word in lowered for word in excluded) or
-                (string_front and not any(word in lowered for word in
-                                          ("pizz", "spic")))):
+                (string_front and not safe_sustained_string and
+                 not any(word in lowered for word in ("pizz", "spic")))):
             continue
         articulation = asset.articulation or infer_articulation(asset.relative_path)
         groups[(asset.collection, parent, articulation,
@@ -575,7 +582,8 @@ class SampleLibrary:
                       transient_score=transient)
         return result
 
-    def index(self, collection: str | None = None, *, deep: bool = False) -> int:
+    def index(self, collection: str | None = None, *, deep: bool = False,
+              progress: Callable[[str, int, int], None] | None = None) -> int:
         """Index audio and SFZ mappings from one collection or all installed ones."""
         installed = [collection] if collection else [key for key in COLLECTIONS
                                                       if self.collection_path(key).exists()]
@@ -596,9 +604,12 @@ class SampleLibrary:
                 db.execute("INSERT OR REPLACE INTO collections VALUES (?,?,?,?,?,?,?)",
                            (spec.id, spec.name, spec.repository, revision,
                             spec.license, spec.attribution, time.time()))
-                for path in root.rglob("*"):
-                    if not path.is_file() or ".git" in path.parts:
-                        continue
+                paths = [path for path in root.rglob("*")
+                         if path.is_file() and ".git" not in path.parts]
+                total_audio = sum(path.suffix.lower() in AUDIO_SUFFIXES
+                                  for path in paths)
+                processed_audio = 0
+                for path in paths:
                     relative = path.relative_to(root).as_posix()
                     if path.suffix.lower() == ".sfz":
                         document = parse_sfz(path)
@@ -608,6 +619,11 @@ class SampleLibrary:
                         continue
                     if path.suffix.lower() not in AUDIO_SUFFIXES:
                         continue
+                    processed_audio += 1
+                    if progress and (processed_audio == 1 or
+                                     processed_audio % 100 == 0 or
+                                     processed_audio == total_audio):
+                        progress(name, processed_audio, total_audio)
                     metadata = self._analyze(path, deep)
                     digest = _sha256(path)
                     asset = SampleAsset(

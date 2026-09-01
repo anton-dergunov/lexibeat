@@ -4,11 +4,19 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import re
 from dataclasses import asdict
 from pathlib import Path
 
-from lexibeat.library import COLLECTIONS, LIBRARY_TARGETS, SampleLibrary, SampleRef
+import numpy as np
+import soundfile as sf
+
+from lexibeat.library import (COLLECTIONS, LIBRARY_TARGETS, SampleLibrary,
+                             SampleRef, external_root, instrument_refs)
+from lexibeat.library_audit import (audit_markdown, build_expansion_audit,
+                                    render_bank_audition)
 
 
 def _refs(value) -> list[SampleRef]:
@@ -93,6 +101,21 @@ def main() -> None:
     verify.add_argument("collection", nargs="?", choices=sorted(COLLECTIONS))
     report_parser = sub.add_parser("report")
     report_parser.add_argument("--out", type=Path)
+    audit = sub.add_parser(
+        "audit-expansion",
+        help="compare the complete external library with the production bundle")
+    audit.add_argument("--workspace", type=Path,
+                       default=Path("out/library-expansion"))
+    audit.add_argument("--refresh-index", action="store_true",
+                       help="deep-index the attached external collections first")
+    audit.add_argument("--target-gb", type=float, default=10.0,
+                       help="maximum proposed payload; whole banks are never split")
+    audition = sub.add_parser(
+        "audition-expansion",
+        help="render isolated listening probes from an expansion proposal")
+    audition.add_argument("--workspace", type=Path,
+                          default=Path("out/library-expansion"))
+    audition.add_argument("--out-dir", type=Path)
     promote = sub.add_parser("promote")
     promote.add_argument("bed_specs", type=Path, nargs="+")
     playlist = sub.add_parser("playlist")
@@ -132,6 +155,136 @@ def main() -> None:
                             "\n", encoding="utf-8")
         result = {"playlist": str(args.out), "collection": args.collection,
                   "category": args.category, "files": len(paths)}
+    elif args.command == "audit-expansion":
+        if args.target_gb <= 0:
+            raise ValueError("--target-gb must be positive")
+        args.workspace.mkdir(parents=True, exist_ok=True)
+        external_library = SampleLibrary(
+            external=external_root(), local=args.workspace, use_bundled=False)
+        if args.refresh_index:
+            indexed = external_library.index(
+                deep=True,
+                progress=lambda name, current, total: print(
+                    f"Indexing {name}: {current:,}/{total:,}", flush=True),
+            )
+        elif not external_library.local_catalog_path.exists():
+            raise FileNotFoundError(
+                f"No external audit catalog at {external_library.local_catalog_path}; "
+                "rerun with --refresh-index.")
+        else:
+            indexed = None
+        external_assets = external_library.assets(usable_only=False)
+        production_assets = SampleLibrary().assets(usable_only=False)
+        sizes = {}
+        for asset in external_assets:
+            path = external_library.collection_path(
+                asset.collection) / asset.relative_path
+            sizes[(asset.collection, asset.asset_id)] = (
+                path.stat().st_size if path.exists() else 0)
+        instruments = instrument_refs(
+            [asset for asset in external_assets if not asset.quarantined],
+            include_sustained_strings=True)
+        expansion, proposal = build_expansion_audit(
+            external_assets, production_assets, instruments, sizes,
+            target_bytes=int(args.target_gb * 1_000_000_000))
+        audit_json = args.workspace / "audit.json"
+        proposal_json = args.workspace / "candidate-manifest.json"
+        report_md = args.workspace / "report.md"
+        audit_json.write_text(json.dumps(expansion, indent=2) + "\n",
+                              encoding="utf-8")
+        proposal_json.write_text(json.dumps(proposal, indent=2) + "\n",
+                                 encoding="utf-8")
+        report_md.write_text(audit_markdown(expansion, proposal), encoding="utf-8")
+        result = {
+            "indexed": indexed,
+            "external_assets": expansion["catalogs"]["external_assets"],
+            "production_assets": expansion["catalogs"]["production_assets"],
+            "bank_counts": expansion["bank_counts"],
+            "proposed_banks": len(proposal["banks"]),
+            "proposed_assets": len(proposal["assets"]),
+            "proposed_bytes": proposal["selected_bytes"],
+            "copied_audio": False,
+            "audit": str(audit_json),
+            "candidate_manifest": str(proposal_json),
+            "report": str(report_md),
+        }
+    elif args.command == "audition-expansion":
+        manifest_path = args.workspace / "candidate-manifest.json"
+        if not manifest_path.exists():
+            raise FileNotFoundError(
+                f"Missing {manifest_path}; run audit-expansion first.")
+        proposal = json.loads(manifest_path.read_text(encoding="utf-8"))
+        external_library = SampleLibrary(
+            external=external_root(), local=args.workspace, use_bundled=False)
+        assets = external_library.assets()
+        instruments = instrument_refs(
+            assets, include_sustained_strings=True)
+        instruments_by_name = {instrument.name: instrument
+                               for instrument in instruments}
+        out_dir = args.out_dir or args.workspace / "auditions"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        rows = []
+        for number, bank in enumerate(proposal["banks"], 1):
+            slug = re.sub(r"[^a-z0-9]+", "-", bank["family"].lower()).strip("-")
+            path = out_dir / f"{number:02d}-{slug}.wav"
+            audio = render_bank_audition(
+                bank, external_library, instruments_by_name)
+            sf.write(path, audio, 44_100)
+            rows.append({
+                "number": number, "file": path.name, "bank": bank["name"],
+                "family": bank["family"], "role": bank.get("role"),
+                "status": bank["status"],
+                "warnings": bank["review_warnings"],
+                "mapping_limitations": bank.get("mapping_limitations", []),
+                "seconds": len(audio) / 44_100,
+                "peak": float(np.abs(audio).max()),
+                "finite": bool(np.isfinite(audio).all()),
+            })
+        audition_manifest = {
+            "schema_version": 1, "source_proposal": str(manifest_path),
+            "purpose": "isolated pre-promotion speech-safety screening",
+            "clips": rows,
+        }
+        (out_dir / "manifest.json").write_text(
+            json.dumps(audition_manifest, indent=2) + "\n", encoding="utf-8")
+        with (out_dir / "ratings.csv").open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow([
+                "number", "file", "family", "bank",
+                "piercing_or_high_pitch_1_5", "attack_distraction_1_5",
+                "perceived_level_consistency_1_5", "naturalness_1_5",
+                "background_suitability_1_5", "keep", "notes",
+            ])
+            for row in rows:
+                writer.writerow([row["number"], row["file"], row["family"],
+                                 row["bank"], "", "", "", "", "", "", ""])
+        guide = [
+            "# Expansion-bank audition guide", "",
+            "These are isolated, level-preserving probes read directly from the "
+            "external library. No samples have been promoted.", "",
+            "Listen to the complete set independently before comparing individual "
+            "banks. Reject any piercing high note, bottle-like or cosmic effect, "
+            "uneven perceived level, distracting attack, or sound that would pull "
+            "attention away from spoken words.", "",
+            "A low score means the problem is strong; a high score means the bank is "
+            "safe or suitable. Record the decision in `ratings.csv`.", "",
+            "| # | File | Family/role | Status | Bank | Automated flags |",
+            "|---:|---|---|---|---|---|",
+        ]
+        for row in rows:
+            family = row["family"] + (f"/{row['role']}" if row["role"] else "")
+            flags = [*row["warnings"], *row["mapping_limitations"]]
+            guide.append(
+                f"| {row['number']} | `{row['file']}` | {family} | "
+                f"{row['status']} | `{row['bank']}` | {', '.join(flags) or 'none'} |")
+        (out_dir / "listening-guide.md").write_text(
+            "\n".join(guide) + "\n", encoding="utf-8")
+        result = {
+            "clips": len(rows), "out_dir": str(out_dir),
+            "finite": all(row["finite"] for row in rows),
+            "max_peak": max((row["peak"] for row in rows), default=0.0),
+            "copied_audio": False,
+        }
     else:
         result = library.report()
         if args.out:

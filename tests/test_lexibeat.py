@@ -25,10 +25,13 @@ from lexibeat.generator import (
     _safe_inventory,
 )
 from lexibeat.instruments import CatalogMultiSampleInstrument, SampledInstrument
-from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, SampleAsset,
-                              SampleLibrary, SampleRef, directory_size,
-                              infer_articulation, infer_round_robin,
-                              instrument_refs, timbre_clusters)
+from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
+                              SampleAsset, SampleLibrary, SampleRef,
+                              directory_size, infer_articulation,
+                              infer_round_robin, instrument_refs,
+                              timbre_clusters)
+from lexibeat.library_audit import (build_expansion_audit,
+                                    evaluate_instrument_bank)
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
@@ -681,6 +684,70 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_expansion_audit_prioritizes_complete_natural_piano(self) -> None:
+        assets = []
+        zones = []
+        sizes = {}
+        for note in range(48, 78):
+            for layer, (lo, hi) in enumerate(((0, 63), (64, 127)), 1):
+                asset = SampleAsset(
+                    "vcsl", f"piano-{note}-{layer}", f"sha-{note}-{layer}",
+                    f"Chordophones/Grand Piano/Sustain/Piano_{note}_v{layer}.wav",
+                    "CC0-1.0", "pitched", articulation="sustain",
+                    midi_note=note, duration_seconds=2.0, peak=0.8, rms=0.12,
+                    spectral_centroid=1400.0, transient_score=0.2)
+                assets.append(asset)
+                sizes[(asset.collection, asset.asset_id)] = 1000
+                zones.append(InstrumentZoneRef(
+                    asset.ref, note, note, note, lo, hi,
+                    articulation="sustain"))
+        piano = InstrumentRef(
+            "vcsl:Chordophones/Grand Piano/Sustain#sustain@main", tuple(zones))
+        audit, proposal = build_expansion_audit(
+            assets, [], [piano], sizes, target_bytes=1_000_000)
+        self.assertEqual(audit["bank_counts"], {"candidate": 1})
+        self.assertEqual(proposal["status"], "proposed-not-promoted")
+        self.assertEqual(proposal["banks"][0]["family"], "piano")
+        self.assertEqual(proposal["banks"][0]["velocity_layers"], 2)
+        self.assertEqual(len(proposal["assets"]), 60)
+
+    def test_expansion_audit_rejects_attention_grabbing_electronic_piano(self) -> None:
+        assets = []
+        zones = []
+        sizes = {}
+        for note in range(48, 78):
+            asset = SampleAsset(
+                "vcsl", f"fm-{note}", f"fm-sha-{note}",
+                f"Electrophones/TX81Z/FM Piano/FM_{note}.wav", "CC0-1.0",
+                "pitched", midi_note=note, duration_seconds=1.0, peak=0.8,
+                rms=0.08, spectral_centroid=6200.0, transient_score=0.3)
+            assets.append(asset)
+            sizes[(asset.collection, asset.asset_id)] = 1000
+            zones.append(InstrumentZoneRef(asset.ref, note, note, note))
+        row = evaluate_instrument_bank(
+            InstrumentRef("vcsl:Electrophones/TX81Z/FM Piano#natural@main",
+                          tuple(zones)),
+            {(asset.collection, asset.asset_id): asset for asset in assets},
+            set(), sizes)
+        self.assertEqual(row["status"], "rejected")
+        self.assertIn("electronic_approximation_not_a_natural_expansion",
+                      row["rejection_reasons"])
+        self.assertIn("attention_grabbing_timbre_family",
+                      row["rejection_reasons"])
+
+    def test_expansion_audit_can_map_sustained_strings_without_changing_default(self) -> None:
+        assets = [
+            SampleAsset(
+                "vsco2", f"violin-{note}", f"violin-sha-{note}",
+                f"Strings/Solo Violin/Sustain/Violin_{note}.wav", "CC0-1.0",
+                "pitched", articulation="sustain", midi_note=note,
+                duration_seconds=2.0)
+            for note in range(60, 66)
+        ]
+        self.assertEqual(instrument_refs(assets), [])
+        self.assertEqual(len(instrument_refs(
+            assets, include_sustained_strings=True)), 1)
+
     def test_round_robin_and_articulation_filename_metadata(self) -> None:
         self.assertEqual(infer_round_robin("Piano_C4_v2_rr3_Main.wav"), 2)
         self.assertEqual(

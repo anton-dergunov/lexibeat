@@ -232,6 +232,22 @@ uv run sample_library.py index --deep
 uv run sample_library.py report
 ```
 
+To audit the complete attached library against the shipped production bundle
+without copying audio, then render isolated speech-safety probes:
+
+```bash
+uv run sample_library.py audit-expansion --refresh-index \
+  --workspace out/library-expansion --target-gb 10
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion
+```
+
+The audit prioritizes natural piano, restrained strings, acoustic guitar,
+natural bass and soft organic percussion. It records safe-register coverage,
+velocity and round-robin depth, normalized perceived-level spread, spectral
+brightness and transient risk. Its candidate manifest is a listening shortlist,
+not permission to promote the files.
+
 The library contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
 Spanish Classical Guitar, Karoryfer Fashionbass and the Stargate public-domain
 pack. Downloads use staging directories, the index stores SHA-256 identities,
