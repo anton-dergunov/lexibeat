@@ -204,6 +204,10 @@ the highest-quality tier. Supplying recent `BedFingerprint` values is optional
 and increases novelty without introducing hidden engine state. Resolution and
 rendering never download assets.
 
+See [How LexiBeat generates music](docs/music-generation.md) for a
+beginner-friendly explanation of the composition rules, parameters,
+instruments, rendering pipeline, and related music-theory research.
+
 The CLI exposes the same production path while preserving the legacy style
 flags:
 
