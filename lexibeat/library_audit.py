@@ -32,6 +32,23 @@ ATTENTION_WORDS = (
 )
 EXCLUDED_WORDS = ("release", "/rel", "noise", "demo", "loop")
 
+WAVE3_SAFE_REGISTERS = {
+    "accordion": (48, 79),
+    "recorder": (48, 79),
+    "ocarina": (60, 79),
+    "flute": (60, 84),
+    "clarinet": (50, 82),
+    "oboe": (58, 81),
+    "bassoon": (34, 67),
+    "harmonica": (55, 79),
+    "harp": (40, 84),
+    "plucked-string": (40, 84),
+    "organ": (36, 79),
+    "harpsichord": (40, 79),
+    "lamellophone": (48, 79),
+    "marimba": (43, 84),
+}
+
 
 def _db(value: float | None) -> float | None:
     if value is None or value <= 1e-12:
@@ -483,6 +500,214 @@ def build_secondary_manifest(
         "skipped_audio_aliases": skipped_aliases,
         "requires_paired_speech_listening": True,
     }
+
+
+def _wave3_family(name: str) -> str | None:
+    lowered = name.lower()
+    for family in ("accordion", "recorder", "ocarina", "flute", "clarinet", "oboe",
+                   "bassoon", "harmonica", "organ", "harpsichord",
+                   "marimba"):
+        if family in lowered:
+            return family
+    if "harp" in lowered and "harpsichord" not in lowered:
+        return "harp"
+    if any(word in lowered for word in ("guitar", "strumstick")):
+        return "plucked-string"
+    if any(word in lowered for word in ("kalimba", "mbira", "nyunga")):
+        return "lamellophone"
+    return None
+
+
+def evaluate_wave3_bank(
+    instrument: InstrumentRef,
+    assets_by_key: dict[tuple[str, str], SampleAsset],
+    baseline_sha256: set[str],
+    asset_sizes: dict[tuple[str, str], int],
+) -> dict | None:
+    """Evaluate a broader natural bank with warnings rather than narrow taste gates."""
+    family = _wave3_family(instrument.name)
+    if family is None:
+        return None
+    keys = list(dict.fromkeys(
+        (zone.sample.collection, zone.sample.asset_id) for zone in instrument.zones
+    ))
+    assets = [assets_by_key[key] for key in keys if key in assets_by_key]
+    new_assets = [asset for asset in assets if asset.sha256 not in baseline_sha256]
+    lo, hi = WAVE3_SAFE_REGISTERS[family]
+    safe_zones = [zone for zone in instrument.zones if lo <= zone.root_note <= hi]
+    safe_notes = sorted({zone.root_note for zone in safe_zones})
+    velocity_layers = len({(zone.lo_velocity, zone.hi_velocity)
+                           for zone in safe_zones})
+    rr_counts: dict[tuple[int, int, int], int] = defaultdict(int)
+    for zone in safe_zones:
+        rr_counts[(zone.root_note, zone.lo_velocity, zone.hi_velocity)] += 1
+    max_round_robins = max(rr_counts.values(), default=1)
+    metrics = _asset_metrics(assets)
+    lowered = instrument.name.lower()
+    reasons: list[str] = []
+    warnings: list[str] = []
+    limitations: list[str] = []
+    if not new_assets:
+        reasons.append("already_in_candidate_v2")
+    if any(word in lowered for word in EXCLUDED_WORDS):
+        reasons.append("release_noise_demo_or_loop")
+    if any(word in lowered for word in
+           ("electrophone", "tx81z", "fm piano", "synth")):
+        reasons.append("electronic_bank_not_needed_for_natural_wave")
+    if len(safe_notes) < 5:
+        reasons.append("insufficient_middle_register_coverage")
+    largest_gap = _largest_gap(safe_notes)
+    if largest_gap > 12:
+        reasons.append("excessive_transposition_gap")
+    elif largest_gap > 7:
+        warnings.append("wide_transposition_gap_requires_listening")
+    if any((asset.rms or 0.0) <= 1e-7 for asset in assets):
+        reasons.append("silent_or_near_silent_asset")
+    centroid = metrics["spectral_centroid_p90_hz"]
+    transient = metrics["transient_p90"]
+    spread = metrics["normalized_rms_p90_p10_db"]
+    if centroid is not None and centroid >= 6000:
+        warnings.append("bright_upper_partial_requires_role_gain")
+    if transient is not None and transient >= 0.78:
+        warnings.append("sharp_attack_requires_speech_masking_test")
+    if spread is not None and spread >= 14:
+        warnings.append("large_perceived_level_spread_requires_zone_gains")
+    if "vib" in lowered:
+        warnings.append("vibrato_is_expressive_and_should_remain_occasional")
+    if family in ("recorder", "ocarina", "flute"):
+        warnings.append("keep_melody_in_middle_register_by_default")
+    if velocity_layers < 2:
+        limitations.append("single_velocity_layer")
+    if max_round_robins < 2:
+        limitations.append("no_multi_take_round_robin")
+    status = "rejected" if reasons else "review" if warnings else "candidate"
+    score = (min(len(safe_notes), 100) * 10 + min(velocity_layers, 5) * 40 +
+             min(max_round_robins, 4) * 25 - len(warnings) * 20)
+    return {
+        "kind": "pitched", "name": instrument.name, "family": family,
+        "priority": 1, "score": score, "status": status,
+        "rejection_reasons": reasons, "review_warnings": warnings,
+        "mapping_limitations": limitations, "safe_register": [lo, hi],
+        "source_register": [
+            min((zone.root_note for zone in instrument.zones), default=0),
+            max((zone.root_note for zone in instrument.zones), default=0),
+        ],
+        "safe_note_count": len(safe_notes),
+        "largest_safe_note_gap": largest_gap,
+        "velocity_layers": velocity_layers,
+        "max_round_robins": max_round_robins,
+        "articulations": sorted({zone.articulation for zone in safe_zones}),
+        "assets": len(assets), "new_assets": len(new_assets),
+        "new_bytes": sum(asset_sizes.get((asset.collection, asset.asset_id), 0)
+                         for asset in new_assets),
+        "metrics": metrics, "_asset_keys": keys,
+    }
+
+
+def build_wave3_expansion(
+    external_assets: list[SampleAsset],
+    baseline_assets: list[SampleAsset],
+    instruments: list[InstrumentRef],
+    asset_sizes: dict[tuple[str, str], int],
+) -> tuple[dict, dict]:
+    """Select every technically usable, checksum-distinct broader natural bank."""
+    baseline_sha256 = {asset.sha256 for asset in baseline_assets}
+    assets_by_key = {(asset.collection, asset.asset_id): asset
+                     for asset in external_assets}
+    rows = [row for instrument in instruments
+            if (row := evaluate_wave3_bank(
+                instrument, assets_by_key, baseline_sha256, asset_sizes)) is not None]
+    rows.sort(key=lambda row: (-row["score"], row["family"], row["name"]))
+    selected = []
+    seen_signatures: set[frozenset[str]] = set()
+    selected_sha256 = set(baseline_sha256)
+    manifest_assets = []
+    selected_bytes = 0
+    aliases = []
+    for row in rows:
+        if row["status"] not in ("candidate", "review"):
+            continue
+        values = [assets_by_key[key] for key in row["_asset_keys"]
+                  if key in assets_by_key]
+        signature = frozenset(asset.sha256 for asset in values)
+        additions = [asset for asset in values
+                     if asset.sha256 not in selected_sha256]
+        if not signature or signature in seen_signatures or not additions:
+            aliases.append(row["name"])
+            continue
+        seen_signatures.add(signature)
+        selected.append(row)
+        for asset in additions:
+            if asset.sha256 in selected_sha256:
+                continue
+            selected_sha256.add(asset.sha256)
+            key = (asset.collection, asset.asset_id)
+            size = asset_sizes.get(key, 0)
+            selected_bytes += size
+            manifest_assets.append({
+                **asdict(asset.ref), "relative_path": asset.relative_path,
+                "license": asset.license, "bytes": size,
+            })
+    counts: dict[str, int] = defaultdict(int)
+    for row in rows:
+        counts[row["status"]] += 1
+    audit = {
+        "schema_version": 1,
+        "policy": {
+            "direction": "broader-natural-instruments",
+            "safe_registers": {key: list(value)
+                               for key, value in WAVE3_SAFE_REGISTERS.items()},
+            "approach": ("Include all technically usable natural banks; retain "
+                         "brightness, vibrato and attack as gain/role warnings rather "
+                         "than aesthetic rejection reasons."),
+            "preserve_existing_electronic_leads": True,
+        },
+        "catalogs": {
+            "external_assets": len(external_assets),
+            "baseline_assets": len(baseline_assets),
+            "new_payloads": len({asset.sha256 for asset in external_assets} -
+                                baseline_sha256),
+        },
+        "bank_counts": dict(sorted(counts.items())),
+        "banks": [_public_row(row) for row in rows],
+    }
+    manifest = {
+        "schema_version": 1,
+        "status": "wave3-proposed-not-promoted",
+        "selected_bytes": selected_bytes,
+        "banks": [_public_row(row) for row in selected],
+        "assets": manifest_assets,
+        "skipped_audio_aliases": aliases,
+        "requires_role_based_listening": True,
+    }
+    return audit, manifest
+
+
+def wave3_markdown(audit: dict, manifest: dict) -> str:
+    lines = [
+        "# Wave 3 broader natural-instrument audit", "",
+        "This wave intentionally accepts a wider range of instrumental color. "
+        "Warnings control register, gain and frequency of use; they are not "
+        "automatic aesthetic rejections.", "",
+        f"- Baseline candidate-v2 catalog: {audit['catalogs']['baseline_assets']:,} assets.",
+        f"- Broader banks evaluated: {len(audit['banks'])}.",
+        f"- Audition banks: {len(manifest['banks'])}.",
+        f"- New payload: {len(manifest['assets']):,} assets, "
+        f"{manifest['selected_bytes'] / 1e9:.2f} GB.",
+        f"- Checksum aliases removed: {len(manifest['skipped_audio_aliases'])}.", "",
+        "The existing TX81Z/FM and synthesized lead colors remain available; Wave 3 "
+        "adds natural recordings rather than replacing those occasional colors.", "",
+        "| # | Status | Family | Bank | Safe notes | Layers | RR | Size | Flags |",
+        "|---:|---|---|---|---:|---:|---:|---:|---|",
+    ]
+    for number, row in enumerate(manifest["banks"], 1):
+        flags = [*row["review_warnings"], *row["mapping_limitations"]]
+        lines.append(
+            f"| W3-{number:02d} | {row['status']} | {row['family']} | "
+            f"`{row['name']}` | {row['safe_note_count']} | "
+            f"{row['velocity_layers']} | {row['max_round_robins']} | "
+            f"{row['new_bytes'] / 1e6:.1f} MB | {', '.join(flags) or 'none'} |")
+    return "\n".join(lines) + "\n"
 
 
 def audit_markdown(audit: dict, manifest: dict) -> str:

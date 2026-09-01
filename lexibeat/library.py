@@ -125,6 +125,11 @@ COLLECTIONS: dict[str, SampleCollection] = {
         "freepats-guitar", "FreePats Spanish Classical Guitar",
         "https://github.com/freepats/spanish-classical-guitar.git", "CC0-1.0",
         "Roberto and FreePats contributors", 30_000_000, ("pitched",)),
+    "freepats-accordion": SampleCollection(
+        "freepats-accordion", "FreePats Button Accordion HN",
+        "https://github.com/freepats/button-accordion-HN.git", "CC0-1.0",
+        "Jeff Stauffer, michael02022 and FreePats contributors", 10_000_000,
+        ("pitched",)),
     "karoryfer-fashionbass": SampleCollection(
         "karoryfer-fashionbass", "Karoryfer Fashionbass",
         "https://github.com/sfzinstruments/karoryfer.fashionbass.git", "CC0-1.0",
@@ -136,7 +141,7 @@ COLLECTIONS: dict[str, SampleCollection] = {
         ("percussion", "pitched", "texture")),
 }
 LIBRARY_TARGETS = {
-    "library-core": ("freepats-world", "freepats-guitar",
+    "library-core": ("freepats-world", "freepats-guitar", "freepats-accordion",
                      "karoryfer-fashionbass", "stargate", "vsco2", "vcsl"),
 }
 
@@ -265,7 +270,8 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
     to construct conservative note/velocity zones without treating isolated
     recordings as complete instruments.
     """
-    wanted = include or ("piano", "harp", "marimba", "glock", "vibraphone",
+    wanted = include or ("piano", "accordion", "harp", "marimba", "glock",
+                         "vibraphone",
                          "kalimba", "mbira", "nyunga", "psaltery", "ocarina",
                          "harmonica", "recorder", "flute", "oboe", "clarinet",
                          "bassoon", "strumstick", "guitar", "fashionbass",
@@ -284,10 +290,12 @@ def instrument_refs(assets: list[SampleAsset], *, min_notes: int = 6,
             include_sustained_strings and string_articulation in
             ("bowed", "natural", "sustain", "sustain-non-vibrato")
         )
+        release_directory = (lowered == "rel" or lowered.endswith("/rel") or
+                             "/rel/" in lowered)
         if (asset.midi_note is None or
                 asset.duration_seconds is None or not 0.08 <= asset.duration_seconds <= 24 or
                 not any(word in searchable for word in wanted) or
-                any(word in lowered for word in excluded) or
+                release_directory or any(word in lowered for word in excluded) or
                 (string_front and not safe_sustained_string and
                  not any(word in lowered for word in ("pizz", "spic")))):
             continue

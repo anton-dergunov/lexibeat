@@ -17,7 +17,8 @@ from lexibeat.library import (COLLECTIONS, LIBRARY_TARGETS, SampleLibrary,
                              SampleRef, external_root, instrument_refs)
 from lexibeat.library_audit import (audit_markdown, build_expansion_audit,
                                     build_secondary_manifest,
-                                    render_bank_audition)
+                                    build_wave3_expansion,
+                                    render_bank_audition, wave3_markdown)
 from lexibeat.library_bundle import build_candidate_bundle
 
 
@@ -118,8 +119,15 @@ def main() -> None:
     audition.add_argument("--workspace", type=Path,
                           default=Path("out/library-expansion"))
     audition.add_argument("--out-dir", type=Path)
-    audition.add_argument("--wave", choices=("primary", "secondary"),
+    audition.add_argument("--wave", choices=("primary", "secondary", "wave3"),
                           default="primary")
+    wave3 = sub.add_parser(
+        "audit-wave3",
+        help="audit broader natural instruments against candidate v2")
+    wave3.add_argument("--workspace", type=Path,
+                       default=Path("out/library-expansion"))
+    wave3.add_argument("--baseline-bundle", type=Path,
+                       default=Path("out/library-expansion/candidate-v2"))
     integrate = sub.add_parser(
         "integrate-expansion",
         help="build a separate candidate bundle from accepted audition banks")
@@ -224,15 +232,73 @@ def main() -> None:
             "candidate_manifest": str(proposal_json),
             "report": str(report_md),
         }
-    elif args.command == "audition-expansion":
-        primary_path = args.workspace / "candidate-manifest.json"
-        if not primary_path.exists():
+    elif args.command == "audit-wave3":
+        external_library = SampleLibrary(
+            external=external_root(), local=args.workspace, use_bundled=False)
+        if not external_library.local_catalog_path.exists():
             raise FileNotFoundError(
-                f"Missing {primary_path}; run audit-expansion first.")
+                f"Missing {external_library.local_catalog_path}; "
+                "run audit-expansion --refresh-index first.")
+        baseline_library = SampleLibrary(
+            external=external_root(), local=args.baseline_bundle,
+            use_bundled=False)
+        if not baseline_library.local_catalog_path.exists():
+            raise FileNotFoundError(
+                f"Missing candidate-v2 catalog: "
+                f"{baseline_library.local_catalog_path}")
+        external_assets = external_library.assets(usable_only=False)
+        baseline_assets = baseline_library.assets(usable_only=False)
+        sizes = {}
+        for asset in external_assets:
+            source = external_library.collection_path(
+                asset.collection) / asset.relative_path
+            sizes[(asset.collection, asset.asset_id)] = (
+                source.stat().st_size if source.exists() else 0)
+        instruments = instrument_refs(
+            [asset for asset in external_assets if not asset.quarantined],
+            include_sustained_strings=True)
+        expansion, proposal = build_wave3_expansion(
+            external_assets, baseline_assets, instruments, sizes)
+        out_dir = args.workspace / "wave3"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        audit_path = out_dir / "audit.json"
+        manifest_path = out_dir / "candidate-manifest.json"
+        report_path = out_dir / "report.md"
+        audit_path.write_text(json.dumps(expansion, indent=2) + "\n",
+                              encoding="utf-8")
+        manifest_path.write_text(json.dumps(proposal, indent=2) + "\n",
+                                 encoding="utf-8")
+        report_path.write_text(wave3_markdown(expansion, proposal),
+                               encoding="utf-8")
+        result = {
+            "evaluated_banks": len(expansion["banks"]),
+            "bank_counts": expansion["bank_counts"],
+            "proposed_banks": len(proposal["banks"]),
+            "proposed_assets": len(proposal["assets"]),
+            "proposed_bytes": proposal["selected_bytes"],
+            "checksum_aliases_removed": len(proposal["skipped_audio_aliases"]),
+            "copied_audio": False,
+            "audit": str(audit_path), "candidate_manifest": str(manifest_path),
+            "report": str(report_path),
+        }
+    elif args.command == "audition-expansion":
         external_library = SampleLibrary(
             external=external_root(), local=args.workspace, use_bundled=False)
         assets = external_library.assets()
-        primary = json.loads(primary_path.read_text(encoding="utf-8"))
+        if args.wave == "wave3":
+            manifest_path = args.workspace / "wave3" / "candidate-manifest.json"
+            if not manifest_path.exists():
+                raise FileNotFoundError(
+                    f"Missing {manifest_path}; run audit-wave3 first.")
+            proposal = json.loads(manifest_path.read_text(encoding="utf-8"))
+        else:
+            primary_path = args.workspace / "candidate-manifest.json"
+            if not primary_path.exists():
+                raise FileNotFoundError(
+                    f"Missing {primary_path}; run audit-expansion first.")
+            primary = json.loads(primary_path.read_text(encoding="utf-8"))
+            proposal = primary
+            manifest_path = primary_path
         if args.wave == "secondary":
             audit_path = args.workspace / "audit.json"
             if not audit_path.exists():
@@ -250,24 +316,22 @@ def main() -> None:
             manifest_path = args.workspace / "secondary-candidate-manifest.json"
             manifest_path.write_text(json.dumps(proposal, indent=2) + "\n",
                                      encoding="utf-8")
-        else:
-            proposal = primary
-            manifest_path = primary_path
         instruments = instrument_refs(
             assets, include_sustained_strings=True)
         instruments_by_name = {instrument.name: instrument
                                for instrument in instruments}
-        default_dir = ("secondary-auditions" if args.wave == "secondary"
-                       else "auditions")
+        default_dir = ({"secondary": "secondary-auditions",
+                        "wave3": "wave3/auditions"}.get(args.wave, "auditions"))
         out_dir = args.out_dir or args.workspace / default_dir
         out_dir.mkdir(parents=True, exist_ok=True)
         rows = []
         for number, bank in enumerate(proposal["banks"], 1):
-            clip_id = (f"S{number:02d}" if args.wave == "secondary"
-                       else str(number))
+            clip_id = ({"secondary": f"S{number:02d}",
+                        "wave3": f"W3-{number:02d}"}.get(args.wave, str(number)))
             slug = re.sub(r"[^a-z0-9]+", "-", bank["family"].lower()).strip("-")
-            filename_number = (f"s{number:02d}" if args.wave == "secondary"
-                               else f"{number:02d}")
+            filename_number = ({"secondary": f"s{number:02d}",
+                                "wave3": f"w3-{number:02d}"}.get(
+                                    args.wave, f"{number:02d}"))
             path = out_dir / f"{filename_number}-{slug}.wav"
             audio = render_bank_audition(
                 bank, external_library, instruments_by_name)
@@ -291,30 +355,53 @@ def main() -> None:
         }
         (out_dir / "manifest.json").write_text(
             json.dumps(audition_manifest, indent=2) + "\n", encoding="utf-8")
+        expected_audio = {row["file"] for row in rows}
+        if args.wave == "wave3":
+            for stale_path in out_dir.glob("w3-*.wav"):
+                if stale_path.name not in expected_audio:
+                    stale_path.unlink()
         ratings_path = out_dir / "ratings.csv"
-        if not ratings_path.exists():
-            with ratings_path.open("w", newline="", encoding="utf-8") as handle:
-                writer = csv.writer(handle)
-                writer.writerow([
-                    "clip_id", "file", "family", "bank",
-                    "piercing_or_high_pitch_1_5", "attack_distraction_1_5",
-                    "perceived_level_consistency_1_5", "naturalness_1_5",
-                    "background_suitability_1_5", "keep", "notes",
-                ])
-                for row in rows:
-                    writer.writerow([
-                        row["clip_id"], row["file"], row["family"], row["bank"],
-                        "", "", "", "", "", "", "",
-                    ])
-        wave_title = "Secondary (Wave 2)" if args.wave == "secondary" else "Primary"
+        fields = [
+            "clip_id", "file", "family", "bank",
+            "piercing_or_high_pitch_1_5", "attack_distraction_1_5",
+            "perceived_level_consistency_1_5", "naturalness_1_5",
+            "background_suitability_1_5", "keep", "notes",
+        ]
+        previous_ratings = {}
+        if ratings_path.exists():
+            with ratings_path.open(newline="", encoding="utf-8") as handle:
+                previous_ratings = {
+                    item.get("bank", ""): item for item in csv.DictReader(handle)
+                    if item.get("bank")
+                }
+        with ratings_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            for row in rows:
+                retained = previous_ratings.get(row["bank"], {})
+                writer.writerow({
+                    "clip_id": row["clip_id"], "file": row["file"],
+                    "family": row["family"], "bank": row["bank"],
+                    **{field: retained.get(field, "") for field in fields[4:]},
+                })
+        wave_title = ({"secondary": "Secondary (Wave 2)",
+                       "wave3": "Broader natural-instrument Wave 3"}.get(
+                           args.wave, "Primary"))
+        listening_policy = (
+            "For Wave 3, unusual color, brightness or expressive vibrato is not an "
+            "automatic rejection. Note the safest register, role and gain; reject "
+            "only technical defects or a sound that remains unusable under speech."
+            if args.wave == "wave3" else
+            "Reject any piercing high note, bottle-like or cosmic effect, uneven "
+            "perceived level, distracting attack, or sound that would pull "
+            "attention away from spoken words."
+        )
         guide = [
             f"# {wave_title} expansion-bank audition guide", "",
             "These are isolated, level-preserving probes read directly from the "
             "external library. No samples have been promoted.", "",
             "Listen to the complete set independently before comparing individual "
-            "banks. Reject any piercing high note, bottle-like or cosmic effect, "
-            "uneven perceived level, distracting attack, or sound that would pull "
-            "attention away from spoken words.", "",
+            f"banks. {listening_policy}", "",
             "A low score means the problem is strong; a high score means the bank is "
             "safe or suitable. Record the decision in `ratings.csv`.", "",
             "| # | File | Family/role | Status | Bank | Automated flags |",

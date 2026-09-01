@@ -160,19 +160,55 @@ banks enter their compatible rhythmic roles.
 The paired treatment in `out/library-expansion/paired-treatment/` replays the 14
 family/seed pairs from `out/music-bakeoff-3/` with byte-identical speech and
 identical composition events. It exercises 16 distinct accepted banks across 23
-placements. Stage 4 remains gated on listening to this control/treatment pair.
+placements.
 
-## Proposed Wave 3 — broader natural instruments
+The listener accepted all 14 treatments as appropriate background music and
+preferred the greater natural-instrument variety. Treatment clips 7 and 14 also
+confirm that the existing electronic colors remain useful when occasional:
+clip 7 resolves the VCSL TX81Z/FM Piano bank and clip 14 uses the built-in synth
+lead. Neither sound is removed by the natural-library expansion. Candidate-v2
+is therefore the approved foundation for Wave 3, while production-v1 remains
+unchanged until the broader wave has completed its own listening gate.
 
-The next audit should be more inclusive while retaining role-specific speech
-safety. The attached catalog already has 64 mapped banks across classical
-guitar, flute, recorder, ocarina, clarinet, oboe, bassoon, harmonica, harp,
-strumstick, quiet organ, harpsichord, kalimba, mbira and marimba. These should be
-screened in low/middle registers and auditioned in actual musical roles rather
-than rejected merely for being outside the first-wave family list.
+## Wave 3 — broader natural instruments
 
-Accordion and bandoneon are not present as coherent mapped banks in the current
-catalog, so adding them requires new redistributable sources. Wave 3 can research
-those sources after the existing 64-bank broader-instrument audit, prioritizing
-dry or restrained recordings, complete note coverage and at least two useful
-velocity layers where available.
+This audit is more inclusive while retaining role-specific speech safety. The
+attached catalog has mapped banks across accordion, classical guitar, flute,
+recorder, ocarina, clarinet, oboe, bassoon, harmonica, harp, strumstick, quiet
+organ, harpsichord, kalimba, mbira and marimba. They are screened in low/middle
+registers and auditioned in actual musical roles rather than rejected merely
+for being outside the first-wave family list.
+
+The policy is intentionally more aggressive than Waves 1 and 2. Technically
+usable coherent natural banks are auditioned by default; brightness, expressive
+vibrato, unusual timbre and attack become role/register/gain notes rather than
+automatic aesthetic rejections. A bank is rejected only for a concrete problem
+such as silence, release/noise/demo material, unusable note coverage, excessive
+mapping gaps, duplicate payload, or inability to remain usable under speech.
+
+The implemented metadata-only audit evaluates 66 mapped banks against
+candidate-v2. Ten contain no new payload because they are already in the
+candidate bundle. All 56 checksum-distinct additions proceed to audition:
+1,136 assets totaling 1.51 GB across accordion, recorder, ocarina, flute,
+clarinet, oboe, bassoon, harmonica, harp, plucked string, organ, harpsichord,
+lamellophone and marimba. No audio is copied or promoted by the audit.
+
+```bash
+uv run sample_library.py audit-wave3 \
+  --workspace out/library-expansion \
+  --baseline-bundle out/library-expansion/candidate-v2
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion --wave wave3
+```
+
+The auditions and rating sheet are in
+`out/library-expansion/wave3/auditions/`. The generated probes are finite and
+peak at 0.42. The new FreePats Button Accordion HN bank is a 17-note CC0 SFZ
+bank explicitly downloaded to the external tier; its separate release-trigger
+recordings are excluded from the playable foreground mapping. Its source is
+https://freepats.zenvoid.org/Organ/accordion.html.
+
+No coherent bandoneon multisample bank with a sufficiently clear redistributable
+license was found in this source pass. Do not substitute a single demonstration
+recording or a bank with sample-repackaging restrictions; bandoneon remains an
+explicit acquisition gap for a later source search.

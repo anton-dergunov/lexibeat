@@ -40,6 +40,13 @@ Spanish classical-guitar recordings by Roberto for the FreePats project.
 Dedicated to the public domain under CC0 1.0.
 https://github.com/freepats/spanish-classical-guitar
 
+FreePats Button Accordion HN
+----------------------------
+Hohner button-accordion recordings by Jeff Stauffer, processed and mapped by
+michael02022 for the FreePats project. Dedicated to the public domain under
+CC0 1.0.
+https://github.com/freepats/button-accordion-HN
+
 Karoryfer Fashionbass
 ---------------------
 Sampled electric bass recorded and mapped by Karoryfer Samples.

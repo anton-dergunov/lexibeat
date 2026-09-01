@@ -33,7 +33,9 @@ from lexibeat.library import (EXTERNAL_LIMIT, InstrumentRef, InstrumentZoneRef,
                               timbre_clusters)
 from lexibeat.library_audit import (build_expansion_audit,
                                     build_secondary_manifest,
-                                    evaluate_instrument_bank)
+                                    build_wave3_expansion,
+                                    evaluate_instrument_bank,
+                                    evaluate_wave3_bank)
 from lexibeat.library_bundle import accepted_expansion_policy
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
@@ -687,6 +689,74 @@ class SampleTests(unittest.TestCase):
 
 
 class TieredLibraryTests(unittest.TestCase):
+    def test_wave3_recognizes_explicit_accordion_collection(self) -> None:
+        assets = [SampleAsset(
+            "freepats-accordion", f"accordion-{note}",
+            f"accordion-sha-{note}", f"Button Accordion HN {note}.flac",
+            "CC0-1.0", "pitched", midi_note=note, duration_seconds=1.5,
+            peak=0.7, rms=0.1, spectral_centroid=2200.0,
+            transient_score=0.2)
+            for note in range(60, 65)]
+        instrument = InstrumentRef(
+            "freepats-accordion:Button Accordion HN#natural@default",
+            tuple(InstrumentZoneRef(asset.ref, asset.midi_note,
+                                    asset.midi_note, asset.midi_note)
+                  for asset in assets))
+        row = evaluate_wave3_bank(
+            instrument,
+            {(asset.collection, asset.asset_id): asset for asset in assets},
+            set(), {(asset.collection, asset.asset_id): 100 for asset in assets})
+        self.assertIsNotNone(row)
+        self.assertEqual(row["family"], "accordion")
+        self.assertEqual(row["status"], "candidate")
+
+    def test_instrument_refs_exclude_rel_release_directory(self) -> None:
+        assets = []
+        for note in range(60, 66):
+            assets.extend([
+                SampleAsset(
+                    "freepats-accordion", f"main-{note}", f"main-sha-{note}",
+                    f"Button Accordion HN {note}.flac", "CC0-1.0", "pitched",
+                    midi_note=note, duration_seconds=1.5),
+                SampleAsset(
+                    "freepats-accordion", f"rel-{note}", f"rel-sha-{note}",
+                    f"rel/Button Accordion HN {note}_rel.flac", "CC0-1.0",
+                    "pitched", midi_note=note, duration_seconds=0.5),
+            ])
+        instruments = instrument_refs(assets)
+        self.assertEqual([instrument.name for instrument in instruments], [
+            "freepats-accordion:.#natural@default",
+        ])
+
+    def test_wave3_accepts_middle_register_flute_and_skips_baseline_payload(self) -> None:
+        assets = [SampleAsset(
+            "vsco2", f"flute-{note}", f"flute-sha-{note}",
+            f"Woodwinds/Flute/susNV/Flute_{note}.wav", "CC0-1.0",
+            "pitched", articulation="sustain-non-vibrato", midi_note=note,
+            duration_seconds=1.5, peak=0.7, rms=0.1,
+            spectral_centroid=2800.0, transient_score=0.2)
+            for note in range(60, 66)]
+        instrument = InstrumentRef(
+            "vsco2:Woodwinds/Flute/susNV#sustain-non-vibrato@default",
+            tuple(InstrumentZoneRef(asset.ref, asset.midi_note,
+                                    asset.midi_note, asset.midi_note)
+                  for asset in assets))
+        sizes = {(asset.collection, asset.asset_id): 100 for asset in assets}
+        row = evaluate_wave3_bank(
+            instrument,
+            {(asset.collection, asset.asset_id): asset for asset in assets},
+            set(), sizes)
+        self.assertIsNotNone(row)
+        self.assertEqual(row["family"], "flute")
+        self.assertEqual(row["status"], "review")
+        audit, proposal = build_wave3_expansion(
+            assets, [], [instrument], sizes)
+        self.assertEqual(len(audit["banks"]), 1)
+        self.assertEqual(len(proposal["banks"]), 1)
+        _, baseline_proposal = build_wave3_expansion(
+            assets, assets, [instrument], sizes)
+        self.assertEqual(baseline_proposal["banks"], [])
+
     def test_listener_decisions_record_all_banks_and_caution_gain(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp)

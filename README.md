@@ -242,6 +242,11 @@ uv run sample_library.py audition-expansion \
   --workspace out/library-expansion
 uv run sample_library.py audition-expansion \
   --workspace out/library-expansion --wave secondary
+uv run sample_library.py audit-wave3 \
+  --workspace out/library-expansion \
+  --baseline-bundle out/library-expansion/candidate-v2
+uv run sample_library.py audition-expansion \
+  --workspace out/library-expansion --wave wave3
 ```
 
 The audit prioritizes natural piano, restrained strings, acoustic guitar,
@@ -252,7 +257,15 @@ not permission to promote the files.
 
 The secondary wave is written separately under `secondary-auditions/`. It
 contains the remaining non-rejected banks after checksum-identical aliases are
-removed, and never overwrites an existing ratings sheet.
+removed. Audition regeneration keeps existing ratings matched by bank while
+updating clip identifiers and filenames.
+
+Wave 3 is a deliberately broader natural-instrument pass. It compares the
+complete attached catalog with candidate-v2, retains brightness and vibrato as
+role/register/gain warnings instead of aesthetic rejection reasons, and writes
+its isolated probes under `wave3/auditions/`. The explicitly downloadable CC0
+sources now include FreePats Button Accordion HN; normal generation still never
+downloads samples.
 
 After recording an all-accepted listening decision, build and verify the
 separate candidate-v2 bundle with explicit attenuation for retained caution
