@@ -30,16 +30,16 @@ uv sync
 
 uv run python -m lexibeat.cli --words 12 --out out/lesson.wav
 uv run python -m lexibeat.cli --words 6 --dry-run              # show the plan only
-uv run python -m lexibeat.cli --bed-only --bed-style lofi      # audition a bed in ~1 s
+uv run python -m lexibeat.cli --bed-only --music-palette electronic  # audition a bed
 uv run python -m lexibeat.cli --download-samples               # fetch the piano (~88 MB)
 uv run python -m lexibeat.cli --words 6                        # Chatterbox, expressive default
 uv run python -m lexibeat.cli --words 6 --backend kokoro       # faster fallback
 uv run python -m scripts.benchmarks.compare_voices --words 3   # A/B the voice setups
 ```
 
-Flags worth knowing: `--bed-style yoga|nocturne|lofi|warm`, `--bed-seed`,
-`--bed-spec <file>`, `--instrument`, `--pad-instrument`, `--meter`,
-`--chord-extension`, `--mode words|phrases|mixed`, `--pattern retrieval|alternating`,
+Flags worth knowing: `--music-family`, `--music-energy`, `--music-rhythm`,
+`--music-palette`, `--bed-seed`, `--bed-spec <file>`,
+`--mode words|phrases|mixed`, `--pattern retrieval|alternating`,
 `--backend chatterbox|kokoro`, `--ref-audio-es`, `--ref-audio-en`,
 `--prosody-strength`, `--no-emotion`, `--duck-db`.
 
@@ -53,7 +53,7 @@ parameters, so a bed that sounds good can be replayed or hand-edited.
 | Utterance onset vs downbeat | median **15 ms** |
 | Integrated loudness / true peak | −17.4 LUFS / 0.97 |
 | Recovered tempo of the finished mix | 80.75 BPM (requested 80) |
-| Bed render | 0.3–1.4 s for ~70 s of audio, all styles |
+| Bed render | 0.3–1.4 s for ~70 s of audio, measured families |
 | Kokoro | ~0.4 s per utterance; 4.2 min track in 36 s |
 | Chatterbox (MLX) | ~5.5–6.1 s per utterance — about 14× Kokoro |
 | Emoji coverage in the vocabulary notes | **922 / 939 entries (98%)** |
@@ -251,12 +251,11 @@ microphone groups, then labels explicit alternate takes with stable round-robin
 indexes. Conservative filename inference avoids combining ambiguous siblings or
 switching microphone perspectives during a phrase.
 
-BedSpec 1.1 serializes event articulation, sample-variation indexes, percussion
-take groups and the selection strategy. The cyclic strategy can offset a saved
-choice on each phrase repetition and advance percussion through its resolved
-take group per hit. Production uses the control-compatible first-take strategy.
-Replaying either strategy is byte-deterministic; older JSON receives compatible
-natural-articulation and first-take defaults.
+The experiment serialized event articulation, sample-variation indexes,
+percussion take groups and a cyclic selection strategy. Production retained
+event and zone articulation plus deterministic first-take multisample selection;
+the cyclic BedSpec replay fields were later removed as unused compatibility
+surface.
 
 Catalog reports now expose register, articulation and timbre-cluster coverage,
 round-robin depth, instrument-bank utilization and explicit rejection reasons.
@@ -274,11 +273,10 @@ product goal even though it met the distinctiveness goal.
 
 Production generation returned to the earlier bass patterns, random-walk motif,
 acoustic/hybrid/electronic palettes, fingerprint distance and balanced-selection
-policy. The historical style RNG order is explicitly preserved. Saved Step 3B
-BedSpecs remain loadable, while resolved metadata, opt-in deterministic sample
-round robins, catalog reports and manifest replay remain available as useful
-infrastructure. Future variety work will prioritize coherent natural sample
-banks and speech-safe register and perceived-level gates.
+policy. The superseded Step 3B grammar and palette values are no longer accepted.
+Catalog reports, multisample round-robin auditing, and manifest replay remain
+available as useful infrastructure. Future variety work will prioritize coherent
+natural sample banks and speech-safe register and perceived-level gates.
 
 ---
 
@@ -353,16 +351,12 @@ separate `ef_dora` and `af_heart` voices as the fast fallback.
 
 ### Music parameterisation
 
-`BedSpec` (`lexibeat/bedspec.py`) holds metre, harmony, four layers and space.
-Chords are derived from `root` + `scale` + scale degrees rather than a hard-coded
-table; the voicing formula `[r, r+7, r+12, r+12+third, r+19]` reproduces the v1
-progression **exactly**, which is how the refactor was verified as
-sound-preserving. Drum patterns use one string step per sixteenth note, with
-their length derived from the selected meter, so rhythm remains data.
-
-Four styles — `yoga` (the original), `nocturne`, `lofi`, `warm` — define
-*ranges* that a seeded rng samples within, so the same style gives related but
-distinct beds.
+`BedSpec` (`lexibeat/bedspec.py`) holds metre, harmony, four layers, space, and a
+mandatory resolved phrase. Chords are derived from `root` + `scale` + scale
+degrees during composition, then stored as explicit events. Percussion patterns
+use one string step per sixteenth note, with their length derived from the
+selected meter, so rhythm remains data. The phrase-less prototype styles and
+renderer have been removed.
 
 ### Sampled instruments
 

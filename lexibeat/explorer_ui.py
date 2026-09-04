@@ -96,8 +96,6 @@ def _parse_control(path: str, value: object) -> object:
 
 
 def _table_rows(spec: BedSpec) -> tuple[list[list], list[list], list[list], list[list]]:
-    if spec.phrase is None:
-        return [], [], [], []
     chords = [[event.step, step_position(spec, event.step), event.duration_steps,
                ",".join(str(note) for note in event.midi_notes),
                ", ".join(midi_name(note) for note in event.midi_notes), event.velocity]
@@ -109,7 +107,7 @@ def _table_rows(spec: BedSpec) -> tuple[list[list], list[list], list[list], list
              event.midi_note, midi_name(event.midi_note), event.velocity]
             for event in spec.phrase.lead]
     percussion = [[lane.sound, lane.pattern, lane.level, lane.probability,
-                   lane.humanize, lane.pan, lane.role,
+                   lane.humanize, lane.role,
                    logical_id(lane.sample) if lane.sample else ""]
                   for lane in spec.phrase.percussion]
     return chords, bass, lead, percussion
@@ -127,10 +125,8 @@ def _clean_rows(value: object) -> list[list]:
 
 def _apply_tables(data: dict, table_values: list[object]) -> None:
     phrase = data.get("phrase")
-    if phrase is None:
-        if any(_clean_rows(value) for value in table_values):
-            raise ValueError("Legacy BedSpecs without a resolved phrase cannot accept phrase tables.")
-        return
+    if not isinstance(phrase, dict):
+        raise ValueError("BedSpec requires a resolved phrase before editing tables.")
     chord_rows, bass_rows, lead_rows, percussion_rows = map(_clean_rows, table_values)
     phrase["chords"] = [{
         "step": int(row[0]), "duration_steps": float(row[2]),
@@ -147,11 +143,11 @@ def _apply_tables(data: dict, table_values: list[object]) -> None:
     } for row in lead_rows]
     lanes = []
     for row in percussion_rows:
-        sample = parse_logical_id(str(row[7])) if len(row) > 7 and row[7] else None
+        sample = parse_logical_id(str(row[6])) if len(row) > 6 and row[6] else None
         lanes.append({
             "sound": str(row[0]), "pattern": str(row[1]), "level": float(row[2]),
             "probability": float(row[3]), "humanize": float(row[4]),
-            "pan": float(row[5]), "role": str(row[6] or ""),
+            "role": str(row[5] or ""),
             "sample": asdict(sample) if sample else None,
         })
     phrase["percussion"] = lanes
@@ -244,17 +240,16 @@ def _sample_tables(spec: BedSpec, samples: SampleService) -> tuple[list[list], l
             rows.append([logical_id(ref), ref.collection, "", "unavailable", False,
                          "", ref.sha256, str(exc)])
     zones: list[list] = []
-    if spec.phrase:
-        for role, instrument in (("pad", spec.phrase.pad_instrument),
-                                 ("bass", spec.phrase.bass_instrument),
-                                 ("lead", spec.phrase.lead_instrument)):
-            if not instrument:
-                continue
-            for zone in instrument.zones:
-                zones.append([role, instrument.name, logical_id(zone.sample),
-                              zone.root_note, midi_name(zone.root_note),
-                              zone.lo_note, zone.hi_note, zone.lo_velocity,
-                              zone.hi_velocity, zone.gain_db])
+    for role, instrument in (("pad", spec.phrase.pad_instrument),
+                             ("bass", spec.phrase.bass_instrument),
+                             ("lead", spec.phrase.lead_instrument)):
+        if not instrument:
+            continue
+        for zone in instrument.zones:
+            zones.append([role, instrument.name, logical_id(zone.sample),
+                          zone.root_note, midi_name(zone.root_note),
+                          zone.lo_note, zone.hi_note, zone.lo_velocity,
+                          zone.hi_velocity, zone.gain_db])
     return rows, zones
 
 
@@ -401,8 +396,8 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                         type="array", label="Lead notes", interactive=True)
                     lead_lock = gr.Checkbox(label="Keep all lead events on randomize")
                     percussion = gr.Dataframe(
-                        headers=["sound", "pattern", "level", "probability", "humanize", "pan", "role", "sample logical ID"],
-                        datatype=["str", "str", "number", "number", "number", "number", "str", "str"],
+                        headers=["sound", "pattern", "level", "probability", "humanize", "role", "sample logical ID"],
+                        datatype=["str", "str", "number", "number", "number", "str", "str"],
                         type="array", label="Percussion lanes", interactive=True)
                     percussion_lock = gr.Checkbox(label="Keep all percussion lanes on randomize")
 

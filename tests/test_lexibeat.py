@@ -17,11 +17,11 @@ import soundfile as sf
 from lexibeat.api import MusicRequest, render_music, resolve_music
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
+from lexibeat.cli import build_spec, parse_args
 from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from lexibeat.generator import (
     _apply_expansion_instrument_policy,
     _bundled_inventory_cache,
-    _round_robin_variants,
     _safe_assets,
     _safe_inventory,
 )
@@ -63,7 +63,9 @@ from lexibeat.voice import (
     reference_path,
 )
 from lexibeat.vocab import Item
-from scripts.benchmarks.benchmark_voices import pressure_snapshot, write_comparison
+from scripts.benchmarks.benchmark_voices import (pressure_snapshot,
+                                                  resolve_benchmark_bed,
+                                                  write_comparison)
 from scripts.benchmarks.compare_gemini_batched import split_on_long_silences
 from scripts.benchmarks.compare_beds import (
     Candidate,
@@ -500,81 +502,67 @@ class VoiceTests(unittest.TestCase):
 
 
 class BedSpecTests(unittest.TestCase):
-    def test_legacy_dict_gets_compatible_defaults(self) -> None:
-        spec = BedSpec.from_dict({"bpm": 80, "pad": {"level": 0.4}})
-        self.assertEqual((spec.beats_per_bar, spec.beat_unit), (4, 4))
-        self.assertEqual(spec.chord_extension, "none")
-        self.assertEqual(spec.pad.instrument, "synth")
-        self.assertEqual(spec.pad.duck_db, 5.0)
+    def test_old_or_phrase_less_specs_are_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "schema_version must be 3"):
+            BedSpec.from_dict({"schema_version": 2})
+        with self.assertRaisesRegex(ValueError, "resolved phrase"):
+            BedSpec.from_dict({"schema_version": 3, "phrase": None})
 
-    def test_legacy_resolved_phrase_gets_sample_variation_defaults(self) -> None:
+    def test_removed_compatibility_fields_are_rejected(self) -> None:
         data = json.loads(BedSpec.from_style("radiant", 4).to_json())
-        data["phrase"].pop("round_robin_strategy")
-        data["phrase"].pop("bass_grammar")
-        data["phrase"].pop("motif_grammar")
-        data["phrase"].pop("palette")
-        for event in data["phrase"]["lead"]:
-            event.pop("articulation")
-            event.pop("sample_variation")
-        rebuilt = BedSpec.from_dict(data)
-        self.assertEqual(rebuilt.phrase.round_robin_strategy, "first")
-        self.assertEqual(rebuilt.phrase.bass_grammar, "legacy")
-        self.assertEqual(rebuilt.phrase.motif_grammar, "legacy")
-        self.assertEqual(rebuilt.phrase.palette, "hybrid")
-        self.assertTrue(all(event.articulation == "natural"
-                            and event.sample_variation == 0
-                            for event in rebuilt.phrase.lead))
+        data["phrase"]["round_robin_strategy"] = "cyclic"
+        with self.assertRaisesRegex(ValueError, "Removed BedSpec field"):
+            BedSpec.from_dict(data)
 
-    def test_control_composition_and_draw_order_are_restored(self) -> None:
+    def test_family_composition_is_deterministic(self) -> None:
         spec = BedSpec.from_style("meditative", 21727037)
         self.assertEqual(
             (spec.bpm, spec.beats_per_bar, spec.root, spec.scale),
             (72, 4, 48, "natural_minor"),
         )
-        self.assertEqual(spec.progression, [0, 5, 3, 4, 6, 4, 0, 5])
+        self.assertEqual(spec.progression, [0, 4, 6, 0, 4, 6, 3, 5])
         self.assertEqual(
             (spec.phrase.harmony_texture, spec.phrase.pad_timbre,
              spec.phrase.bass_timbre),
-            ("sustain", "strings", "round"),
+            ("open", "sine", "pluck"),
         )
-        self.assertEqual(spec.phrase.bass_grammar, "drone")
+        self.assertEqual(spec.phrase.bass_grammar, "sustain")
         self.assertEqual(spec.phrase.motif_grammar, "random_walk")
-        self.assertEqual(spec.phrase.round_robin_strategy, "first")
         self.assertEqual([event.step for event in spec.phrase.bass],
                          [0, 16, 32, 48, 64, 80, 96, 112])
-        self.assertEqual({event.midi_note for event in spec.phrase.bass}, {36})
-        self.assertEqual({event.sample_variation for event in spec.phrase.bass}, {0})
+        self.assertEqual({event.midi_note for event in spec.phrase.bass},
+                         {31, 32, 34, 36, 41})
 
-    def test_step3b_resolved_metadata_remains_loadable(self) -> None:
-        data = json.loads(BedSpec.from_style("radiant", 3).to_json())
-        data["phrase"]["bass_grammar"] = "chord_tone"
-        data["phrase"]["motif_grammar"] = "falling"
-        data["phrase"]["palette"] = "airy"
-        rebuilt = BedSpec.from_dict(data)
-        self.assertEqual(
-            (rebuilt.phrase.bass_grammar, rebuilt.phrase.motif_grammar,
-             rebuilt.phrase.palette),
-            ("chord_tone", "falling", "airy"),
-        )
+    def test_step3b_resolved_metadata_is_rejected(self) -> None:
+        for field, value in (("bass_grammar", "chord_tone"),
+                             ("motif_grammar", "falling"),
+                             ("palette", "airy")):
+            data = json.loads(BedSpec.from_style("radiant", 3).to_json())
+            data["phrase"][field] = value
+            with self.assertRaises(ValueError):
+                BedSpec.from_dict(data)
 
     def test_json_round_trip_preserves_new_fields(self) -> None:
-        spec = BedSpec.from_style("nocturne", 9)
+        spec = BedSpec.from_style("nocturnal", 9)
         rebuilt = BedSpec.from_dict(json.loads(spec.to_json()))
         self.assertEqual(rebuilt.to_json(), spec.to_json())
 
     def test_extensions_add_notes(self) -> None:
-        base = BedSpec(chord_extension="none").chord(0)
-        seventh = BedSpec(chord_extension="seventh").chord(0)
-        add9 = BedSpec(chord_extension="add9").chord(0)
-        ninth = BedSpec(chord_extension="ninth").chord(0)
+        spec = BedSpec.from_style("radiant", 9)
+        def chord(extension: str) -> list[int]:
+            spec.chord_extension = extension
+            return spec.chord(0)
+        base = chord("none")
+        seventh = chord("seventh")
+        add9 = chord("add9")
+        ninth = chord("ninth")
         self.assertGreater(len(seventh), len(base))
         self.assertGreater(len(add9), len(base))
         self.assertEqual(set(ninth), set(seventh) | set(add9))
 
     def test_supported_meters_have_dynamic_grids(self) -> None:
         for beats, expected in ((3, 12), (4, 16), (5, 20)):
-            spec = BedSpec(bpm=60, beats_per_bar=beats, beat_unit=4)
-            grid = Grid.from_spec(spec)
+            grid = Grid(bpm=60, beats_per_bar=beats, beat_unit=4)
             self.assertEqual(grid.steps_per_bar, expected)
             self.assertAlmostEqual(grid.bar, float(beats))
             self.assertAlmostEqual(grid.step_time(1, 0), grid.bar)
@@ -583,19 +571,22 @@ class BedSpecTests(unittest.TestCase):
         grid = Grid(bpm=60, beats_per_bar=3, beat_unit=4, swing=0.25)
         self.assertAlmostEqual(grid.step_time(0, 2), 0.5 + 0.25 * 0.25)
 
-    def test_styles_are_seeded_and_keep_speech_sized_bars(self) -> None:
+    def test_families_are_seeded_and_keep_speech_sized_bars(self) -> None:
         meters = set()
         for seed in range(30):
-            first = BedSpec.from_style("yoga", seed)
-            second = BedSpec.from_style("yoga", seed)
+            first = BedSpec.from_style("meditative", seed)
+            second = BedSpec.from_style("meditative", seed)
             self.assertEqual(first.to_json(), second.to_json())
             self.assertGreaterEqual(Grid.from_spec(first).bar, 2.2)
             meters.add(first.beats_per_bar)
         self.assertEqual(meters, {3, 4, 5})
+        for legacy in ("yoga", "nocturne", "lofi", "warm"):
+            with self.assertRaisesRegex(ValueError, "Unknown style"):
+                BedSpec.from_style(legacy, 1)
 
     def test_filter_curves_are_bounded_and_deterministic(self) -> None:
         for name in ("sine", "triangle", "random_walk"):
-            spec = BedSpec()
+            spec = BedSpec.from_style("meditative", 3)
             spec.pad.cutoff_curve = name
             a = filter_curve(spec, 8, 100, np.random.default_rng(4))
             b = filter_curve(spec, 8, 100, np.random.default_rng(4))
@@ -638,7 +629,7 @@ class PublicGenerationApiTests(unittest.TestCase):
     def test_fixed_request_is_fully_deterministic_and_versioned(self) -> None:
         self.assertEqual(self.first.bed_spec.to_json(), self.second.bed_spec.to_json())
         self.assertEqual(self.first.fingerprint, self.second.fingerprint)
-        self.assertEqual(self.first.engine_version, "1.3.0")
+        self.assertEqual(self.first.engine_version, "1.4.0")
         self.assertEqual(self.first.profile_version, "production-v1")
         self.assertEqual(self.first.bed_spec.profile_version, "production-v1")
         self.assertTrue(self.first.quality.accepted)
@@ -665,12 +656,29 @@ class PublicGenerationApiTests(unittest.TestCase):
         spec = BedSpec.from_style("meditative", 3)
         spec.pad.instrument = "synth"
         spec.lead.instrument = "synth"
-        spec.phrase.pad_sample = None
-        spec.phrase.lead_sample = None
         first = render_stems(spec, 1)
         second = render_stems(spec, 1)
         for name in first:
             np.testing.assert_array_equal(first[name], second[name])
+
+    def test_bare_cli_uses_the_production_request_path(self) -> None:
+        with mock.patch.object(
+                sys, "argv", ["lexibeat", "--music-palette", "electronic"]):
+            args = parse_args()
+        spec, label = build_spec(args)
+        self.assertEqual(spec.profile_version, "production-v1")
+        self.assertTrue(label.startswith("production-v1:"))
+        self.assertFalse(hasattr(args, "bed_style"))
+
+    def test_cli_replays_a_current_saved_bed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "saved.bed.json"
+            self.first.bed_spec.to_json(path)
+            with mock.patch.object(sys, "argv", ["lexibeat", "--bed-spec", str(path)]):
+                args = parse_args()
+            spec, label = build_spec(args)
+        self.assertEqual(spec.to_json(), self.first.bed_spec.to_json())
+        self.assertEqual(label, "saved.bed.json")
 
 
 class SampleTests(unittest.TestCase):
@@ -1073,25 +1081,6 @@ class TieredLibraryTests(unittest.TestCase):
         self.assertEqual(len(instrument.zones), 6)
         self.assertEqual({zone.round_robin for zone in instrument.zones}, {0})
 
-    def test_percussion_round_robins_require_explicit_coherent_takes(self) -> None:
-        selected = SampleAsset(
-            "vcsl", "main-1", "hash-main-1",
-            "Drums/Hit_v1_rr1_Main.wav", "CC0-1.0", "percussion")
-        candidates = [
-            selected,
-            SampleAsset("vcsl", "main-2", "hash-main-2",
-                        "Drums/Hit_v1_rr2_Main.wav", "CC0-1.0", "percussion"),
-            SampleAsset("vcsl", "room-1", "hash-room-1",
-                        "Drums/Hit_v1_rr1_Room.wav", "CC0-1.0", "percussion"),
-            SampleAsset("vcsl", "unmarked", "hash-unmarked",
-                        "Drums/Hit_v1_Main.wav", "CC0-1.0", "percussion"),
-        ]
-        self.assertEqual(
-            [ref.asset_id for ref in _round_robin_variants(selected, candidates)],
-            ["main-1", "main-2"],
-        )
-        self.assertEqual(_round_robin_variants(candidates[-1], candidates), ())
-
     def test_round_robins_keep_velocity_articulation_and_microphone_coherent(self) -> None:
         assets = []
         for note in range(60, 66):
@@ -1390,7 +1379,13 @@ class BedSelectionTests(unittest.TestCase):
 
 class RenderAndMixTests(unittest.TestCase):
     def _spec(self, beats: int = 4) -> BedSpec:
-        spec = BedSpec(bpm=72, beats_per_bar=beats, beat_unit=4, seed=3)
+        for seed in range(100):
+            spec = BedSpec.from_style("meditative", seed)
+            if spec.beats_per_bar == beats:
+                break
+        else:
+            raise AssertionError(f"No deterministic {beats}/4 fixture found")
+        spec.bpm = 72
         spec.pad.instrument = "synth"
         spec.lead.instrument = "synth"
         spec.space.reverb_seconds = 0.15
@@ -1478,6 +1473,15 @@ class RenderAndMixTests(unittest.TestCase):
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_voice_benchmark_resolves_a_shared_production_bed(self) -> None:
+        args = types.SimpleNamespace(
+            music_family="playful-minimal", music_energy="balanced",
+            music_rhythm="steady", music_palette="electronic", seed=17,
+        )
+        spec = resolve_benchmark_bed(args)
+        self.assertEqual(spec.profile_version, "production-v1")
+        self.assertEqual(spec.phrase.family, "playful-minimal")
+
     def test_pressure_snapshot_parses_swap_for_numeric_delta(self) -> None:
         outputs = iter([
             "System-wide memory free percentage: 27%",

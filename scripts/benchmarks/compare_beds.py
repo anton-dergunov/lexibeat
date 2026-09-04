@@ -253,9 +253,9 @@ def main() -> None:
             spec.engine_version = ENGINE_VERSION
             spec.profile_version = profile_name
             profile = get_profile(profile_name)
-            saved_palette = row.get("phrase", {}).get("palette")
-            palette = (saved_palette if saved_palette in TIMBRE_PALETTES
-                       else args.palettes[0])
+            palette = row["phrase"]["palette"]
+            if palette not in TIMBRE_PALETTES:
+                raise ValueError(f"Replay manifest has unsupported palette: {palette}")
             request = MusicRequest(
                 seed=args.seed, profile=profile_name, palette=palette)
             _apply_request(spec, request, profile)
@@ -274,8 +274,7 @@ def main() -> None:
                 role_profiles[(row["family"], bed_seed)] = \
                     apply_wave3_role_profile(
                         spec, target_family, by_name[target_bank])
-            preview_stems = render_stems(
-                spec, max(spec.phrase.loop_bars if spec.phrase else 4, 4))
+            preview_stems = render_stems(spec, max(spec.phrase.loop_bars, 4))
             preview = sum(preview_stems.values(),
                           np.zeros_like(next(iter(preview_stems.values()))))
             quality, fingerprint = evaluate_preview(
@@ -363,7 +362,7 @@ def main() -> None:
         spec.to_json(args.out_dir / f"{stem}.bed.json")
         row = {"number": number, "file": wav_path.name, "family": candidate.family,
                "seed": candidate.seed, "bpm": spec.bpm,
-               "palette": spec.phrase.palette if spec.phrase else "legacy",
+               "palette": spec.phrase.palette,
                "meter": f"{spec.beats_per_bar}/{spec.beat_unit}",
                "scale": spec.scale, "phrase": asdict(spec.phrase),
                "sample_refs": [asdict(ref) for ref in _refs(spec)],

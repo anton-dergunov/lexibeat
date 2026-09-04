@@ -208,8 +208,7 @@ See [How LexiBeat generates music](docs/music-generation.md) for a
 beginner-friendly explanation of the composition rules, parameters,
 instruments, rendering pipeline, and related music-theory research.
 
-The CLI exposes the same production path while preserving the legacy style
-flags:
+The CLI uses the same production path by default:
 
 ```bash
 uv run python -m lexibeat.cli --bed-only --music-family auto \
@@ -219,10 +218,11 @@ uv run python -m lexibeat.cli --bed-only --music-family auto \
 
 ## Large sample library and varied procedural beds
 
-The expanded music engine has six additional procedural families:
+The exploration profile retains six procedural families used by the listening
+benchmarks and README demo:
 `meditative`, `organic`, `acoustic`, `nocturnal`, `sunlit`, and `lofi-wide`.
-Unlike the four legacy styles, these resolve a complete repeating phrase—chord
-voicings, bass rhythm, motif and multi-lane percussion—into the saved
+They resolve a complete repeating phrase—chord voicings, bass rhythm, motif and
+multi-lane percussion—into the saved
 `.bed.json`. A fixed seed therefore reproduces both the composition and audio.
 
 Bulk sample collections are managed explicitly and never downloaded by normal
@@ -347,17 +347,14 @@ uv run python -m scripts.samples.sample_library playlist vcsl --category pitched
 
 The catalog also groups pitch-labelled directories into resolved multisample
 instruments with note, velocity, articulation, microphone and round-robin zones.
-The renderer keeps those dimensions coherent. Production uses the control's
-first-take policy; saved Step 3 experiments can still request deterministic
-cyclic alternates. This keeps the mapping infrastructure available without
-changing the accepted production sound. Every active choice is represented in
-the saved BedSpec, so a fixed seed remains replayable.
+The production renderer deterministically uses the first coherent take, while
+the sample-library audit tools can still audition alternate zones. Every active
+production choice is represented in the saved BedSpec, so a fixed seed remains
+replayable.
 
-Resolved phrases also label the selected control bass pattern, the existing
-random-walk motif, and the acoustic/hybrid/electronic palette. These labels make
-saved beds easier to inspect without changing candidate selection or the music.
-The wider Step 3B grammar and palette experiment remains loadable from its saved
-BedSpec files, but is not used by production generation.
+Resolved phrases also label the selected production bass pattern, motif, and
+acoustic/hybrid/electronic palette. The abandoned Step 3B grammar and palette
+values are no longer accepted by the current BedSpec schema.
 
 Generate a controlled listening set with:
 
@@ -409,12 +406,13 @@ uv run --extra hosted-tts python -m scripts.benchmarks.compare_beds --count 14 \
 # Chatterbox is the default
 uv run python -m lexibeat.cli --words 12 --out out/lesson.wav
 
-# Audition only the music
-uv run python -m lexibeat.cli --bed-only --bed-style nocturne --out out/nocturne.wav
+# Audition only synth-based production music
+uv run python -m lexibeat.cli --bed-only --music-family meditative \
+  --music-palette electronic --out out/meditative.wav
 
-# Choose a specific background, lead, meter and chord colour
-uv run python -m lexibeat.cli --pad-instrument strings --instrument piano \
-  --meter 4/4 --chord-extension add9 --out out/strings-and-piano.wav
+# Choose product-level music controls
+uv run python -m lexibeat.cli --music-family sunlit-acoustic \
+  --music-energy bright --music-rhythm steady --out out/sunlit.wav
 
 # Fast voice fallback
 uv run python -m lexibeat.cli --backend kokoro --words 6 --out out/quick.wav

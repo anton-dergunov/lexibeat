@@ -32,27 +32,17 @@ PENTATONIC_DEGREES = {
     "lydian": [0, 1, 2, 4, 5],
 }
 
-# Production uses the original control vocabulary. The extra Step 3B values stay
-# valid when loading an experimental BedSpec, but are no longer generated.
 BASS_GRAMMARS = ("drone", "sustain", "root_fifth", "passing", "syncopated")
 MOTIF_GRAMMARS = ("random_walk",)
 TIMBRE_PALETTES = ("acoustic", "hybrid", "electronic")
-RESOLVED_BASS_GRAMMARS = ("legacy", *BASS_GRAMMARS, "chord_tone")
-RESOLVED_MOTIF_GRAMMARS = (
-    "legacy", *MOTIF_GRAMMARS, "rising", "falling", "arch", "return_home",
-    "call_response",
-)
-RESOLVED_TIMBRE_PALETTES = (
-    *TIMBRE_PALETTES, "airy", "wooden", "warm", "shimmering", "plucked",
-    "soft-electronic",
-)
+BED_SPEC_SCHEMA_VERSION = 3
+ENGINE_VERSION = "1.4.0"
 
 
 @dataclass
 class Pad:
     instrument: str = "synth"  # "synth" or "strings"
     level: float = 0.55
-    detune: float = 0.06  # semitones either side of centre
     cutoff_base: float = 900.0
     cutoff_motion: float = 400.0
     cutoff_curve: str = "sine"  # sine, triangle, random_walk
@@ -65,23 +55,15 @@ class Pad:
 @dataclass
 class Bass:
     level: float = 0.5
-    octave: int = -1
     attack: float = 0.15
-    decay_bars: float = 0.6
     duck_db: float = 5.0
     enabled: bool = True
 
 
 @dataclass
 class Drums:
-    """Patterns are 16-step strings: 'x' strikes, '.' rests."""
+    """Controls for the resolved percussion bus."""
 
-    kick: str = "x.......x......."
-    rim: str = "....x.......x..."
-    kick_level: float = 0.55
-    rim_level: float = 0.16
-    shaker_level: float = 0.06
-    shaker_density: float = 1.0  # 1.0 = every eighth note
     level: float = 1.0
     duck_db: float = 5.0
     enabled: bool = True
@@ -91,11 +73,8 @@ class Drums:
 class Lead:
     instrument: str = "synth"  # synth, piano, marimba, glockenspiel
     level: float = 1.0
-    bar_probability: float = 0.45  # chance a given bar gets any notes at all
-    max_notes: int = 2
     register: tuple[int, int] = (24, 39)  # semitones above the root
     velocity: tuple[float, float] = (0.45, 0.75)
-    humanize: float = 0.0  # seconds of timing jitter
     duck_db: float = 5.0
     enabled: bool = True
 
@@ -115,7 +94,6 @@ class NoteEvent:
     midi_note: int
     velocity: float
     articulation: str = "natural"
-    sample_variation: int = 0
 
 
 @dataclass
@@ -125,7 +103,6 @@ class ChordEvent:
     midi_notes: list[int]
     velocity: float = 0.55
     articulation: str = "sustain"
-    sample_variation: int = 0
 
 
 @dataclass
@@ -137,11 +114,9 @@ class PercussionLane:
     level: float
     probability: float = 1.0
     humanize: float = 0.0
-    pan: float = 0.0
     sample: SampleRef | None = None
-    role: str = ""  # low, mid or high; empty keeps legacy JSON compatible
+    role: str = ""  # low, mid or high
     articulation: str = "natural"
-    round_robin_samples: tuple[SampleRef, ...] = ()
 
 
 @dataclass
@@ -153,16 +128,13 @@ class ResolvedPhrase:
     harmony_texture: str
     pad_timbre: str
     bass_timbre: str
-    round_robin_strategy: str = "first"
-    bass_grammar: str = "legacy"
-    motif_grammar: str = "legacy"
+    bass_grammar: str = "sustain"
+    motif_grammar: str = "random_walk"
     palette: str = "hybrid"
     chords: list[ChordEvent] = field(default_factory=list)
     bass: list[NoteEvent] = field(default_factory=list)
     lead: list[NoteEvent] = field(default_factory=list)
     percussion: list[PercussionLane] = field(default_factory=list)
-    lead_sample: SampleRef | None = None
-    pad_sample: SampleRef | None = None
     lead_instrument: InstrumentRef | None = None
     pad_instrument: InstrumentRef | None = None
     bass_instrument: InstrumentRef | None = None
@@ -170,6 +142,7 @@ class ResolvedPhrase:
 
 @dataclass
 class BedSpec:
+    phrase: ResolvedPhrase
     bpm: float = 80.0
     beats_per_bar: int = 4
     beat_unit: int = 4
@@ -184,10 +157,9 @@ class BedSpec:
     drums: Drums = field(default_factory=Drums)
     lead: Lead = field(default_factory=Lead)
     space: Space = field(default_factory=Space)
-    phrase: ResolvedPhrase | None = None
-    schema_version: int = 2
-    engine_version: str = "1.3.0"
-    profile_version: str = "legacy"
+    schema_version: int = BED_SPEC_SCHEMA_VERSION
+    engine_version: str = ENGINE_VERSION
+    profile_version: str = "unprofiled"
 
     # -- harmony helpers -------------------------------------------------
 
@@ -257,10 +229,26 @@ class BedSpec:
 
     @classmethod
     def from_dict(cls, data: dict) -> "BedSpec":
-        spec = _build(cls, data)
-        if data.get("phrase") is not None:
-            spec.phrase = _phrase_from_dict(data["phrase"])
-        return spec
+        if not isinstance(data, dict):
+            raise ValueError("BedSpec must be a JSON object.")
+        if data.get("schema_version") != BED_SPEC_SCHEMA_VERSION:
+            raise ValueError(
+                f"BedSpec schema_version must be {BED_SPEC_SCHEMA_VERSION}; "
+                "older BedSpec JSON is not supported."
+            )
+        if not isinstance(data.get("phrase"), dict):
+            raise ValueError("BedSpec requires a resolved phrase object.")
+        _reject_removed_fields(data)
+        phrase = _phrase_from_dict(data["phrase"])
+        if phrase.bass_grammar not in BASS_GRAMMARS:
+            raise ValueError(f"Unknown resolved bass grammar '{phrase.bass_grammar}'.")
+        if phrase.motif_grammar in {
+                "rising", "falling", "arch", "return_home", "call_response"}:
+            raise ValueError(
+                f"Unsupported Step 3B motif grammar '{phrase.motif_grammar}'.")
+        if phrase.palette not in TIMBRE_PALETTES:
+            raise ValueError(f"Unknown resolved palette '{phrase.palette}'.")
+        return _build(cls, data, phrase=phrase)
 
     @classmethod
     def from_json(cls, path: Path) -> "BedSpec":
@@ -278,7 +266,7 @@ class BedSpec:
         return spec
 
 
-def _build(kind, data):
+def _build(kind, data, **overrides):
     """Rebuild a nested dataclass tree from plain JSON data."""
     if not is_dataclass(kind):
         return data
@@ -297,10 +285,46 @@ def _build(kind, data):
             kwargs[f.name] = tuple(value)
         else:
             kwargs[f.name] = value
+    kwargs.update(overrides)
     return kind(**kwargs)
 
 
 _NESTED = {"pad": Pad, "bass": Bass, "drums": Drums, "lead": Lead, "space": Space}
+
+_REMOVED_FIELDS = {
+    "pad": {"detune"},
+    "bass": {"octave", "decay_bars"},
+    "drums": {
+        "kick", "rim", "kick_level", "rim_level", "shaker_level",
+        "shaker_density",
+    },
+    "lead": {"bar_probability", "max_notes", "humanize"},
+    "phrase": {
+        "round_robin_strategy", "lead_sample", "pad_sample",
+    },
+}
+
+
+def _reject_removed_fields(data: dict) -> None:
+    removed: list[str] = []
+    for group, names in _REMOVED_FIELDS.items():
+        value = data.get(group)
+        if isinstance(value, dict):
+            removed.extend(f"{group}.{name}" for name in sorted(names & value.keys()))
+    phrase = data.get("phrase")
+    if isinstance(phrase, dict):
+        for collection in ("chords", "bass", "lead"):
+            for index, event in enumerate(phrase.get(collection, [])):
+                if isinstance(event, dict) and "sample_variation" in event:
+                    removed.append(f"phrase.{collection}[{index}].sample_variation")
+        for index, lane in enumerate(phrase.get("percussion", [])):
+            if not isinstance(lane, dict):
+                continue
+            for name in ("pan", "round_robin_samples"):
+                if name in lane:
+                    removed.append(f"phrase.percussion[{index}].{name}")
+    if removed:
+        raise ValueError("Removed BedSpec field(s): " + ", ".join(removed))
 
 
 def _sample_ref(data: dict | None) -> SampleRef | None:
@@ -327,25 +351,20 @@ def _phrase_from_dict(data: dict) -> ResolvedPhrase:
         family=data["family"], loop_bars=int(data["loop_bars"]),
         harmony_texture=data["harmony_texture"], pad_timbre=data["pad_timbre"],
         bass_timbre=data["bass_timbre"],
-        round_robin_strategy=data.get("round_robin_strategy", "first"),
-        bass_grammar=data.get("bass_grammar", "legacy"),
-        motif_grammar=data.get("motif_grammar", "legacy"),
-        palette=data.get("palette", "hybrid"),
+        bass_grammar=data["bass_grammar"],
+        motif_grammar=data["motif_grammar"],
+        palette=data["palette"],
         chords=[ChordEvent(**event) for event in data.get("chords", [])],
         bass=[NoteEvent(**event) for event in data.get("bass", [])],
         lead=[NoteEvent(**event) for event in data.get("lead", [])],
         percussion=[PercussionLane(
             sound=lane["sound"], pattern=lane["pattern"], level=lane["level"],
             probability=lane.get("probability", 1.0),
-            humanize=lane.get("humanize", 0.0), pan=lane.get("pan", 0.0),
+            humanize=lane.get("humanize", 0.0),
             sample=_sample_ref(lane.get("sample")), role=lane.get("role", ""),
             articulation=lane.get("articulation", "natural"),
-            round_robin_samples=tuple(
-                _sample_ref(ref) for ref in lane.get("round_robin_samples", [])
-                if ref))
+        )
             for lane in data.get("percussion", [])],
-        lead_sample=_sample_ref(data.get("lead_sample")),
-        pad_sample=_sample_ref(data.get("pad_sample")),
         lead_instrument=_instrument_ref(data.get("lead_instrument")),
         pad_instrument=_instrument_ref(data.get("pad_instrument")),
         bass_instrument=_instrument_ref(data.get("bass_instrument")),
@@ -366,163 +385,12 @@ def _meter(rng: random.Random, bpms: list[int]) -> tuple[int, int, int]:
     return rng.choice(compatible), beats, 4
 
 
-def _beat_pattern(beats: int, positions: list[int]) -> str:
-    steps = ["."] * (beats * 4)
-    for position in positions:
-        steps[position % len(steps)] = "x"
-    return "".join(steps)
-
-
-def _drum_patterns(beats: int, flavour: str) -> tuple[str, str]:
-    steps = beats * 4
-    if flavour == "lofi":
-        kick = _beat_pattern(beats, [0, max(4, steps // 2 - 2), steps // 2 + 2])
-        rim = _beat_pattern(beats, list(range(4, steps, 8)))
-    elif flavour == "warm":
-        kick = _beat_pattern(beats, list(range(0, steps, 4)))
-        rim = _beat_pattern(beats, list(range(4, steps, 8)))
-    elif flavour == "nocturne":
-        kick = _beat_pattern(beats, [0, steps // 2])
-        rim = _beat_pattern(beats, [steps // 2])
-    else:
-        kick = _beat_pattern(beats, list(range(0, steps, 8)))
-        rim = _beat_pattern(beats, list(range(4, steps, 8)))
-    return kick, rim
-
-
 def _harmony(rng: random.Random) -> str:
     return rng.choice(["none", "seventh", "add9", "add9", "ninth"])
 
 
 def _curve(rng: random.Random) -> str:
     return rng.choice(["sine", "sine", "triangle", "random_walk"])
-
-def _yoga(rng: random.Random) -> BedSpec:
-    """The original bed: warm, unresolved, nothing demanding attention."""
-    bpm, beats, unit = _meter(rng, [72, 76, 78, 80, 82, 84])
-    kick, rim = _drum_patterns(beats, "yoga")
-    return BedSpec(
-        bpm=bpm, beats_per_bar=beats, beat_unit=unit,
-        root=rng.choice([43, 45, 47, 48]),
-        scale=rng.choice(["natural_minor", "dorian"]),
-        progression=rng.choice([[0, 5, 2, 6], [0, 3, 5, 4], [0, 5, 3, 6]]),
-        chord_extension=_harmony(rng),
-        pad=Pad(instrument=rng.choice(["synth", "synth", "strings"]),
-                cutoff_base=rng.uniform(800, 1100),
-                cutoff_motion=rng.uniform(300, 500), cutoff_curve=_curve(rng),
-                cutoff_period_bars=rng.uniform(6, 12), duck_db=rng.uniform(5.5, 6.5)),
-        bass=Bass(duck_db=rng.uniform(1.5, 2.5)),
-        drums=Drums(kick=kick, rim=rim, duck_db=rng.uniform(2.5, 3.5)),
-        lead=Lead(instrument=rng.choice(["synth", "piano", "marimba"]),
-                  bar_probability=rng.uniform(0.35, 0.55), max_notes=2,
-                  duck_db=rng.uniform(6.5, 7.5)),
-        space=Space(reverb_seconds=rng.uniform(2.6, 3.4), reverb_mix=rng.uniform(0.4, 0.5)),
-    )
-
-
-def _nocturne(rng: random.Random) -> BedSpec:
-    """Slower and darker, with the melodic instrument further forward."""
-    bpm, beats, unit = _meter(rng, [58, 60, 64, 66, 68])
-    kick, rim = _drum_patterns(beats, "nocturne")
-    return BedSpec(
-        bpm=bpm, beats_per_bar=beats, beat_unit=unit,
-        root=rng.choice([40, 41, 43, 45]),
-        scale=rng.choice(["natural_minor", "harmonic_minor"]),
-        progression=rng.choice([[0, 4, 5, 0], [0, 6, 5, 4], [0, 2, 5, 4]]),
-        chord_extension=_harmony(rng),
-        pad=Pad(instrument=rng.choice(["strings", "strings", "synth"]),
-                level=0.6, cutoff_base=rng.uniform(600, 850),
-                cutoff_curve=_curve(rng), cutoff_period_bars=rng.uniform(8, 16),
-                overlap=rng.uniform(1.6, 2.1), duck_db=rng.uniform(5.5, 6.5)),
-        bass=Bass(level=0.42, attack=0.25, duck_db=rng.uniform(1.5, 2.5)),
-        drums=Drums(kick=kick, rim=rim, shaker_level=0.03,
-                    shaker_density=0.5, duck_db=rng.uniform(2.5, 3.5)),
-        lead=Lead(instrument=rng.choice(["piano", "piano", "glockenspiel"]), level=1.1,
-                  bar_probability=rng.uniform(0.55, 0.8), max_notes=3,
-                  register=(19, 34), humanize=0.02,
-                  duck_db=rng.uniform(6.5, 7.5)),
-        space=Space(reverb_seconds=rng.uniform(3.2, 4.2), reverb_mix=rng.uniform(0.45, 0.58)),
-    )
-
-
-def _lofi(rng: random.Random) -> BedSpec:
-    """Shuffled, muted and closer, with a busier kit."""
-    bpm, beats, unit = _meter(rng, [68, 72, 74, 76, 80])
-    kick, rim = _drum_patterns(beats, "lofi")
-    return BedSpec(
-        bpm=bpm, beats_per_bar=beats, beat_unit=unit,
-        swing=rng.uniform(0.18, 0.3),
-        root=rng.choice([44, 45, 46, 48]),
-        scale=rng.choice(["dorian", "natural_minor"]),
-        progression=rng.choice([[0, 3, 5, 4], [0, 5, 1, 4], [0, 4, 5, 3]]),
-        chord_extension=_harmony(rng),
-        pad=Pad(instrument=rng.choice(["synth", "synth", "strings"]), level=0.45,
-                cutoff_base=rng.uniform(500, 750), cutoff_motion=250,
-                cutoff_curve=_curve(rng), cutoff_period_bars=rng.uniform(4, 9),
-                duck_db=rng.uniform(5.5, 6.5)),
-        bass=Bass(level=0.58, attack=0.08, decay_bars=0.45,
-                  duck_db=rng.uniform(1.5, 2.5)),
-        drums=Drums(kick=kick, rim=rim,
-                    kick_level=0.6, rim_level=0.2,
-                    shaker_level=rng.uniform(0.05, 0.09),
-                    duck_db=rng.uniform(2.5, 3.5)),
-        lead=Lead(instrument=rng.choice(["piano", "marimba"]),
-                  bar_probability=rng.uniform(0.4, 0.65),
-                  max_notes=3, register=(24, 36), humanize=0.03,
-                  velocity=(0.35, 0.6), duck_db=rng.uniform(6.5, 7.5)),
-        space=Space(reverb_seconds=rng.uniform(1.6, 2.4), reverb_mix=rng.uniform(0.3, 0.4)),
-    )
-
-
-def _warm(rng: random.Random) -> BedSpec:
-    """Major and open — brighter than the rest without becoming cheerful."""
-    bpm, beats, unit = _meter(rng, [78, 82, 84, 88, 90, 92])
-    kick, rim = _drum_patterns(beats, "warm")
-    return BedSpec(
-        bpm=bpm, beats_per_bar=beats, beat_unit=unit,
-        root=rng.choice([48, 50, 53, 55]),
-        scale=rng.choice(["major", "lydian"]),
-        progression=rng.choice([[0, 4, 5, 3], [0, 3, 4, 0], [0, 5, 3, 4]]),
-        chord_extension=_harmony(rng),
-        pad=Pad(instrument=rng.choice(["synth", "strings"]),
-                cutoff_base=rng.uniform(1000, 1400),
-                cutoff_motion=rng.uniform(350, 550), cutoff_curve=_curve(rng),
-                cutoff_period_bars=rng.uniform(6, 12), duck_db=rng.uniform(5.5, 6.5)),
-        bass=Bass(level=0.45, duck_db=rng.uniform(1.5, 2.5)),
-        drums=Drums(kick=kick, rim=rim,
-                    shaker_level=rng.uniform(0.05, 0.08),
-                    duck_db=rng.uniform(2.5, 3.5)),
-        lead=Lead(instrument=rng.choice(["piano", "glockenspiel"]),
-                  bar_probability=rng.uniform(0.45, 0.7), max_notes=2,
-                  register=(24, 38), duck_db=rng.uniform(6.5, 7.5)),
-        space=Space(reverb_seconds=rng.uniform(2.2, 3.0), reverb_mix=rng.uniform(0.35, 0.45)),
-    )
-
-
-def _euclidean(pulses: int, steps: int, rotation: int = 0) -> str:
-    """Evenly distribute ``pulses`` across ``steps`` without a pattern table."""
-    pulses = max(0, min(pulses, steps))
-    bucket = 0
-    values: list[str] = []
-    for _ in range(steps):
-        bucket += pulses
-        if bucket >= steps:
-            bucket -= steps
-            values.append("x")
-        else:
-            values.append(".")
-    if values:
-        rotation %= len(values)
-        values = values[-rotation:] + values[:-rotation]
-    return "".join(values)
-
-
-def _with_bar_downbeats(pattern: str, steps_per_bar: int) -> str:
-    """Guarantee the primary rhythmic anchor beneath every spoken downbeat."""
-    values = list(pattern)
-    for index in range(0, len(values), steps_per_bar):
-        values[index] = "x"
-    return "".join(values)
 
 
 def _smooth_voicing(notes: list[int], previous: list[int] | None) -> list[int]:
@@ -798,6 +666,15 @@ def _lead_events(spec: BedSpec, rng: random.Random, bars: int,
                         note = shifted
                 events.append(NoteEvent(offset + step, rng.choice([1.5, 2.5, 4.0]),
                                         note, velocity * rng.uniform(0.88, 1.08)))
+    if (spec.lead.instrument == "piano" and len(events) >= 2 and
+            max(event.midi_note for event in events) -
+            min(event.midi_note for event in events) < 7):
+        pairs = [(low, high) for low in notes for high in notes
+                 if 7 <= high - low <= 19]
+        if pairs:
+            low, high = rng.choice(pairs)
+            events[0].midi_note = low
+            events[-1].midi_note = high
     return events
 
 
@@ -850,11 +727,9 @@ def _percussion_lanes(spec: BedSpec, rng: random.Random, bars: int,
         PercussionLane("synth:kick", low, 0.25 + density * 0.14, 0.98,
                        role="low"),
         PercussionLane(rng.choice(["synth:rim", "synth:wood", "synth:brush"]),
-                       mid, 0.06 + density * 0.11, 0.86, 0.002,
-                       rng.uniform(-0.2, 0.2), role="mid"),
+                       mid, 0.06 + density * 0.11, 0.86, 0.002, role="mid"),
         PercussionLane(rng.choice(["synth:shaker", "synth:soft_hat"]), high,
-                       0.012 + density * 0.035, 0.84, 0.002,
-                       rng.choice([-0.3, 0.3]), role="high"),
+                       0.012 + density * 0.035, 0.84, 0.002, role="high"),
     ]
 
 
@@ -916,6 +791,10 @@ def _wide_style(family: str, rng: random.Random) -> BedSpec:
     bpm, beats, unit = _meter(rng, config["bpms"])
     low, high = config["brightness"]
     spec = BedSpec(
+        phrase=ResolvedPhrase(
+            family=family, loop_bars=1, harmony_texture="sustain",
+            pad_timbre="sine", bass_timbre="sine",
+        ),
         bpm=bpm, beats_per_bar=beats, beat_unit=unit,
         swing=rng.uniform(*config["swing"]), root=rng.choice(config["roots"]),
         scale=rng.choice(config["scales"]), chord_extension=_harmony(rng),
@@ -925,12 +804,11 @@ def _wide_style(family: str, rng: random.Random) -> BedSpec:
                 cutoff_curve=_curve(rng), cutoff_period_bars=rng.uniform(4, 14),
                 overlap=rng.uniform(1.1, 1.9), duck_db=rng.uniform(6.0, 7.5)),
         bass=Bass(level=rng.uniform(0.34, 0.56), attack=rng.uniform(0.04, 0.22),
-                  decay_bars=rng.uniform(0.35, 0.9), duck_db=rng.uniform(2.0, 3.5)),
+                  duck_db=rng.uniform(2.0, 3.5)),
         drums=Drums(level=rng.uniform(0.48, 0.64), duck_db=rng.uniform(4.5, 6.0)),
         lead=Lead(instrument=rng.choice(config["leads"]), level=rng.uniform(0.72, 1.08),
                   register=(rng.choice([19, 24]), rng.choice([34, 36, 39])),
-                  velocity=(0.3, 0.66), humanize=rng.uniform(0.0, 0.006),
-                  duck_db=rng.uniform(7.0, 9.0)),
+                  velocity=(0.3, 0.66), duck_db=rng.uniform(7.0, 9.0)),
         space=Space(reverb_seconds=rng.uniform(1.5, 4.4),
                     reverb_mix=rng.uniform(0.28, 0.58)),
     )
@@ -949,7 +827,4 @@ def _family_style(name: str):
     return lambda rng: _wide_style(name, rng)
 
 
-STYLES = {
-    "yoga": _yoga, "nocturne": _nocturne, "lofi": _lofi, "warm": _warm,
-    **{name: _family_style(name) for name in _WIDE_FAMILIES},
-}
+STYLES = {name: _family_style(name) for name in _WIDE_FAMILIES}

@@ -7,15 +7,9 @@ the lesson arranger something a free-running audio model cannot guarantee: the
 exact time of every bar and downbeat.
 
 This document describes the active `production-v1` path exposed by
-`MusicRequest`, `resolve_music()`, and `generate_music()`. The older phrase-less
-renderers are deliberately outside its scope.
-
-In particular, `yoga`, `nocturne`, `lofi`, and `warm` are compatibility-era
-styles, not four production families. Repository history shows that they were
-superseded because all four used essentially the same repetitive topology: one
-chord and one bass note per bar, plus independently scattered lead notes. It
-does not show that the four styles were individually accepted in the later
-listening tests, so this guide does not present them as approved alternatives.
+`MusicRequest`, `resolve_music()`, and `generate_music()`. Every current BedSpec
+contains a fully resolved phrase; the superseded phrase-less renderers and their
+four prototype styles have been removed.
 
 The main implementation is split across
 [`api.py`](../lexibeat/api.py),
@@ -336,18 +330,16 @@ final mixer reads it after those events exist.
 | Drums | `enabled`, `level`, `duck_db` | Replay: enable and balance the resolved percussion lanes. |
 | Lead | `enabled`, `instrument`, `level`, `register`, `velocity`, `duck_db` | Register and velocity guide motif composition; instrument and level guide selection/rendering; ducking protects speech. |
 | Space | `reverb_seconds`, `reverb_mix` | Replay: control convolution-reverb length and wet/dry balance. |
-| Phrase identity | `family`, `loop_bars`, `harmony_texture`, `pad_timbre`, `bass_timbre`, `bass_grammar`, `motif_grammar`, `palette`, `round_robin_strategy` | Family can influence catalog routing; texture, grammars, and palette record how the phrase was resolved. Replay uses loop length and synth timbres. Production fixes round-robin strategy to `first`. |
-| Chord events | `step`, `duration_steps`, `midi_notes`, `velocity` | Replay: exact chord onsets, lengths, pitches, and strength. |
-| Bass/lead events | `step`, `duration_steps`, `midi_note`, `velocity` | Replay: exact monophonic event data. |
+| Phrase identity | `family`, `loop_bars`, `harmony_texture`, `pad_timbre`, `bass_timbre`, `bass_grammar`, `motif_grammar`, `palette` | Family can influence catalog routing; texture, grammars, and palette record how the phrase was resolved. Replay uses loop length and synth timbres. |
+| Chord events | `step`, `duration_steps`, `midi_notes`, `velocity`, `articulation` | Replay: exact chord onsets, lengths, pitches, and strength; articulation records the resolved instrument role. |
+| Bass/lead events | `step`, `duration_steps`, `midi_note`, `velocity`, `articulation` | Replay: exact monophonic event data; articulation records the resolved instrument role. |
 | Percussion lanes | `sound`, `pattern`, `level`, `probability`, `humanize`, `role`, `sample` | Sample assignment uses the low/mid/high role; replay uses the phrase-length pattern, probability, timing variation, gain, and resolved synth or sample. |
 | Instruments | `pad_instrument`, `bass_instrument`, `lead_instrument`; zone `sample`, `root_note`, `lo_note`, `hi_note`, `lo_velocity`, `hi_velocity`, `gain_db`, `round_robin`, `articulation` | Replay: stable collection/asset/checksum references and complete pitch, velocity, gain, take, and articulation maps for multisample instruments. |
 
-Fields belonging only to the superseded phrase-less renderer are intentionally
-not documented here. Examples include pad detune; bass octave and decay; the
-old kick/rim/shaker patterns and levels; lead bar probability, maximum notes,
-and timing humanization; and single-sample or cyclic-round-robin compatibility
-fields. Event articulation and lane pan are serialized metadata in the current
-implementation, not additional production replay controls.
+Schema 3 removed the phrase-less pad, bass, drum, and lead controls, along with
+single-sample pitched replay, cyclic phrase-level sample variation, and unused
+percussion pan. Event and multisample-zone articulation remain serialized
+provenance.
 
 ## Worked example: `warm-motion`, request seed 42
 
@@ -363,44 +355,41 @@ result = resolve_music(MusicRequest(
 ))
 ```
 
-With engine version 1.3.0 and profile `production-v1`, the request resolves to
-candidate seed `209500`—candidate index 2, because
-`42 + 2 × 104729 = 209500`. Its main choices are:
+With engine version 1.4.0 and profile `production-v1`, the request resolves to
+candidate seed `523687`—candidate index 5, because
+`42 + 5 × 104729 = 523687`. Its main choices are:
 
 ```text
-80 BPM · 3/4 · root MIDI 45 (A2) · A Dorian · add9
-4 bars · pulse chords · round bass synth · root–fifth bass
-progression [0, 5, 2, 5] · random-walk motif
+84 BPM · 4/4 · root MIDI 53 (F3) · F major · seventh
+8 bars · open chords · triangle bass synth · root–fifth bass
+progression [0, 5, 0, 5, 2, 4, 0, 3] · random-walk motif
 ```
 
-The A Dorian scale is A–B–C–D–E–F#–G. Zero-based progression degrees
-`[0, 5, 2, 5]` therefore start from A, F#, C, and F#. The actual smoothed pulse
-voicings, written as piano note names, are:
+The F-major scale is F–G–A–B♭–C–D–E. Zero-based progression degrees
+`[0, 5, 0, 5, 2, 4, 0, 3]` therefore start from F, D, F, D, A, C, F, and B♭.
+The saved open voicings are:
 
 | Bar | Degree | Saved voicing (duplicate notes are doubled voices) |
 |---:|---:|---|
-| 1 | 0 | E3–A3–A3–B3–C4 |
-| 2 | 5 | F#3–F#3–G3–A3–C#4 |
-| 3 | 2 | C3–D3–E3–G3–C4 |
-| 4 | 5 | C#3–F#3–F#3–G3–A3 |
+| 1 | 0 | F3–C4 |
+| 2 | 5 | D3–F3–A3–D4 |
+| 3 | 0 | C3–F3–A3–C4 |
+| 4 | 5 | D3–A3 |
+| 5 | 2 | A2–E3–C4–E4 |
+| 6 | 4 | C3–E3–G3–C4 |
+| 7 | 0 | C3–F3–A3–C4 |
+| 8 | 3 | B♭2–F3–D4–F4 |
 
-There are 12 steps in each 3/4 bar. Pulse texture places these chords at steps
-`0` and `6` of each bar. The bass plays A1/E2, F#1/C#2, C2/G2, then F#1/C#2.
-The seven lead notes are G5, E5, D5, A4, A4, A4, and G4 at saved steps
-`6, 10, 16, 26, 28, 34, 42`.
-
-The three 48-step drum lanes are four bars long. Grouped by bar, they are:
+There are 16 steps in each 4/4 bar. Open texture places one overlapping chord
+at each bar boundary. The root–fifth bass places two notes per bar, and the
+random-walk lead stores 19 exact note events. Each percussion cell below repeats
+for all eight bars, producing three 128-step saved lanes:
 
 ```text
-low:  x...x....... | x...x....... | x...x....... | x...x.......
-mid:  ....x....... | ....x....... | ....x....... | ....x.......
-high: ..x.......x. | ..x.......x. | ..x...x...x. | ..x.......x.
+low:  x.......x.......
+mid:  ....x.......x...
+high: ..x...x...x...x.
 ```
-
-This example also exposes the limits of the harmony system. F#–A would suggest
-a scale-derived F# minor/diminished colour in A Dorian, but the custom chord
-builder always supplies a perfect fifth, C#, which is outside A Dorian. The
-result is intentional stable colour, not a textbook harmonization exercise.
 
 ## Instruments and where they come from
 
@@ -499,12 +488,11 @@ phrase-length `x`/`.` percussion strings and repeated metric grid.
 The paper's central result is stronger: Euclidean rhythms distribute a chosen
 number of onsets as evenly as possible on a circle and have additional
 properties involving deepness and shelling. LexiBeat's current production
-percussion does **not** implement those results. `_euclidean()` is a retained,
-currently unused helper left by an earlier Euclidean-percussion experiment.
-Listening work moved production to explicit meter-aware anchors, and the active
-path never calls that helper. Production does not compute geometric evenness or
-deepness, shell rhythms, derive scales with the Euclidean algorithm, or imitate
-the traditional world timelines catalogued in the paper.
+percussion does **not** implement those results. Listening work moved production
+to explicit meter-aware anchors, and the unused Euclidean experiment helper was
+removed. Production does not compute geometric evenness or deepness, shell
+rhythms, derive scales with the Euclidean algorithm, or imitate the traditional
+world timelines catalogued in the paper.
 
 The accurate mapping is therefore: shared cyclic representation and historical
 rhythm experiment, not an active implementation of the paper's full theory.

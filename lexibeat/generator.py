@@ -21,7 +21,7 @@ from .api import (
     MusicRequest,
     SampleUsage,
 )
-from .bedspec import BedSpec
+from .bedspec import ENGINE_VERSION, BedSpec
 from .instrument_roles import (FINAL_ACCEPTED_FAMILIES,
                                apply_final_wave3_role_profile)
 from .library import (
@@ -31,9 +31,7 @@ from .library import (
     SampleLibrary,
     SampleRef,
     infer_articulation,
-    infer_round_robin,
     instrument_refs,
-    round_robin_group_key,
 )
 from .music import Grid, render_bed, render_stems
 from .profiles import GenerationProfile, get_profile
@@ -46,7 +44,6 @@ from .quality import (
     preference_score,
 )
 
-ENGINE_VERSION = "1.3.0"
 SEED_STEP = 104_729
 ProgressCallback = Callable[[float, str], None]
 CancelCheck = Callable[[], bool]
@@ -76,15 +73,7 @@ def _sha256(source: Path, block_size: int = 1024 * 1024) -> str:
 
 
 def sample_refs(spec: BedSpec) -> list[SampleRef]:
-    if spec.phrase is None:
-        return []
     refs = [lane.sample for lane in spec.phrase.percussion if lane.sample]
-    refs.extend(
-        ref for lane in spec.phrase.percussion for ref in lane.round_robin_samples
-    )
-    refs.extend(
-        ref for ref in (spec.phrase.lead_sample, spec.phrase.pad_sample) if ref
-    )
     for instrument in (
         spec.phrase.lead_instrument,
         spec.phrase.pad_instrument,
@@ -97,8 +86,6 @@ def sample_refs(spec: BedSpec) -> list[SampleRef]:
 
 
 def named_pack_names(spec: BedSpec) -> set[str]:
-    if spec.phrase is None:
-        return set()
     aliases = {
         "piano": "salamander",
         "marimba": "vsco-marimba",
@@ -106,11 +93,11 @@ def named_pack_names(spec: BedSpec) -> set[str]:
         "strings": "vsco-strings",
     }
     names: set[str] = set()
-    if not spec.phrase.lead_instrument and not spec.phrase.lead_sample:
+    if not spec.phrase.lead_instrument:
         name = aliases.get(spec.lead.instrument)
         if name:
             names.add(name)
-    if not spec.phrase.pad_instrument and not spec.phrase.pad_sample:
+    if not spec.phrase.pad_instrument:
         name = aliases.get(spec.pad.instrument)
         if name:
             names.add(name)
@@ -185,34 +172,6 @@ def _role_assets(assets: list[SampleAsset], role: str, *,
     return matched
 
 
-def _round_robin_variants(
-    selected: SampleAsset,
-    candidates: list[SampleAsset],
-) -> tuple[SampleRef, ...]:
-    """Return one coherent take group, keeping the seeded choice first."""
-    selected_round_robin = (
-        selected.round_robin if selected.round_robin is not None
-        else infer_round_robin(selected.relative_path)
-    )
-    if selected_round_robin is None:
-        return ()
-    key = round_robin_group_key(selected)
-    matches = [asset for asset in candidates
-               if round_robin_group_key(asset) == key and
-               (asset.round_robin is not None or
-                infer_round_robin(asset.relative_path) is not None)]
-    matches.sort(key=lambda asset: (
-        asset.round_robin if asset.round_robin is not None
-        else infer_round_robin(asset.relative_path),
-        asset.relative_path,
-    ))
-    if len(matches) < 2:
-        return ()
-    start = matches.index(selected)
-    ordered = matches[start:] + matches[:start]
-    return tuple(asset.ref for asset in ordered)
-
-
 def enrich_with_catalog_samples(
     spec: BedSpec,
     assets: list[SampleAsset],
@@ -223,7 +182,7 @@ def enrich_with_catalog_samples(
     expansion_policy: dict | None = None,
 ) -> None:
     """Resolve safe catalog choices without consulting network availability."""
-    if spec.phrase is None or not assets or palette == "electronic":
+    if not assets or palette == "electronic":
         return
     rng = np.random.default_rng(seed * 7919 + 17)
     expansion_policy = expansion_policy or {}
@@ -256,9 +215,6 @@ def enrich_with_catalog_samples(
         asset = _choose_across_collections(rng, roles[role])
         if asset:
             lane.sample = asset.ref
-            if spec.phrase.round_robin_strategy == "cyclic":
-                lane.round_robin_samples = _round_robin_variants(
-                    asset, roles[role])
             lane.articulation = (asset.articulation or
                                  infer_articulation(asset.relative_path))
             lane.sound = f"sample:{asset.collection}"
@@ -443,27 +399,22 @@ def _apply_request(spec: BedSpec, request: MusicRequest, profile: GenerationProf
         spec.lead.level *= 1.04
         spec.pad.cutoff_base *= 1.10
 
-    if request.rhythm == "sparse" and spec.phrase:
+    if request.rhythm == "sparse":
         spec.phrase.percussion = spec.phrase.percussion[:2]
         spec.drums.level *= 0.88
     elif request.rhythm == "groovy":
         spec.drums.level = min(spec.drums.level * 1.06, 0.62)
 
     spec.swing = min(spec.swing, profile.max_swing)
-    if spec.phrase:
-        spec.phrase.palette = request.palette
+    spec.phrase.palette = request.palette
     if request.palette == "electronic":
         spec.pad.instrument = "synth"
         spec.lead.instrument = "synth"
-        if spec.phrase:
-            spec.phrase.pad_instrument = None
-            spec.phrase.lead_instrument = None
-            spec.phrase.bass_instrument = None
-            spec.phrase.pad_sample = None
-            spec.phrase.lead_sample = None
-            for lane in spec.phrase.percussion:
-                lane.sample = None
-                lane.round_robin_samples = ()
+        spec.phrase.pad_instrument = None
+        spec.phrase.lead_instrument = None
+        spec.phrase.bass_instrument = None
+        for lane in spec.phrase.percussion:
+            lane.sample = None
 
 
 def _safe_assets(library: SampleLibrary) -> list[SampleAsset]:
@@ -569,7 +520,7 @@ def build_candidates(
             })
             continue
         try:
-            bars = max(spec.phrase.loop_bars if spec.phrase else 4, 4)
+            bars = max(spec.phrase.loop_bars, 4)
             stems = render_stems(spec, bars, cancel_check=cancel_check)
             preview = sum(stems.values(), np.zeros_like(next(iter(stems.values()))))
         except (FileNotFoundError, RuntimeError, ValueError) as exc:
@@ -644,7 +595,7 @@ def select_balanced(
             return row.fingerprint
         phrase = row.spec.phrase
         return BedFingerprint(
-            family=phrase.family if phrase else row.family,
+            family=phrase.family,
             audio_features=tuple(float(value) for value in row.features),
             motif_features=tuple(float(value) for value in motif_features(row.spec)),
             instrument_families=instrument_families(row.spec),
@@ -690,11 +641,11 @@ def select_balanced(
             phrase = row.spec.phrase
             if "freepats-guitar" in row.sample_collections:
                 tags.add("classical-guitar")
-            if phrase and phrase.bass_instrument and "fashionbass" in \
+            if phrase.bass_instrument and "fashionbass" in \
                     phrase.bass_instrument.name.lower():
                 tags.add("natural-bass")
             lead_name = (phrase.lead_instrument.name.lower()
-                         if phrase and phrase.lead_instrument else "")
+                         if phrase.lead_instrument else "")
             if any(word in lead_name for word in (
                 "mbira", "nyunga", "psaltery", "ocarina", "harmonica",
                 "/pizz", "/spic",

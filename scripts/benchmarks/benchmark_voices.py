@@ -13,7 +13,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from lexibeat.bedspec import BedSpec
+from lexibeat.api import MusicRequest, resolve_music
+from lexibeat.profiles import POSITIVE_FAMILIES
 from lexibeat.voice import CAPABILITIES, DEFAULT_MODELS, model_cache_root
 
 BACKENDS = ("indextts25", "voxcpm2", "qwen3", "tada", "fish-s2")
@@ -221,6 +222,17 @@ def write_comparison(out_dir: Path, rows: list[dict[str, Any]]) -> None:
     (out_dir / "comparison.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def resolve_benchmark_bed(args: argparse.Namespace):
+    """Resolve the shared production bed used by every voice backend."""
+    return resolve_music(MusicRequest(
+        family=args.music_family,
+        energy=args.music_energy,
+        rhythm=args.music_rhythm,
+        palette=args.music_palette,
+        seed=args.seed,
+    )).bed_spec
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backends", nargs="+", choices=BACKENDS,
@@ -228,7 +240,15 @@ def main() -> None:
     parser.add_argument("--words", type=int, default=1)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--voice-seed", type=int, default=7007)
-    parser.add_argument("--bed-style", default="yoga")
+    parser.add_argument("--music-family", choices=("auto", *POSITIVE_FAMILIES),
+                        default="auto")
+    parser.add_argument("--music-energy", choices=("calm", "balanced", "bright"),
+                        default="balanced")
+    parser.add_argument("--music-rhythm", choices=("sparse", "steady", "groovy"),
+                        default="steady")
+    parser.add_argument("--music-palette",
+                        choices=("acoustic", "hybrid", "electronic"),
+                        default="hybrid")
     parser.add_argument("--vocab", type=Path, nargs="+", default=[VOCAB_DIR])
     parser.add_argument("--out-dir", type=Path, default=Path("out/tts-bakeoff"))
     parser.add_argument("--skip-download", action="store_true")
@@ -240,7 +260,7 @@ def main() -> None:
     os.environ.setdefault("HF_HOME", str(cache_root / "huggingface"))
     os.environ.setdefault("UV_CACHE_DIR", str(cache_root / "uv"))
     shared_bed = args.out_dir / "shared.bed.json"
-    BedSpec.from_style(args.bed_style, args.seed).to_json(shared_bed)
+    resolve_benchmark_bed(args).to_json(shared_bed)
     hardware = hardware_snapshot()
     downloads = ({backend: {"skipped": True, "model_id": DEFAULT_MODELS[backend]}
                   for backend in args.backends}

@@ -24,7 +24,7 @@ import soundfile as sf
 
 from lexibeat.api import MusicRequest, resolve_music
 from lexibeat.arrange import PATTERNS, arrange, render_speech
-from lexibeat.bedspec import STYLES, BedSpec
+from lexibeat.bedspec import BedSpec
 from lexibeat.mix import mix_stems
 from lexibeat.music import SR, Grid, render_bed, render_stems
 from lexibeat.profiles import POSITIVE_FAMILIES
@@ -52,13 +52,12 @@ def parse_args() -> argparse.Namespace:
                         help="'retrieval' leaves a silent bar to recall the answer in")
 
     music = p.add_argument_group("music bed")
-    music.add_argument("--bed-style", choices=sorted(STYLES), default="yoga")
     music.add_argument("--bed-seed", type=int, default=None,
                        help="varies the bed independently of item selection")
     music.add_argument("--bed-spec", type=Path,
-                       help="load a saved bed spec JSON instead of a style")
+                       help="replay a saved resolved BedSpec JSON")
     music.add_argument("--music-family", choices=("auto", *POSITIVE_FAMILIES),
-                       help="use the production API instead of a legacy bed style")
+                       default="auto", help="production music family")
     music.add_argument("--music-energy", choices=("calm", "balanced", "bright"),
                        default="balanced")
     music.add_argument("--music-rhythm", choices=("sparse", "steady", "groovy"),
@@ -67,17 +66,7 @@ def parse_args() -> argparse.Namespace:
                        choices=("acoustic", "hybrid", "electronic"),
                        default="hybrid")
     music.add_argument("--bpm", type=float, default=None,
-                       help="override the tempo the style chose")
-    music.add_argument("--meter", choices=["3/4", "4/4", "5/4"],
-                       help="override the style's time signature")
-    music.add_argument("--chord-extension",
-                       choices=["none", "seventh", "add9", "ninth"],
-                       help="override the style's chord colour")
-    music.add_argument("--instrument",
-                       choices=["synth", "piano", "marimba", "glockenspiel"],
-                       help="override the sparse melodic instrument")
-    music.add_argument("--pad-instrument", choices=["synth", "strings"],
-                       help="override the sustained background instrument")
+                       help="override the resolved tempo")
     music.add_argument("--bed-only", action="store_true",
                        help="render just the music, with no speech")
     music.add_argument("--download-samples", nargs="?", const="salamander",
@@ -128,7 +117,7 @@ def build_spec(args: argparse.Namespace) -> tuple[BedSpec, str]:
     if args.bed_spec:
         spec = BedSpec.from_json(args.bed_spec)
         label = args.bed_spec.name
-    elif getattr(args, "music_family", None):
+    else:
         seed = args.bed_seed if args.bed_seed is not None else args.seed
         result = resolve_music(MusicRequest(
             family=args.music_family,
@@ -139,22 +128,8 @@ def build_spec(args: argparse.Namespace) -> tuple[BedSpec, str]:
         ))
         spec = result.bed_spec
         label = f"{result.profile_version}:{result.fingerprint.family}"
-    else:
-        seed = args.bed_seed if args.bed_seed is not None else args.seed
-        spec = BedSpec.from_style(args.bed_style, seed)
-        label = args.bed_style
     if args.bpm:
         spec.bpm = args.bpm
-    if args.meter:
-        numerator, denominator = args.meter.split("/")
-        spec.beats_per_bar = int(numerator)
-        spec.beat_unit = int(denominator)
-    if args.chord_extension:
-        spec.chord_extension = args.chord_extension
-    if args.instrument:
-        spec.lead.instrument = args.instrument
-    if args.pad_instrument:
-        spec.pad.instrument = args.pad_instrument
     return spec, label
 
 

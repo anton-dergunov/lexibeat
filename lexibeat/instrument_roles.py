@@ -90,7 +90,6 @@ def _bar_note(spec: BedSpec, instrument: InstrumentRef, bar: int,
 
 def _sustained_events(spec: BedSpec, instrument: InstrumentRef,
                       family: str) -> list[NoteEvent]:
-    assert spec.phrase is not None
     steps = spec.steps_per_bar
     octave = 12 if family == "bassoon" else 24
     articulation = instrument.zones[0].articulation
@@ -101,14 +100,12 @@ def _sustained_events(spec: BedSpec, instrument: InstrumentRef,
             _bar_note(spec, instrument, bar, octave),
             0.50 if bar % 2 == 0 else 0.46,
             articulation,
-            bar,
         )
         for bar in range(spec.phrase.loop_bars)
     ]
 
 
 def _accordion_events(spec: BedSpec, instrument: InstrumentRef) -> list[NoteEvent]:
-    assert spec.phrase is not None
     steps = spec.steps_per_bar
     articulation = instrument.zones[0].articulation
     events = []
@@ -116,17 +113,16 @@ def _accordion_events(spec: BedSpec, instrument: InstrumentRef) -> list[NoteEven
         note = _bar_note(spec, instrument, bar, 12)
         events.append(NoteEvent(
             bar * steps + max(1, round(steps * 0.16)), steps * 0.48,
-            note, 0.50, articulation, bar))
+            note, 0.50, articulation))
         if bar % 2:
             events.append(NoteEvent(
                 bar * steps + round(steps * 0.72), steps * 0.18,
-                _fit(note + 2, instrument), 0.40, articulation, bar + 1))
+                _fit(note + 2, instrument), 0.40, articulation))
     return events
 
 
 def _plucked_events(spec: BedSpec, instrument: InstrumentRef,
                     family: str) -> list[NoteEvent]:
-    assert spec.phrase is not None
     steps = spec.steps_per_bar
     articulation = instrument.zones[0].articulation
     events = []
@@ -141,13 +137,11 @@ def _plucked_events(spec: BedSpec, instrument: InstrumentRef,
                 _fit(base + interval, instrument),
                 0.48 - index * 0.045,
                 articulation,
-                bar + index,
             ))
     return events
 
 
 def _organ_chords(spec: BedSpec, instrument: InstrumentRef) -> list[ChordEvent]:
-    assert spec.phrase is not None
     steps = spec.steps_per_bar
     articulation = instrument.zones[0].articulation
     chords = []
@@ -160,7 +154,7 @@ def _organ_chords(spec: BedSpec, instrument: InstrumentRef) -> list[ChordEvent]:
             _fit(note, instrument) for note in (root, root + third, root + 7)
         ))
         chords.append(ChordEvent(
-            bar * steps, steps * 0.90, notes, 0.68, articulation, bar))
+            bar * steps, steps * 0.90, notes, 0.68, articulation))
     return chords
 
 
@@ -170,8 +164,6 @@ def apply_wave3_role_profile(
     instrument: InstrumentRef,
 ) -> dict:
     """Apply one experimental family role entirely through serialized BedSpec data."""
-    if spec.phrase is None:
-        raise ValueError("Wave 3 role profiles require a resolved phrase.")
     if family not in ROLE_GAIN_DB:
         raise ValueError(f"Unknown Wave 3 role family '{family}'.")
     instrument = _raise_to_gain(instrument, ROLE_GAIN_DB[family])
@@ -180,9 +172,7 @@ def apply_wave3_role_profile(
 
     if family == "organ":
         spec.phrase.pad_instrument = instrument
-        spec.phrase.pad_sample = None
         spec.phrase.lead_instrument = None
-        spec.phrase.lead_sample = None
         spec.phrase.chords = _organ_chords(spec, instrument)
         spec.phrase.motif_grammar = "organ-held-pad-v1"
         spec.pad.level = max(spec.pad.level, 0.62)
@@ -191,7 +181,6 @@ def apply_wave3_role_profile(
         role = "held-pad"
     else:
         spec.phrase.lead_instrument = instrument
-        spec.phrase.lead_sample = None
         spec.lead.enabled = True
         # The renderer deliberately keeps generic sampled leads conservative.
         # These explicit BedSpec levels compensate for that attenuation in the

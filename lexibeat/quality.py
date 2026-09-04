@@ -47,12 +47,6 @@ def audio_features(audio: np.ndarray, spec: BedSpec) -> np.ndarray:
     onset_density = float(np.count_nonzero(changes > onset_threshold) /
                           max(len(mono) / SR, 1))
     phrase = spec.phrase
-    if phrase is None:
-        return np.array([
-            spec.bpm / 100, spec.beats_per_bar / 5, spec.swing, rms / peak,
-            math.log10(max(centroid, 1)) / 4, high, onset_density / 10,
-            0, 0, 0, 0, 0,
-        ], dtype=np.float64)
     downbeat_hits = 0
     if phrase.percussion:
         lane = phrase.percussion[0]
@@ -80,7 +74,7 @@ def audio_features(audio: np.ndarray, spec: BedSpec) -> np.ndarray:
 def metrical_clarity(spec: BedSpec) -> float:
     """Score a stable low anchor and penalize bar-boundary collisions."""
     phrase = spec.phrase
-    if not phrase or not phrase.percussion:
+    if not phrase.percussion:
         return 1.0
     lane = phrase.percussion[0]
     steps = spec.steps_per_bar
@@ -97,7 +91,7 @@ def metrical_clarity(spec: BedSpec) -> float:
 def motif_features(spec: BedSpec, length: int = 12) -> np.ndarray:
     """Describe melodic intervals and onset gaps independently of key/timbre."""
     phrase = spec.phrase
-    if not phrase or not phrase.lead:
+    if not phrase.lead:
         return np.zeros(length * 2, dtype=np.float64)
     events = phrase.lead[:length + 1]
     intervals = np.diff([event.midi_note for event in events]) / 12.0
@@ -111,21 +105,20 @@ def motif_features(spec: BedSpec, length: int = 12) -> np.ndarray:
 def instrument_families(spec: BedSpec) -> tuple[str, ...]:
     phrase = spec.phrase
     values = {spec.pad.instrument, spec.lead.instrument}
-    if phrase:
-        for instrument in (phrase.pad_instrument, phrase.bass_instrument,
-                           phrase.lead_instrument):
-            if instrument:
-                values.add(instrument.name.split(":", 1)[0])
-        values.update(
-            lane.sample.collection for lane in phrase.percussion if lane.sample
-        )
+    for instrument in (phrase.pad_instrument, phrase.bass_instrument,
+                       phrase.lead_instrument):
+        if instrument:
+            values.add(instrument.name.split(":", 1)[0])
+    values.update(
+        lane.sample.collection for lane in phrase.percussion if lane.sample
+    )
     return tuple(sorted(values))
 
 
 def make_fingerprint(audio: np.ndarray, spec: BedSpec) -> BedFingerprint:
     phrase = spec.phrase
     return BedFingerprint(
-        family=phrase.family if phrase else "legacy",
+        family=phrase.family,
         audio_features=tuple(float(value) for value in audio_features(audio, spec)),
         motif_features=tuple(float(value) for value in motif_features(spec)),
         instrument_families=instrument_families(spec),
@@ -137,7 +130,7 @@ def preference_score(spec: BedSpec) -> float:
     phrase = spec.phrase
     straight = 1.0 - min(spec.swing / 0.08, 1.0)
     downbeats = 1.0
-    if phrase and phrase.percussion:
+    if phrase.percussion:
         downbeats = sum(
             phrase.percussion[0].pattern[bar * spec.steps_per_bar] == "x"
             for bar in range(phrase.loop_bars)

@@ -26,9 +26,8 @@ import pyloudnorm as pyln
 import soundfile as sf
 
 from .api import MusicGenerationResult, MusicRequest, resolve_music
-from .bedspec import (RESOLVED_BASS_GRAMMARS, RESOLVED_MOTIF_GRAMMARS,
-                      RESOLVED_TIMBRE_PALETTES, TIMBRE_PALETTES, BedSpec,
-                      SCALES, STYLES)
+from .bedspec import (BASS_GRAMMARS, TIMBRE_PALETTES, BedSpec, SCALES,
+                      STYLES)
 from .generator import ENGINE_VERSION
 from .library import (BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary,
                       SampleRef, infer_articulation, infer_round_robin)
@@ -178,8 +177,6 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
     ControlField("/pad/instrument", "Pad", "Instrument", "enum",
                  choices=("synth", "strings")),
     ControlField("/pad/level", "Pad", "Level", "number", 0, 2, 0.15, 0.8, 0.01),
-    ControlField("/pad/detune", "Pad", "Detune", "number", 0, 1, 0, 0.2,
-                 0.01, unit="semitones"),
     ControlField("/pad/cutoff_base", "Pad", "Filter base", "number", 80, 18000,
                  400, 4000, 10, unit="Hz"),
     ControlField("/pad/cutoff_motion", "Pad", "Filter motion", "number", 0, 10000,
@@ -194,40 +191,21 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
                  2, 10, 0.25, unit="dB"),
     ControlField("/bass/enabled", "Bass", "Enabled", "boolean"),
     ControlField("/bass/level", "Bass", "Level", "number", 0, 2, 0.12, 0.75, 0.01),
-    ControlField("/bass/octave", "Bass", "Octave", "integer", -4, 3, -2, 0, 1),
     ControlField("/bass/attack", "Bass", "Attack", "number", 0, 2, 0.003, 0.5,
                  0.005, unit="seconds"),
-    ControlField("/bass/decay_bars", "Bass", "Decay", "number", 0.02, 4,
-                 0.1, 1.5, 0.05, unit="bars"),
     ControlField("/bass/duck_db", "Bass", "Speech duck", "number", 0, 24,
                  0, 8, 0.25, unit="dB"),
     ControlField("/drums/enabled", "Percussion", "Enabled", "boolean"),
-    ControlField("/drums/kick", "Percussion", "Legacy kick pattern", "text"),
-    ControlField("/drums/rim", "Percussion", "Legacy rim pattern", "text"),
     ControlField("/drums/level", "Percussion", "Bus level", "number", 0, 2,
                  0.15, 0.65, 0.01),
-    ControlField("/drums/kick_level", "Percussion", "Legacy kick level", "number",
-                 0, 2, 0.1, 0.8, 0.01),
-    ControlField("/drums/rim_level", "Percussion", "Legacy rim level", "number",
-                 0, 2, 0, 0.4, 0.01),
-    ControlField("/drums/shaker_level", "Percussion", "Legacy shaker level", "number",
-                 0, 2, 0, 0.2, 0.01),
-    ControlField("/drums/shaker_density", "Percussion", "Shaker density", "number",
-                 0, 1, 0, 1, 0.05),
     ControlField("/drums/duck_db", "Percussion", "Speech duck", "number", 0, 24,
                  0, 8, 0.25, unit="dB"),
     ControlField("/lead/enabled", "Lead", "Enabled", "boolean"),
     ControlField("/lead/instrument", "Lead", "Instrument", "enum",
                  choices=("synth", "piano", "marimba", "glockenspiel")),
     ControlField("/lead/level", "Lead", "Level", "number", 0, 2, 0.1, 1.2, 0.01),
-    ControlField("/lead/bar_probability", "Lead", "Bar probability", "number", 0, 1,
-                 0.05, 0.75, 0.05),
-    ControlField("/lead/max_notes", "Lead", "Maximum notes", "integer", 1, 16,
-                 1, 4, 1),
     ControlField("/lead/register", "Lead", "Register range", "text", unit="semitones"),
     ControlField("/lead/velocity", "Lead", "Velocity range", "text"),
-    ControlField("/lead/humanize", "Lead", "Timing humanize", "number", 0, 0.25,
-                 0, 0.04, 0.005, unit="seconds"),
     ControlField("/lead/duck_db", "Lead", "Speech duck", "number", 0, 24,
                  2, 10, 0.25, unit="dB"),
     ControlField("/space/reverb_seconds", "Space", "Reverb length", "number", 0,
@@ -245,14 +223,11 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
     ControlField("/phrase/bass_timbre", "Resolved phrase", "Bass timbre", "enum",
                  choices=("sine", "round", "triangle", "pluck")),
     ControlField("/phrase/bass_grammar", "Resolved phrase", "Bass grammar", "enum",
-                 choices=RESOLVED_BASS_GRAMMARS, read_only=True),
-    ControlField("/phrase/motif_grammar", "Resolved phrase", "Motif grammar", "enum",
-                 choices=RESOLVED_MOTIF_GRAMMARS, read_only=True),
-    ControlField("/phrase/palette", "Resolved phrase", "Timbre palette", "enum",
-                 choices=RESOLVED_TIMBRE_PALETTES, read_only=True),
-    ControlField("/phrase/round_robin_strategy", "Resolved phrase",
-                 "Sample variation", "enum", choices=("first", "cyclic"),
+                 choices=BASS_GRAMMARS, read_only=True),
+    ControlField("/phrase/motif_grammar", "Resolved phrase", "Motif grammar", "text",
                  read_only=True),
+    ControlField("/phrase/palette", "Resolved phrase", "Timbre palette", "enum",
+                 choices=TIMBRE_PALETTES, read_only=True),
     ControlField("/phrase/chords", "Resolved phrase", "Chord events", "table"),
     ControlField("/phrase/bass", "Resolved phrase", "Bass events", "table"),
     ControlField("/phrase/lead", "Resolved phrase", "Lead events", "table"),
@@ -262,8 +237,8 @@ CONTROL_FIELDS: tuple[ControlField, ...] = (
 CONTROL_BY_PATH = {field.path: field for field in CONTROL_FIELDS}
 TABLE_LOCK_PATHS = {
     "/phrase/chords", "/phrase/bass", "/phrase/lead", "/phrase/percussion",
-    "/phrase/lead_sample", "/phrase/pad_sample", "/phrase/lead_instrument",
-    "/phrase/pad_instrument", "/phrase/bass_instrument",
+    "/phrase/lead_instrument", "/phrase/pad_instrument",
+    "/phrase/bass_instrument",
 }
 LOCKABLE_PATHS = {
     field.path for field in CONTROL_FIELDS if not field.read_only
@@ -311,27 +286,23 @@ _ROOT_KEYS = {
     "space", "phrase", "schema_version", "engine_version", "profile_version",
 }
 _NESTED_KEYS = {
-    "pad": {"instrument", "level", "detune", "cutoff_base", "cutoff_motion",
+    "pad": {"instrument", "level", "cutoff_base", "cutoff_motion",
             "cutoff_curve", "cutoff_period_bars", "overlap", "duck_db", "enabled"},
-    "bass": {"level", "octave", "attack", "decay_bars", "duck_db", "enabled"},
-    "drums": {"kick", "rim", "kick_level", "rim_level", "shaker_level",
-              "shaker_density", "level", "duck_db", "enabled"},
-    "lead": {"instrument", "level", "bar_probability", "max_notes", "register",
-             "velocity", "humanize", "duck_db", "enabled"},
+    "bass": {"level", "attack", "duck_db", "enabled"},
+    "drums": {"level", "duck_db", "enabled"},
+    "lead": {"instrument", "level", "register", "velocity", "duck_db", "enabled"},
     "space": {"reverb_seconds", "reverb_mix"},
 }
 _PHRASE_KEYS = {
     "family", "loop_bars", "harmony_texture", "pad_timbre", "bass_timbre",
-    "chords", "bass", "lead", "percussion", "lead_sample", "pad_sample",
+    "chords", "bass", "lead", "percussion",
     "lead_instrument", "pad_instrument", "bass_instrument",
-    "round_robin_strategy", "bass_grammar", "motif_grammar", "palette",
+    "bass_grammar", "motif_grammar", "palette",
 }
-_NOTE_KEYS = {"step", "duration_steps", "midi_note", "velocity",
-              "articulation", "sample_variation"}
-_CHORD_KEYS = {"step", "duration_steps", "midi_notes", "velocity",
-               "articulation", "sample_variation"}
-_LANE_KEYS = {"sound", "pattern", "level", "probability", "humanize", "pan",
-              "sample", "role", "articulation", "round_robin_samples"}
+_NOTE_KEYS = {"step", "duration_steps", "midi_note", "velocity", "articulation"}
+_CHORD_KEYS = {"step", "duration_steps", "midi_notes", "velocity", "articulation"}
+_LANE_KEYS = {"sound", "pattern", "level", "probability", "humanize",
+              "sample", "role", "articulation"}
 _SAMPLE_KEYS = {"collection", "asset_id", "sha256"}
 _INSTRUMENT_KEYS = {"name", "zones"}
 _ZONE_KEYS = {"sample", "root_note", "lo_note", "hi_note", "lo_velocity",
@@ -417,6 +388,8 @@ def _validate_shape(data: object) -> list[ValidationIssue]:
             _unknown_keys(data[name], allowed, f"/{name}", issues)
     phrase = data.get("phrase")
     if phrase is None:
+        _issue(issues, "error", "/phrase", "required",
+               "BedSpec requires a resolved phrase object.")
         return issues
     _unknown_keys(phrase, _PHRASE_KEYS, "/phrase", issues)
     if not isinstance(phrase, dict):
@@ -433,16 +406,6 @@ def _validate_shape(data: object) -> list[ValidationIssue]:
             _unknown_keys(row, allowed, row_path, issues)
             if collection == "percussion" and isinstance(row, dict):
                 _validate_sample(row.get("sample"), f"{row_path}/sample", issues)
-                variations = row.get("round_robin_samples", [])
-                if not isinstance(variations, (list, tuple)) or len(variations) > 32:
-                    _issue(issues, "error", f"{row_path}/round_robin_samples",
-                           "size", "Round-robin sample groups may contain at most 32 takes.")
-                else:
-                    for variation, sample in enumerate(variations):
-                        _validate_sample(
-                            sample, f"{row_path}/round_robin_samples/{variation}", issues)
-    for name in ("lead_sample", "pad_sample"):
-        _validate_sample(phrase.get(name), f"/phrase/{name}", issues)
     for name in ("lead_instrument", "pad_instrument", "bass_instrument"):
         _validate_instrument(phrase.get(name), f"/phrase/{name}", issues)
     return issues
@@ -551,11 +514,6 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
                 not -14 <= value <= 14 for value in spec.progression):
         _issue(issues, "error", "/progression", "progression",
                "Progression must contain 1–16 integer scale degrees between -14 and 14.")
-    for path, pattern in (("/drums/kick", spec.drums.kick),
-                          ("/drums/rim", spec.drums.rim)):
-        if not isinstance(pattern, str) or not pattern or set(pattern) - {"x", "."}:
-            _issue(issues, "error", path, "pattern",
-                   "Patterns must be non-empty strings containing only 'x' and '.'.")
     for path, pair in (("/lead/register", spec.lead.register),
                        ("/lead/velocity", spec.lead.velocity)):
         if not isinstance(pair, tuple) or len(pair) != 2 or not all(_number(v) for v in pair):
@@ -563,10 +521,6 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
         elif pair[0] > pair[1]:
             _issue(issues, "error", path, "range_order", "Range minimum exceeds maximum.")
     phrase = spec.phrase
-    if phrase is None:
-        _issue(issues, "warning", "/phrase", "legacy_phrase",
-               "This legacy BedSpec has no fully resolved phrase provenance.")
-        return
     if phrase.family not in STYLES:
         _issue(issues, "error", "/phrase/family", "family",
                f"Unknown resolved family '{phrase.family}'.")
@@ -579,19 +533,17 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
                "Loop bars must be an integer between 1 and 32.")
         return
     phrase_steps = phrase.loop_bars * steps_per_bar
-    if phrase.round_robin_strategy not in ("first", "cyclic"):
-        _issue(issues, "error", "/phrase/round_robin_strategy", "enum",
-               "Resolved sample variation strategy must be 'first' or 'cyclic'.")
     for value, choices, path, label in (
-            (phrase.bass_grammar, RESOLVED_BASS_GRAMMARS,
+            (phrase.bass_grammar, BASS_GRAMMARS,
              "/phrase/bass_grammar", "bass grammar"),
-            (phrase.motif_grammar, RESOLVED_MOTIF_GRAMMARS,
-             "/phrase/motif_grammar", "motif grammar"),
-            (phrase.palette, RESOLVED_TIMBRE_PALETTES,
+            (phrase.palette, TIMBRE_PALETTES,
              "/phrase/palette", "palette")):
         if value not in choices:
             _issue(issues, "error", path, "enum",
                    f"Unknown resolved {label} '{value}'.")
+    if not isinstance(phrase.motif_grammar, str) or not phrase.motif_grammar:
+        _issue(issues, "error", "/phrase/motif_grammar", "motif_grammar",
+               "Motif grammar must be a non-empty production label.")
     for name, events in (("chords", phrase.chords), ("bass", phrase.bass),
                          ("lead", phrase.lead)):
         for index, event in enumerate(events):
@@ -605,11 +557,6 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
             if not _number(event.velocity) or not 0 <= event.velocity <= 1.5:
                 _issue(issues, "error", f"{base}/velocity", "velocity",
                        "Velocity must be between 0 and 1.5.")
-            if (not isinstance(event.sample_variation, int) or
-                    isinstance(event.sample_variation, bool) or
-                    event.sample_variation < 0):
-                _issue(issues, "error", f"{base}/sample_variation",
-                       "round_robin", "Sample variation must be a non-negative integer.")
             if not isinstance(event.articulation, str) or not event.articulation:
                 _issue(issues, "error", f"{base}/articulation", "articulation",
                        "Articulation must be a non-empty label.")
@@ -626,7 +573,7 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
                    f"Pattern must contain exactly {phrase_steps} 'x' or '.' steps.")
         for name, value, low, high in (
             ("level", lane.level, 0, 2), ("probability", lane.probability, 0, 1),
-            ("humanize", lane.humanize, 0, 0.25), ("pan", lane.pan, -1, 1),
+            ("humanize", lane.humanize, 0, 0.25),
         ):
             if not _number(value) or not low <= value <= high:
                 _issue(issues, "error", f"{base}/{name}", "renderable_range",
@@ -634,8 +581,6 @@ def _validate_structure(spec: BedSpec, issues: list[ValidationIssue]) -> None:
 
 
 def _event_density(spec: BedSpec) -> float:
-    if not spec.phrase:
-        return 0.0
     phrase = spec.phrase
     hits = sum(lane.pattern.count("x") for lane in phrase.percussion)
     events = len(phrase.chords) + len(phrase.bass) + len(phrase.lead) + hits
@@ -668,7 +613,7 @@ def validate_bed_spec(data_or_spec: dict | BedSpec, *, analyze: bool = True,
     fingerprint_dict: dict | None = None
     try:
         profile = get_profile(profile_name)
-        bars = max(spec.phrase.loop_bars if spec.phrase else 4, 4)
+        bars = max(spec.phrase.loop_bars, 4)
         stems = render_stems(spec, bars)
         audio = sum(stems.values(), np.zeros_like(next(iter(stems.values()))))
         quality, fingerprint = evaluate_preview(audio, stems, spec, profile)
@@ -736,7 +681,7 @@ def randomize_unlocked(base: dict | BedSpec, locked_paths: list[str], *,
     chosen_seed = secrets.randbits(64) if seed is None else seed
     if not 0 <= chosen_seed < 2 ** 64:
         raise ValueError("seed must be an unsigned 64-bit integer")
-    family = base_spec.phrase.family if base_spec.phrase else "auto"
+    family = base_spec.phrase.family
     profile = (base_spec.profile_version if base_spec.profile_version in PROFILES
                else "production-v1")
     if family != "auto" and family not in get_profile(profile).families:
@@ -744,11 +689,10 @@ def randomize_unlocked(base: dict | BedSpec, locked_paths: list[str], *,
     if family != "auto" and family not in get_profile(profile).families:
         family = "auto"
     if request is None:
-        has_natural = bool(base_spec.phrase and (
-            base_spec.phrase.lead_sample or base_spec.phrase.pad_sample or
+        has_natural = bool(
             base_spec.phrase.lead_instrument or base_spec.phrase.pad_instrument or
             base_spec.phrase.bass_instrument or
-            any(lane.sample for lane in base_spec.phrase.percussion)))
+            any(lane.sample for lane in base_spec.phrase.percussion))
         request = MusicRequest(family=family, palette="hybrid" if has_natural else "electronic",
                                seed=chosen_seed, profile=profile)
     else:
@@ -911,7 +855,7 @@ class ArtifactStore:
 
 def preview_duration(spec: BedSpec) -> float:
     grid = Grid.from_spec(spec)
-    bars = spec.phrase.loop_bars if spec.phrase else 4
+    bars = spec.phrase.loop_bars
     return min(max(grid.bar, bars * grid.bar), PREVIEW_MAX_DURATION_SECONDS)
 
 

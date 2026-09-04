@@ -57,12 +57,15 @@ class ExplorerCoreTests(unittest.TestCase):
     def test_schema_reports_versions_controls_and_hosted_limits(self) -> None:
         schema = explorer_schema(ExplorerConfig(hosted=True))
         self.assertEqual(schema["api_version"], "explorer-v1")
-        self.assertEqual(schema["engine_version"], "1.3.0")
+        self.assertEqual(schema["engine_version"], "1.4.0")
         self.assertEqual(schema["limits"]["render_seconds"], 30.0)
         self.assertFalse(schema["capabilities"]["sample_promotion"])
         self.assertIn("/bpm", schema["lockable_paths"])
-        self.assertTrue(any(control["path"] == "/phrase/round_robin_strategy"
-                            for control in schema["controls"]))
+        self.assertFalse(any(control["path"] in {
+            "/pad/detune", "/bass/octave", "/bass/decay_bars",
+            "/drums/kick", "/lead/bar_probability",
+            "/phrase/round_robin_strategy",
+        } for control in schema["controls"]))
         self.assertTrue(any(control["path"] == "/phrase/motif_grammar"
                             for control in schema["controls"]))
         self.assertTrue(any(control["path"] == "/phrase/bass_grammar"
@@ -92,7 +95,7 @@ class ExplorerCoreTests(unittest.TestCase):
         invalid_variation["phrase"]["lead"][0]["sample_variation"] = -1
         _, report = validate_bed_spec(invalid_variation, analyze=False)
         self.assertEqual(report.state, "invalid")
-        self.assertTrue(any(issue.code == "round_robin" for issue in report.issues))
+        self.assertTrue(any(issue.code == "unknown_field" for issue in report.issues))
 
     def test_experimental_value_has_explicit_repair(self) -> None:
         experimental = copy.deepcopy(self.data)
