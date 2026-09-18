@@ -53,4 +53,12 @@ __all__ = [
     "validate_bed_spec",
 ]
 
-__version__ = "2.0.0"
+# Read from the installed metadata rather than written twice. It used to be "1.4.0" here *and*
+# in `bedspec.ENGINE_VERSION`, which are different things: this versions the package, that versions
+# the bed format a saved BedSpec replays against.
+try:
+    from importlib.metadata import PackageNotFoundError, version as _package_version
+
+    __version__ = _package_version("lexibeat")
+except PackageNotFoundError:  # a source tree that was never installed
+    __version__ = "0.0.0+unknown"

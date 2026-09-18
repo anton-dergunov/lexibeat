@@ -21,7 +21,26 @@ BUNDLED_ROOT = configured_bundle_root()
 
 # SQLite writes this at the head of every database it makes.
 SQLITE_MAGIC = b"SQLite format 3\x00"
+# And Git LFS writes this at the head of every pointer it leaves in place of a file.
+LFS_POINTER_MAGIC = b"version https://git-lfs.github.com/spec/v1"
 CATALOG_NAME = "catalog.sqlite3"
+
+
+def is_lfs_pointer(path: Path) -> bool:
+    """Is this the 130-byte stand-in Git LFS leaves, rather than the file itself?
+
+    A checkout without `git lfs pull` — a fresh clone, a CI job that skips LFS — leaves one of
+    these at every tracked path. They *exist*, so every `Path.exists()` check says yes and the
+    failure surfaces wherever the bytes are first read: `sqlite3.DatabaseError: file is not a
+    database` from the catalog, `LibsndfileError: Format not recognised` from a sample. Neither
+    says the word "LFS", and both are far worse than the well-handled case where the bundle is
+    simply absent.
+    """
+    try:
+        with path.open("rb") as handle:
+            return handle.read(len(LFS_POINTER_MAGIC)) == LFS_POINTER_MAGIC
+    except OSError:
+        return False
 
 
 def bundle_catalog(root: Path | None = None) -> Path | None:

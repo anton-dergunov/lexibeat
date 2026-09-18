@@ -13,7 +13,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-from .paths import BUNDLED_ROOT
+from .paths import BUNDLED_ROOT, is_lfs_pointer
 
 
 SEMITONES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
@@ -146,10 +146,29 @@ def cache_dir() -> Path:
     return root / "samples"
 
 
+def _bundled_pack_is_materialized(pack: SamplePack) -> bool:
+    """A bundled pack of Git-LFS pointers is not a pack. See `paths.is_lfs_pointer`.
+
+    One representative entry is enough: LFS smudges the whole checkout or none of it, and reading
+    42 bytes on every pack lookup is cheaper than reading the first sample twice.
+    """
+    bundled = BUNDLED_PACK_ROOT / pack.name
+    if not bundled.is_dir():
+        return False
+    entries = pack.entries()
+    return bool(entries) and not is_lfs_pointer(bundled / entries[0].filename)
+
+
 def pack_dir(pack: SamplePack) -> Path:
     cached = cache_dir() / pack.name
-    bundled = BUNDLED_PACK_ROOT / pack.name
-    return cached if cached.exists() or not bundled.exists() else bundled
+    return (cached if cached.exists() or not _bundled_pack_is_materialized(pack)
+            else BUNDLED_PACK_ROOT / pack.name)
+
+
+def available(pack: SamplePack) -> bool:
+    """Whether this pack's audio is on disk at all — cached, or materialized in the bundle."""
+    directory = pack_dir(pack)
+    return any((directory / entry.filename).exists() for entry in pack.entries())
 
 
 def missing(pack: SamplePack,

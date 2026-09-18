@@ -1,39 +1,58 @@
 name: Tests
 
-# On a pull request, not only on the way to a deployment. The job that used to live here ran the
-# suite as step four of publishing a Hugging Face Space, so a branch got no signal at all and a
-# green run meant "the Space went out" rather than "the tests passed".
+# One definition of "the suite passed", called from two places: a push or pull request, and the
+# release workflow before it publishes anything. The job that used to live here ran the tests as
+# step four of publishing a Hugging Face Space, so a branch got no signal at all and a green run
+# meant "the Space went out" rather than "the tests passed".
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: The ref to check out; defaults to the calling workflow's
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: tests-${{ github.ref }}
+  group: tests-${{ inputs.ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
-      - name: Check out source without the sample bundle
+      - name: Check out source without smudging Git LFS
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
-          # No Git LFS, so this job runs against a checkout with no sample bundle: the engine then
-          # offers only the sample-free `electronic` palette, which is a state worth exercising and
-          # keeps the job to a couple of minutes rather than 1.8 GB.
-          #
-          # It is not free, and the cost is named in the step below rather than left to be
-          # discovered: the handful of tests that assert the *shipped* bundle resolves skip here and
-          # run only where it is materialized. Run the suite locally with `git lfs pull` before
-          # cutting a tag.
+          ref: ${{ inputs.ref || github.ref }}
+          # Fetched below instead, so the 1.8 GB of audio comes from the cache on all but the
+          # first run of a given bundle.
           lfs: false
+
+      - name: Cache the immutable production audio
+        uses: actions/cache@v5
+        with:
+          path: .git/lfs
+          # manifest.json is not itself LFS-tracked, so this hashes the real file: a new bundle
+          # changes the manifest, and nothing else does.
+          key: production-core-${{ hashFiles('assets/production-core/v1/manifest.json') }}
+
+      - name: Materialize the sample bundle
+        # Without this the checkout holds Git LFS *pointers* at every audio path. The code treats
+        # those as an absent bundle rather than reading them (see `lexibeat/paths.py`), so the
+        # suite would pass — while silently skipping every test of the sampled-instrument
+        # renderer, which is half the music engine. A green run has to mean the whole engine.
+        run: |
+          git lfs install --local
+          git lfs pull
 
       - name: Install uv and Python 3.12
         uses: astral-sh/setup-uv@v7
@@ -44,13 +63,30 @@ jobs:
       - name: Install the service and explorer extras
         run: uv sync --extra service --extra explorer --locked
 
+      - name: Install librosa alone, on purpose
+        # Not the whole local-tts extra: mlx-audio is Apple Silicon only. librosa is wanted here for
+        # two reasons. It is what the batched-Gemini benchmark's silence splitter needs, so its test
+        # runs rather than skipping. And it makes the slim-import check below mean something: with
+        # librosa absent that assertion passed trivially, which is the shape of a check that has
+        # stopped checking.
+        run: uv pip install librosa
+
       - name: Run the test suite
         run: uv run python -m unittest discover -s tests -v
 
-      - name: Say what this checkout could not cover
+      - name: Nothing was skipped for want of the bundle
+        # A skip is the correct behaviour on a laptop that has not run `git lfs pull`. Here it
+        # would mean the cache or the pull silently did nothing, and the coverage this job exists
+        # for went missing without turning anything red.
         run: |
-          echo "No sample bundle in this checkout (lfs: false), so the tests that assert the"
-          echo "shipped bundle resolves were skipped. They run locally after 'git lfs pull'."
+          uv run python -c "
+          from lexibeat.paths import BUNDLED_ROOT, bundle_present
+          from lexibeat.samples import PACKS, available
+          assert bundle_present(BUNDLED_ROOT), 'the sample catalogue did not materialize'
+          missing = sorted(name for name, pack in PACKS.items() if not available(pack))
+          assert not missing, f'sample packs did not materialize: {missing}'
+          print('bundle and packs materialized')
+          "
 
       - name: The committed OpenAPI snapshot is current
         run: |
@@ -58,6 +94,8 @@ jobs:
           diff -u docs/openapi-v1.json /tmp/openapi-v1.json
 
       - name: The service import path stays slim
+        # librosa, numba and llvmlite are installed by the step above, so this asserts the render
+        # path does not *import* them rather than that they are merely unavailable.
         run: |
           uv run python -c "
           import lexibeat.loop, lexibeat.service, sys
@@ -68,6 +106,11 @@ jobs:
           "
 
       - name: A synth-only bed renders with no samples at all
+        env:
+          # The state a fresh deployment is in: the engine must still serve, offering only the
+          # sample-free palette.
+          LEXIBEAT_BUNDLE_ROOT: /tmp/no-bundle
+          LEXIBEAT_CACHE: /tmp/no-cache
         run: |
           uv run lexibeat --bed-only --music-palette electronic --out /tmp/bed.wav
           uv run python -c "

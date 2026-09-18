@@ -45,7 +45,7 @@ from lexibeat.library_bundle import (accepted_expansion_policy,
 from lexibeat.mix import duck_envelope, mix_stems
 from lexibeat.paths import BUNDLED_ROOT, bundle_present
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
-from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
+from lexibeat.samples import PACKS, Sample, SamplePack, available, midi, missing
 from lexibeat.voice import (
     CAPABILITIES,
     CHATTERBOX_TEMPERATURE,
@@ -1483,6 +1483,8 @@ class RenderAndMixTests(unittest.TestCase):
             self.assertEqual(bed.shape, next(iter(stems.values())).shape)
             self.assertTrue(np.isfinite(bed).all())
 
+    @unittest.skipUnless(available(PACKS["vsco-strings"]),
+                         "needs the sampled strings; run `git lfs pull` or --download-samples")
     def test_sampled_pad_handles_non_integral_tempo_rounding(self) -> None:
         spec = self._spec()
         spec.bpm = 66
