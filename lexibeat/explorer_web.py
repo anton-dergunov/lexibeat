@@ -31,7 +31,7 @@ from .explorer import (
     validate_bed_spec,
 )
 from .generator import ENGINE_VERSION
-from .library import BUNDLED_ROOT
+from .paths import bundle_present
 
 
 class StrictModel(BaseModel):
@@ -186,7 +186,7 @@ def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
             "api_version": EXPLORER_API_VERSION,
             "engine_version": ENGINE_VERSION,
             "hosted": resolved_config.hosted,
-            "production_bundle": BUNDLED_ROOT.joinpath("catalog.sqlite3").exists(),
+            "production_bundle": bundle_present(),
         }
 
     @app.get("/api/schema")

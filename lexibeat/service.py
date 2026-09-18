@@ -50,7 +50,7 @@ from .loop import (
     LoopResult,
     render_loop,
 )
-from .paths import configured_bundle_root
+from .paths import bundle_present
 from .profiles import PROFILES, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
@@ -340,7 +340,7 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
     version appears in the host's dialog with nothing changing there.
     """
     del config
-    bundle = configured_bundle_root().joinpath("catalog.sqlite3").is_file()
+    bundle = bundle_present()
     return {
         "api_version": API_VERSION,
         "engine_version": ENGINE_VERSION,
@@ -446,8 +446,7 @@ def create_service(*, config: ServiceConfig | None = None,
             "status": "ok",
             "api_version": API_VERSION,
             "engine_version": ENGINE_VERSION,
-            "production_bundle": configured_bundle_root()
-            .joinpath("catalog.sqlite3").is_file(),
+            "production_bundle": bundle_present(),
         }
 
     @app.get(f"{API_PREFIX}/schema")

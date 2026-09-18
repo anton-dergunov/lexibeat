@@ -29,6 +29,7 @@ from .api import MusicGenerationResult, MusicRequest, resolve_music
 from .bedspec import (BASS_GRAMMARS, TIMBRE_PALETTES, BedSpec, SCALES,
                       STYLES)
 from .generator import ENGINE_VERSION
+from .paths import bundle_present
 from .library import (BUNDLED_ROOT, COLLECTIONS, SampleAsset, SampleLibrary,
                       SampleRef, infer_articulation, infer_round_robin)
 from .music import Grid, SR, render_bed, render_stems
@@ -247,7 +248,7 @@ LOCKABLE_PATHS = {
 
 def explorer_schema(config: ExplorerConfig | None = None) -> dict:
     config = config or ExplorerConfig.from_environment()
-    production_bundle = BUNDLED_ROOT.joinpath("catalog.sqlite3").is_file()
+    production_bundle = bundle_present(BUNDLED_ROOT)
     return {
         "api_version": EXPLORER_API_VERSION,
         "engine_version": ENGINE_VERSION,

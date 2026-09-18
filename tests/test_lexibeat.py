@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import importlib.util
 import io
 import json
 import os
@@ -42,6 +43,7 @@ from lexibeat.library_audit import (build_expansion_audit,
 from lexibeat.library_bundle import (accepted_expansion_policy,
                                      accepted_wave3_policy)
 from lexibeat.mix import duck_envelope, mix_stems
+from lexibeat.paths import BUNDLED_ROOT, bundle_present
 from lexibeat.music import Grid, SR, filter_curve, render_bed, render_stems
 from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
 from lexibeat.voice import (
@@ -202,6 +204,8 @@ class VoiceTests(unittest.TestCase):
         self.assertIn("silent timing instruction", prompt)
         self.assertIn("do not speak the tag", prompt)
 
+    @unittest.skipUnless(importlib.util.find_spec("librosa"),
+                         "the silence splitter is benchmark apparatus and wants local-tts")
     def test_batched_gemini_split_uses_longest_silences(self) -> None:
         rate = 1000
         tone = np.sin(2 * np.pi * 30 * np.arange(180) / rate).astype(np.float32)
@@ -1226,6 +1230,8 @@ class TieredLibraryTests(unittest.TestCase):
         self.assertNotEqual(clusters[("vcsl", "dark")],
                             clusters[("vcsl", "bright")])
 
+    @unittest.skipUnless(bundle_present(BUNDLED_ROOT),
+                         "needs the shipped sample bundle; run `git lfs pull`")
     def test_shipped_bundle_resolves_without_local_or_external_tier(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -1237,6 +1243,8 @@ class TieredLibraryTests(unittest.TestCase):
             self.assertTrue(resolved.exists())
             self.assertIn("production-core", str(resolved))
 
+    @unittest.skipUnless(bundle_present(BUNDLED_ROOT),
+                         "needs the shipped sample bundle; run `git lfs pull`")
     def test_bundled_inventory_trusts_catalog_and_is_cached(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -1555,6 +1563,31 @@ class RenderAndMixTests(unittest.TestCase):
             [0.0, 0.04, -0.04])
         self.assertEqual(len(spanish[-1].audio), 100)
         self.assertEqual(sum(retry for _, _, retry in speaker.calls), 1)
+
+
+class BundlePresenceTests(unittest.TestCase):
+    def test_an_unpulled_git_lfs_pointer_reads_as_no_bundle(self) -> None:
+        """Existing at the right path is not being a database, and the difference bit.
+
+        A checkout that skips Git LFS leaves a 130-byte pointer at `catalog.sqlite3`. Every check
+        that only asked whether the file existed said yes, and the first query then died with
+        `sqlite3.DatabaseError: file is not a database` — instead of the well-handled case where
+        the bundle is simply absent and the engine offers the sample-free palette.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertFalse(bundle_present(root))
+            pointer = root / "catalog.sqlite3"
+            pointer.write_text("version https://git-lfs.github.com/spec/v1\n"
+                               f"oid sha256:{'0' * 64}\nsize 364544\n")
+            self.assertTrue(pointer.is_file())
+            self.assertFalse(bundle_present(root))
+            with mock.patch("lexibeat.library.BUNDLED_ROOT", root):
+                library = SampleLibrary(root / "no-external", root / "empty-local",
+                                        use_bundled=True)
+                self.assertFalse(library.uses_bundled_catalog)
+                # And the query that used to raise now simply finds nothing.
+                self.assertEqual(library.assets(), [])
 
 
 class BenchmarkTests(unittest.TestCase):

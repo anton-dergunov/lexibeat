@@ -24,7 +24,7 @@ from typing import Callable
 import numpy as np
 import soundfile as sf
 
-from .paths import BUNDLED_ROOT, configured_bundle_root
+from .paths import BUNDLED_ROOT, bundle_catalog, configured_bundle_root
 from .sfz import parse as parse_sfz
 
 
@@ -458,16 +458,22 @@ class SampleLibrary:
         return BUNDLED_ROOT / "catalog.sqlite3"
 
     @property
+    def bundled_catalog_is_readable(self) -> bool:
+        """A pointer left by an unpulled Git-LFS checkout is not a catalog. See `paths`."""
+        return bundle_catalog(BUNDLED_ROOT) is not None
+
+    @property
     def catalog_path(self) -> Path:
         """Prefer a mutable local catalog, then the shipped read-only catalog."""
         return (self.local_catalog_path
                 if self.local_catalog_path.exists() or not self.use_bundled
+                or not self.bundled_catalog_is_readable
                 else self.bundled_catalog_path)
 
     @property
     def uses_bundled_catalog(self) -> bool:
         """Whether catalog rows come from the immutable production bundle."""
-        return (self.use_bundled and self.bundled_catalog_path.exists()
+        return (self.use_bundled and self.bundled_catalog_is_readable
                 and self.catalog_path == self.bundled_catalog_path)
 
     def expansion_policy(self) -> dict:
@@ -547,11 +553,12 @@ class SampleLibrary:
 
     def _connect(self, *, write: bool = False) -> sqlite3.Connection:
         target = self.local_catalog_path if write else self.catalog_path
-        if not write and target == self.bundled_catalog_path and target.exists():
+        if (not write and target == self.bundled_catalog_path
+                and self.bundled_catalog_is_readable):
             return sqlite3.connect(f"file:{target}?mode=ro", uri=True)
         self.ensure_roots()
         if (write and self.use_bundled and not self.local_catalog_path.exists()
-                and self.bundled_catalog_path.exists()):
+                and self.bundled_catalog_is_readable):
             shutil.copy2(self.bundled_catalog_path, self.local_catalog_path)
         target = self.local_catalog_path if write else self.catalog_path
         db = sqlite3.connect(target)

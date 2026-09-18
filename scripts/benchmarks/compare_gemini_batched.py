@@ -15,7 +15,6 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 
-import librosa
 import numpy as np
 import soundfile as sf
 
@@ -30,6 +29,19 @@ MODELS = (
     "gemini-2.5-flash-lite-preview-tts",
     "gemini-2.5-pro-tts",
 )
+
+
+def _librosa():
+    """Imported here, not at module scope.
+
+    `tests/test_lexibeat.py` imports `split_on_long_silences` from this benchmark, and a
+    checkout that installed only the service and explorer extras has no librosa — so a
+    module-level import made the whole test module fail to load over a helper that uses it
+    in one branch.
+    """
+    import librosa
+
+    return librosa
 
 
 def split_on_long_silences(
@@ -50,7 +62,7 @@ def split_on_long_silences(
     frame_length = max(32, int(round(0.025 * sample_rate)))
     hop_length = max(8, int(round(0.003 * sample_rate)))
     for top_db in (20, 25, 30, 35, 40, 45, 50):
-        intervals = librosa.effects.split(
+        intervals = _librosa().effects.split(
             audio, top_db=top_db, frame_length=frame_length,
             hop_length=hop_length)
         if len(intervals) < expected:
@@ -85,13 +97,13 @@ def split_on_long_silences(
     edges = [0, *boundaries, len(audio)]
     segments: list[np.ndarray] = []
     for start, end in zip(edges, edges[1:]):
-        segment, _ = librosa.effects.trim(audio[start:end], top_db=32)
+        segment, _ = _librosa().effects.trim(audio[start:end], top_db=32)
         segment = np.asarray(segment, dtype=np.float32)
         if len(segment) < int(0.08 * sample_rate):
             raise RuntimeError("A batched Gemini segment was empty or implausibly short.")
         segments.append(segment)
     ranked_pauses = sorted(pauses)
-    intervals = librosa.effects.split(
+    intervals = _librosa().effects.split(
         audio, top_db=top_db, frame_length=frame_length,
         hop_length=hop_length)
     all_gaps = sorted((int(intervals[index][0] - intervals[index - 1][1]) /
