@@ -18,14 +18,31 @@ from .explorer import (
     randomize_unlocked,
     validate_bed_spec,
 )
+from .language import Language
+from .loop import LoopError, LoopRequest, LoopResult, build_timeline, render_loop
+from .vocab import Item
+from .voice import Backend, BackendCapabilities, Delivery, Prosody, SpeechRequest, SynthesisResult
 
 __all__ = [
+    "Backend",
+    "BackendCapabilities",
     "BedFingerprint",
+    "Delivery",
+    "Item",
+    "Language",
+    "LoopError",
+    "LoopRequest",
+    "LoopResult",
     "MusicGenerationResult",
     "MusicRequest",
+    "Prosody",
     "QualityReport",
     "SampleUsage",
+    "SpeechRequest",
+    "SynthesisResult",
+    "build_timeline",
     "generate_music",
+    "render_loop",
     "render_music",
     "resolve_music",
     "ExplorerValidationReport",
@@ -36,4 +53,4 @@ __all__ = [
     "validate_bed_spec",
 ]
 
-__version__ = "1.4.0"
+__version__ = "2.0.0"

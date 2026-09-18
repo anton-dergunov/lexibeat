@@ -15,12 +15,13 @@ from typing import Any, Sequence
 import numpy as np
 import soundfile as sf
 
-from .arrange import Event, PATTERNS
-from .bedspec import BedSpec, STYLES
-from .emotion import for_item
+from .arrange import PATTERNS, SOURCE, TARGET, Event
+from .bedspec import STYLES, BedSpec
+from .language import ENGLISH, SPANISH, Language
+from .loop import build_timeline
 from .music import SR, Grid
-from .voice import Prosody, Speaker
 from .vocab import Item
+from .voice import Delivery, Speaker
 
 DEMO_WIDTH = 1280
 DEMO_HEIGHT = 720
@@ -46,6 +47,8 @@ class DemoConfig:
     items: tuple[Item, ...]
     bars_per_utterance: tuple[int, ...]
     variants: tuple[DemoVariant, ...]
+    source_language: Language = SPANISH
+    target_language: Language = ENGLISH
 
 
 def load_demo_config(path: Path) -> DemoConfig:
@@ -78,7 +81,7 @@ def load_demo_config(path: Path) -> DemoConfig:
         if not isinstance(row, dict):
             raise ValueError(f"Demo item {index} must be an object.")
         item = Item(str(row.get("source") or ""), str(row.get("target") or ""),
-                    str(row.get("emoji") or ""))
+                    str(row.get("direction") or ""))
         if not item:
             raise ValueError(f"Demo item {index} needs source and target text.")
         items.append(item)
@@ -105,7 +108,9 @@ def load_demo_config(path: Path) -> DemoConfig:
         names.add(variant.name)
         variants.append(variant)
     return DemoConfig(title, pattern, bpm, beats_per_bar, beat_unit,
-                      tuple(items), tuple(bars_per_utterance), tuple(variants))
+                      tuple(items), tuple(bars_per_utterance), tuple(variants),
+                      Language.from_value(data.get("source_language") or "es"),
+                      Language.from_value(data.get("target_language") or "en"))
 
 
 def resolve_demo_specs(config: DemoConfig) -> dict[str, BedSpec]:
@@ -134,8 +139,8 @@ def resolve_demo_specs(config: DemoConfig) -> dict[str, BedSpec]:
     return specs
 
 
-def cache_key(speaker: Speaker, text: str, lang: str, prosody: Prosody,
-              emotion_name: str, target_seconds: float | None) -> str:
+def cache_key(speaker: Speaker, text: str, language: Language, delivery: Delivery,
+              target_seconds: float | None) -> str:
     """Return a stable key for one fully directed, post-fit utterance."""
     backend = speaker.backend
     backend_name = getattr(backend, "name", type(backend).__name__)
@@ -148,9 +153,10 @@ def cache_key(speaker: Speaker, text: str, lang: str, prosody: Prosody,
         "voices": getattr(backend, "voices", None),
         "voice_seed": speaker.voice_seed,
         "text": text,
-        "lang": lang,
-        "prosody": asdict(prosody),
-        "emotion": emotion_name,
+        "lang": language.code,
+        "prosody": asdict(delivery.prosody),
+        "take": delivery.take,
+        "direction": delivery.direction,
         "target_seconds": target_seconds,
         "sample_rate": SR,
     }
@@ -176,10 +182,9 @@ class PersistentSpeaker:
     def stats(self) -> list[dict[str, Any]]:
         return self.speaker.stats
 
-    def say(self, text: str, lang: str, prosody: Prosody, emotion: Any,
+    def say(self, text: str, language: Language, delivery: Delivery,
             target_seconds: float | None = None, *, retry: bool = False) -> np.ndarray:
-        key = cache_key(self.speaker, text, lang, prosody, emotion.name,
-                        target_seconds)
+        key = cache_key(self.speaker, text, language, delivery, target_seconds)
         wav_path = self.cache_dir / f"{key}.wav"
         metadata_path = self.cache_dir / f"{key}.json"
         if not self.refresh and not retry and wav_path.is_file() and metadata_path.is_file():
@@ -201,7 +206,7 @@ class PersistentSpeaker:
                 return audio
 
         before = len(self.speaker.stats)
-        audio = self.speaker.say(text, lang, prosody, emotion, target_seconds,
+        audio = self.speaker.say(text, language, delivery, target_seconds,
                                  retry=retry)
         if len(self.speaker.stats) <= before:
             raise RuntimeError("Speech backend did not record take metadata.")
@@ -234,76 +239,32 @@ class PersistentSpeaker:
         self.speaker.close()
 
 
-def arrange_demo(config: DemoConfig, speaker: PersistentSpeaker,
-                 grid: Grid, *, intro_bars: int = 2,
+def arrange_demo(config: DemoConfig, speaker: PersistentSpeaker, grid: Grid, *,
+                 intro_bars: int = 2,
                  outro_bars: int = 2) -> tuple[list[Event], int]:
     """Arrange the retrieval pattern with optional longer per-item speech slots."""
     events: list[Event] = []
     bar = intro_bars
     for index, (item, span) in enumerate(
             zip(config.items, config.bars_per_utterance), 1):
-        emotion = for_item(item.source, item.emoji)
-        print(f"  [{index}/{len(config.items)}] {item.emoji or ' '} "
-              f"{item.source} — {item.target}  ({emotion.name}, "
+        print(f"  [{index}/{len(config.items)}] {item.source} — {item.target}  "
+              f"({item.direction or 'plain'}, "
               f"{span} bar{'s' if span != 1 else ''}/utterance)", flush=True)
         for kind, repetition in PATTERNS[config.pattern]:
             if kind in ("gap", "rest"):
                 bar += 1
                 continue
-            text = item.source if kind == "es" else item.target
-            prosody = Prosody.for_repeat(repetition, speaker.prosody_strength)
-            prosody = prosody.with_emotion(emotion, speaker.prosody_strength)
+            text = item.source if kind == SOURCE else item.target
+            language = (config.source_language if kind == SOURCE
+                        else config.target_language)
+            delivery = Delivery.for_take(repetition, item.direction,
+                                         strength=speaker.prosody_strength)
             audio = speaker.say(
-                text, kind, prosody, emotion,
+                text, language, delivery,
                 target_seconds=grid.bar * span * 0.92)
             events.append(Event(grid.bar_start(bar), audio, f"{kind}:{text}"))
             bar += span
     return events, bar + outro_bars
-
-
-def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
-                   total_bars: int, pattern: str) -> list[dict[str, Any]]:
-    """Describe progressive reveals and active utterances from arranged events."""
-    slots = PATTERNS[pattern]
-    spoken_slots = [(kind, rep) for kind, rep in slots if kind in ("es", "en")]
-    expected = len(items) * len(spoken_slots)
-    if len(events) != expected:
-        raise ValueError(f"Expected {expected} speech events, received {len(events)}.")
-    timeline: list[dict[str, Any]] = []
-    cursor = 0
-    for item_index, item in enumerate(items):
-        utterances = []
-        for language, repetition in spoken_slots:
-            event = events[cursor]
-            expected_text = item.source if language == "es" else item.target
-            if event.label != f"{language}:{expected_text}":
-                raise ValueError("Speech events do not match the configured vocabulary.")
-            utterances.append({
-                "language": language,
-                "repetition": repetition,
-                "start": float(event.start),
-                "end": float(event.start + len(event.audio) / grid.sr),
-            })
-            cursor += 1
-        source_reveal = next(row["start"] for row in utterances
-                             if row["language"] == "es")
-        target_reveal = next(row["start"] for row in utterances
-                             if row["language"] == "en")
-        next_start = (float(events[cursor].start) if cursor < len(events)
-                      else float(total_bars * grid.bar))
-        timeline.append({
-            "index": item_index,
-            "source": item.source,
-            "target": item.target,
-            "emoji": item.emoji,
-            "emotion": for_item(item.source, item.emoji).name,
-            "start": source_reveal,
-            "source_reveal": source_reveal,
-            "target_reveal": target_reveal,
-            "end": next_start,
-            "utterances": utterances,
-        })
-    return timeline
 
 
 def write_tracklist(path: Path, variant: str, config: DemoConfig,
@@ -315,8 +276,9 @@ def write_tracklist(path: Path, variant: str, config: DemoConfig,
     ]
     for row in timeline:
         at = float(row["start"])
-        lines.append(f"{int(at)//60:02d}:{int(at)%60:02d}  {row['emoji']} "
-                     f"{row['source']} — {row['target']} ({row['emotion']})")
+        lines.append(f"{int(at)//60:02d}:{int(at)%60:02d}  "
+                     f"{row['source']} — {row['target']}"
+                     f"{' (' + row['direction'] + ')' if row['direction'] else ''}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -412,10 +374,10 @@ def _active_item(timeline: Sequence[dict[str, Any]], at: float) -> dict[str, Any
                  if float(row["start"]) <= at < float(row["end"])), None)
 
 
-def _active_language(row: dict[str, Any], at: float) -> str | None:
+def _active_role(row: dict[str, Any], at: float) -> str | None:
     active = next((utterance for utterance in row["utterances"]
                    if float(utterance["start"]) <= at < float(utterance["end"])), None)
-    return str(active["language"]) if active else None
+    return str(active["role"]) if active else None
 
 
 def frame_bytes(title: str, timeline: Sequence[dict[str, Any]], duration: float,
@@ -450,19 +412,19 @@ def frame_bytes(title: str, timeline: Sequence[dict[str, Any]], duration: float,
         _centered_text(draw, "Expressive Gemini voices · deterministic procedural music",
                        355, medium, (174, 204, 216, 220))
     else:
-        active = _active_language(row, at)
+        active = _active_role(row, at)
         source_visible = at >= float(row["source_reveal"])
         target_visible = at >= float(row["target_reveal"])
         card = (105, 145, DEMO_WIDTH - 105, 592)
         _rounded_rectangle(draw, card, 34, (14, 21, 47, 206),
                            (126, 155, 186, 50), 2)
 
-        source_alpha = 255 if active == "es" else 222
-        target_alpha = 255 if active == "en" else 218
-        if active == "es":
+        source_alpha = 255 if active == SOURCE else 222
+        target_alpha = 255 if active == TARGET else 218
+        if active == SOURCE:
             _rounded_rectangle(draw, (132, 178, DEMO_WIDTH - 132, 337), 25,
                                (45, 94, 124, 125), (102, 220, 194, 125), 2)
-        if active == "en":
+        if active == TARGET:
             _rounded_rectangle(draw, (132, 378, DEMO_WIDTH - 132, 537), 25,
                                (72, 61, 118, 125), (170, 139, 242, 125), 2)
         if source_visible:
@@ -481,7 +443,9 @@ def frame_bytes(title: str, timeline: Sequence[dict[str, Any]], duration: float,
                       fill=(154, 180, 207, 55), width=2)
 
         index = int(row["index"]) + 1
-        label = f"{index:02d}  /  {len(timeline):02d}    ·    {str(row['emotion']).upper()}"
+        label = f"{index:02d}  /  {len(timeline):02d}"
+        if row.get("direction"):
+            label += f"    ·    {str(row['direction']).upper()}"
         _centered_text(draw, label, 619, small, (155, 187, 204, 190))
 
     progress = min(max(at / max(duration, 0.001), 0.0), 1.0)

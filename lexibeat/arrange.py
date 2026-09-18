@@ -1,8 +1,13 @@
 """Lay utterances onto the beat grid.
 
-Each vocabulary item gets a fixed block of bars. Within the block, every
-utterance starts exactly on a downbeat; the rest of its bar is silence. This
-preserves the downbeat-aligned structure established by the prototype.
+Each vocabulary item gets a fixed block of bars. Within the block, every utterance starts exactly
+on a downbeat; the rest of its bar is silence. This preserves the downbeat-aligned structure
+established by the prototype.
+
+The pattern used to be bilingual in the literal sense: its slots were ``("es", 0)`` and
+``("en", 0)``. They are ``("source", 0)`` and ``("target", 0)`` now, and which language each one is
+comes from the request — so the same two presets teach Mandarin from Portuguese without a line
+changing here.
 """
 
 from __future__ import annotations
@@ -12,30 +17,41 @@ from typing import Callable
 
 import numpy as np
 
-from .emotion import for_item
+from .language import Language
 from .music import Grid
 from .vocab import Item
-from .voice import Prosody, Speaker
+from .voice import Delivery, Speaker
 
-# Each entry is one bar: (language | "gap" | "rest", repetition index).
+SOURCE = "source"
+TARGET = "target"
+
+# Each entry is one bar: (source | target | "gap" | "rest", repetition index).
 #   "gap"  - deliberate silence for the learner to recall the translation
 #   "rest" - breathing room before the next word
 PATTERNS: dict[str, list[tuple[str, int]]] = {
-    # Spanish, silence to recall in, then the answer. Retrieval practice.
+    # The word, silence to recall in, then the answer. Retrieval practice.
     "retrieval": [
-        ("es", 0), ("gap", 0), ("en", 0),
-        ("es", 1), ("en", 1),
-        ("es", 2), ("en", 2),
+        (SOURCE, 0), ("gap", 0), (TARGET, 0),
+        (SOURCE, 1), (TARGET, 1),
+        (SOURCE, 2), (TARGET, 2),
         ("rest", 0),
     ],
     # Straight alternation without a retrieval gap.
     "alternating": [
-        ("es", 0), ("en", 0),
-        ("es", 1), ("en", 1),
-        ("es", 2), ("en", 2),
+        (SOURCE, 0), (TARGET, 0),
+        (SOURCE, 1), (TARGET, 1),
+        (SOURCE, 2), (TARGET, 2),
         ("rest", 0), ("rest", 0),
     ],
 }
+
+
+def spoken_slots(pattern: str) -> list[tuple[str, int]]:
+    return [(kind, rep) for kind, rep in PATTERNS[pattern] if kind in (SOURCE, TARGET)]
+
+
+class Cancelled(RuntimeError):
+    """The caller asked for the render to stop, between utterances."""
 
 
 @dataclass
@@ -50,72 +66,71 @@ def arrange(
     speaker: Speaker,
     grid: Grid,
     *,
+    source_language: Language,
+    target_language: Language,
     pattern: str = "retrieval",
     intro_bars: int = 2,
     outro_bars: int = 2,
-    emotions: bool = True,
     progress: bool = True,
     progress_callback: Callable[[int, int, str], None] | None = None,
+    cancel_check: Callable[[], bool] | None = None,
 ) -> tuple[list[Event], int]:
     """Return the scheduled utterances and the total number of bars needed."""
     slots = PATTERNS[pattern]
+    languages = {SOURCE: source_language, TARGET: target_language}
     events: list[Event] = []
     bar = intro_bars
     completed = 0
-    spoken_slots = sum(kind in ("es", "en") for kind, _ in slots)
-    total_utterances = len(items) * spoken_slots
+    total_utterances = len(items) * len(spoken_slots(pattern))
 
     for n, item in enumerate(items, 1):
-        emotion = for_item(item.source, item.emoji, enabled=emotions)
         if progress:
-            print(f"  [{n}/{len(items)}] {item.emoji or ' '} {item.source} — "
-                  f"{item.target}  ({emotion.name})", flush=True)
-        item_events: dict[str, list[tuple[Event, str, Prosody]]] = {
-            "es": [], "en": [],
+            print(f"  [{n}/{len(items)}] {item.source} — {item.target}"
+                  f"{'  (' + item.direction + ')' if item.direction else ''}", flush=True)
+        item_events: dict[str, list[tuple[Event, str, Delivery]]] = {
+            SOURCE: [], TARGET: [],
         }
         for kind, rep in slots:
             if kind in ("gap", "rest"):
                 bar += 1
                 continue
-            text = item.source if kind == "es" else item.target
-            if getattr(getattr(speaker, "backend", None), "name", None) == "chatterbox":
-                prosody = Prosody.for_chatterbox_repeat(
-                    rep, speaker.prosody_strength)
-            else:
-                prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
-            prosody = prosody.with_emotion(emotion, speaker.prosody_strength)
+            if cancel_check and cancel_check():
+                raise Cancelled("The render was cancelled.")
+            text = item.source if kind == SOURCE else item.target
+            language = languages[kind]
+            delivery = speaker.take(rep, item.direction)
             if progress_callback:
-                language = "Spanish" if kind == "es" else "English"
                 progress_callback(
                     completed, total_utterances,
                     f"Synthesizing {completed + 1} of {total_utterances}: "
-                    f"{language} — {text}")
+                    f"{language.name} — {text}")
             # Leave a little of the bar clear so the next downbeat stays audible.
-            audio = speaker.say(text, kind, prosody, emotion,
+            audio = speaker.say(text, language, delivery,
                                 target_seconds=grid.bar * 0.92)
             event = Event(grid.bar_start(bar), audio, f"{kind}:{text}")
             events.append(event)
-            item_events[kind].append((event, text, prosody))
+            item_events[kind].append((event, text, delivery))
             completed += 1
             bar += 1
 
-        if getattr(getattr(speaker, "backend", None), "name", None) == "chatterbox":
+        # A backend that cannot be told to go faster, and cannot be stretched locally, is the one
+        # that returns a take far longer than its peers. That is a capability, not a model name.
+        if not speaker.capabilities.schedulable:
             for kind, repetitions in item_events.items():
                 longest = _long_duration_outlier(
                     [len(event.audio) for event, _, _ in repetitions], grid.sr)
                 if longest is None:
                     continue
-                event, text, prosody = repetitions[longest]
+                event, text, delivery = repetitions[longest]
                 peers = [len(row[0].audio) for index, row in enumerate(repetitions)
                          if index != longest]
                 peer_median = float(np.median(peers))
                 if progress_callback:
-                    language = "Spanish" if kind == "es" else "English"
                     progress_callback(
                         completed, total_utterances,
-                        f"Retrying an unusually long {language} repetition — {text}")
+                        f"Retrying an unusually long {languages[kind].name} repetition — {text}")
                 replacement = speaker.say(
-                    text, kind, prosody, emotion,
+                    text, languages[kind], delivery,
                     target_seconds=grid.bar * 0.92, retry=True)
                 if abs(len(replacement) - peer_median) < \
                         abs(len(event.audio) - peer_median):
@@ -123,15 +138,20 @@ def arrange(
                 else:
                     remember = getattr(speaker, "remember_take", None)
                     if remember:
-                        remember(text, kind, prosody, emotion,
+                        remember(text, languages[kind], delivery,
                                  grid.bar * 0.92, event.audio)
 
     return events, bar + outro_bars
 
 
 def _long_duration_outlier(lengths: list[int], sample_rate: int) -> int | None:
-    """Return a clearly long take among three repetitions, if one exists."""
-    if len(lengths) != 3:
+    """Return a clearly long take among the repetitions, if one exists.
+
+    This required exactly three lengths, which is the whole of what stood between three repetitions
+    and four. Any count from three up now works; two cannot have an outlier, because with one peer
+    there is nothing to be an outlier from.
+    """
+    if len(lengths) < 3:
         return None
     longest = int(np.argmax(lengths))
     peers = [length for index, length in enumerate(lengths) if index != longest]

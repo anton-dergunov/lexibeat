@@ -30,14 +30,10 @@ from .explorer import (
     validate_bed_spec,
 )
 from .generator import sample_refs
-from .lesson import (
-    DEFAULT_LESSON_ROWS,
-    LESSON_MODEL,
-    finalize_lesson,
-    lesson_gpu_duration,
-    normalize_lesson_rows,
-    render_lesson_speech,
-)
+from .language import Language
+from .arrange import PATTERNS
+from .loop import LoopRequest, estimated_seconds, render_loop
+from .vocab import Item
 
 
 _TABLE_PATHS = ("/phrase/chords", "/phrase/bass", "/phrase/lead",
@@ -45,6 +41,14 @@ _TABLE_PATHS = ("/phrase/chords", "/phrase/bass", "/phrase/lead",
 _EXTRA_LOCK_PATHS = tuple(sorted(TABLE_LOCK_PATHS - set(_TABLE_PATHS)))
 _LOCAL_VOICE_LOCK = threading.Lock()
 _LOCAL_VOICE_BACKEND = None
+
+# Three columns, not two, and no cap. The six-row limit and the missing direction column were the
+# hosted demo's shape, not the engine's.
+DEFAULT_LOOP_ROWS = [
+    ["hola", "hello", "warmly, greeting a friend"],
+    ["gracias", "thank you", "sincerely grateful"],
+    ["por favor", "please", "politely asking"],
+]
 
 
 def _initial_state() -> dict:
@@ -255,65 +259,72 @@ def _sample_tables(spec: BedSpec, samples: SampleService) -> tuple[list[list], l
 
 def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                samples: SampleService,
-               lesson_generate: Callable[[object, str, dict], dict] | None = None):
+               backend_factory: Callable[[], Any] | None = None):
     import gradio as gr
 
     schema = __import__("lexibeat.explorer", fromlist=["explorer_schema"]).explorer_schema(config)
     scalar_fields = [field for field in CONTROL_FIELDS
                      if field.kind != "table" and not field.read_only]
     palette_choices = schema["simple"]["palette"]
-    lesson_palette = "hybrid" if "hybrid" in palette_choices else "electronic"
+    loop_palette = "hybrid" if "hybrid" in palette_choices else "electronic"
 
-    if lesson_generate is None:
-        def lesson_generate(rows: object, model: str, state: dict,
-                            progress=gr.Progress()) -> dict:
+    if backend_factory is None:
+        def backend_factory():
+            """The Lab's own voice: whatever this machine can run locally.
+
+            The service takes its backend from the host instead. This is the one place LexiBeat
+            builds one for itself, because a laptop exploring beds has no host to ask.
+            """
             global _LOCAL_VOICE_BACKEND
-            progress(0.01, desc="Loading local Chatterbox")
             with _LOCAL_VOICE_LOCK:
                 if _LOCAL_VOICE_BACKEND is None:
                     from .voice import MlxAudioBackend
                     _LOCAL_VOICE_BACKEND = MlxAudioBackend()
-            return render_lesson_speech(
-                rows, model, state, backend=_LOCAL_VOICE_BACKEND,
-                config=config, palette=lesson_palette,
-                progress=lambda value, message: progress(value, desc=message))
+                return _LOCAL_VOICE_BACKEND
 
-    with gr.Blocks(title="LexiBeat Lesson Generator", fill_width=True,
+    with gr.Blocks(title="LexiBeat Loop Generator", fill_width=True,
                    analytics_enabled=False) as demo:
         current = gr.State(_initial_state())
-        lesson_job = gr.State(None)
         gr.Markdown(
-            "# LexiBeat\nCreate a bilingual spoken lesson over a reproducible music bed, "
+            "# LexiBeat\nBuild a spoken loop over a reproducible music bed, "
             "or explore the music on its own.")
 
-        with gr.Tabs(selected="lesson") as tabs:
-            with gr.Tab("Lesson", id="lesson"):
+        with gr.Tabs(selected="loop") as tabs:
+            with gr.Tab("Loop", id="loop"):
                 gr.Markdown(
-                    "Enter one to six Spanish/English pairs. The current applied music "
-                    "bed is reused; if there is none, LexiBeat creates a safe automatic bed.")
+                    "One row a word: the word, its translation, and how it should be said. "
+                    "The direction is free text and may be left blank.")
                 with gr.Row():
                     with gr.Column(scale=3, min_width=420):
                         vocabulary = gr.Dataframe(
-                            value=DEFAULT_LESSON_ROWS,
-                            headers=["Spanish", "English"],
-                            datatype=["str", "str"], type="array",
+                            value=DEFAULT_LOOP_ROWS,
+                            headers=["Word", "Translation", "Direction"],
+                            datatype=["str", "str", "str"], type="array",
                             label="Vocabulary", interactive=True)
-                        voice_model = gr.Dropdown(
-                            choices=[("Chatterbox Multilingual", LESSON_MODEL)],
-                            value=LESSON_MODEL, label="Voice model",
-                            interactive=True)
-                        lesson_button = gr.Button(
-                            "Generate spoken lesson", variant="primary")
-                        lesson_open_lab = gr.Button("Open bed in Lab")
+                        # A code and a name, because that is what a language is here: the code
+                        # picks the voice and the name goes into the director note a model reads.
+                        with gr.Row():
+                            source_code = gr.Textbox(value="es", label="Word language",
+                                                     max_lines=1, scale=1)
+                            source_name = gr.Textbox(value="Spanish", label="called",
+                                                     max_lines=1, scale=2)
+                            target_code = gr.Textbox(value="en", label="Translation language",
+                                                     max_lines=1, scale=1)
+                            target_name = gr.Textbox(value="English", label="called",
+                                                     max_lines=1, scale=2)
+                        loop_pattern = gr.Radio(
+                            sorted(PATTERNS), value="retrieval", label="Pattern")
+                        loop_button = gr.Button("Generate loop", variant="primary")
+                        loop_open_lab = gr.Button("Open bed in Lab")
                     with gr.Column(scale=4, min_width=420):
-                        lesson_status = gr.Markdown(
-                            "### Lesson\nReady to generate three vocabulary pairs.")
-                        lesson_audio = gr.Audio(
-                            label="Spoken lesson", interactive=False,
+                        loop_status = gr.Markdown(
+                            "### Loop\nReady to generate three words.")
+                        loop_audio = gr.Audio(
+                            label="Loop", interactive=False,
                             editable=False, autoplay=False, buttons=["download"],
-                            elem_id="lesson-audio")
-                        lesson_download = gr.File(
-                            label="Download lesson WAV", interactive=False)
+                            elem_id="loop-audio")
+                        loop_download = gr.File(
+                            label="Download loop MP3", interactive=False)
 
             with gr.Tab("Music", id="simple"):
                 with gr.Row():
@@ -616,61 +627,78 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                          audio_path=None)
             return full_values(state, clear_locks=False)
 
-        def finish_lesson(job: dict, state: dict, progress=gr.Progress()):
-            if not job:
-                raise gr.Error("Speech generation did not return a lesson artifact.")
-            result = finalize_lesson(
-                job, config=config,
-                progress=lambda value, message: progress(value, desc=message))
-            spec, report = validate_bed_spec(result["bed_spec"], analyze=False)
+        def loop_items(rows: object) -> list[Item]:
+            if hasattr(rows, "values"):
+                rows = rows.values.tolist()
+            items: list[Item] = []
+            for index, row in enumerate(list(rows or []), 1):
+                cells = list(row) + ["", "", ""]
+                item = Item(str(cells[0] or ""), str(cells[1] or ""), str(cells[2] or ""))
+                if not item.source and not item.target:
+                    continue
+                if not item:
+                    raise gr.Error(f"Row {index} needs both a word and a translation.")
+                items.append(item)
+            if not items:
+                raise gr.Error("Enter at least one word and its translation.")
+            return items
+
+        def generate_loop(rows: object, source_code: str, source_name: str,
+                          target_code: str, target_name: str,
+                          pattern: str, state: dict, progress=gr.Progress()):
+            items = loop_items(rows)
+            try:
+                request = LoopRequest(
+                    items=tuple(items),
+                    source_language=Language(source_code, source_name),
+                    target_language=Language(target_code, target_name),
+                    pattern=pattern, palette=loop_palette)
+            except ValueError as exc:
+                raise gr.Error(str(exc)) from exc
+            progress(0.01, desc="Preparing the voice")
+            backend = backend_factory()
+            output = (config.output_root / "loops" /
+                      f"{secrets.token_hex(8)}.mp3")
+            try:
+                result = render_loop(
+                    request, backend=backend, output=output,
+                    progress=lambda value, message: progress(value, desc=message))
+            except ValueError as exc:
+                raise gr.Error(str(exc)) from exc
+            spec, report = validate_bed_spec(result.bed_spec, analyze=False)
             if spec is None or report.state == "invalid":
-                raise gr.Error("The generated lesson contains an invalid BedSpec.")
+                raise gr.Error("The generated loop contains an invalid BedSpec.")
             previous_request = (state or {}).get("music_request")
             state = _initial_state()
-            state.update(
-                bed_spec=_json_data(spec), validation=report.to_dict(),
-                audio_path=result["audio_path"])
+            state.update(bed_spec=_json_data(spec), validation=report.to_dict(),
+                         audio_path=result.audio_path)
             if previous_request:
                 state["music_request"] = previous_request
             values = full_values(state, clear_locks=True)
-            count = len(job["items"])
-            cache_note = " (cached)" if result["cache_hit"] else ""
             status = (
-                "### Lesson ready\n"
-                f"{count} vocabulary pair{'s' if count != 1 else ''} · "
-                f"{result['duration_seconds'] / 60:.1f} minutes{cache_note}")
-            lesson_value = audio_value(
-                result["audio_path"], label="Spoken lesson", autoplay=True,
-                subtitles=result["subtitles"])
-            return [*values, status, lesson_value, result["audio_path"]]
+                "### Loop ready\n"
+                f"{len(items)} word{'s' if len(items) != 1 else ''} · "
+                f"{result.duration_seconds / 60:.1f} minutes · "
+                f"style '{result.style_id}' · seed {result.seed}")
+            loop_value = audio_value(result.audio_path, label="Loop", autoplay=True)
+            return [*values, status, loop_value, result.audio_path]
 
-        def start_lesson(rows: object) -> str:
-            count = len(normalize_lesson_rows(rows))
-            destination = ("ZeroGPU allocation" if config.hosted
-                           else "local Chatterbox")
-            reservation = lesson_gpu_duration(rows)
-            quota_note = (f" Requested GPU reservation: {reservation} seconds."
-                          if config.hosted else "")
-            return (
-                "### Preparing lesson\n"
-                f"Validated {count} vocabulary pair{'s' if count != 1 else ''}. "
-                f"Waiting for {destination}…{quota_note}")
+        def announce_loop(rows: object, pattern: str) -> str:
+            items = loop_items(rows)
+            seconds = estimated_seconds(len(items), pattern)
+            return ("### Preparing the loop\n"
+                    f"{len(items)} word{'s' if len(items) != 1 else ''}, "
+                    f"about {seconds / 60:.1f} minutes of audio.")
 
-        # Keep this lightweight status update independent and unqueued. ZeroGPU
-        # must see the decorated inference callback directly on the click event;
-        # putting it behind `.then(...)` can leave the scheduler uninvoked.
-        lesson_button.click(
-            start_lesson, vocabulary, lesson_status, api_name=False,
-            queue=False, show_progress="hidden")
-        lesson_event = lesson_button.click(
-            lesson_generate, [vocabulary, voice_model, current], lesson_job,
-            api_name=False)
-        lesson_event.then(
-            finish_lesson, [lesson_job, current],
-            [*full_outputs, lesson_status, lesson_audio, lesson_download],
-            api_name=False)
-        lesson_open_lab.click(lambda: gr.Tabs(selected="lab"), outputs=tabs,
-                              api_name=False)
+        loop_button.click(announce_loop, [vocabulary, loop_pattern], loop_status,
+                          api_name=False, queue=False, show_progress="hidden")
+        loop_button.click(
+            generate_loop,
+            [vocabulary, source_code, source_name, target_code, target_name,
+             loop_pattern, current],
+            [*full_outputs, loop_status, loop_audio, loop_download], api_name=False)
+        loop_open_lab.click(lambda: gr.Tabs(selected="lab"), outputs=tabs,
+                            api_name=False)
 
         generate_event = generate_button.click(
             generate, [family, energy, rhythm, palette], full_outputs,

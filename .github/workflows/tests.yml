@@ -1,0 +1,79 @@
+name: Tests
+
+# On a pull request, not only on the way to a deployment. The job that used to live here ran the
+# suite as step four of publishing a Hugging Face Space, so a branch got no signal at all and a
+# green run meant "the Space went out" rather than "the tests passed".
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source without the sample bundle
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          # The 1.8 GB bundle is a release artifact, not a checkout. Every test either needs no
+          # samples or asserts what happens when there are none.
+          lfs: false
+
+      - name: Install uv and Python 3.12
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install the service and explorer extras
+        run: uv sync --extra service --extra explorer --locked
+
+      - name: Run the test suite
+        run: uv run python -m unittest discover -s tests -v
+
+      - name: The committed OpenAPI snapshot is current
+        run: |
+          uv run lexibeat-service openapi --out /tmp/openapi-v1.json
+          diff -u docs/openapi-v1.json /tmp/openapi-v1.json
+
+      - name: The service import path stays slim
+        run: |
+          uv run python -c "
+          import lexibeat.loop, lexibeat.service, sys
+          heavy = sorted(n for n in ('librosa', 'numba', 'llvmlite', 'torch', 'gradio')
+                         if n in sys.modules)
+          assert not heavy, heavy
+          print('slim')
+          "
+
+      - name: A synth-only bed renders with no samples at all
+        run: |
+          uv run lexibeat --bed-only --music-palette electronic --out /tmp/bed.wav
+          uv run python -c "
+          import numpy as np, soundfile as sf
+          audio, rate = sf.read('/tmp/bed.wav')
+          assert audio.ndim == 2 and audio.shape[1] == 2, audio.shape
+          assert np.isfinite(audio).all()
+          assert float(np.abs(audio).max()) <= 0.97
+          print('bed ok', rate, audio.shape)
+          "
+
+      - name: The prohibited word appears nowhere
+        # Assembled rather than written out, so this step is not itself the only occurrence.
+        run: |
+          word="$(printf 'ear%s' 'worm')"
+          if grep -ril "$word" --exclude-dir=.git --exclude-dir=.venv --exclude-dir=out . ; then
+            echo "That word is prohibited in this repository; see the naming rule in AGENTS.md." >&2
+            exit 1
+          fi
+          echo 'clean'

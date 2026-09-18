@@ -16,16 +16,17 @@ from lexibeat.demo import (
     DEMO_WIDTH,
     PersistentSpeaker,
     arrange_demo,
-    build_timeline,
     cache_key,
     encode_visual_track,
     load_demo_config,
     mux_audio,
     resolve_demo_specs,
 )
-from lexibeat.emotion import for_item
+from lexibeat.arrange import TARGET
+from lexibeat.language import ENGLISH, SPANISH
+from lexibeat.loop import build_timeline
 from lexibeat.music import SR, Grid
-from lexibeat.voice import Prosody, Speaker, SynthesisResult
+from lexibeat.voice import CAPABILITIES, Delivery, Speaker, SynthesisResult
 
 ROOT = Path(__file__).parents[1]
 MANIFEST = ROOT / "examples" / "readme_demo" / "full.json"
@@ -63,8 +64,10 @@ class DemoConfigTests(unittest.TestCase):
         spans = dict(zip((item.source for item in config.items),
                          config.bars_per_utterance))
         self.assertEqual(spans["estar envuelto en sus pensamientos"], 2)
-        self.assertEqual(for_item("descansar", "😴").name, "calm")
-        self.assertEqual(for_item("tranquilizarse", "😌").name, "calm")
+        directions = dict(zip((item.source for item in config.items),
+                              (item.direction for item in config.items)))
+        self.assertEqual(directions["descansar"], "drowsy and unhurried")
+        self.assertEqual(directions["tranquilizarse"], "calm, settling")
         specs = resolve_demo_specs(config)
         self.assertEqual(list(specs), [
             "gentle-movement", "playful-plucked", "sunlit", "lofi-wide",
@@ -75,26 +78,18 @@ class DemoConfigTests(unittest.TestCase):
         self.assertEqual(grids, {(78, 4, 4)})
 
     def test_full_timeline_has_downbeats_and_progressive_reveals(self) -> None:
-        class FakeSpeaker:
+        class DemoFakeSpeaker:
             prosody_strength = 1.0
-            backend = type("Backend", (), {"name": "fake"})()
+            capabilities = CAPABILITIES["gemini"]
 
             @staticmethod
-            def say(text, lang, prosody, emotion, target_seconds=None):
-                del text, lang, prosody, emotion, target_seconds
+            def say(text, language, delivery, target_seconds=None):
+                del text, language, delivery, target_seconds
                 return np.ones(SR // 20, dtype=np.float32)
 
         config = load_demo_config(MANIFEST)
         spec = next(iter(resolve_demo_specs(config).values()))
         grid = Grid.from_spec(spec)
-        class DemoFakeSpeaker:
-            prosody_strength = 1.0
-
-            @staticmethod
-            def say(text, lang, prosody, emotion, target_seconds=None):
-                return FakeSpeaker.say(text, lang, prosody, emotion,
-                                       target_seconds)
-
         events, total_bars = arrange_demo(config, DemoFakeSpeaker(), grid)
         timeline = build_timeline(config.items, events, grid, total_bars,
                                   config.pattern)
@@ -108,7 +103,7 @@ class DemoConfigTests(unittest.TestCase):
             self.assertTrue(all(
                 utterance["start"] >= row["target_reveal"]
                 for utterance in row["utterances"]
-                if utterance["language"] == "en"))
+                if utterance["role"] == TARGET))
             self.assertGreater(row["end"], row["target_reveal"])
 
 
@@ -120,9 +115,11 @@ class PersistentSpeakerTests(unittest.TestCase):
         sample_rate = SR
         calls = 0
 
-        def synth(self, text, lang, prosody, emotion, target_seconds=None,
-                  seed=None):
-            del text, lang, prosody, emotion, target_seconds, seed
+        capabilities = CAPABILITIES["gemini"]
+        load_seconds = 0.0
+
+        def synth(self, request):
+            del request
             type(self).calls += 1
             return SynthesisResult(
                 np.full(SR // 10, 0.1, dtype=np.float32), SR, 0.01,
@@ -132,20 +129,16 @@ class PersistentSpeakerTests(unittest.TestCase):
         self.FakeBackend.calls = 0
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            first = Speaker(backend="chatterbox",
-                            backend_instance=self.FakeBackend())
+            first = Speaker(backend_instance=self.FakeBackend())
             cached = PersistentSpeaker(first, root)
-            audio = cached.say("hola", "es", Prosody(),
-                               for_item("hola", ""), 1.0)
+            audio = cached.say("hola", SPANISH, Delivery(direction="warmly"), 1.0)
             cached.close()
             self.assertEqual(self.FakeBackend.calls, 1)
             self.assertTrue(np.isfinite(audio).all())
 
-            second = Speaker(backend="chatterbox",
-                             backend_instance=self.FakeBackend())
+            second = Speaker(backend_instance=self.FakeBackend())
             resumed = PersistentSpeaker(second, root)
-            again = resumed.say("hola", "es", Prosody(),
-                                for_item("hola", ""), 1.0)
+            again = resumed.say("hola", SPANISH, Delivery(direction="warmly"), 1.0)
             resumed.close()
             self.assertEqual(self.FakeBackend.calls, 1)
             self.assertTrue(second.stats[-1]["cache_hit"])
@@ -164,7 +157,7 @@ class PersistentSpeakerTests(unittest.TestCase):
         vertex.backend = GeminiLike()
         vertex.backend.vertex = True
         vertex.voice_seed = 7
-        args = ("hola", "es", Prosody(), "warm", 1.0)
+        args = ("hola", SPANISH, Delivery(direction="warmly"), 1.0)
         self.assertNotEqual(cache_key(direct, *args), cache_key(vertex, *args))
 
 
@@ -176,12 +169,12 @@ class DemoVideoIntegrationTests(unittest.TestCase):
         config = load_demo_config(MANIFEST)
         grid = Grid.from_spec(next(iter(resolve_demo_specs(config).values())))
         timeline = [{
-            "index": 0, "source": "hola", "target": "hello", "emoji": "🙂",
-            "emotion": "happy", "start": 0.0, "source_reveal": 0.0,
-            "target_reveal": 0.12, "end": 0.5,
+            "index": 0, "source": "hola", "target": "hello",
+            "direction": "warmly, greeting a friend", "start": 0.0,
+            "source_reveal": 0.0, "target_reveal": 0.12, "end": 0.5,
             "utterances": [
-                {"language": "es", "repetition": 0, "start": 0.0, "end": 0.1},
-                {"language": "en", "repetition": 0, "start": 0.12, "end": 0.22},
+                {"role": "source", "repetition": 0, "start": 0.0, "end": 0.1},
+                {"role": "target", "repetition": 0, "start": 0.12, "end": 0.22},
             ],
         }]
         with tempfile.TemporaryDirectory() as temporary:

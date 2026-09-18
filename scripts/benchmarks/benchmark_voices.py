@@ -18,7 +18,6 @@ from lexibeat.profiles import POSITIVE_FAMILIES
 from lexibeat.voice import CAPABILITIES, DEFAULT_MODELS, model_cache_root
 
 BACKENDS = ("indextts25", "voxcpm2", "qwen3", "tada", "fish-s2")
-VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 
 
 def directory_bytes(path: Path) -> int:
@@ -249,7 +248,8 @@ def main() -> None:
     parser.add_argument("--music-palette",
                         choices=("acoustic", "hybrid", "electronic"),
                         default="hybrid")
-    parser.add_argument("--vocab", type=Path, nargs="+", default=[VOCAB_DIR])
+    parser.add_argument("--vocab", type=Path, nargs="+", required=True,
+                        help="markdown files or directories of vocabulary notes")
     parser.add_argument("--out-dir", type=Path, default=Path("out/tts-bakeoff"))
     parser.add_argument("--skip-download", action="store_true")
     args = parser.parse_args()

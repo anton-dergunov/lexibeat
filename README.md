@@ -1,28 +1,26 @@
----
-title: LexiBeat Language Lesson Generator
-emoji: 🎵
-colorFrom: indigo
-colorTo: green
-sdk: gradio
-sdk_version: 6.26.0
-python_version: "3.12"
-app_file: app.py
-pinned: false
----
-
 # LexiBeat
 
-LexiBeat is a small experimental project for making language-learning
-audio: a word or phrase is spoken in Spanish, followed by its English meaning,
-over a calm procedural music bed. Speech lands on a known beat grid, repeats use
-slightly different delivery, and the music ducks gently while either speaker is
-talking.
+LexiBeat makes **loops**: a handful of words, each spoken in the language you are learning,
+followed by its translation, over a calm procedural music bed. Speech lands on a known beat grid,
+repeats are delivered slightly differently, and the music ducks gently while either speaker is
+talking. The `retrieval` pattern leaves a silent bar between the word and its answer to recall it in.
 
-The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate
-native references by default—Paulina for Mexican Spanish and Daniel for British
-English—so the two languages are easy to distinguish. Kokoro remains available
-as a faster fallback. The public Hugging Face Space uses the official CUDA
-Chatterbox Multilingual runtime on ZeroGPU.
+The music engine is procedural, not a model: numpy and `scipy.signal` over CC0 samples, no GPU, no
+network, and byte-identical from a seed. That is what lets a loop be built on a small always-on
+machine.
+
+There are two ways in.
+
+- **A library and a versioned HTTP service.** A host posts words and a direction for each, injects
+  its own speech backend, and follows an operation until the finished MP3 and its timeline are
+  ready. LexiBeat holds no provider credential of its own. The contract is
+  [`docs/service.md`](docs/service.md).
+- **A local command and a Gradio Lab**, for working on the music and trying a voice this machine
+  can run.
+
+The preferred local voice backend is Chatterbox on Apple Silicon. It uses separate native
+references by default — Paulina for Mexican Spanish and Daniel for British English — so the two
+languages are easy to distinguish. Kokoro remains available as a faster fallback.
 
 ## Demo
 
@@ -64,32 +62,68 @@ https://github.com/user-attachments/assets/9a83a5b9-1427-4216-b78c-aa6aed5d8a0f
 
 ### Try it yourself
 
-Generate your own tracks with any language pair, vocabulary, and music style:
-
-**[▶ Open LexiBeat on Hugging Face Spaces](https://huggingface.co/spaces/AntonDergunov/LexiBeat)**
+Generate your own tracks with any language pair, vocabulary, and music style — see **Setup** below,
+then either the local command or the Lab.
 
 ## Setup
 
 Install [`uv`](https://docs.astral.sh/uv/), then:
 
 ```bash
-uv sync
-# Local Chatterbox, Kokoro, and other MLX voice backends
-uv sync --extra local-tts
-# Optional research backends and benchmark resource monitoring
-uv sync --extra local-tts --extra experimental-tts
-# Optional hosted Gemini and Cloudflare speech backends
-uv sync --extra hosted-tts
-uv run python -m lexibeat.cli --download-samples salamander  # piano
-uv run python -m lexibeat.cli --download-samples vsco        # strings, marimba, glockenspiel
+uv sync                                    # the slim runtime: music, mixing, MP3
+uv sync --extra service                    # the versioned HTTP surface a host integrates against
+uv sync --extra explorer                   # the Gradio Lab
+uv sync --extra local-tts                  # Chatterbox, Kokoro and other MLX voice backends
+uv sync --extra local-tts --extra experimental-tts   # research backends and resource monitoring
+uv sync --extra hosted-tts                 # Gemini and Cloudflare speech backends
+uv run lexibeat --download-samples salamander  # piano
+uv run lexibeat --download-samples vsco        # strings, marimba, glockenspiel
 ```
 
-The repository includes a checksum-locked production sample bundle through Git
-LFS. Run `git lfs pull` after cloning. Additional samples can be downloaded
-explicitly into `~/.cache/lexibeat/`. The default Chatterbox and other local
-backends run offline after their weights are cached; explicitly selected Gemini
-and Cloudflare backends send transcript text to their provider. Kokoro
-additionally needs `brew install espeak-ng`.
+The slim runtime is numpy, scipy, soundfile, pyloudnorm, soxr and pedalboard, and nothing else.
+`librosa` is an extra of `local-tts`: the music path used it for resampling alone, and through it
+numba and llvmlite rode into an image whose job is to render a bed and mix speech it did not
+synthesise.
+
+The repository includes a checksum-locked production sample bundle through Git LFS. Run
+`git lfs pull` after cloning, or fetch a published one with `lexibeat-bundle fetch`. Without it the
+engine still works and offers the sample-free `electronic` palette. Additional samples can be
+downloaded explicitly into `~/.cache/lexibeat/`. The default Chatterbox and other local backends run
+offline after their weights are cached; explicitly selected Gemini and Cloudflare backends send
+transcript text to their provider. Kokoro additionally needs `brew install espeak-ng`.
+
+### The sample bundle
+
+```bash
+lexibeat-bundle verify                                   # every asset against its own digest
+lexibeat-bundle fetch --into /data/lexibeat --from URL --sha256 DIGEST
+lexibeat-bundle publish --out dist/bundle                # an archive plus SHA256SUMS, for a release
+export LEXIBEAT_BUNDLE_ROOT=/data/lexibeat/lexibeat-production-core-v1
+```
+
+It is 1.8 GB, so it never rides a wheel or a release of source: it is fetched once into a volume and
+named by `LEXIBEAT_BUNDLE_ROOT`. Licensing is not the reason — the one attribution-bearing source is
+CC-BY 3.0 and its credit already travels inside the bundle — size is.
+
+## The loop service
+
+```python
+from pathlib import Path
+from lexibeat.service import ServiceConfig, create_service
+
+app = create_service(
+    config=ServiceConfig(output_root=Path("/var/lib/lexibeat")),
+    backend_factory=lambda context: MyBackend(context.credentials),
+)
+```
+
+`POST /api/v1/loops` takes the words, a free-text direction for each and the two languages, and
+answers an operation to follow; `GET /api/v1/loops/{id}/audio` is the finished MP3 at 128 kbps.
+The full contract, including the `Backend` protocol a host implements, is
+[`docs/service.md`](docs/service.md), with `docs/openapi-v1.json` as the machine copy.
+
+There is no `lexibeat-service serve`: a process with no speech backend has nothing to run, and a
+default one would be exactly the provider credential this package refuses to hold.
 
 ## Web interface
 
@@ -99,81 +133,28 @@ Run the optional browser explorer locally with:
 ./scripts/run_explorer.sh
 ```
 
-It installs the explorer and local-TTS extras and opens a Gradio interface.
-**Lesson** accepts one to six Spanish/English pairs, synthesizes the established
-retrieval-practice sequence with Chatterbox, mixes it over the current music
-bed, and displays timed text in the audio player. A caption begins with its
-utterance and remains visible until the next utterance, so the English answer is
-never exposed before it is spoken. Lesson progress distinguishes validation,
-model allocation/loading, individual utterances, music rendering, and mixing.
-The first local request may download model weights and create the language-
-specific reference cache.
+It installs the explorer and local-TTS extras and opens a Gradio interface. **Loop** takes one row
+a word — the word, its translation, and free text saying how it should be said — with the two
+languages given as a code and a name. It synthesizes the retrieval-practice sequence with whatever
+voice this machine can run, mixes it over the current music bed, and writes an MP3. There is no row
+limit. The first local request may download model weights and create the language-specific
+reference cache.
 
-**Music** exposes the safe product controls. **Lab** edits the resolved
-`BedSpec`, validates production safety, randomizes unlocked fields, renders WAV
-previews, and loads or saves complete `.bed.json` files. A lesson reuses the
-last applied Music/Lab bed, or creates a safe automatic bed when none exists.
-Local music-only renders may be up to 180 seconds; the public
-[Hugging Face Space](https://huggingface.co/spaces/AntonDergunov/LexiBeat)
-caps music-only renders at 30 seconds and lessons at six vocabulary pairs.
+**Music** exposes the safe product controls. **Lab** edits the resolved `BedSpec`, validates
+production safety, randomizes unlocked fields, renders WAV previews, and loads or saves complete
+`.bed.json` files. A loop reuses the last applied Music/Lab bed, or creates a safe automatic bed
+when none exists. Music-only renders may be up to 180 seconds.
 
-The local launcher retains FastAPI routes beneath `/api/`, with interactive API
-documentation at `/api/docs`. The public Space launches Gradio directly so
-ZeroGPU can discover its GPU callback and does not expose these custom routes.
-The service never accepts client filesystem paths and writes only beneath
-`out/explorer/` unless `LEXIBEAT_EXPLORER_OUT` selects another managed root.
-Hosted sample promotion remains disabled.
+The Lab launcher retains FastAPI routes beneath `/api/`, with interactive API documentation at
+`/api/docs`. These are the *music* routes and are separate from the versioned loop service at
+`/api/v1`; the Lab never accepts client filesystem paths and writes only beneath `out/explorer/`
+unless `LEXIBEAT_EXPLORER_OUT` selects another managed root.
 
-Deployment from `main` is handled by `.github/workflows/deploy-huggingface.yml`.
-Add a write-capable Hugging Face token as the GitHub Actions secret `HF_TOKEN`.
-The workflow verifies the Linux music/web installation and synchronizes a small
-staging directory to `AntonDergunov/LexiBeat`. It includes a revision-pinned
-official Chatterbox CUDA runtime with the multilingual v3 model and hosted-only
-dependency pins, but excludes
-the checkout's `.venv` and the Git-LFS production audio, so the Space repository
-stays well below its Git storage limit.
-
-The hosted sample library lives separately in the private
-`AntonDergunov/LexiBeatSamples` Storage Bucket. Upload the checksum-locked local
-bundle once (review the plan before the real upload):
-
-```bash
-hf auth login
-./scripts/sync_hf_samples.sh --dry-run
-./scripts/sync_hf_samples.sh
-```
-
-In the Space settings, attach that bucket at `/data`, preferably read-only. The
-application automatically discovers
-`/data/lexibeat-production-core/v1/catalog.sqlite3`. A custom mount can be set
-with `LEXIBEAT_BUCKET_MOUNT`, or the complete bundle path can be selected with
-`LEXIBEAT_BUNDLE_ROOT`. If the bundle is not mounted, the hosted UI remains
-usable but offers only the sample-free electronic palette. Rendering and
+The production bundle catalog contains only checksum-verified files. Music generation therefore
+trusts and caches that immutable inventory instead of issuing per-sample existence checks against
+the mount. Mutable local catalogs retain availability checks. If a cataloged bundle file is missing
+when selected, generation reports that the bundle must be repaired or reattached. Rendering and
 validation never perform implicit downloads.
-
-The production bundle catalog contains only checksum-verified files copied by
-the bundle builder. Music generation therefore trusts and caches that immutable
-inventory instead of issuing per-sample existence checks against the mounted
-bucket. Mutable local catalogs retain availability checks. If a cataloged bundle
-file is missing when selected, generation reports that the bundle must be
-repaired or reattached.
-
-The production bundle is currently about 1.8 GB. A private bucket is appropriate
-for the public Space: its visibility does not control the Space's visibility,
-and visitors use samples through the application rather than receiving direct
-bucket access. The bucket can be made public later if direct redistribution is
-desired and every included source remains license-compatible.
-
-The Space runs Chatterbox Multilingual v3 on ZeroGPU. Its module-level model is
-placed on the CUDA-emulated device during startup, and the exact Gradio lesson
-handler is decorated with `@spaces.GPU`; its reservation grows from 70 to 120
-seconds with the number of vocabulary pairs. Only speech synthesis occupies the
-GPU allocation. Music rendering and final mixing run in the chained CPU stage.
-The Space launches Gradio directly with server-side rendering disabled, which
-also lets ZeroGPU complete its startup scan before serving requests.
-The first process start downloads the model checkpoint, and a cold ZeroGPU
-allocation can therefore take longer than later requests. Generated speech and
-finished lessons are cached beneath the managed explorer output directory.
 
 ## Versioned music API
 
@@ -211,7 +192,7 @@ instruments, rendering pipeline, and related music-theory research.
 The CLI uses the same production path by default:
 
 ```bash
-uv run python -m lexibeat.cli --bed-only --music-family auto \
+uv run lexibeat --bed-only --music-family auto \
   --music-energy bright --music-rhythm steady --music-palette acoustic \
   --out out/production-bed.wav
 ```
@@ -400,61 +381,67 @@ uv run --extra hosted-tts python -m scripts.benchmarks.compare_beds --count 14 \
   --speech-cache-from out/music-bakeoff-2 --out-dir out/music-bakeoff-3
 ```
 
-## Generate a lesson
+## Generate a loop from local notes
 
 ```bash
 # Chatterbox is the default
-uv run python -m lexibeat.cli --words 12 --out out/lesson.wav
+uv run lexibeat --vocab ~/notes/spanish --words 12 --out out/loop.wav
+
+# Any pair of languages: the code picks the voice, the name goes into the director note
+uv run lexibeat --vocab ~/notes/mandarin --source-language zh-Hans \
+  --source-language-name "Mandarin Chinese" --target-language pt-BR \
+  --target-language-name "Brazilian Portuguese" --out out/mandarin.wav
 
 # Audition only synth-based production music
-uv run python -m lexibeat.cli --bed-only --music-family meditative \
+uv run lexibeat --bed-only --music-family meditative \
   --music-palette electronic --out out/meditative.wav
 
 # Choose product-level music controls
-uv run python -m lexibeat.cli --music-family sunlit-acoustic \
+uv run lexibeat --music-family sunlit-acoustic \
   --music-energy bright --music-rhythm steady --out out/sunlit.wav
 
 # Fast voice fallback
-uv run python -m lexibeat.cli --backend kokoro --words 6 --out out/quick.wav
+uv run lexibeat --backend kokoro --vocab ~/notes/spanish --words 6 --out out/quick.wav
 
 # Experimental expressive backends (weights download to the LexiBeat cache)
-uv run python -m lexibeat.cli --backend indextts25 --words 1 --out out/index.wav
-uv run python -m lexibeat.cli --backend voxcpm2 --words 1 --out out/voxcpm.wav
-uv run python -m lexibeat.cli --backend qwen3 --words 1 --out out/qwen.wav
-uv run python -m lexibeat.cli --backend tada --words 1 --out out/tada.wav
-uv run python -m lexibeat.cli --backend fish-s2 --words 1 --out out/fish.wav
+uv run lexibeat --backend indextts25 --vocab ~/notes/spanish --words 1 --out out/index.wav
+uv run lexibeat --backend voxcpm2 --vocab ~/notes/spanish --words 1 --out out/voxcpm.wav
+uv run lexibeat --backend qwen3 --vocab ~/notes/spanish --words 1 --out out/qwen.wav
+uv run lexibeat --backend tada --vocab ~/notes/spanish --words 1 --out out/tada.wav
+uv run lexibeat --backend fish-s2 --vocab ~/notes/spanish --words 1 --out out/fish.wav
 
 # Hosted backends read credentials from the environment
 uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
-  --backend gemini --words 1 --out out/gemini.wav
+  --backend gemini --vocab ~/notes/spanish --words 1 --out out/gemini.wav
 # Paid Vertex AI via Application Default Credentials (no API key)
 GOOGLE_CLOUD_PROJECT=your-project-id \
 GOOGLE_CLOUD_LOCATION=global \
 uv run --extra hosted-tts python -m lexibeat.cli --backend gemini-vertex \
-  --words 1 --out out/gemini-vertex.wav
+  --vocab ~/notes/spanish --words 1 --out out/gemini-vertex.wav
 uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
-  --backend cloudflare-aura2 --words 1 --out out/aura2.wav
+  --backend cloudflare-aura2 --vocab ~/notes/spanish --words 1 --out out/aura2.wav
 uv run --extra hosted-tts --env-file .env python -m lexibeat.cli \
-  --backend cloudflare-melotts --words 1 --out out/melotts.wav
+  --backend cloudflare-melotts --vocab ~/notes/spanish --words 1 --out out/melotts.wav
 ```
 
-Vocabulary comes from Markdown files or directories passed with `--vocab`.
-Every lesson also writes a timestamped `.txt` tracklist and the resolved
-`.bed.json`, which can be replayed or hand-edited with `--bed-spec`.
+Vocabulary comes from Markdown files or directories passed with `--vocab`, which is required and
+has no default — those are your own notes, in your own place. Every run also writes a timestamped
+`.txt` tracklist and the resolved `.bed.json`, which can be replayed or hand-edited with
+`--bed-spec`.
 
 ## Experimental expressive voices
 
 The experimental backends expose only controls their current local runtimes or
 hosted APIs actually implement:
 
-| Backend | Emotion/variation | Timing | Voice |
+| Backend | Direction/variation | Timing | Voice |
 |---|---|---|---|
-| `indextts25` | exact eight-float vector | model-side duration factor, bounded fit fallback | Paulina/Daniel cloning |
-| `voxcpm2` | natural-language emotion, pace and pitch | qualitative instruction | Paulina/Daniel cloning |
-| `qwen3` | natural-language emotion and prosody | qualitative instruction | Serena/Ryan presets |
+| `indextts25` | neutral eight-float vector | model-side duration factor, bounded fit fallback | Paulina/Daniel cloning |
+| `voxcpm2` | the caller's direction, plus pace and pitch | qualitative instruction | Paulina/Daniel cloning |
+| `qwen3` | the caller's direction, plus prosody | qualitative instruction | Serena/Ryan presets |
 | `tada` | stochastic dynamic prosody | no explicit rate control | Paulina/Daniel cloning |
-| `fish-s2` | inline emotion tags and style instruction | no native rate control | Paulina/Daniel cloning |
-| `gemini` | natural-language emotion, pace and pitch | qualitative instruction | Sulafat/Achird presets |
+| `fish-s2` | the caller's direction as a style instruction | no native rate control | Paulina/Daniel cloning |
+| `gemini` | the caller's direction, plus pace and pitch | qualitative instruction | Sulafat/Achird presets |
 | `gemini-vertex` | same controls via paid Vertex AI/ADC | qualitative instruction | Sulafat/Achird presets |
 | `cloudflare-aura2` | gentle local pitch/speed variation | local post-process | Aquila/Luna presets |
 | `cloudflare-melotts` | gentle local pitch/speed variation | local post-process | provider default; currently English-only |
@@ -467,10 +454,10 @@ Spanish and Ryan for English.
 Run the matched five-model review and resource benchmark with:
 
 ```bash
-uv run python -m scripts.benchmarks.benchmark_voices --words 1 --out-dir out/tts-bakeoff
+uv run python -m scripts.benchmarks.benchmark_voices --vocab ~/notes/spanish --words 1 --out-dir out/tts-bakeoff
 ```
 
-It runs models sequentially, writes one complete lesson WAV and `.stats.json`
+It runs models sequentially, writes one complete loop WAV and `.stats.json`
 per backend, and produces `comparison.json`/`comparison.md`. Statistics include
 cold load and synthesis time, RTF, process-tree peak RSS, MLX peak allocation,
 macOS memory pressure, swap state, output validation and any timing fallback.

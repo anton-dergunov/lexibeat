@@ -767,15 +767,15 @@ wheels = [
 
 [[package]]
 name = "lexibeat"
-version = "0.1.0"
-source = { virtual = "." }
+version = "2.0.0"
+source = { editable = "." }
 dependencies = [
-    { name = "librosa" },
     { name = "numpy" },
     { name = "pedalboard" },
     { name = "pyloudnorm" },
     { name = "scipy" },
     { name = "soundfile" },
+    { name = "soxr" },
 ]
 
 [package.optional-dependencies]
@@ -787,6 +787,7 @@ explorer = [
     { name = "fastapi" },
     { name = "gradio" },
     { name = "httpx" },
+    { name = "pydantic" },
     { name = "uvicorn" },
 ]
 hosted-tts = [
@@ -795,7 +796,13 @@ hosted-tts = [
 ]
 local-tts = [
     { name = "kokoro" },
+    { name = "librosa" },
     { name = "mlx-audio" },
+]
+service = [
+    { name = "fastapi" },
+    { name = "pydantic" },
+    { name = "uvicorn" },
 ]
 video-demo = [
     { name = "pillow" },
@@ -804,24 +811,29 @@ video-demo = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", marker = "extra == 'explorer'", specifier = ">=0.116.0,<1" },
+    { name = "fastapi", marker = "extra == 'service'", specifier = ">=0.116.0,<1" },
     { name = "google-genai", marker = "extra == 'hosted-tts'", specifier = ">=2.19.0" },
     { name = "gradio", marker = "extra == 'explorer'", specifier = ">=6.0.0,<7" },
     { name = "httpx", marker = "extra == 'explorer'", specifier = ">=0.28.0,<1" },
     { name = "kokoro", marker = "extra == 'local-tts'", specifier = ">=0.9.4" },
-    { name = "librosa", specifier = ">=1.0.0" },
+    { name = "librosa", marker = "extra == 'local-tts'", specifier = ">=1.0.0" },
     { name = "mlx-audio", marker = "extra == 'local-tts'", specifier = ">=0.5.0" },
     { name = "mlx-tada", marker = "extra == 'experimental-tts'", specifier = ">=0.1.0" },
     { name = "numpy", specifier = ">=2.5.2" },
     { name = "pedalboard", specifier = ">=0.9.24" },
     { name = "pillow", marker = "extra == 'video-demo'", specifier = ">=11.0.0" },
     { name = "psutil", marker = "extra == 'experimental-tts'", specifier = ">=7.0.0" },
+    { name = "pydantic", marker = "extra == 'explorer'", specifier = ">=2.9,<3" },
+    { name = "pydantic", marker = "extra == 'service'", specifier = ">=2.9,<3" },
     { name = "pyloudnorm", specifier = ">=0.2.0" },
     { name = "requests", marker = "extra == 'hosted-tts'", specifier = ">=2.32.0" },
     { name = "scipy", specifier = ">=1.18.1" },
     { name = "soundfile", specifier = ">=0.14.0" },
+    { name = "soxr", specifier = ">=1.0.0" },
     { name = "uvicorn", marker = "extra == 'explorer'", specifier = ">=0.35.0,<1" },
+    { name = "uvicorn", marker = "extra == 'service'", specifier = ">=0.35.0,<1" },
 ]
-provides-extras = ["local-tts", "experimental-tts", "hosted-tts", "video-demo", "explorer"]
+provides-extras = ["service", "explorer", "local-tts", "experimental-tts", "hosted-tts", "video-demo"]
 
 [[package]]
 name = "librosa"

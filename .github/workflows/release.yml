@@ -1,0 +1,68 @@
+name: Release
+
+# A tag builds the wheel and writes SHA256SUMS, because a host pins this project by version and
+# verifies what it downloads against the release's own digests.
+#
+# The 1.8 GB sample bundle is deliberately not built here: it is Git-LFS tracked, so a runner would
+# have to pull the whole of it to repack it. It is published from a workstation instead:
+#
+#     lexibeat-bundle publish --out dist/bundle
+#     gh release upload "$TAG" dist/bundle/*.tar dist/bundle/SHA256SUMS
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The existing tag to build and attach artifacts to
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          lfs: false
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: The tag and the package version agree
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          version=$(uv run --no-project python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          if [ "$tag" != "v$version" ]; then
+            echo "Tag $tag does not match version $version in pyproject.toml." >&2
+            exit 1
+          fi
+
+      - name: Install and test before publishing anything
+        run: |
+          uv sync --extra service --extra explorer --locked
+          uv run python -m unittest discover -s tests
+
+      - name: Build the wheel and the source distribution
+        run: uv build --out-dir dist
+
+      - name: Write SHA256SUMS
+        working-directory: dist
+        run: |
+          sha256sum ./*.whl ./*.tar.gz | sed 's|\./||' > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Attach the artifacts to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --generate-notes
+          gh release upload "$tag" dist/*.whl dist/*.tar.gz dist/SHA256SUMS --clobber

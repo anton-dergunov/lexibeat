@@ -17,8 +17,8 @@ import soundfile as sf
 from lexibeat.api import MusicRequest, render_music, resolve_music
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
+from lexibeat.language import ENGLISH, SPANISH, Language
 from lexibeat.cli import build_spec, parse_args
-from lexibeat.emotion import EMOTIONS, NEUTRAL, VECTOR_ORDER
 from lexibeat.generator import (
     _apply_expansion_instrument_policy,
     _bundled_inventory_cache,
@@ -47,19 +47,24 @@ from lexibeat.samples import PACKS, Sample, SamplePack, midi, missing
 from lexibeat.voice import (
     CAPABILITIES,
     CHATTERBOX_TEMPERATURE,
+    INDEXTTS_NEUTRAL_VECTOR,
+    INDEXTTS_VECTOR_ORDER,
+    BackendCapabilities,
     CloudflareAura2Backend,
     CloudflareMeloBackend,
     DEFAULT_MODELS,
-    FISH_TAGS,
+    Delivery,
     GeminiBackend,
     IndexTTS25Backend,
     MlxAudioBackend,
     Prosody,
     Qwen3Backend,
     Speaker,
+    SpeechRequest,
     SynthesisResult,
+    UnsupportedLanguage,
     delivery_instruction,
-    gemini_prompt,
+    director_prompt,
     reference_path,
 )
 from lexibeat.vocab import Item
@@ -76,6 +81,12 @@ from scripts.benchmarks.compare_beds import (
 from lexibeat.sfz import parse as parse_sfz
 
 
+def ask(text: str, language=SPANISH, delivery: Delivery | None = None,
+        **kwargs) -> SpeechRequest:
+    """One utterance, the way every backend now receives it."""
+    return SpeechRequest(text, language, delivery or Delivery(), **kwargs)
+
+
 class VoiceTests(unittest.TestCase):
     def test_experimental_capabilities_and_defaults_are_explicit(self) -> None:
         expected = {"indextts25", "voxcpm2", "qwen3", "tada", "fish-s2"}
@@ -85,19 +96,87 @@ class VoiceTests(unittest.TestCase):
         self.assertEqual(CAPABILITIES["indextts25"].emotion, "8-float vector")
 
     def test_index_emotion_vector_keeps_official_order(self) -> None:
-        vector = EMOTIONS["surprised"].vector()
-        self.assertEqual(len(vector), 8)
-        self.assertEqual(VECTOR_ORDER[6], "surprised")
-        self.assertEqual(vector[6], EMOTIONS["surprised"].exaggeration)
-        self.assertEqual(sum(value != 0 for value in vector), 1)
+        self.assertEqual(len(INDEXTTS_NEUTRAL_VECTOR), len(INDEXTTS_VECTOR_ORDER))
+        self.assertEqual(INDEXTTS_VECTOR_ORDER[-1], "calm")
+        self.assertEqual(sum(value != 0 for value in INDEXTTS_NEUTRAL_VECTOR), 1)
 
-    def test_instruction_and_fish_tag_map_emotion_and_prosody(self) -> None:
-        text = delivery_instruction(EMOTIONS["sad"],
-                                    Prosody(speed=0.96, semitones=-0.4))
-        self.assertIn("sad", text)
-        self.assertIn("slowly", text)
+    def test_instruction_carries_the_direction_and_the_prosody_words(self) -> None:
+        text = delivery_instruction(Delivery(
+            take=1, direction="quietly sorry",
+            prosody=Prosody(speed=0.96, semitones=-0.4)))
+        self.assertIn("quietly sorry", text)
+        self.assertIn("slightly slowly", text)
         self.assertIn("lower", text)
-        self.assertEqual(FISH_TAGS["emphatic"], "emphasis")
+        self.assertEqual(delivery_instruction(Delivery()),
+                         "Speak clearly, at a natural pace, with a natural pitch range.")
+
+    def test_three_takes_of_one_line_never_share_an_instruction(self) -> None:
+        """Two identical director notes are one reading twice, which is the opposite of the point.
+
+        They used to collide: a word directed emphatically resolved takes 0 and 2 into the same
+        sentence, because each axis had three bands and the emotion bias pushed both takes past the
+        same threshold.
+        """
+        for direction in ("", "repulsed, recoiling slightly", "resolute, encouraging"):
+            spoken = {delivery_instruction(Delivery.for_take(take, direction))
+                      for take in range(3)}
+            self.assertEqual(len(spoken), 3, direction)
+
+    def test_post_processing_flags_come_from_the_declaration(self) -> None:
+        """Every flag a Speaker sets is read off the backend, so an injected one is not special."""
+        expected_pitch = {"kokoro", "cloudflare-aura2", "cloudflare-melotts"}
+        expected_speed = {"cloudflare-aura2", "cloudflare-melotts"}
+        for name, capabilities in CAPABILITIES.items():
+            self.assertEqual(capabilities.post_process_pitch, name in expected_pitch, name)
+            self.assertEqual(capabilities.post_process_speed, name in expected_speed, name)
+        self.assertTrue(CAPABILITIES["chatterbox"].varies_by_exaggeration)
+        self.assertFalse(CAPABILITIES["chatterbox"].schedulable)
+        self.assertTrue(CAPABILITIES["gemini"].schedulable)
+
+    def test_an_unknown_backend_speaks_without_this_module_knowing_its_name(self) -> None:
+        class Injected:
+            name = "acervo-call-home"
+            sample_rate = SR
+            model_id = "host/v1"
+            load_seconds = 0.0
+            capabilities = BackendCapabilities("instruction", "instruction", "preset",
+                                               languages=())
+
+            def synth(self, request):
+                return SynthesisResult(np.ones(100, dtype=np.float32), SR, 0.0, {})
+
+        speaker = Speaker(backend_instance=Injected())
+        self.assertIs(speaker.capabilities, Injected.capabilities)
+        audio = speaker.say("hola", Language("zh-Hans", "Mandarin Chinese"))
+        self.assertEqual(len(audio), 100)
+
+    def test_a_backend_refuses_a_language_it_did_not_declare_by_name(self) -> None:
+        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
+        backend.model_id = "@cf/myshell-ai/melotts"
+        backend._request = mock.Mock()
+        with self.assertRaisesRegex(UnsupportedLanguage, "Spanish"):
+            backend.synth(ask("hola", SPANISH))
+        backend._request.assert_not_called()
+
+    def test_a_take_gain_survives_the_peak_normalise(self) -> None:
+        """`gain_db` was applied and then divided straight back out; the column was decoration."""
+        class Flat:
+            name = "flat"
+            sample_rate = SR
+            model_id = "flat/v1"
+            load_seconds = 0.0
+            capabilities = BackendCapabilities("instruction", "instruction", "preset")
+
+            def synth(self, request):
+                return SynthesisResult(np.full(400, 0.5, dtype=np.float32), SR, 0.0, {})
+
+        speaker = Speaker(backend_instance=Flat())
+        quiet = speaker.say("a", SPANISH, Delivery(prosody=Prosody(gain_db=-6.0)))
+        loud = speaker.say("b", SPANISH, Delivery(prosody=Prosody(gain_db=+3.0)))
+        plain = speaker.say("c", SPANISH, Delivery())
+        self.assertLess(float(np.abs(quiet).max()), float(np.abs(plain).max()))
+        self.assertGreater(float(np.abs(loud).max()), float(np.abs(plain).max()))
+        self.assertLessEqual(float(np.abs(loud).max()), 0.97 + 1e-6)
 
     def test_hosted_capabilities_and_defaults_are_explicit(self) -> None:
         hosted = {"gemini", "gemini-vertex", "cloudflare-aura2",
@@ -109,17 +188,17 @@ class VoiceTests(unittest.TestCase):
                          "post-process")
 
     def test_gemini_prompt_fences_exact_transcript(self) -> None:
-        prompt = gemini_prompt("¿Dónde está?", "es", EMOTIONS["thoughtful"],
-                               Prosody(speed=0.96, semitones=-0.35))
+        prompt = director_prompt(ask("¿Dónde está?", SPANISH, Delivery(
+            direction="thoughtful, turning it over",
+            prosody=Prosody(speed=0.96, semitones=-0.35))))
         self.assertIn("native Spanish", prompt)
-        self.assertIn("thoughtful", prompt)
+        self.assertIn("thoughtful, turning it over", prompt)
         self.assertIn("slightly slowly", prompt)
         self.assertIn("<TRANSCRIPT>\n¿Dónde está?\n</TRANSCRIPT>", prompt)
         self.assertIn("Speak only the transcript", prompt)
 
     def test_gemini_batch_prompt_treats_pause_tags_as_silence(self) -> None:
-        prompt = gemini_prompt("uno\n[long pause]\ndos", "es", NEUTRAL,
-                               Prosody())
+        prompt = director_prompt(ask("uno\n[long pause]\ndos", SPANISH))
         self.assertIn("silent timing instruction", prompt)
         self.assertIn("do not speak the tag", prompt)
 
@@ -158,7 +237,7 @@ class VoiceTests(unittest.TestCase):
         backend.model_id = "gemini-3.1-flash-tts-preview"
         backend.voices = {"es": "Sulafat", "en": "Achird"}
         backend.sample_rate = 24000
-        result = backend.synth("hola", "es", Prosody(), EMOTIONS["warm"], seed=9)
+        result = backend.synth(ask("hola", SPANISH, seed=9))
         self.assertEqual(calls[0]["generation_config"]["speech_config"],
                          [{"voice": "Sulafat"}])
         self.assertIn("<TRANSCRIPT>\nhola\n</TRANSCRIPT>", calls[0]["input"])
@@ -206,7 +285,7 @@ class VoiceTests(unittest.TestCase):
         backend.capabilities = CAPABILITIES["gemini-vertex"]
         backend._min_request_interval = 0.0
         backend._last_request_started = None
-        result = backend.synth("hola", "es", Prosody(), EMOTIONS["warm"])
+        result = backend.synth(ask("hola", SPANISH))
         self.assertEqual(calls[0]["model"], "gemini-2.5-flash-tts")
         speech = calls[0]["config"]["speech_config"]
         self.assertEqual(speech["language_code"], "es-US")
@@ -266,8 +345,8 @@ class VoiceTests(unittest.TestCase):
             calls.append((model, payload)) or
             (self._wav_bytes(np.array([0.0, 0.25], dtype=np.float32)),
              "audio/wav"))
-        result = backend.synth("hola", "es", Prosody(speed=0.96),
-                               EMOTIONS["warm"], seed=4)
+        result = backend.synth(ask("hola", SPANISH, Delivery(
+            prosody=Prosody(speed=0.96)), seed=4))
         self.assertEqual(calls[0][0], "@cf/deepgram/aura-2-es")
         self.assertEqual(calls[0][1]["speaker"], "aquila")
         self.assertEqual(calls[0][1]["container"], "wav")
@@ -306,14 +385,6 @@ class VoiceTests(unittest.TestCase):
         self.assertEqual(content_type, "audio/wav")
         sleep.assert_called_once()
 
-    def test_cloudflare_melo_rejects_broken_spanish_path_without_call(self) -> None:
-        backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
-        backend.model_id = "@cf/myshell-ai/melotts"
-        backend._request = mock.Mock()
-        with self.assertRaisesRegex(RuntimeError, "AiError 8002"):
-            backend.synth("hola", "es", Prosody(), EMOTIONS["warm"])
-        backend._request.assert_not_called()
-
     def test_cloudflare_melo_caches_text_before_local_variation(self) -> None:
         backend = CloudflareMeloBackend.__new__(CloudflareMeloBackend)
         backend.model_id = "@cf/myshell-ai/melotts"
@@ -321,9 +392,9 @@ class VoiceTests(unittest.TestCase):
         backend._request = mock.Mock(return_value=(
             self._wav_bytes(np.array([0.0, 0.25], dtype=np.float32)),
             "audio/wav"))
-        first = backend.synth("hello", "en", Prosody(), EMOTIONS["warm"])
-        second = backend.synth("hello", "en", Prosody(semitones=0.4),
-                               EMOTIONS["warm"])
+        first = backend.synth(ask("hello", ENGLISH))
+        second = backend.synth(ask("hello", ENGLISH, Delivery(
+            prosody=Prosody(semitones=0.4))))
         backend._request.assert_called_once()
         self.assertFalse(first.controls["cache_hit"])
         self.assertTrue(second.controls["cache_hit"])
@@ -355,20 +426,21 @@ class VoiceTests(unittest.TestCase):
             sample_rate = SR
             load_seconds = 0.0
 
-            def synth(self, text, lang, prosody, emotion, target_seconds=None,
-                      seed=None):
+            capabilities = CAPABILITIES["cloudflare-aura2"]
+
+            def synth(self, request):
                 return SynthesisResult(np.ones(100, dtype=np.float32), SR, 0.1,
                                        {"native_prosody_supported": False})
 
         with mock.patch("lexibeat.voice.make_backend", return_value=FakeBackend()), \
                 mock.patch("lexibeat.voice.warnings.warn"), \
-                mock.patch("lexibeat.voice.librosa.effects.time_stretch",
+                mock.patch("lexibeat.voice.time_stretch",
                            return_value=np.ones(90, dtype=np.float32)) as stretch, \
-                mock.patch("lexibeat.voice._pitch_shift",
+                mock.patch("lexibeat.voice.pitch_shift",
                            side_effect=lambda audio, *_: audio) as pitch:
             speaker = Speaker(backend="cloudflare-aura2", voice_seed=3)
-            speaker.say("hola", "es", Prosody(
-                speed=1.02, semitones=0.4, gain_db=0.6))
+            speaker.say("hola", SPANISH, Delivery(prosody=Prosody(
+                speed=1.02, semitones=0.4, gain_db=0.6)))
         stretch.assert_called_once()
         pitch.assert_called_once()
         applied = speaker.stats[0]["controls"]["local_post_process"]
@@ -391,11 +463,12 @@ class VoiceTests(unittest.TestCase):
         backend._model = Model()
         backend.voices = {"es": "Serena", "en": "Ryan"}
         backend.sample_rate = 24000
-        result = backend.synth("hola", "es", Prosody(), EMOTIONS["happy"], seed=11)
+        result = backend.synth(ask("hola", SPANISH, Delivery(
+            direction="delighted, eyes wide"), seed=11))
         self.assertEqual(result.sample_rate, 24000)
         self.assertEqual(calls[0]["voice"], "Serena")
         self.assertEqual(calls[0]["lang_code"], "spanish")
-        self.assertIn("happy", calls[0]["instruct"])
+        self.assertIn("delighted, eyes wide", calls[0]["instruct"])
 
     def test_speaker_records_target_fit_and_deterministic_seed(self) -> None:
         class FakeBackend:
@@ -405,9 +478,10 @@ class VoiceTests(unittest.TestCase):
             load_seconds = 0.0
             calls = []
 
-            def synth(self, text, lang, prosody, emotion, target_seconds=None,
-                      seed=None):
-                self.calls.append((target_seconds, seed))
+            capabilities = CAPABILITIES["voxcpm2"]
+
+            def synth(self, request):
+                self.calls.append((request.target_seconds, request.seed))
                 return SynthesisResult(np.ones(SR * 3, dtype=np.float32), SR,
                                        0.1, {"native": True})
 
@@ -415,7 +489,7 @@ class VoiceTests(unittest.TestCase):
         with mock.patch("lexibeat.voice.make_backend", return_value=backend), \
                 mock.patch("lexibeat.voice.warnings.warn"):
             speaker = Speaker(backend="voxcpm2", voice_seed=90)
-            audio = speaker.say("hola", "es", target_seconds=1.0)
+            audio = speaker.say("hola", SPANISH, target_seconds=1.0)
         self.assertLessEqual(len(audio), SR)
         self.assertEqual(backend.calls, [(1.0, 90)])
         self.assertTrue(speaker.stats[0]["post_fit_applied"])
@@ -450,13 +524,13 @@ class VoiceTests(unittest.TestCase):
             }
             with mock.patch("lexibeat.voice.hashlib.sha1") as sha:
                 sha.return_value.hexdigest.return_value = output.stem
-                result = backend.synth("hola", "es", Prosody(speed=1.25),
-                                       EMOTIONS["happy"], target_seconds=1.1,
-                                       seed=3)
+                result = backend.synth(ask(
+                    "hola", SPANISH, Delivery(prosody=Prosody(speed=1.25)),
+                    target_seconds=1.1, seed=3))
             request = json.loads(backend._process.stdin.value)
             self.assertAlmostEqual(request["duration_factor"], 0.8)
             self.assertEqual(request["target_seconds"], 1.1)
-            self.assertEqual(request["emotion"], EMOTIONS["happy"].vector())
+            self.assertEqual(request["emotion"], INDEXTTS_NEUTRAL_VECTOR)
             self.assertEqual(result.passes, 2)
     def test_reference_cache_is_language_specific(self) -> None:
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -491,8 +565,8 @@ class VoiceTests(unittest.TestCase):
         with mock.patch.dict(sys.modules, modules), mock.patch(
                 "lexibeat.voice.ensure_reference", side_effect=resolved):
             backend = MlxAudioBackend()
-            backend.synth("hola", "es", Prosody(), NEUTRAL)
-            backend.synth("hello", "en", Prosody(), NEUTRAL)
+            backend.synth(ask("hola", SPANISH))
+            backend.synth(ask("hello", ENGLISH))
 
         self.assertEqual(calls[0]["ref_audio"], "/es-Paulina.wav")
         self.assertEqual(calls[1]["ref_audio"], "/en-Daniel.wav")
@@ -1428,42 +1502,53 @@ class RenderAndMixTests(unittest.TestCase):
     def test_arrangement_passes_slot_duration_and_uses_downbeats(self) -> None:
         class FakeSpeaker:
             prosody_strength = 1.0
+            capabilities = CAPABILITIES["gemini"]
             targets: list[float] = []
 
-            def say(self, text, lang, prosody, emotion, target_seconds=None):
+            def take(self, index, direction=""):
+                return Delivery.for_take(index, direction)
+
+            def say(self, text, language, delivery, target_seconds=None):
                 self.targets.append(target_seconds)
                 return np.ones(100, dtype=np.float32)
 
         grid = Grid(bpm=60, beats_per_bar=4, beat_unit=4)
         speaker = FakeSpeaker()
         events, _ = arrange([Item("hola", "hello")], speaker, grid,
+                            source_language=SPANISH, target_language=ENGLISH,
                             progress=False)
         self.assertEqual(len(events), 6)
         self.assertTrue(all(event.start % grid.bar == 0 for event in events))
         self.assertTrue(all(value == grid.bar * 0.92
                             for value in speaker.targets))
 
-    def test_chatterbox_repeats_are_ordered_and_long_outlier_is_retried(self) -> None:
+    def test_exaggeration_takes_are_ordered_and_a_long_outlier_is_retried(self) -> None:
         class FakeSpeaker:
             prosody_strength = 1.0
-            backend = types.SimpleNamespace(name="chatterbox")
+            capabilities = CAPABILITIES["chatterbox"]
 
             def __init__(self):
                 self.calls = []
 
-            def say(self, text, lang, prosody, emotion, target_seconds=None,
+            def take(self, index, direction=""):
+                return Delivery.for_take(index, direction,
+                                         capabilities=self.capabilities)
+
+            def say(self, text, language, delivery, target_seconds=None,
                     *, retry=False):
-                del text, emotion, target_seconds
-                self.calls.append((lang, prosody.exaggeration_bias, retry))
-                if lang == "es" and prosody.exaggeration_bias == -0.04 and not retry:
+                del text, target_seconds
+                bias = delivery.prosody.exaggeration_bias
+                self.calls.append((language.code, bias, retry))
+                if language.code == "es" and bias == -0.04 and not retry:
                     return np.ones(30_000, dtype=np.float32)
                 return np.ones(100, dtype=np.float32)
 
         speaker = FakeSpeaker()
         events, _ = arrange(
             [Item("hola", "hello")], speaker,
-            Grid(bpm=60, beats_per_bar=4, beat_unit=4), progress=False)
-        spanish = [event for event in events if event.label.startswith("es:")]
+            Grid(bpm=60, beats_per_bar=4, beat_unit=4),
+            source_language=SPANISH, target_language=ENGLISH, progress=False)
+        spanish = [event for event in events if event.label.startswith("source:")]
         self.assertEqual(
             [bias for lang, bias, retry in speaker.calls
              if lang == "es" and not retry],

@@ -28,7 +28,11 @@ from .paths import BUNDLED_ROOT, configured_bundle_root
 from .sfz import parse as parse_sfz
 
 
-EXTERNAL_DEFAULT = Path("/Volumes/EXTSSD_SAND/downloaded_music/lexibeat-library")
+# Where a working sample library lives when nothing says otherwise. It used to name one
+# machine's external disk, which is a private path in a public repository and wrong on every
+# other machine besides. Point LEXIBEAT_LIBRARY_ROOT at the volume that actually has room.
+EXTERNAL_DEFAULT = Path(
+    os.environ.get("LEXIBEAT_CACHE", Path.home() / ".cache" / "lexibeat")) / "library"
 GB = 1_000_000_000
 EXTERNAL_WARN = 450 * GB
 EXTERNAL_LIMIT = 500 * GB

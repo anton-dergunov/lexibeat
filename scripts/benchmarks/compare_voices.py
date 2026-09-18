@@ -18,12 +18,11 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from lexibeat.emotion import for_item
 from lexibeat.music import SR
 from lexibeat.vocab import load
-from lexibeat.voice import Prosody, Speaker
+from lexibeat.language import ENGLISH, SPANISH
+from lexibeat.voice import Speaker
 
-VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 OUT = Path("out/compare")
 
 # name -> kwargs for Speaker
@@ -53,10 +52,11 @@ CONFIGS: dict[str, dict] = {
 }
 
 
-def render(name: str, kwargs: dict, items, reps: int, emotions: bool,
+def render(name: str, kwargs: dict, items, reps: int,
            out_dir: Path) -> dict:
     started = time.time()
-    languages = tuple(kwargs.pop("languages", ("es", "en")))
+    codes = tuple(kwargs.pop("languages", ("es", "en")))
+    languages = tuple(SPANISH if code == "es" else ENGLISH for code in codes)
     speaker = Speaker(backend=kwargs.pop("backend"), **kwargs)
     load_time = time.time() - started
 
@@ -67,15 +67,13 @@ def render(name: str, kwargs: dict, items, reps: int, emotions: bool,
     for item_number, item in enumerate(items, 1):
         print(f"   [{item_number}/{len(items)}] {item.source} — {item.target}",
               flush=True)
-        emotion = for_item(item.source, item.emoji, enabled=emotions)
         for rep in range(reps):
-            prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
-            prosody = prosody.with_emotion(emotion, speaker.prosody_strength)
+            delivery = speaker.take(rep, item.direction)
             texts = {"es": item.source, "en": item.target}
-            for lang in languages:
-                text = texts[lang]
+            for language in languages:
+                text = texts[language.code]
                 t0 = time.time()
-                audio = speaker.say(text, lang, prosody, emotion)
+                audio = speaker.say(text, language, delivery)
                 synth_seconds += time.time() - t0
                 count += 1
                 pieces += [audio, gap]
@@ -92,7 +90,7 @@ def render(name: str, kwargs: dict, items, reps: int, emotions: bool,
     result = {"name": name, "path": str(path), "load": load_time,
               "per_utterance": synth_seconds / max(count, 1),
               "audio": len(track) / SR, "count": count,
-              "languages": list(languages),
+              "languages": list(codes),
               "estimated_provider_cost_usd": estimated_cost,
               "seed_warning": ("Hosted APIs do not honor voice_seed."
                                if name.startswith(("gemini", "cloudflare-"))
@@ -108,19 +106,19 @@ def render(name: str, kwargs: dict, items, reps: int, emotions: bool,
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--vocab", type=Path, nargs="+", required=True,
+                   help="markdown files or directories of vocabulary notes")
     p.add_argument("--words", type=int, default=3)
     p.add_argument("--reps", type=int, default=3)
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--configs", nargs="+", default=list(CONFIGS),
                    choices=list(CONFIGS))
     p.add_argument("--out-dir", type=Path, default=OUT)
-    p.add_argument("--no-emotion", action="store_true")
     args = p.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    items = load([VOCAB_DIR], mode="words", limit=args.words, seed=args.seed)
-    print("Words:", ", ".join(
-        f"{i.emoji}{i.source} ({for_item(i.source, i.emoji).name})" for i in items))
+    items = load(args.vocab, mode="words", limit=args.words, seed=args.seed)
+    print("Words:", ", ".join(item.source for item in items))
     print()
 
     rows = []
@@ -129,7 +127,7 @@ def main() -> None:
         print(f"→ {name}", flush=True)
         try:
             rows.append(render(name, dict(CONFIGS[name]), items, args.reps,
-                               not args.no_emotion, args.out_dir))
+                               args.out_dir))
         except Exception as exc:
             print(f"   failed: {exc}")
             failures += 1

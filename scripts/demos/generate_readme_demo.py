@@ -18,7 +18,6 @@ from lexibeat.demo import (
     PersistentSpeaker,
     arrange_demo,
     audio_summary,
-    build_timeline,
     encode_visual_track,
     load_demo_config,
     mux_audio,
@@ -26,6 +25,7 @@ from lexibeat.demo import (
     resolve_font,
     write_tracklist,
 )
+from lexibeat.loop import build_timeline
 from lexibeat.mix import mix_stems
 from lexibeat.music import SR, Grid, render_stems
 from lexibeat.voice import DEFAULT_MODELS, Speaker

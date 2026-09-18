@@ -27,17 +27,8 @@ from lexibeat.explorer import (
 )
 from lexibeat.library import SampleLibrary, configured_bundle_root, local_root
 from lexibeat.explorer_ui import build_demo
-from lexibeat.lesson import (
-    DEFAULT_LESSON_ROWS,
-    LESSON_MODEL,
-    finalize_lesson,
-    lesson_gpu_duration,
-    normalize_lesson_rows,
-    render_lesson_speech,
-    resolve_lesson_spec,
-)
+from lexibeat.explorer_ui import DEFAULT_LOOP_ROWS
 from lexibeat.music import SR, Grid
-from lexibeat.voice import CAPABILITIES, SynthesisResult
 
 try:
     from fastapi.testclient import TestClient
@@ -169,161 +160,6 @@ class ExplorerCoreTests(unittest.TestCase):
                 clear=True):
             self.assertEqual(configured_bundle_root(), Path("/data/custom/v1"))
 
-    def test_space_entrypoint_builds_a_local_gradio_demo(self) -> None:
-        from deploy.huggingface import app as space_entrypoint
-
-        self.assertFalse(space_entrypoint.config.hosted)
-        self.assertIsNotNone(space_entrypoint.demo)
-        self.assertTrue(callable(space_entrypoint.generate_hosted_lesson))
-        source = Path(space_entrypoint.__file__).read_text(encoding="utf-8")
-        self.assertIn("@spaces.GPU(duration=lesson_gpu_duration)", source)
-        self.assertIn(
-            "lesson_generate=generate_hosted_lesson if config.hosted else None",
-            source)
-
-
-class LessonTests(unittest.TestCase):
-    class FakeBackend:
-        name = "chatterbox"
-        model_id = "fake-chatterbox"
-        sample_rate = SR
-        load_seconds = 0.0
-        capabilities = CAPABILITIES["chatterbox"]
-
-        def synth(self, text, lang, prosody, emotion, target_seconds=None,
-                  seed=None):
-            del text, lang, prosody, emotion, target_seconds, seed
-            audio = np.sin(np.linspace(0, 50, SR // 10)).astype(np.float32) * 0.1
-            return SynthesisResult(audio, SR, 0.001)
-
-    def test_vocabulary_table_validation_and_duration(self) -> None:
-        rows = [[" hola ", " hello "], ["", ""], ["hola", "hello"]]
-        items = normalize_lesson_rows(rows)
-        self.assertEqual([(item.source, item.target) for item in items],
-                         [("hola", "hello"), ("hola", "hello")])
-        self.assertEqual(lesson_gpu_duration(DEFAULT_LESSON_ROWS), 90)
-        self.assertEqual(
-            lesson_gpu_duration(
-                DEFAULT_LESSON_ROWS, LESSON_MODEL, {}, object()),
-            90,
-        )
-        self.assertEqual(lesson_gpu_duration([["hola", "hello"]] * 6), 120)
-        with self.assertRaisesRegex(ValueError, "both Spanish and English"):
-            normalize_lesson_rows([["hola", ""]])
-        with self.assertRaisesRegex(ValueError, "at least one"):
-            normalize_lesson_rows([["", ""]])
-        with self.assertRaisesRegex(ValueError, "120-character"):
-            normalize_lesson_rows([["a" * 121, "word"]])
-        with self.assertRaisesRegex(ValueError, "limited to 6"):
-            normalize_lesson_rows([[str(i), str(i)] for i in range(7)])
-
-    def test_current_bed_is_reused_and_default_is_safe(self) -> None:
-        current = resolve_music(MusicRequest(
-            family="warm-motion", palette="electronic", seed=42)).bed_spec
-        reused = resolve_lesson_spec({"bed_spec": asdict(current)})
-        self.assertEqual(reused.to_json(), current.to_json())
-        generated = resolve_lesson_spec({}, palette="electronic")
-        _, report = validate_bed_spec(generated, analyze=False)
-        self.assertEqual(report.state, "production-safe")
-
-    def test_speech_cache_downbeats_subtitles_and_final_mix(self) -> None:
-        result = resolve_music(MusicRequest(
-            family="warm-motion", palette="electronic", seed=73))
-        state = {"bed_spec": asdict(result.bed_spec)}
-        with tempfile.TemporaryDirectory() as tmp:
-            config = ExplorerConfig(output_root=Path(tmp))
-            first = render_lesson_speech(
-                [["hola", "hello"]], LESSON_MODEL, state,
-                backend=self.FakeBackend(), config=config)
-            second = render_lesson_speech(
-                [["hola", "hello"]], LESSON_MODEL, state,
-                backend=self.FakeBackend(), config=config)
-            self.assertFalse(first["cache_hit"])
-            self.assertTrue(second["cache_hit"])
-            self.assertEqual(len(first["subtitles"]), 6)
-            self.assertEqual(
-                [row["text"] for row in first["subtitles"]],
-                ["hola", "hello", "hola", "hello", "hola", "hello"])
-            grid = Grid.from_spec(result.bed_spec)
-            self.assertEqual(
-                [round(row["timestamp"][0] / grid.bar)
-                 for row in first["subtitles"]],
-                [2, 4, 5, 6, 7, 8])
-            self.assertEqual(
-                [round(row["timestamp"][1] / grid.bar)
-                 for row in first["subtitles"]],
-                [4, 5, 6, 7, 8, 10])
-            for index, row in enumerate(first["subtitles"]):
-                self.assertAlmostEqual(row["timestamp"][0] / grid.bar,
-                                       round(row["timestamp"][0] / grid.bar))
-                self.assertGreater(row["timestamp"][1], row["timestamp"][0])
-                if index + 1 < len(first["subtitles"]):
-                    self.assertEqual(
-                        row["timestamp"][1],
-                        first["subtitles"][index + 1]["timestamp"][0])
-
-            mixed = finalize_lesson(first, config=config)
-            audio, rate = sf.read(mixed["audio_path"], always_2d=True)
-            self.assertEqual(rate, SR)
-            self.assertEqual(audio.shape[1], 2)
-            self.assertTrue(np.isfinite(audio).all())
-            self.assertLessEqual(float(np.abs(audio).max()), 0.97 + 1e-4)
-            self.assertEqual(len(mixed["subtitles"]), 6)
-
-            changed = render_lesson_speech(
-                [["adiós", "goodbye"]], LESSON_MODEL, state,
-                backend=self.FakeBackend(), config=config)
-            self.assertNotEqual(first["speech_path"], changed["speech_path"])
-
-            class OtherModel(self.FakeBackend):
-                model_id = "fake-chatterbox-next"
-
-            model_changed = render_lesson_speech(
-                [["hola", "hello"]], LESSON_MODEL, state,
-                backend=OtherModel(), config=config)
-            self.assertNotEqual(first["speech_path"], model_changed["speech_path"])
-
-            seed_changed = render_lesson_speech(
-                [["hola", "hello"]], LESSON_MODEL, state,
-                backend=self.FakeBackend(), config=config, voice_seed=999)
-            self.assertNotEqual(first["speech_path"], seed_changed["speech_path"])
-
-            other_bed = resolve_music(MusicRequest(
-                family="warm-motion", palette="electronic", seed=74)).bed_spec
-            bed_changed = render_lesson_speech(
-                [["hola", "hello"]], LESSON_MODEL,
-                {"bed_spec": asdict(other_bed)}, backend=self.FakeBackend(),
-                config=config)
-            self.assertNotEqual(first["speech_path"], bed_changed["speech_path"])
-
-            progress_events: list[tuple[float, str]] = []
-            render_lesson_speech(
-                [["uno", "one"]], LESSON_MODEL, state,
-                backend=self.FakeBackend(), config=config,
-                progress=lambda value, message:
-                    progress_events.append((value, message)))
-            messages = [message for _, message in progress_events]
-            self.assertIn("Validating vocabulary", messages)
-            self.assertTrue(any("Synthesizing 1 of 6" in message
-                                for message in messages))
-            self.assertEqual(messages[-1], "Speech synthesis complete")
-
-    def test_failed_speech_render_removes_partial_files(self) -> None:
-        class BrokenBackend(self.FakeBackend):
-            def synth(self, *args, **kwargs):
-                raise RuntimeError("synthetic failure")
-
-        result = resolve_music(MusicRequest(palette="electronic", seed=19))
-        with tempfile.TemporaryDirectory() as tmp:
-            config = ExplorerConfig(output_root=Path(tmp))
-            with self.assertRaisesRegex(RuntimeError, "synthetic failure"):
-                render_lesson_speech(
-                    [["hola", "hello"]], LESSON_MODEL,
-                    {"bed_spec": asdict(result.bed_spec)},
-                    backend=BrokenBackend(), config=config)
-            self.assertEqual(list(Path(tmp).rglob("*.partial.*")), [])
-
-
 @unittest.skipUnless(TestClient is not None, "install the explorer extra")
 class ExplorerHttpTests(unittest.TestCase):
     @classmethod
@@ -420,53 +256,36 @@ class ExplorerHttpTests(unittest.TestCase):
                 labels = {component.get("props", {}).get("label")
                           for component in config.json().get("components", [])}
                 self.assertIn("Vocabulary", labels)
-                self.assertIn("Voice model", labels)
                 self.assertIn("Style", labels)
                 self.assertIn("Current BedSpec JSON", labels)
 
-    def test_lesson_handler_is_directly_registered_and_tabs_are_preserved(self) -> None:
+    def test_the_loop_tab_takes_a_direction_and_has_no_row_cap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             config = ExplorerConfig(output_root=Path(tmp))
-
-            def lesson_generate(rows, model, state):
-                return {"rows": rows, "model": model, "state": state}
-
             demo = build_demo(
                 config, artifacts=ArtifactStore(config),
-                samples=SampleService(config), lesson_generate=lesson_generate)
-            handlers = [block.fn for block in demo.fns.values()]
-            self.assertIn(lesson_generate, handlers)
-            lesson_handler_id = next(
-                block_id for block_id, block in demo.fns.items()
-                if block.fn is lesson_generate)
-            lesson_dependency = next(
-                dependency for dependency in demo.config["dependencies"]
-                if dependency["id"] == lesson_handler_id)
-            self.assertIsNone(lesson_dependency["trigger_after"])
-            self.assertEqual(lesson_dependency["targets"][0][1], "click")
+                samples=SampleService(config))
             labels = {getattr(block, "label", None) for block in demo.blocks.values()}
             self.assertIn("Vocabulary", labels)
-            self.assertIn("Voice model", labels)
+            self.assertIn("Word language", labels)
             vocabulary = next(block for block in demo.blocks.values()
                               if getattr(block, "label", None) == "Vocabulary")
-            self.assertEqual(vocabulary.value["data"], DEFAULT_LESSON_ROWS)
-            voice_model = next(block for block in demo.blocks.values()
-                               if getattr(block, "label", None) == "Voice model")
-            self.assertEqual(voice_model.value, LESSON_MODEL)
-            self.assertEqual(voice_model.choices,
-                             [("Chatterbox Multilingual", LESSON_MODEL)])
-            start_lesson = next(
+            self.assertEqual(vocabulary.value["data"], DEFAULT_LOOP_ROWS)
+            self.assertEqual(vocabulary.headers,
+                             ["Word", "Translation", "Direction"])
+            announce = next(
                 block for block in demo.fns.values()
-                if block.fn is not None and block.fn.__name__ == "start_lesson")
-            self.assertIn("Waiting for local Chatterbox",
-                          start_lesson.fn(DEFAULT_LESSON_ROWS))
+                if block.fn is not None and block.fn.__name__ == "announce_loop")
+            # Seven rows, which the six-pair cap used to refuse outright.
+            rows = [[f"palabra {index}", f"word {index}", ""] for index in range(7)]
+            self.assertIn("7 words", announce.fn(rows, "retrieval"))
             tabs = next(block for block in demo.blocks.values()
                         if block.__class__.__name__ == "Tabs")
-            self.assertEqual(tabs.selected, "lesson")
+            self.assertEqual(tabs.selected, "loop")
             tab_labels = {getattr(block, "label", None)
                           for block in demo.blocks.values()
                           if block.__class__.__name__ == "Tab"}
-            self.assertTrue({"Lesson", "Music", "Lab"}.issubset(tab_labels))
+            self.assertTrue({"Loop", "Music", "Lab"}.issubset(tab_labels))
 
     def test_simple_generate_renders_a_fresh_reset_preview(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

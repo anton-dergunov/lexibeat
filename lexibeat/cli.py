@@ -25,6 +25,7 @@ import soundfile as sf
 from lexibeat.api import MusicRequest, resolve_music
 from lexibeat.arrange import PATTERNS, arrange, render_speech
 from lexibeat.bedspec import BedSpec
+from lexibeat.language import Language
 from lexibeat.mix import mix_stems
 from lexibeat.music import SR, Grid, render_bed, render_stems
 from lexibeat.profiles import POSITIVE_FAMILIES
@@ -32,24 +33,31 @@ from lexibeat.samples import PACKS, PACK_GROUPS, download_target
 from lexibeat.vocab import load
 from lexibeat.voice import CAPABILITIES, DEFAULT_MODELS, Speaker
 
-VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
-
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
 
     src = p.add_argument_group("vocabulary")
-    src.add_argument("--vocab", type=Path, nargs="+", default=[VOCAB_DIR],
+    # No default: vocabulary notes are the operator's own files, in their own place.
+    src.add_argument("--vocab", type=Path, nargs="+",
                      help="markdown files or directories of vocabulary notes")
     src.add_argument("--words", type=int, default=12, help="how many items to teach")
     src.add_argument("--mode", choices=["words", "phrases", "mixed"], default="words",
                      help="teach headwords, example sentences, or both")
     src.add_argument("--seed", type=int, default=7, help="item selection seed")
 
-    lesson = p.add_argument_group("lesson shape")
-    lesson.add_argument("--pattern", choices=sorted(PATTERNS), default="retrieval",
-                        help="'retrieval' leaves a silent bar to recall the answer in")
+    loop = p.add_argument_group("loop shape")
+    loop.add_argument("--pattern", choices=sorted(PATTERNS), default="retrieval",
+                      help="'retrieval' leaves a silent bar to recall the answer in")
+    loop.add_argument("--source-language", default="es",
+                      help="language code of the words, e.g. es")
+    loop.add_argument("--source-language-name", default="Spanish",
+                      help="what that language is called, for the director note")
+    loop.add_argument("--target-language", default="en",
+                      help="language code of the translations, e.g. en")
+    loop.add_argument("--target-language-name", default="English",
+                      help="what that language is called, for the director note")
 
     music = p.add_argument_group("music bed")
     music.add_argument("--bed-seed", type=int, default=None,
@@ -96,11 +104,9 @@ def parse_args() -> argparse.Namespace:
                        help="TTS sampling seed (defaults to --seed)")
     voice.add_argument("--prosody-strength", type=float, default=1.0,
                        help="0 disables per-repeat variation, 1 is the default")
-    voice.add_argument("--no-emotion", action="store_true",
-                       help="ignore the emoji in the notes and read everything neutrally")
 
     out = p.add_argument_group("output")
-    out.add_argument("--out", type=Path, default=Path("out/lesson.wav"))
+    out.add_argument("--out", type=Path, default=Path("out/loop.wav"))
     out.add_argument("--duck-db", type=float, default=None,
                      help="override every layer's configured speech-duck depth")
     out.add_argument("--speech-lufs", type=float, default=-16.0)
@@ -169,6 +175,8 @@ def main() -> None:
               f"in {time.time()-started:.1f}s -> {args.out}")
         return
 
+    if not args.vocab:
+        raise SystemExit("--vocab is required: point it at your markdown notes.")
     slots = len(PATTERNS[args.pattern])
     items = load(args.vocab, mode=args.mode, limit=args.words, seed=args.seed)
     if not items:
@@ -182,7 +190,7 @@ def main() -> None:
     if args.dry_run:
         for i, item in enumerate(items, 1):
             at = (2 + (i - 1) * slots) * grid.bar
-            print(f"  {int(at)//60:02d}:{int(at)%60:02d}  {item.emoji or ' '} "
+            print(f"  {int(at)//60:02d}:{int(at)%60:02d}  "
                   f"{item.source} — {item.target}")
         return
 
@@ -203,8 +211,10 @@ def main() -> None:
                       else args.seed)
     speaker_init_seconds = time.perf_counter() - speaker_started
     speech_started = time.perf_counter()
-    events, total_bars = arrange(items, speaker, grid, pattern=args.pattern,
-                                 emotions=not args.no_emotion)
+    events, total_bars = arrange(
+        items, speaker, grid, pattern=args.pattern,
+        source_language=Language(args.source_language, args.source_language_name),
+        target_language=Language(args.target_language, args.target_language_name))
     speech = render_speech(events, total_bars, grid)
     speech_seconds = time.perf_counter() - speech_started
     speaker.close()
@@ -237,7 +247,7 @@ def main() -> None:
                   *[f"Warning: {warning}" for warning in capabilities.warnings], ""]
     for i, item in enumerate(items):
         at = (2 + i * slots) * grid.bar
-        lines.append(f"{int(at)//60:02d}:{int(at)%60:02d}  {item.emoji or ' '} "
+        lines.append(f"{int(at)//60:02d}:{int(at)%60:02d}  "
                      f"{item.source} — {item.target}")
     listing.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

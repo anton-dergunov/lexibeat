@@ -20,7 +20,6 @@ from .compare_gemini_batched import split_on_long_silences
 from lexibeat.arrange import PATTERNS
 from lexibeat.api import MusicRequest
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
-from lexibeat.emotion import NEUTRAL
 from lexibeat.generator import (
     ENGINE_VERSION,
     _apply_expansion_instrument_policy,
@@ -38,7 +37,9 @@ from lexibeat.music import Grid, SR, render_stems
 from lexibeat.profiles import BROAD_FAMILIES, POSITIVE_FAMILIES, get_profile
 from lexibeat.quality import Candidate, evaluate_preview
 from lexibeat import samples as sample_packs
-from lexibeat.voice import Prosody, Speaker, fit
+from lexibeat.dsp import fit
+from lexibeat.language import ENGLISH, SPANISH
+from lexibeat.voice import Speaker
 
 
 FAMILIES = BROAD_FAMILIES
@@ -74,11 +75,12 @@ def _synthesize_backend(out_dir: Path, backend: str, model: str | None,
     try:
         if backend.startswith("gemini"):
             for rep in range(3):
-                prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
-                for lang in ("es", "en"):
+                delivery = speaker.take(rep)
+                for language in (SPANISH, ENGLISH):
+                    lang = language.code
                     phrases = [item[0 if lang == "es" else 1] for item in ITEMS]
-                    audio = speaker.say("\n[long pause]\n".join(phrases), lang,
-                                        prosody, NEUTRAL)
+                    audio = speaker.say("\n[long pause]\n".join(phrases), language,
+                                        delivery)
                     pieces, split = split_on_long_silences(audio, len(phrases),
                                                            sample_rate=SR)
                     for item_index, piece in enumerate(pieces):
@@ -88,11 +90,12 @@ def _synthesize_backend(out_dir: Path, backend: str, model: str | None,
                                  "synthesis": speaker.stats[-1]})
         else:
             for rep in range(3):
-                prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
-                for lang in ("es", "en"):
+                delivery = speaker.take(rep)
+                for language in (SPANISH, ENGLISH):
+                    lang = language.code
                     for item_index, item in enumerate(ITEMS):
-                        audio = speaker.say(item[0 if lang == "es" else 1], lang,
-                                            prosody, NEUTRAL)
+                        audio = speaker.say(item[0 if lang == "es" else 1], language,
+                                            delivery)
                         segments[(rep, lang, item_index)] = audio
                         rows.append({"repeat": rep, "language": lang,
                                      "item": item_index,
@@ -150,7 +153,7 @@ def _speech_track(spec: BedSpec, segments: dict) -> tuple[np.ndarray, int, list[
                 continue
             audio = segments[(rep, kind, item_index)]
             target = grid.bar * 0.92
-            fitted = fit(audio, target) if len(audio) / SR > target else audio
+            fitted = fit(audio, target, SR) if len(audio) / SR > target else audio
             at = grid.samples(grid.bar_start(bar))
             speech[at:at + len(fitted)] += fitted
             events.append({"bar": bar, "seconds": grid.bar_start(bar),

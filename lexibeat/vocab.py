@@ -1,12 +1,17 @@
-"""Parse vocabulary items out of the Obsidian markdown notes.
+"""Parse vocabulary items out of Obsidian-style markdown notes.
 
 Expected shape of an entry:
 
-    ##### **antojar** 🤤
+    ##### **antojar**
     *to crave*
     > ¿Qué sabor se te **antoja** más? - What flavor are you most **craving**?
 
 The example line is optional. Its two halves are separated by " - ".
+
+This reader is the local command's convenience, not the interface LexiBeat is integrated through.
+A host supplies :class:`Item` values directly, with a direction it has chosen by reading the word —
+which is why the emoji column that used to colour delivery here is gone. One mechanism decides how
+a line is said, and it is the caller's.
 """
 
 from __future__ import annotations
@@ -16,15 +21,11 @@ import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
-HEADWORD = re.compile(r"^#{3,6}\s+\*\*(?P<word>.+?)\*\*\s*(?P<emoji>.*)$")
+# Anything trailing the headword - an emoji a note happens to carry - is ignored rather than
+# read: nothing downstream has an opinion about it any more.
+HEADWORD = re.compile(r"^#{3,6}\s+\*\*(?P<word>.+?)\*\*.*$")
 TRANSLATION = re.compile(r"^\*(?P<gloss>[^*].*?)\*\s*$")
 EXAMPLE = re.compile(r"^>\s*(?P<body>.+)$")
-
-
-def _emoji_only(text: str) -> str:
-    """Keep just the symbol characters trailing a headword."""
-    return "".join(c for c in (text or "")
-                   if unicodedata.category(c) in {"So", "Sk"})
 
 
 def _strip_markup(text: str) -> str:
@@ -34,20 +35,29 @@ def _strip_markup(text: str) -> str:
     return " ".join(text.split())
 
 
-@dataclass
+@dataclass(frozen=True)
 class Item:
-    """One thing to teach: a source-language string and its translation."""
+    """One thing to teach: two strings, and how the caller wants them said.
 
-    source: str  # Spanish
-    target: str  # English
-    emoji: str = ""  # the note's own emoji, used to colour the delivery
+    ``direction`` is free text — *"repulsed, recoiling slightly"* — and empty is a legitimate
+    answer meaning "read it plainly".
+    """
+
+    source: str
+    target: str
+    direction: str = ""
 
     def __post_init__(self) -> None:
-        self.source = _strip_markup(self.source)
-        self.target = _strip_markup(self.target)
+        object.__setattr__(self, "source", _strip_markup(self.source))
+        object.__setattr__(self, "target", _strip_markup(self.target))
+        object.__setattr__(self, "direction", " ".join(str(self.direction or "").split()))
 
     def __bool__(self) -> bool:
         return bool(self.source and self.target)
+
+    def to_dict(self) -> dict[str, str]:
+        return {"source": self.source, "target": self.target,
+                "direction": self.direction}
 
 
 @dataclass
@@ -59,23 +69,21 @@ class Entry:
 def parse_file(path: Path) -> list[Entry]:
     entries: list[Entry] = []
     word: str | None = None
-    emoji: str = ""
     gloss: str | None = None
     example: Item | None = None
 
     def flush() -> None:
-        nonlocal word, emoji, gloss, example
+        nonlocal word, gloss, example
         if word and gloss:
-            item = Item(word, gloss.split(";")[0], emoji)
+            item = Item(word, gloss.split(";")[0])
             if item:
                 entries.append(Entry(item, example))
-        word, emoji, gloss, example = None, "", None, None
+        word, gloss, example = None, None, None
 
     for line in path.read_text(encoding="utf-8").splitlines():
         if m := HEADWORD.match(line):
             flush()
             word = m.group("word")
-            emoji = _emoji_only(m.group("emoji"))
         elif word and gloss is None and (m := TRANSLATION.match(line)):
             gloss = m.group("gloss")
         elif word and example is None and (m := EXAMPLE.match(line)):
@@ -83,7 +91,7 @@ def parse_file(path: Path) -> list[Entry]:
             # The two halves are joined by a spaced hyphen; be tolerant of dashes.
             parts = re.split(r"\s+[-–—]\s+", body, maxsplit=1)
             if len(parts) == 2:
-                candidate = Item(parts[0], parts[1], emoji)
+                candidate = Item(parts[0], parts[1])
                 if candidate:
                     example = candidate
     flush()

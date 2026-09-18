@@ -5,37 +5,166 @@
   "bpm": 78,
   "meter": "4/4",
   "items": [
-    {"source": "¿arrancamos?", "target": "shall we start?", "emoji": "🚀"},
-    {"source": "¡Que cante!", "target": "Let him/her sing!", "emoji": "🎶"},
-    {"source": "hacer ilusión", "target": "to excite", "emoji": "🤩"},
-    {"source": "espectacular", "target": "spectacular", "emoji": "🤩"},
-    {"source": "preciosa", "target": "precious", "emoji": "🥰"},
-    {"source": "asombroso", "target": "amazing", "emoji": "😲"},
-    {"source": "resulta que", "target": "it turns out that", "emoji": "😲"},
-    {"source": "podrido", "target": "rotten", "emoji": "🤢"},
-    {"source": "asco", "target": "disgust", "emoji": "🤮"},
-    {"source": "dar bronca", "target": "to upset", "emoji": "😠"},
-    {"source": "la rabia", "target": "rage", "emoji": "😡"},
-    {"source": "abrumado", "target": "overwhelmed", "emoji": "😥"},
-    {"source": "¡Qué susto!", "target": "What a scare!", "emoji": "😨"},
-    {"source": "la pesadilla", "target": "nightmare", "emoji": "😨"},
-    {"source": "qué lástima", "target": "what a shame", "emoji": "😔"},
-    {"source": "ni pensarlo", "target": "I don't even want to think about it", "emoji": "💭"},
-    {"source": "estar envuelto en sus pensamientos", "target": "to be lost in thought", "emoji": "💭", "bars_per_utterance": 2},
-    {"source": "vencer tus miedos", "target": "overcome your fears", "emoji": "💪"},
-    {"source": "descansar", "target": "to rest", "emoji": "😴"},
-    {"source": "tranquilizarse", "target": "to calm down", "emoji": "😌"}
+    {
+      "source": "¿arrancamos?",
+      "target": "shall we start?",
+      "direction": "briskly, with a spark of impatience"
+    },
+    {
+      "source": "¡Que cante!",
+      "target": "Let him/her sing!",
+      "direction": "brightly, almost singing the invitation"
+    },
+    {
+      "source": "hacer ilusión",
+      "target": "to excite",
+      "direction": "delighted, eyes wide"
+    },
+    {
+      "source": "espectacular",
+      "target": "spectacular",
+      "direction": "delighted, eyes wide"
+    },
+    {
+      "source": "preciosa",
+      "target": "precious",
+      "direction": "tenderly, with real affection"
+    },
+    {
+      "source": "asombroso",
+      "target": "amazing",
+      "direction": "genuinely astonished"
+    },
+    {
+      "source": "resulta que",
+      "target": "it turns out that",
+      "direction": "genuinely astonished"
+    },
+    {
+      "source": "podrido",
+      "target": "rotten",
+      "direction": "queasy, holding back"
+    },
+    {
+      "source": "asco",
+      "target": "disgust",
+      "direction": "repulsed, recoiling slightly"
+    },
+    {
+      "source": "dar bronca",
+      "target": "to upset",
+      "direction": "irritated, clipped"
+    },
+    {
+      "source": "la rabia",
+      "target": "rage",
+      "direction": "angry, with heat behind it"
+    },
+    {
+      "source": "abrumado",
+      "target": "overwhelmed",
+      "direction": "weary, carrying too much"
+    },
+    {
+      "source": "¡Qué susto!",
+      "target": "What a scare!",
+      "direction": "startled, a little breathless"
+    },
+    {
+      "source": "la pesadilla",
+      "target": "nightmare",
+      "direction": "startled, a little breathless"
+    },
+    {
+      "source": "qué lástima",
+      "target": "what a shame",
+      "direction": "quietly sorry"
+    },
+    {
+      "source": "ni pensarlo",
+      "target": "I don't even want to think about it",
+      "direction": "thoughtful, turning it over"
+    },
+    {
+      "source": "estar envuelto en sus pensamientos",
+      "target": "to be lost in thought",
+      "bars_per_utterance": 2,
+      "direction": "thoughtful, turning it over"
+    },
+    {
+      "source": "vencer tus miedos",
+      "target": "overcome your fears",
+      "direction": "resolute, encouraging"
+    },
+    {
+      "source": "descansar",
+      "target": "to rest",
+      "direction": "drowsy and unhurried"
+    },
+    {
+      "source": "tranquilizarse",
+      "target": "to calm down",
+      "direction": "calm, settling"
+    }
   ],
   "variants": [
-    {"name": "gentle-movement", "style": "gentle-movement", "seed": 12},
-    {"name": "playful-plucked", "style": "playful-plucked", "seed": 15},
-    {"name": "sunlit", "style": "sunlit", "seed": 18},
-    {"name": "lofi-wide", "style": "lofi-wide", "seed": 11},
-    {"name": "nocturnal", "style": "nocturnal", "seed": 1},
-    {"name": "meditative", "style": "meditative", "seed": 0},
-    {"name": "acoustic", "style": "acoustic", "seed": 9},
-    {"name": "radiant", "style": "radiant", "seed": 4},
-    {"name": "warm-motion", "style": "warm-motion", "seed": 1},
-    {"name": "bright-pastoral", "style": "bright-pastoral", "seed": 7}
-  ]
+    {
+      "name": "gentle-movement",
+      "style": "gentle-movement",
+      "seed": 12
+    },
+    {
+      "name": "playful-plucked",
+      "style": "playful-plucked",
+      "seed": 15
+    },
+    {
+      "name": "sunlit",
+      "style": "sunlit",
+      "seed": 18
+    },
+    {
+      "name": "lofi-wide",
+      "style": "lofi-wide",
+      "seed": 11
+    },
+    {
+      "name": "nocturnal",
+      "style": "nocturnal",
+      "seed": 1
+    },
+    {
+      "name": "meditative",
+      "style": "meditative",
+      "seed": 0
+    },
+    {
+      "name": "acoustic",
+      "style": "acoustic",
+      "seed": 9
+    },
+    {
+      "name": "radiant",
+      "style": "radiant",
+      "seed": 4
+    },
+    {
+      "name": "warm-motion",
+      "style": "warm-motion",
+      "seed": 1
+    },
+    {
+      "name": "bright-pastoral",
+      "style": "bright-pastoral",
+      "seed": 7
+    }
+  ],
+  "source_language": {
+    "code": "es",
+    "name": "Spanish"
+  },
+  "target_language": {
+    "code": "en",
+    "name": "English"
+  }
 }

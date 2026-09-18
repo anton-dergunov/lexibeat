@@ -1,7 +1,20 @@
-"""Speech synthesis with capability-aware local and hosted backends.
+"""Speech synthesis with capability-aware local, hosted and injected backends.
 
-Kokoro and Chatterbox remain the stable paths. Experimental model-side controls,
-provider metadata, and any local post-processing are recorded separately.
+Three things about this module are load-bearing for a host that supplies its own voice.
+
+**Dispatch is on a declaration, never on a name.** ``Speaker`` used to look ``CAPABILITIES`` up by
+the backend's name string and derive its post-processing flags from set membership on that string,
+so an injected backend under a name this module has never heard of raised ``KeyError`` before it
+spoke a word. A backend now carries its own ``BackendCapabilities`` and everything — whether to
+pitch-shift locally, whether repetitions vary by exaggeration, whether a long take is worth
+retrying — is read from that.
+
+**A direction is free text.** What used to be an ``Emotion`` chosen from a twelve-name table by
+looking at the emoji in an Obsidian note is now a phrase the caller supplies: *"repulsed, recoiling
+slightly"*. The prosody words for the take are appended to it. Nothing here decides how a word
+should sound; the caller has read the word and this has not.
+
+**A language is a pair, not one of two.** See :mod:`lexibeat.language`.
 """
 
 from __future__ import annotations
@@ -22,10 +35,10 @@ from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Protocol
 
-import librosa
 import numpy as np
 
-from .emotion import NEUTRAL, Emotion
+from .dsp import fit, pitch_shift, resample, time_stretch, trim
+from .language import ENGLISH, SPANISH, Language
 from .music import SR
 
 KOKORO_SR = 24000
@@ -47,6 +60,7 @@ DEFAULT_MODELS = {
 }
 TADA_TOKENIZER_MODEL = "gafiatulin/tada-3b-ml-mlx"
 QWEN_VOICES = {"es": "Serena", "en": "Ryan"}
+QWEN_LANGUAGE_NAMES = {"es": "spanish", "en": "english"}
 GEMINI_VOICES = {"es": "Sulafat", "en": "Achird"}
 GEMINI_LOCALES = {"es": "es-US", "en": "en-GB"}
 AURA2_VOICES = {"es": "aquila", "en": "luna"}
@@ -65,11 +79,31 @@ REFERENCE_TEXTS = {
 }
 DEFAULT_REFERENCES = {"es": "say:Paulina", "en": "say:Daniel"}
 CHATTERBOX_TEMPERATURE = 0.68
-CHATTERBOX_REPEAT_EXAGGERATION = (0.0, 0.04, -0.04)
+# What an Emotion used to carry for this backend. A direction is free text now and no table maps a
+# phrase onto a number, so the base is fixed and the per-take bias is the only thing that moves it.
+CHATTERBOX_BASE_EXAGGERATION = 0.45
+CHATTERBOX_CFG_WEIGHT = 0.5
+CHATTERBOX_TAKE_EXAGGERATION = (0.0, 0.04, -0.04)
+# IndexTTS orders its emotion vector this way. Nothing chooses a name for it any more.
+INDEXTTS_VECTOR_ORDER = ("happy", "angry", "sad", "afraid", "disgusted",
+                         "melancholic", "surprised", "calm")
+INDEXTTS_NEUTRAL_VECTOR = [0.0] * 7 + [CHATTERBOX_BASE_EXAGGERATION]
+
+# The peak every take is normalised to before its per-take gain is applied, and the ceiling the
+# result is held under. Both are local: no provider accepts a gain.
+REFERENCE_PEAK = 0.9
+PEAK_CEILING = 0.97
 
 
 @dataclass(frozen=True)
 class BackendCapabilities:
+    """What a backend says it can do. Every dispatch decision reads this and nothing else.
+
+    ``languages`` is a declaration, and an **empty tuple means any language** — which is what an
+    injected backend that resolves its own voices says. A backend that names languages refuses one
+    it did not name, by name, rather than raising ``KeyError`` out of a voice table.
+    """
+
     emotion: str
     rate: str
     voice: str
@@ -77,6 +111,30 @@ class BackendCapabilities:
     experimental: bool = False
     license: str = ""
     warnings: tuple[str, ...] = ()
+
+    @property
+    def post_process_pitch(self) -> bool:
+        return self.emotion == "post-process"
+
+    @property
+    def post_process_speed(self) -> bool:
+        return self.rate == "post-process"
+
+    @property
+    def varies_by_exaggeration(self) -> bool:
+        return self.emotion == "exaggeration"
+
+    @property
+    def schedulable(self) -> bool:
+        """Can this backend be asked to fit a bar at all?
+
+        A backend that takes neither a rate instruction nor a local time-stretch can return a take
+        far longer than its peers, and that is the one worth recording a second time.
+        """
+        return self.rate != "unsupported"
+
+    def speaks(self, language: Language) -> bool:
+        return not self.languages or language.code in self.languages
 
 
 CAPABILITIES = {
@@ -123,7 +181,7 @@ CAPABILITIES = {
     "tada": BackendCapabilities(
         "unsupported", "unsupported", "clone", experimental=True,
         license="Llama 3.2 Community License",
-        warnings=("TADA contributes stochastic prosody, not semantic emotion or rate control.",),
+        warnings=("TADA contributes stochastic prosody, not semantic direction or rate control.",),
     ),
     "fish-s2": BackendCapabilities(
         "inline tags and instruction", "instruction", "clone", experimental=True,
@@ -148,28 +206,55 @@ class Prosody:
     )
 
     @classmethod
-    def for_repeat(cls, index: int, strength: float = 1.0) -> "Prosody":
+    def for_take(cls, index: int, strength: float = 1.0,
+                 capabilities: BackendCapabilities | None = None) -> "Prosody":
+        """The delivery of one repetition.
+
+        ``strength`` scales every deviation from neutral, so ``0`` deliberately makes every take
+        identical — that is what "disable per-repeat variation" means, and the reason the takes
+        converge at low strength rather than that being a defect.
+        """
         speed, semitones, gain, exaggeration = cls.TABLE[index % len(cls.TABLE)]
-        return cls(speed=1.0 + (speed - 1.0) * strength,
-                   semitones=semitones * strength,
-                   gain_db=gain * strength,
-                   exaggeration_bias=exaggeration * strength)
+        result = cls(speed=1.0 + (speed - 1.0) * strength,
+                     semitones=semitones * strength,
+                     gain_db=gain * strength,
+                     exaggeration_bias=exaggeration * strength)
+        if capabilities is not None and capabilities.varies_by_exaggeration:
+            # Vary conservatively: normal, emphasized, then restrained. This backend has no speed
+            # or pitch control, so exaggeration is the whole of what can differ.
+            bias = CHATTERBOX_TAKE_EXAGGERATION[index % len(CHATTERBOX_TAKE_EXAGGERATION)]
+            result = replace(result, exaggeration_bias=bias * strength)
+        return result
+
+
+@dataclass(frozen=True)
+class Delivery:
+    """One take of one line: which repetition it is, how the caller asked for it, and the prosody."""
+
+    take: int = 0
+    direction: str = ""
+    prosody: Prosody = Prosody()
 
     @classmethod
-    def for_chatterbox_repeat(cls, index: int,
-                              strength: float = 1.0) -> "Prosody":
-        """Vary delivery conservatively: normal, emphasized, then restrained."""
-        result = cls.for_repeat(index, strength)
-        bias = CHATTERBOX_REPEAT_EXAGGERATION[
-            index % len(CHATTERBOX_REPEAT_EXAGGERATION)]
-        return replace(result, exaggeration_bias=bias * strength)
+    def for_take(cls, index: int, direction: str = "", *, strength: float = 1.0,
+                 capabilities: BackendCapabilities | None = None) -> "Delivery":
+        return cls(take=index, direction=(direction or "").strip(),
+                   prosody=Prosody.for_take(index, strength, capabilities))
 
-    def with_emotion(self, emotion: Emotion, strength: float = 1.0) -> "Prosody":
-        return replace(
-            self,
-            speed=self.speed * (1.0 + (emotion.speed_bias - 1.0) * strength),
-            semitones=self.semitones + emotion.pitch_bias * strength,
-        )
+
+@dataclass(frozen=True)
+class SpeechRequest:
+    """Everything a backend is told about one utterance."""
+
+    text: str
+    language: Language
+    delivery: Delivery
+    target_seconds: float | None = None
+    seed: int | None = None
+
+    @property
+    def prosody(self) -> Prosody:
+        return self.delivery.prosody
 
 
 @dataclass
@@ -196,9 +281,21 @@ class Backend(Protocol):
     load_seconds: float
     model_id: str
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult: ...
+    def synth(self, request: SpeechRequest) -> SynthesisResult: ...
+
+
+class UnsupportedLanguage(RuntimeError):
+    """A backend was asked for a language it does not declare, named rather than guessed."""
+
+
+def _require_language(backend: Any, language: Language) -> str:
+    capabilities: BackendCapabilities = backend.capabilities
+    if not capabilities.speaks(language):
+        offered = ", ".join(capabilities.languages) or "any"
+        raise UnsupportedLanguage(
+            f"{getattr(backend, 'name', type(backend).__name__)} does not speak "
+            f"{language.name} ({language.code}); it declares: {offered}.")
+    return language.code
 
 
 def model_cache_root() -> Path:
@@ -213,11 +310,6 @@ def model_cache_root() -> Path:
         path.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("HF_HOME", str(path / "huggingface"))
     return path
-
-
-def _trim(audio: np.ndarray) -> np.ndarray:
-    trimmed, _ = librosa.effects.trim(audio, top_db=32)
-    return trimmed if trimmed.size else audio
 
 
 def _peak_mlx_memory() -> int | None:
@@ -265,19 +357,17 @@ class KokoroBackend:
                            for lang, code in LANGS.items()}
         self.load_seconds = time.perf_counter() - started
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del emotion, target_seconds, seed
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
         started = time.perf_counter()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            chunks = list(self._pipes[lang](text, voice=self._voices[lang],
-                                            speed=prosody.speed))
+            chunks = list(self._pipes[code](request.text, voice=self._voices[code],
+                                            speed=request.prosody.speed))
         audio = np.concatenate([c.audio.numpy() for c in chunks]).astype(np.float32)
         return SynthesisResult(audio, self.sample_rate,
                                time.perf_counter() - started,
-                               {"speed": prosody.speed}, "native-rate")
+                               {"speed": request.prosody.speed}, "native-rate")
 
 
 class _ReferenceBackend:
@@ -326,17 +416,15 @@ class MlxAudioBackend(_ReferenceBackend):
         self.load_seconds = time.perf_counter() - started
         self.sample_rate = int(getattr(self._model, "sample_rate", 24000))
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        _seed_mlx(seed)
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        _seed_mlx(request.seed)
         kwargs = dict(
-            text=text, lang_code=CHATTERBOX_LANGS.get(lang, lang),
-            ref_audio=self.ref_audios[lang],
+            text=request.text, lang_code=CHATTERBOX_LANGS.get(code, code),
+            ref_audio=self.ref_audios[code],
             exaggeration=float(np.clip(
-                emotion.exaggeration + prosody.exaggeration_bias, 0.05, 1.0)),
-            cfg_weight=emotion.cfg_weight, temperature=CHATTERBOX_TEMPERATURE,
+                CHATTERBOX_BASE_EXAGGERATION + request.prosody.exaggeration_bias, 0.05, 1.0)),
+            cfg_weight=CHATTERBOX_CFG_WEIGHT, temperature=CHATTERBOX_TEMPERATURE,
         )
         started = time.perf_counter()
         with warnings.catch_warnings():
@@ -347,40 +435,62 @@ class MlxAudioBackend(_ReferenceBackend):
                                "natural", peak_memory_bytes=_peak_mlx_memory())
 
 
-def delivery_instruction(emotion: Emotion, prosody: Prosody) -> str:
-    pace = "at a natural pace"
-    if prosody.speed < 0.985:
-        pace = "slightly slowly and deliberately"
-    elif prosody.speed > 1.015:
-        pace = "slightly briskly"
-    pitch = "with a natural pitch range"
-    if prosody.semitones > 0.25:
-        pitch = "with a slightly brighter, higher pitch"
-    elif prosody.semitones < -0.25:
-        pitch = "with a slightly lower, softer pitch"
-    return f"Speak in a {emotion.name} but clear tone, {pace}, {pitch}."
+# Five bands an axis, not three. With three, two takes of one line could resolve to byte-identical
+# director notes — at full strength, a word directed emphatically resolved take 0 to speed 1.030 /
+# +0.30 st and take 2 to 1.051 / +0.70 st, and both said "slightly briskly, with a slightly
+# brighter, higher pitch". A model that reads the same instruction twice has no reason to read the
+# line differently, so the repetition sounded *more* mechanical, not less.
+_PACE_BANDS = (
+    (0.955, "slowly and deliberately"),
+    (0.985, "slightly slowly"),
+    (1.015, "at a natural pace"),
+    (1.045, "slightly briskly"),
+)
+_PACE_FASTEST = "briskly"
+_PITCH_BANDS = (
+    (-0.55, "with a lower, softer pitch"),
+    (-0.25, "with a slightly lower pitch"),
+    (+0.25, "with a natural pitch range"),
+    (+0.55, "with a slightly brighter pitch"),
+)
+_PITCH_HIGHEST = "with a brighter, higher pitch"
 
 
-def gemini_prompt(text: str, lang: str, emotion: Emotion,
-                  prosody: Prosody) -> str:
+def _band(value: float, bands: tuple[tuple[float, str], ...], last: str) -> str:
+    for threshold, label in bands:
+        if value <= threshold:
+            return label
+    return last
+
+
+def delivery_instruction(delivery: Delivery) -> str:
+    """Director notes for one take: the caller's own direction, then the prosody words."""
+    prosody = delivery.prosody
+    pace = _band(prosody.speed, _PACE_BANDS, _PACE_FASTEST)
+    pitch = _band(prosody.semitones, _PITCH_BANDS, _PITCH_HIGHEST)
+    direction = delivery.direction.strip().rstrip(".,;") if delivery.direction else ""
+    opening = f"Speak {direction}, but clearly" if direction else "Speak clearly"
+    return f"{opening}, {pace}, {pitch}."
+
+
+def director_prompt(request: SpeechRequest) -> str:
     """Build restrained director notes without changing the spoken transcript."""
-    language = "native Spanish" if lang == "es" else "native English"
-    instruction = delivery_instruction(emotion, prosody)
+    instruction = delivery_instruction(request.delivery)
     pause_note = ""
-    if "[long pause]" in text:
+    if "[long pause]" in request.text:
         pause_note = (
             " Treat every [long pause] tag as a silent timing instruction: "
             "do not speak the tag, and leave a clearly separable long silence."
         )
     return (
         "Generate speech for a short language-learning repetition.\n"
-        f"Use {language}. {instruction}\n"
+        f"Use native {request.language.name}. {instruction}\n"
         "Keep the delivery natural, subtle, clear, and gently reinforcing. "
         "Do not sing, spell, translate, paraphrase, add words, or make any "
         "non-verbal sounds. Speak only the transcript between the markers."
         f"{pause_note}\n"
         "<TRANSCRIPT>\n"
-        f"{text}\n"
+        f"{request.text}\n"
         "</TRANSCRIPT>"
     )
 
@@ -401,13 +511,23 @@ def _decode_audio_file(data: bytes) -> tuple[np.ndarray, int]:
     return audio, int(rate)
 
 
+# Secrets a host injects at runtime rather than through the environment — a render-scoped token, for
+# instance — are registered here so provider error text carrying one is redacted like any other.
+_RUNTIME_SECRETS: set[str] = set()
+
+
+def register_secret(value: str) -> None:
+    if value and len(value) >= 8:
+        _RUNTIME_SECRETS.add(value)
+
+
 def _redact_provider_text(value: str) -> str:
     redacted = value
-    for name in ("GEMINI_API_KEY", "CLOUDFLARE_ACCOUNT_ID",
-                 "CLOUDFLARE_API_TOKEN"):
-        secret = os.environ.get(name)
-        if secret:
-            redacted = redacted.replace(secret, "<redacted>")
+    secrets = [os.environ.get(name) for name in
+               ("GEMINI_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN")]
+    for secret in sorted((s for s in [*secrets, *_RUNTIME_SECRETS] if s),
+                         key=len, reverse=True):
+        redacted = redacted.replace(secret, "<redacted>")
     return redacted[:500]
 
 
@@ -548,14 +668,12 @@ class GeminiBackend:
         raise RuntimeError(f"{provider} request failed{suffix}: "
                            f"{_redact_provider_text(str(last_error))}") from last_error
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        prompt = gemini_prompt(text, lang, emotion, prosody)
-        voice = self.voices[lang]
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        prompt = director_prompt(request)
+        voice = self.voices[code]
         started = time.perf_counter()
-        interaction = self._generate(prompt, voice, lang)
+        interaction = self._generate(prompt, voice, code)
         if getattr(self, "vertex", False):
             candidates = getattr(interaction, "candidates", None) or []
             content = getattr(candidates[0], "content", None) if candidates else None
@@ -621,12 +739,12 @@ class GeminiBackend:
             "provider": "vertex-ai" if getattr(self, "vertex", False)
             else "gemini-api",
             "location": getattr(self, "location", None),
-            "instruction": delivery_instruction(emotion, prosody),
+            "instruction": delivery_instruction(request.delivery),
             "voice": voice,
-            "language": lang,
-            "characters": len(text),
+            "language": code,
+            "characters": len(request.text),
             "seed_supported": False,
-            "requested_seed": seed,
+            "requested_seed": request.seed,
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "estimated_cost_usd": estimated_cost,
@@ -730,14 +848,12 @@ class CloudflareAura2Backend(_CloudflareBackend):
         self.model_id = model
         self.voices = {**AURA2_VOICES, **(voices or {})}
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        model = self.model_id.format(lang=lang)
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        model = self.model_id.format(lang=code)
         payload = {
-            "text": text,
-            "speaker": self.voices[lang],
+            "text": request.text,
+            "speaker": self.voices[code],
             "encoding": "linear16",
             "container": "wav",
             "sample_rate": self.sample_rate,
@@ -747,15 +863,15 @@ class CloudflareAura2Backend(_CloudflareBackend):
         audio, rate = _decode_audio_file(raw)
         controls = {
             "model": model,
-            "voice": self.voices[lang],
-            "characters": len(text),
+            "voice": self.voices[code],
+            "characters": len(request.text),
             "native_prosody_supported": False,
-            "requested_emotion": emotion.name,
-            "requested_speed": prosody.speed,
-            "requested_semitones": prosody.semitones,
+            "requested_direction": request.delivery.direction,
+            "requested_speed": request.prosody.speed,
+            "requested_semitones": request.prosody.semitones,
             "seed_supported": False,
-            "requested_seed": seed,
-            "estimated_cost_usd": len(text) / 1000 * 0.03,
+            "requested_seed": request.seed,
+            "estimated_cost_usd": len(request.text) / 1000 * 0.03,
         }
         return SynthesisResult(audio, rate, time.perf_counter() - started,
                                controls, "local-post-process",
@@ -777,20 +893,13 @@ class CloudflareMeloBackend(_CloudflareBackend):
         self.model_id = model
         self._audio_cache: dict[tuple[str, str], tuple[np.ndarray, int, float]] = {}
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        if lang != "en":
-            raise RuntimeError(
-                "Cloudflare MeloTTS currently rejects Spanish with AiError 8002; "
-                "the backend is retained as an English-only baseline until the "
-                "provider fixes cloudflare/ai#221.")
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
         started = time.perf_counter()
-        cache_key = (text, lang)
+        cache_key = (request.text, code)
         cached = self._audio_cache.get(cache_key)
         if cached is None:
-            raw, _ = self._request(self.model_id, {"prompt": text, "lang": lang})
+            raw, _ = self._request(self.model_id, {"prompt": request.text, "lang": code})
             audio, rate = _decode_audio_file(raw)
             provider_cost = len(audio) / rate / 60 * 0.0002
             self._audio_cache[cache_key] = (audio.copy(), rate, provider_cost)
@@ -802,14 +911,14 @@ class CloudflareMeloBackend(_CloudflareBackend):
             cache_hit = True
         controls = {
             "model": self.model_id,
-            "language": lang,
-            "characters": len(text),
+            "language": code,
+            "characters": len(request.text),
             "native_prosody_supported": False,
-            "requested_emotion": emotion.name,
-            "requested_speed": prosody.speed,
-            "requested_semitones": prosody.semitones,
+            "requested_direction": request.delivery.direction,
+            "requested_speed": request.prosody.speed,
+            "requested_semitones": request.prosody.semitones,
             "seed_supported": False,
-            "requested_seed": seed,
+            "requested_seed": request.seed,
             "cache_hit": cache_hit,
             "estimated_cost_usd": provider_cost,
         }
@@ -834,20 +943,18 @@ class VoxCPM2Backend(_ReferenceBackend):
         self.load_seconds = time.perf_counter() - started
         self.sample_rate = int(getattr(self._model, "sample_rate", 48000))
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        _seed_mlx(seed)
-        instruct = delivery_instruction(emotion, prosody)
-        kwargs = dict(text=text, ref_audio=self.ref_audios[lang],
-                      ref_text=self.ref_texts[lang], instruct=instruct,
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        _seed_mlx(request.seed)
+        instruct = delivery_instruction(request.delivery)
+        kwargs = dict(text=request.text, ref_audio=self.ref_audios[code],
+                      ref_text=self.ref_texts[code], instruct=instruct,
                       inference_timesteps=10, cfg_value=2.0)
         started = time.perf_counter()
         audio, rate = _collect(self._model.generate(**kwargs), self.sample_rate)
         self.sample_rate = rate
         return SynthesisResult(audio, rate, time.perf_counter() - started,
-                               {"instruct": instruct, "reference": self.ref_audios[lang]},
+                               {"instruct": instruct, "reference": self.ref_audios[code]},
                                "instruction-rate", peak_memory_bytes=_peak_mlx_memory())
 
 
@@ -866,30 +973,20 @@ class Qwen3Backend:
         self.load_seconds = time.perf_counter() - started
         self.sample_rate = int(getattr(self._model, "sample_rate", 24000))
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        _seed_mlx(seed)
-        instruct = delivery_instruction(emotion, prosody)
-        kwargs = dict(text=text, voice=self.voices[lang], instruct=instruct,
-                      lang_code="spanish" if lang == "es" else "english",
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        _seed_mlx(request.seed)
+        instruct = delivery_instruction(request.delivery)
+        kwargs = dict(text=request.text, voice=self.voices[code], instruct=instruct,
+                      lang_code=QWEN_LANGUAGE_NAMES.get(code, request.language.name.lower()),
                       temperature=0.85, top_k=50, top_p=0.95)
         started = time.perf_counter()
         audio, rate = _collect(self._model.generate(**kwargs), self.sample_rate)
         self.sample_rate = rate
         return SynthesisResult(audio, rate, time.perf_counter() - started,
-                               {"instruct": instruct, "voice": self.voices[lang]},
+                               {"instruct": instruct, "voice": self.voices[code]},
                                "instruction-rate", list(self.capabilities.warnings),
                                _peak_mlx_memory())
-
-
-FISH_TAGS = {
-    "happy": "excited", "warm": "delight", "delighted": "delight",
-    "emphatic": "emphasis", "surprised": "surprised", "angry": "angry",
-    "sad": "sad", "afraid": "fearful", "disgusted": "disgusted",
-    "thoughtful": "calm", "calm": "calm", "neutral": "calm",
-}
 
 
 class FishS2Backend(_ReferenceBackend):
@@ -908,25 +1005,22 @@ class FishS2Backend(_ReferenceBackend):
         self.load_seconds = time.perf_counter() - started
         self.sample_rate = int(getattr(self._model, "sample_rate", 44100))
 
-    def _reference_array(self, lang: str):
+    def _reference_array(self, code: str):
         from mlx_audio.tts.generate import load_audio
-        return load_audio(self.ref_audios[lang], sample_rate=self.sample_rate)
+        return load_audio(self.ref_audios[code], sample_rate=self.sample_rate)
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds
-        _seed_mlx(seed)
-        tag = FISH_TAGS.get(emotion.name, "calm")
-        instruct = delivery_instruction(emotion, prosody)
-        kwargs = dict(text=f"[{tag}] {text}", ref_audio=self._reference_array(lang),
-                      ref_text=self.ref_texts[lang], instruct=instruct,
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
+        _seed_mlx(request.seed)
+        instruct = delivery_instruction(request.delivery)
+        kwargs = dict(text=request.text, ref_audio=self._reference_array(code),
+                      ref_text=self.ref_texts[code], instruct=instruct,
                       temperature=0.75, top_p=0.8, top_k=30, speed=1.0)
         started = time.perf_counter()
         audio, rate = _collect(self._model.generate(**kwargs), self.sample_rate)
         self.sample_rate = rate
         return SynthesisResult(audio, rate, time.perf_counter() - started,
-                               {"tag": tag, "instruct": instruct, "speed": 1.0},
+                               {"instruct": instruct, "speed": 1.0},
                                "instruction-rate", list(self.capabilities.warnings),
                                _peak_mlx_memory())
 
@@ -969,26 +1063,24 @@ class TadaBackend(_ReferenceBackend):
         self.sample_rate = 24000
         self._references: dict[str, Any] = {}
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
-        del target_seconds, emotion
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
         from mlx_tada import InferenceOptions
-        _seed_mlx(seed)
+        code = _require_language(self, request.language)
+        _seed_mlx(request.seed)
         reference_seconds = 0.0
-        if lang not in self._references:
+        if code not in self._references:
             reference_started = time.perf_counter()
-            self._references[lang] = self._model.load_reference(
-                self.ref_audios[lang], audio_text=self.ref_texts[lang])
+            self._references[code] = self._model.load_reference(
+                self.ref_audios[code], audio_text=self.ref_texts[code])
             reference_seconds = time.perf_counter() - reference_started
-        variation = float(np.clip(0.9 + prosody.exaggeration_bias, 0.75, 1.05))
+        variation = float(np.clip(0.9 + request.prosody.exaggeration_bias, 0.75, 1.05))
         options = InferenceOptions(text_temperature=0.6,
                                    noise_temperature=variation,
                                    acoustic_cfg_scale=1.6,
                                    duration_cfg_scale=1.0,
                                    num_flow_matching_steps=10)
         started = time.perf_counter()
-        output = self._model.generate(text, self._references[lang],
+        output = self._model.generate(request.text, self._references[code],
                                       inference_options=options)
         return SynthesisResult(np.asarray(output.audio, dtype=np.float32),
                                self.sample_rate, time.perf_counter() - started,
@@ -1035,17 +1127,18 @@ class IndexTTS25Backend(_ReferenceBackend):
                 f"IndexTTS worker exited unexpectedly ({self._process.poll()}).")
         return json.loads(line)
 
-    def synth(self, text: str, lang: str, prosody: Prosody,
-              emotion: Emotion, target_seconds: float | None = None,
-              seed: int | None = None) -> SynthesisResult:
+    def synth(self, request: SpeechRequest) -> SynthesisResult:
+        code = _require_language(self, request.language)
         output = Path(self._tmp.name) / f"{hashlib.sha1(os.urandom(16)).hexdigest()}.wav"
-        request = {
-            "text": text, "lang": lang, "reference": self.ref_audios[lang],
-            "emotion": emotion.vector(), "duration_factor": 1.0 / prosody.speed,
-            "target_seconds": target_seconds, "seed": seed, "output": str(output),
+        payload = {
+            "text": request.text, "lang": code, "reference": self.ref_audios[code],
+            "emotion": list(INDEXTTS_NEUTRAL_VECTOR),
+            "duration_factor": 1.0 / request.prosody.speed,
+            "target_seconds": request.target_seconds, "seed": request.seed,
+            "output": str(output),
         }
         assert self._process.stdin is not None
-        self._process.stdin.write(json.dumps(request) + "\n")
+        self._process.stdin.write(json.dumps(payload) + "\n")
         self._process.stdin.flush()
         response = self._read_response()
         if response.get("error"):
@@ -1107,7 +1200,8 @@ def ensure_reference(source: str = "kokoro:ef_dora", lang: str = "es") -> Path:
     else:
         fallback = DEFAULT_VOICES[lang]
         backend = KokoroBackend({lang: voice or fallback})
-        result = backend.synth(REFERENCE_TEXTS[lang], lang, Prosody(), NEUTRAL)
+        language = SPANISH if lang == "es" else ENGLISH
+        result = backend.synth(SpeechRequest(REFERENCE_TEXTS[lang], language, Delivery()))
         sf.write(path, result.audio, result.sample_rate)
     return path
 
@@ -1141,6 +1235,13 @@ def make_backend(name: str, *, voices: dict[str, str] | None = None,
 
 
 class Speaker:
+    """One voice, and the local post-processing its own declaration asks for.
+
+    ``backend_instance`` is the seam a host injects through, and it is why nothing here reads a
+    name: the capabilities come off the object. A backend this module has never heard of works
+    exactly as well as one it ships.
+    """
+
     def __init__(self, voices: dict[str, str] | None = None, *,
                  backend: str = "chatterbox", model: str | None = None,
                  ref_audio: str | None = None,
@@ -1149,69 +1250,84 @@ class Speaker:
                  prosody_strength: float = 1.0,
                  voice_seed: int = 7,
                  backend_instance: Backend | None = None) -> None:
-        normalized = "chatterbox" if backend == "mlx" else backend
-        self.capabilities = CAPABILITIES[normalized]
-        if self.capabilities.experimental:
-            warnings.warn(
-                f"Experimental backend '{normalized}' ({self.capabilities.license}): "
-                + " ".join(self.capabilities.warnings), stacklevel=2)
-        self.backend = backend_instance or make_backend(
-            normalized, voices=voices, model=model, ref_audio=ref_audio,
-            ref_audios=ref_audios, ref_texts=ref_texts)
+        if backend_instance is None:
+            normalized = "chatterbox" if backend == "mlx" else backend
+            if normalized not in CAPABILITIES:
+                raise ValueError(f"Unknown voice backend '{backend}'.")
+            if CAPABILITIES[normalized].experimental:
+                capabilities = CAPABILITIES[normalized]
+                warnings.warn(
+                    f"Experimental backend '{normalized}' ({capabilities.license}): "
+                    + " ".join(capabilities.warnings), stacklevel=2)
+            self.backend = make_backend(
+                normalized, voices=voices, model=model, ref_audio=ref_audio,
+                ref_audios=ref_audios, ref_texts=ref_texts)
+        else:
+            self.backend = backend_instance
+        self.capabilities = self.backend.capabilities
         self.prosody_strength = prosody_strength
         self.voice_seed = voice_seed
-        self.post_process_pitch = normalized in {
-            "kokoro", "cloudflare-aura2", "cloudflare-melotts"}
-        self.post_process_speed = normalized in {
-            "cloudflare-aura2", "cloudflare-melotts"}
-        self.post_process_gain = normalized in {
-            "cloudflare-aura2", "cloudflare-melotts"}
+        self.post_process_pitch = self.capabilities.post_process_pitch
+        self.post_process_speed = self.capabilities.post_process_speed
         self._cache: dict[tuple, np.ndarray] = {}
         self.stats: list[dict[str, Any]] = []
         self._call_index = 0
 
-    def say(self, text: str, lang: str, prosody: Prosody = Prosody(),
-            emotion: Emotion = NEUTRAL,
+    def take(self, index: int, direction: str = "") -> Delivery:
+        return Delivery.for_take(index, direction, strength=self.prosody_strength,
+                                 capabilities=self.capabilities)
+
+    def say(self, text: str, language: Language, delivery: Delivery = Delivery(),
             target_seconds: float | None = None, *,
             retry: bool = False) -> np.ndarray:
-        key = (text, lang, prosody, emotion, target_seconds)
+        # Checked here as well as inside each backend, because this is the dispatcher: a backend
+        # that forgets the guard must not turn a language it cannot speak into a KeyError out of a
+        # voice table three frames down.
+        _require_language(self.backend, language)
+        key = (text, language, delivery, target_seconds)
         if not retry and key in self._cache:
             return self._cache[key]
         seed = self.voice_seed + self._call_index
         self._call_index += 1
-        result = self.backend.synth(text, lang, prosody, emotion,
-                                    target_seconds=target_seconds, seed=seed)
-        audio = _trim(result.audio)
+        result = self.backend.synth(SpeechRequest(
+            text=text, language=language, delivery=delivery,
+            target_seconds=target_seconds, seed=seed))
+        prosody = delivery.prosody
+        audio = trim(result.audio)
         rate = result.sample_rate
         post_process: dict[str, float] = {}
         if self.post_process_speed and abs(prosody.speed - 1.0) > 0.001:
-            audio = librosa.effects.time_stretch(audio, rate=prosody.speed)
+            audio = time_stretch(audio, rate, prosody.speed)
             post_process["speed"] = prosody.speed
         if self.post_process_pitch and abs(prosody.semitones) > 0.01:
-            audio = _pitch_shift(audio, rate, prosody.semitones)
+            audio = pitch_shift(audio, rate, prosody.semitones)
             post_process["semitones"] = prosody.semitones
         if rate != SR:
-            audio = librosa.resample(audio, orig_sr=rate, target_sr=SR,
-                                     res_type="soxr_hq")
-        audio = audio * 10 ** (prosody.gain_db / 20)
-        if self.post_process_gain and abs(prosody.gain_db) > 0.01:
-            post_process["gain_db"] = prosody.gain_db
-        if post_process:
-            result.controls["local_post_process"] = post_process
+            audio = resample(audio, rate, SR)
         before_fit = len(audio) / SR
         fitted = False
         if target_seconds is not None and before_fit > target_seconds:
-            fitted_audio = fit(audio, target_seconds)
+            fitted_audio = fit(audio, target_seconds, SR)
             fitted = len(fitted_audio) != len(audio)
             audio = fitted_audio
+        # Normalise *then* apply the take's gain. The other way round — which is how this stood
+        # until now — made `gain_db` inaudible in every backend: it was applied and then divided
+        # straight back out by the peak-normalise eleven lines later, so the -0.8/+0.6 dB column of
+        # `Prosody.TABLE` was decoration.
         peak = float(np.abs(audio).max()) if audio.size else 0.0
         if peak > 0:
-            audio = audio / peak * 0.9
-        audio = audio.astype(np.float32)
+            audio = audio / peak * REFERENCE_PEAK
+        if abs(prosody.gain_db) > 0.01:
+            audio = audio * 10 ** (prosody.gain_db / 20)
+            post_process["gain_db"] = prosody.gain_db
+        audio = np.clip(audio, -PEAK_CEILING, PEAK_CEILING).astype(np.float32)
+        if post_process:
+            result.controls["local_post_process"] = post_process
         metadata = result.metadata()
         metadata.update({
-            "text": text, "lang": lang, "emotion": emotion.name,
-            "emotion_vector": emotion.vector(), "seed": seed,
+            "text": text, "language": language.code, "language_name": language.name,
+            "take": delivery.take, "direction": delivery.direction,
+            "instruction": delivery_instruction(delivery), "seed": seed,
             "target_seconds": target_seconds, "duration_before_fit": before_fit,
             "duration_seconds": len(audio) / SR,
             "post_fit_applied": fitted,
@@ -1220,34 +1336,12 @@ class Speaker:
         self._cache[key] = audio
         return audio
 
-    def remember_take(self, text: str, lang: str, prosody: Prosody,
-                      emotion: Emotion, target_seconds: float | None,
-                      audio: np.ndarray) -> None:
+    def remember_take(self, text: str, language: Language, delivery: Delivery,
+                      target_seconds: float | None, audio: np.ndarray) -> None:
         """Restore or replace the cached take after comparative quality control."""
-        self._cache[(text, lang, prosody, emotion, target_seconds)] = audio
+        self._cache[(text, language, delivery, target_seconds)] = audio
 
     def close(self) -> None:
         close = getattr(self.backend, "close", None)
         if close:
             close()
-
-
-def _pitch_shift(audio: np.ndarray, sr: int, semitones: float) -> np.ndarray:
-    try:
-        from pedalboard import PitchShift
-        return PitchShift(semitones=semitones)(audio, sr)
-    except ImportError:
-        return librosa.effects.pitch_shift(audio, sr=sr, n_steps=semitones)
-
-
-def fit(audio: np.ndarray, max_seconds: float, sr: int = SR) -> np.ndarray:
-    limit = int(max_seconds * sr)
-    if len(audio) <= limit or limit <= 0:
-        return audio
-    rate = min(len(audio) / limit, 1.35)
-    try:
-        from pedalboard import time_stretch
-        stretched = time_stretch(audio, sr, stretch_factor=rate).reshape(-1)
-    except (ImportError, AttributeError):
-        stretched = librosa.effects.time_stretch(audio, rate=rate)
-    return stretched[:limit] if len(stretched) > limit else stretched

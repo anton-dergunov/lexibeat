@@ -19,12 +19,11 @@ import librosa
 import numpy as np
 import soundfile as sf
 
-from lexibeat.emotion import NEUTRAL
 from lexibeat.music import SR
 from lexibeat.vocab import load
-from lexibeat.voice import Prosody, Speaker
+from lexibeat.language import ENGLISH, SPANISH
+from lexibeat.voice import Speaker
 
-VOCAB_DIR = Path("/Users/anton/obsidian/Languages/Spanish/Vocabulary")
 MODELS = (
     "gemini-3.1-flash-tts-preview",
     "gemini-2.5-flash-tts",
@@ -111,6 +110,8 @@ def split_on_long_silences(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--vocab", type=Path, nargs="+", required=True,
+                        help="markdown files or directories of vocabulary notes")
     parser.add_argument("--words", type=int, default=10)
     parser.add_argument("--reps", type=int, default=3)
     parser.add_argument("--seed", type=int, default=7)
@@ -126,7 +127,7 @@ def main() -> None:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     raw_dir = args.out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
-    items = load([VOCAB_DIR], mode="words", limit=args.words, seed=args.seed)
+    items = load(args.vocab, mode="words", limit=args.words, seed=args.seed)
     speaker = Speaker(backend="gemini-vertex", model=args.model,
                       voice_seed=args.seed)
     batches: dict[tuple[int, str], list[np.ndarray]] = {}
@@ -134,14 +135,15 @@ def main() -> None:
     started = time.perf_counter()
     try:
         for rep in range(args.reps):
-            prosody = Prosody.for_repeat(rep, speaker.prosody_strength)
-            for lang in ("es", "en"):
+            delivery = speaker.take(rep)
+            for language in (SPANISH, ENGLISH):
+                lang = language.code
                 phrases = [item.source if lang == "es" else item.target
                            for item in items]
                 transcript = "\n[long pause]\n".join(phrases)
                 print(f"[{rep + 1}/{args.reps}] {lang}: {len(phrases)} phrases",
                       flush=True)
-                audio = speaker.say(transcript, lang, prosody, NEUTRAL)
+                audio = speaker.say(transcript, language, delivery)
                 raw_path = raw_dir / f"rep-{rep + 1}-{lang}.wav"
                 sf.write(raw_path, audio, SR)
                 segments, split_stats = split_on_long_silences(

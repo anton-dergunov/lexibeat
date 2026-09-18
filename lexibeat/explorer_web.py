@@ -1,4 +1,10 @@
-"""FastAPI boundary for the optional LexiBeat web explorer."""
+"""FastAPI boundary for the optional LexiBeat music explorer.
+
+This is the *Lab*: bed resolution, validation, randomization and preview rendering, with the Gradio
+interface mounted over it. It is a tool for working on the music, and it is deliberately not the
+integration surface — that is `lexibeat.service`, which is versioned, operation-shaped and needs
+no gradio.
+"""
 
 from __future__ import annotations
 
@@ -102,7 +108,7 @@ class SampleListResponse(BaseModel):
 
 
 def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
-               lesson_generate: Callable[[object, str, dict], dict] | None = None):
+               backend_factory: Callable[[], Any] | None = None):
     """Create the shared ASGI application without importing web dependencies early."""
     from fastapi import FastAPI, HTTPException, Query, Request
     from fastapi.exceptions import RequestValidationError
@@ -279,7 +285,7 @@ def create_api(*, config: ExplorerConfig | None = None, mount_ui: bool = True,
 
         demo = build_demo(
             resolved_config, artifacts=artifacts, samples=samples,
-            lesson_generate=lesson_generate)
+            backend_factory=backend_factory)
         app = gr.mount_gradio_app(app, demo, path="/", ssr_mode=False)
         app.state.explorer_config = resolved_config
         app.state.artifacts = artifacts

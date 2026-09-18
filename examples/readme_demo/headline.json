@@ -5,20 +5,81 @@
   "bpm": 78,
   "meter": "4/4",
   "items": [
-    {"source": "¿arrancamos?", "target": "shall we start?", "emoji": "🚀"},
-    {"source": "espectacular", "target": "spectacular", "emoji": "🤩"},
-    {"source": "preciosa", "target": "precious", "emoji": "🥰"},
-    {"source": "asombroso", "target": "amazing", "emoji": "😲"},
-    {"source": "asco", "target": "disgust", "emoji": "🤮"},
-    {"source": "dar bronca", "target": "to upset", "emoji": "😠"},
-    {"source": "¡Qué susto!", "target": "What a scare!", "emoji": "😨"},
-    {"source": "la pesadilla", "target": "nightmare", "emoji": "😨"},
-    {"source": "qué lástima", "target": "what a shame", "emoji": "😔"},
-    {"source": "estar envuelto en sus pensamientos", "target": "to be lost in thought", "emoji": "💭", "bars_per_utterance": 2},
-    {"source": "vencer tus miedos", "target": "overcome your fears", "emoji": "💪"},
-    {"source": "descansar", "target": "to rest", "emoji": "😴"}
+    {
+      "source": "¿arrancamos?",
+      "target": "shall we start?",
+      "direction": "briskly, with a spark of impatience"
+    },
+    {
+      "source": "espectacular",
+      "target": "spectacular",
+      "direction": "delighted, eyes wide"
+    },
+    {
+      "source": "preciosa",
+      "target": "precious",
+      "direction": "tenderly, with real affection"
+    },
+    {
+      "source": "asombroso",
+      "target": "amazing",
+      "direction": "genuinely astonished"
+    },
+    {
+      "source": "asco",
+      "target": "disgust",
+      "direction": "repulsed, recoiling slightly"
+    },
+    {
+      "source": "dar bronca",
+      "target": "to upset",
+      "direction": "irritated, clipped"
+    },
+    {
+      "source": "¡Qué susto!",
+      "target": "What a scare!",
+      "direction": "startled, a little breathless"
+    },
+    {
+      "source": "la pesadilla",
+      "target": "nightmare",
+      "direction": "startled, a little breathless"
+    },
+    {
+      "source": "qué lástima",
+      "target": "what a shame",
+      "direction": "quietly sorry"
+    },
+    {
+      "source": "estar envuelto en sus pensamientos",
+      "target": "to be lost in thought",
+      "bars_per_utterance": 2,
+      "direction": "thoughtful, turning it over"
+    },
+    {
+      "source": "vencer tus miedos",
+      "target": "overcome your fears",
+      "direction": "resolute, encouraging"
+    },
+    {
+      "source": "descansar",
+      "target": "to rest",
+      "direction": "drowsy and unhurried"
+    }
   ],
   "variants": [
-    {"name": "acoustic", "style": "acoustic", "seed": 9}
-  ]
+    {
+      "name": "acoustic",
+      "style": "acoustic",
+      "seed": 9
+    }
+  ],
+  "source_language": {
+    "code": "es",
+    "name": "Spanish"
+  },
+  "target_language": {
+    "code": "en",
+    "name": "English"
+  }
 }

@@ -11,11 +11,11 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Protocol
 
-import librosa
 import numpy as np
 import soundfile as sf
 
 from . import samples as sample_packs
+from .dsp import resample
 from .library import InstrumentRef, SampleLibrary, SampleRef
 from .samples import SamplePack
 
@@ -107,8 +107,7 @@ class SampledInstrument:
         ratio = 2 ** (semitones / 12.0)
         target = SR / ratio
         if abs(target - rate) > 1.0:
-            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
-                                     res_type="soxr_hq")
+            audio = resample(audio, rate, target)
 
         n = int(seconds * SR)
         if len(audio) < n:
@@ -144,8 +143,7 @@ class CatalogSampleInstrument:
         ratio = 2 ** ((midi_note - root) / 12.0)
         target = SR / ratio
         if abs(target - rate) > 1.0:
-            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
-                                     res_type="soxr_hq")
+            audio = resample(audio, rate, target)
         n = max(int(seconds * SR), 1)
         audio = np.pad(audio, (0, max(n - len(audio), 0)))[:n].copy()
         release = min(int(0.18 * SR), n)
@@ -196,8 +194,7 @@ class CatalogMultiSampleInstrument:
         ratio = 2 ** ((midi_note - zone.root_note) / 12.0)
         target = SR / ratio
         if abs(target - rate) > 1.0:
-            audio = librosa.resample(audio, orig_sr=rate, target_sr=target,
-                                     res_type="soxr_hq")
+            audio = resample(audio, rate, target)
         n = max(int(seconds * SR), 1)
         audio = np.pad(audio, (0, max(n - len(audio), 0)))[:n].copy()
         release = min(int(0.2 * SR), n)
@@ -215,8 +212,7 @@ def load_one_shot(ref: SampleRef, max_seconds: float = 3.0,
     path = library.resolve(ref)
     audio, rate = _load_sample(str(path), max_seconds)
     if rate != SR:
-        audio = librosa.resample(audio, orig_sr=rate, target_sr=SR,
-                                 res_type="soxr_hq")
+        audio = resample(audio, rate, SR)
     # `_load_sample` is cached. Own this buffer before trimming/fading it so a
     # later replay does not receive PCM mutated by an earlier render.
     audio = np.asarray(audio, dtype=np.float32).copy()
