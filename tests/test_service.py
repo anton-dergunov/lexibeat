@@ -141,6 +141,23 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(self.seen[0].credentials, secret)
         self.assertEqual(self.seen[0].request.source_language.name, "Spanish")
 
+    def test_the_hosts_delivery_reaches_the_backend_factory_untouched(self) -> None:
+        """LexiBeat has no opinion about the value, and that is the point of passing it.
+
+        A host voice that takes a director note and one that does not are told apart by the
+        backend the host builds, which can only be built once this has arrived. Without it the
+        factory has to guess, and a deployment that chose the plain voice was paying for a
+        directed take on every repetition of every line.
+        """
+        self.follow(self.client.post(
+            f"{API_PREFIX}/loops",
+            json=body(speech={"token": "t", "delivery": "plain"})).json()["operation_id"])
+        self.assertEqual(self.seen[0].delivery, "plain")
+
+    def test_a_render_that_says_nothing_about_delivery_still_renders(self) -> None:
+        self.follow(self.client.post(f"{API_PREFIX}/loops", json=body()).json()["operation_id"])
+        self.assertEqual(self.seen[0].delivery, "")
+
     def test_the_credential_never_appears_in_anything_a_caller_can_read(self) -> None:
         secret = "render-scoped-token-value"
         operation = self.follow(self.client.post(

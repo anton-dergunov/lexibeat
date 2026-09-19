@@ -109,8 +109,18 @@ class VoiceTests(unittest.TestCase):
         self.assertIn("quietly sorry", text)
         self.assertIn("slightly slowly", text)
         self.assertIn("lower", text)
-        self.assertEqual(delivery_instruction(Delivery()),
-                         "Speak clearly, at a natural pace, with a natural pitch range.")
+        self.assertEqual(
+            delivery_instruction(Delivery()),
+            "Speak warmly, as if teaching someone, but clearly, at a natural pace, "
+            "with a natural pitch range.")
+
+    def test_a_line_with_no_direction_is_still_given_one(self) -> None:
+        """A word nobody has written a delivery for is the common case, and a bare "Speak clearly"
+        is an instruction to be flat. The default says how a person teaching would say it, and the
+        prosody words still vary it take by take."""
+        plain = delivery_instruction(Delivery())
+        self.assertIn("warmly", plain)
+        self.assertNotIn("Speak clearly", plain)
 
     def test_three_takes_of_one_line_never_share_an_instruction(self) -> None:
         """Two identical director notes are one reading twice, which is the opposite of the point.

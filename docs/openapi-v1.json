@@ -373,12 +373,18 @@
             "maxLength": 8192,
             "title": "Token",
             "default": ""
+          },
+          "delivery": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Delivery",
+            "default": ""
           }
         },
         "additionalProperties": false,
         "type": "object",
         "title": "SpeechBody",
-        "description": "A render-scoped credential for the injected backend. Never stored, never logged."
+        "description": "What the injected backend is given: a render-scoped credential, and how the host will speak.\n\nThe token is never stored and never logged. `delivery` is opaque here and reaches the backend\nfactory as it arrived."
       },
       "ValidationError": {
         "properties": {

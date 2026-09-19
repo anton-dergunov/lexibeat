@@ -463,14 +463,23 @@ def _band(value: float, bands: tuple[tuple[float, str], ...], last: str) -> str:
     return last
 
 
+# How a line is opened when the caller supplied no direction of its own.
+#
+# Not "Speak clearly", which is what this used to be. A caller that has nothing to say about a word
+# is the common case, not the exceptional one — a vocabulary is mostly words nobody has written a
+# delivery for — and a bare instruction to be clear is an instruction to be flat. These are lines
+# somebody is going to leave running in a kitchen, so the default is the voice a person teaching
+# would use, and the prosody words below still vary it take by take.
+_NO_DIRECTION = "warmly, as if teaching someone"
+
+
 def delivery_instruction(delivery: Delivery) -> str:
     """Director notes for one take: the caller's own direction, then the prosody words."""
     prosody = delivery.prosody
     pace = _band(prosody.speed, _PACE_BANDS, _PACE_FASTEST)
     pitch = _band(prosody.semitones, _PITCH_BANDS, _PITCH_HIGHEST)
-    direction = delivery.direction.strip().rstrip(".,;") if delivery.direction else ""
-    opening = f"Speak {direction}, but clearly" if direction else "Speak clearly"
-    return f"{opening}, {pace}, {pitch}."
+    direction = delivery.direction.strip().rstrip(".,;") if delivery.direction else _NO_DIRECTION
+    return f"Speak {direction}, but clearly, {pace}, {pitch}."
 
 
 def director_prompt(request: SpeechRequest) -> str:

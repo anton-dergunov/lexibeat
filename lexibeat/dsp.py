@@ -49,25 +49,45 @@ def trim(audio: np.ndarray, top_db: float = 32.0,
     return trimmed if trimmed.size else audio
 
 
+def _unavailable(operation: str, first: BaseException, second: BaseException) -> RuntimeError:
+    """Say what happened to *both* backends, because one of them is not supposed to be installed.
+
+    Only the import is guarded above, and that is the whole of this fix: the `try` used to wrap the
+    pedalboard *call* as well, so any failure inside pedalboard fell through to `import librosa` and
+    surfaced as `ModuleNotFoundError: No module named 'librosa'` — naming a dependency that was
+    removed on purpose and saying nothing about the one that actually broke.
+    """
+    return RuntimeError(
+        f"{operation} needs pedalboard or librosa, and neither answered. "
+        f"pedalboard: {first!r}. librosa (an optional fallback, not a dependency of the "
+        f"music path): {second!r}."
+    )
+
+
 def time_stretch(audio: np.ndarray, sr: int, rate: float) -> np.ndarray:
     """Change duration without changing pitch. ``rate > 1`` makes it shorter."""
     try:
         from pedalboard import time_stretch as _stretch
-        return np.asarray(_stretch(audio, sr, stretch_factor=rate),
-                          dtype=np.float32).reshape(-1)
-    except (ImportError, AttributeError):
-        import librosa
+    except (ImportError, AttributeError) as missing:
+        try:
+            import librosa
+        except ImportError as absent:
+            raise _unavailable("Time-stretching", missing, absent) from missing
         return np.asarray(librosa.effects.time_stretch(audio, rate=rate), dtype=np.float32)
+    return np.asarray(_stretch(audio, sr, stretch_factor=rate), dtype=np.float32).reshape(-1)
 
 
 def pitch_shift(audio: np.ndarray, sr: int, semitones: float) -> np.ndarray:
     try:
         from pedalboard import PitchShift
-        return np.asarray(PitchShift(semitones=semitones)(audio, sr), dtype=np.float32)
-    except ImportError:
-        import librosa
+    except (ImportError, AttributeError) as missing:
+        try:
+            import librosa
+        except ImportError as absent:
+            raise _unavailable("Pitch-shifting", missing, absent) from missing
         return np.asarray(librosa.effects.pitch_shift(audio, sr=sr, n_steps=semitones),
                           dtype=np.float32)
+    return np.asarray(PitchShift(semitones=semitones)(audio, sr), dtype=np.float32)
 
 
 def fit(audio: np.ndarray, max_seconds: float, sr: int) -> np.ndarray:

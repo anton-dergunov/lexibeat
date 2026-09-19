@@ -100,6 +100,11 @@ class RenderContext:
     operation_id: str
     request: LoopRequest
     credentials: str = ""
+    # What the host asked its own voice to do, passed through untouched. LexiBeat has no opinion
+    # about the value: a backend that cares reads it and declares its capabilities accordingly,
+    # which is how a host voice that takes a director note and one that does not are told apart
+    # without either side branching on the other's vocabulary.
+    delivery: str = ""
 
 
 BackendFactory = Callable[[RenderContext], Backend]
@@ -163,7 +168,7 @@ class Operations:
         self._worker: threading.Thread | None = None
         # The request and its credential live here and nowhere else, and are popped the moment the
         # worker picks the render up: an operation a caller can read must not carry a token.
-        self._pending: dict[str, tuple[LoopRequest, str]] = {}
+        self._pending: dict[str, tuple[LoopRequest, str, str]] = {}
 
     # -- lifecycle -------------------------------------------------------
 
@@ -173,7 +178,7 @@ class Operations:
                                             daemon=True)
             self._worker.start()
 
-    def submit(self, request: LoopRequest, credentials: str = "") -> Operation:
+    def submit(self, request: LoopRequest, credentials: str = "", delivery: str = "") -> Operation:
         with self._lock:
             pending = sum(1 for row in self._operations.values() if not row.finished)
             if pending >= self.config.max_pending:
@@ -181,7 +186,7 @@ class Operations:
             operation = Operation(id=uuid.uuid4().hex)
             self._operations[operation.id] = operation
             self._order.append(operation.id)
-            self._pending[operation.id] = (request, credentials)
+            self._pending[operation.id] = (request, credentials, delivery)
         self._ensure_worker()
         self._queue.put(operation.id)
         return operation
@@ -246,14 +251,14 @@ class Operations:
             pending = self._pending.pop(operation_id, None)
         if operation is None or pending is None or operation.finished:
             return
-        request, credentials = pending
+        request, credentials, delivery = pending
         operation.status = RUNNING
         self._note(operation, 0.01, "Starting")
         output = self.config.loops_root / f"{operation_id}.mp3"
         try:
             backend = self.backend_factory(
                 RenderContext(operation_id=operation_id, request=request,
-                              credentials=credentials))
+                              credentials=credentials, delivery=delivery))
             result = render_loop(
                 request, backend=backend, output=output,
                 progress=lambda fraction, message: self._note(operation, fraction, message),
@@ -301,9 +306,14 @@ class ItemBody(StrictModel):
 
 
 class SpeechBody(StrictModel):
-    """A render-scoped credential for the injected backend. Never stored, never logged."""
+    """What the injected backend is given: a render-scoped credential, and how the host will speak.
+
+    The token is never stored and never logged. `delivery` is opaque here and reaches the backend
+    factory as it arrived.
+    """
 
     token: str = Field(default="", max_length=8192)
+    delivery: str = Field(default="", max_length=32)
 
 
 class LoopBody(StrictModel):
@@ -457,9 +467,10 @@ def create_service(*, config: ServiceConfig | None = None,
     def create_loop(body: LoopBody) -> dict:
         request = body.to_request().validated()
         token = body.speech.token if body.speech else ""
+        delivery = body.speech.delivery if body.speech else ""
         if token:
             register_secret(token)
-        return operations.submit(request, token).to_dict()
+        return operations.submit(request, token, delivery).to_dict()
 
     @app.get(f"{API_PREFIX}/operations/{{operation_id}}")
     def read_operation(operation_id: str) -> dict:

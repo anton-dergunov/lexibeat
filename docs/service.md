@@ -52,13 +52,16 @@ appears in its dialog with nothing changing there.
   "pattern": "retrieval",
   "family": "auto",
   "seed": 4711,
-  "speech": {"token": "…"}
+  "speech": {"token": "…", "delivery": "directed"}
 }
 ```
 
-`direction` is **free text** and may be empty, which means "read it plainly". It is appended to the
-per-take prosody words to make the director note a model actually receives. There is no enum, no
-emoji column and no punctuation heuristic: the caller has read the word and this service has not.
+`direction` is **free text** and may be empty. It is appended to the per-take prosody words to make
+the director note a model actually receives. There is no enum, no emoji column and no punctuation
+heuristic: the caller has read the word and this service has not. An **empty** direction does not
+mean a bare reading: the note then opens with this service's own default, because a word nobody has
+written a delivery for is the common case rather than the exceptional one, and an instruction to be
+merely clear is an instruction to be flat.
 
 `source_language` and `target_language` are a `code` and a `name`. The code picks the voice; the
 name goes into the director note. A bare string is accepted and stands in for both.
@@ -66,6 +69,13 @@ name goes into the director note. A bare string is accepted and stands in for bo
 `speech.token` is the host's render-scoped credential, passed to `backend_factory` and to nothing
 else. It is registered with the provider-text redactor, and it appears in no operation, no result
 and no log line.
+
+`speech.delivery` is **opaque to this service** and reaches `backend_factory` as `RenderContext.delivery`,
+exactly as it arrived. It exists because only the host knows what its own voice can do, and the
+backend it builds declares capabilities accordingly: a voice that takes a director note asks for one
+recording per repetition and lets the note vary them, while a voice that cannot asks for one
+recording per line and lets this service vary it by pitch and speed. Neither side branches on the
+other's vocabulary; the declaration is the whole interface.
 
 ### The operation
 
