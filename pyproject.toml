@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lexibeat"
-version = "0.3.0"
+version = "0.4.0"
 description = "Reproducible procedural music beds and spoken vocabulary loops."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -70,7 +70,7 @@ lexibeat-explorer = "lexibeat.explorer_web:main"
 [tool.hatch.build.targets.wheel]
 packages = ["lexibeat"]
 
-# The 1.8 GB sample bundle never rides the wheel: it is fetched once into a volume and named by
+# The 3.1 GB sample bundle never rides the wheel: it is fetched once into a volume and named by
 # LEXIBEAT_BUNDLE_ROOT. `lexibeat-bundle publish` packs it for a release instead.
 [tool.hatch.build.targets.sdist]
 include = ["lexibeat", "tests", "docs", "examples", "README.md", "NOTICE.md", "AGENTS.md"]

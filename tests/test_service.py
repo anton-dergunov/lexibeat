@@ -104,6 +104,12 @@ class ServiceTests(unittest.TestCase):
         self.assertIn("production_bundle", payload)
         self.assertEqual(payload["api_version"], API_VERSION)
 
+    def test_the_schema_says_which_bundle_is_mounted_and_whether_all_of_it_is(self) -> None:
+        schema = self.client.get(f"{API_PREFIX}/schema").json()
+        self.assertEqual(set(schema["bundle"]), {"present", "complete", "bundle", "version",
+                                                 "assets", "missing", "expanded"})
+        self.assertEqual(schema["production_bundle"], schema["bundle"]["complete"])
+
     def test_a_render_is_an_operation_and_the_track_is_fetched_from_it(self) -> None:
         created = self.client.post(f"{API_PREFIX}/loops", json=body())
         self.assertEqual(created.status_code, 202)
@@ -131,6 +137,7 @@ class ServiceTests(unittest.TestCase):
         self.assertNotIn("audio_path", result)
         for field in ("style_id", "seed", "engine_version", "bed_fingerprint"):
             self.assertTrue(result[field] != "" and result[field] is not None, field)
+        self.assertEqual(result["seed"], body()["seed"])
 
     def test_the_backend_is_built_per_render_from_the_credential_that_came_with_it(self) -> None:
         secret = "render-scoped-token-value"

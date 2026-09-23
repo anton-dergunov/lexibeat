@@ -407,21 +407,23 @@ The electronic palette is entirely local mathematics:
 
 ### Recorded instruments
 
-The repository ships a checksum-locked production bundle. Normal generation
-never downloads samples implicitly. The current bundle contains 1,112 catalog
-assets that form 27 playable multisample banks, plus 95 files in four explicit
-named packs:
+The repository ships a checksum-locked production bundle, `assets/production-core/v3`:
+the listener-approved Wave 3 library. Normal generation never downloads samples
+implicitly. It contains 2,345 catalog assets that form 51 playable multisample
+banks, plus 95 files in four explicit named packs. Its manifest's expansion
+policy enables the audited registers and gains, sustained-string pads, natural
+contrabasses, expanded organic percussion and the Wave 3 lead treatments:
 
 | Source | Current material | License |
 |---|---|---|
 | Salamander Grand Piano | 60 Yamaha C5 files: 30 root notes in two selected velocity layers | CC BY 3.0 |
 | VSCO 2 Community Edition named packs | 22 violin-section sustain files, 7 marimba files, 6 glockenspiel files | CC0 1.0 |
-| Versilian Community Sample Library (VCSL) | Pianos, recorders, ocarina, organ, harp, harpsichord, FM pianos, kalimba/mbira, glockenspiel, marimba, vibraphone, xylophone, and percussion | CC0 1.0 |
-| VSCO 2 catalog | Marimba, pizzicato solo violin, and percussion | CC0 1.0 |
+| Versilian Community Sample Library (VCSL) | Pianos, ocarinas, organs, harps, strumstick, FM pianos, kalimba/mbira/nyunga, glockenspiel, marimba, vibraphone, xylophone, and percussion (1,254 files) | CC0 1.0 |
+| VSCO 2 catalog | Solo violin, solo contrabass, violin/viola/cello sections, harp, marimba, and percussion (617 files) | CC0 1.0 |
 | FreePats Spanish Classical Guitar | 48 pitched guitar recordings | CC0 1.0 |
-| FreePats World Percussion | 30 world-percussion recordings | CC0 1.0 |
-| Karoryfer Fashionbass | 55 natural electric-bass recordings | CC0 1.0 |
-| Stargate Sample Pack | 29 production percussion recordings | CC0/public domain |
+| FreePats World Percussion | 196 world-percussion recordings | CC0 1.0 |
+| Karoryfer Fashionbass | 165 natural electric-bass recordings | CC0 1.0 |
+| Stargate Sample Pack | 65 production percussion recordings | CC0/public domain |
 
 See [`NOTICE.md`](../NOTICE.md) and the
 [bundle README](../assets/production-core/README.md) for attribution and source

@@ -1,7 +1,7 @@
 """The sample bundle: verify it, fetch it, publish it.
 
 The engine works without it and offers only the sample-free ``electronic`` palette, reporting
-``production_bundle: false``. With it, every family is available. It is 1.8 GB of content-addressed
+``production_bundle: false``. With it, every family is available. It is 3.1 GB of content-addressed
 audio, so it does not ride a release tarball of source and it does not enter a host's repository:
 the host fetches it once into a volume and points ``LEXIBEAT_BUNDLE_ROOT`` at the mount.
 
@@ -10,25 +10,31 @@ attribution-bearing source is CC-BY 3.0, which permits redistribution; the credi
 inside ``licenses/`` and ``NOTICE.md``. Size is the whole reason.
 
     lexibeat-bundle verify [--root DIR]
-    lexibeat-bundle fetch --into DIR --from URL [--sha256 DIGEST]
+    lexibeat-bundle fetch --into DIR --from URL [--from URL …] [--sha256 DIGEST]
     lexibeat-bundle publish --out DIR
+    lexibeat-bundle status [--root DIR]
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import tarfile
 import tempfile
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Sequence
 
-from .paths import REPOSITORY_BUNDLE_ROOT, configured_bundle_root
+from .paths import REPOSITORY_BUNDLE_ROOT, bundle_present, configured_bundle_root
 
 MANIFEST_NAME = "manifest.json"
 CATALOG_NAME = "catalog.sqlite3"
 CHECKSUMS_NAME = "SHA256SUMS"
 BLOCK = 1024 * 1024
+# GitHub refuses a release asset of 2 GiB or more, and the bundle is larger than that, so it is
+# published as numbered parts under this size and joined again by `fetch`. The digest a host pins is
+# the *whole* archive's, so how it was cut is not part of what is trusted.
+PART_BYTES = 1900 * 1024 * 1024
 
 
 class BundleError(RuntimeError):
@@ -96,31 +102,95 @@ def verify(root: Path | None = None, *,
     return report
 
 
+_STATUS_CACHE: dict[tuple[str, float], dict[str, Any]] = {}
+
+
+def status(root: Path | None = None) -> dict[str, Any]:
+    """Which bundle is mounted, and whether every file its manifest names is on disk.
+
+    A readable catalogue is not enough to answer either question. The engine rejects a candidate
+    whose sample is missing rather than failing the render, so a half-installed bundle quietly
+    favours the beds whose samples happen to exist; and a host that asks only "is there a bundle?"
+    cannot tell the listener-approved library from the smaller one it replaced — which is exactly
+    how a deployment ran the old one for weeks while sounding thinner than the music it was tuned
+    against. This stats every file rather than hashing it, so it is cheap enough for `/schema`;
+    `verify` is the digest check.
+    """
+    root = Path(root) if root else configured_bundle_root()
+    manifest_path = root / MANIFEST_NAME
+    try:
+        key = (str(root), manifest_path.stat().st_mtime)
+    except OSError:
+        return {"present": False, "complete": False, "bundle": None, "version": None,
+                "assets": 0, "missing": 0, "expanded": False}
+    if key in _STATUS_CACHE:
+        return _STATUS_CACHE[key]
+    manifest = read_manifest(root)
+    entries = manifest_entries(manifest)
+    missing = sum(1 for entry in entries if not (root / str(entry["bundle_path"])).is_file())
+    present = bundle_present(root)
+    report = {
+        "present": present,
+        "complete": present and missing == 0,
+        "bundle": manifest.get("bundle"),
+        "version": str(manifest.get("version")),
+        "assets": len(entries),
+        "missing": missing,
+        # The manifest's expansion policy is what switches on the Wave 2/3 instruments, their role
+        # treatments and their gains; a bundle without one renders the control behaviour.
+        "expanded": bool(manifest.get("expansion_policy")),
+    }
+    # Only a complete answer is remembered: an install still unpacking is asked again next time.
+    if report["complete"]:
+        _STATUS_CACHE[key] = report
+    return report
+
+
 def checksums(paths: Iterable[Path], base: Path) -> str:
     """A `SHA256SUMS` in the format `shasum -c` reads."""
     return "".join(f"{sha256(path)}  {path.relative_to(base).as_posix()}\n"
                    for path in sorted(paths))
 
 
-def publish(root: Path | None = None, *, out: Path) -> dict[str, Any]:
-    """Pack a verified bundle into one archive with its digest, ready to attach to a release."""
+def publish(root: Path | None = None, *, out: Path,
+            part_bytes: int = PART_BYTES) -> dict[str, Any]:
+    """Pack a verified bundle into numbered archive parts, ready to attach to a release.
+
+    The parts are `NAME.tar.001`, `.002`, …, each under `part_bytes`; concatenated in order they are
+    one reproducible tar, and `sha256` is that tar's digest — the one a host pins and `fetch`
+    checks. `SHA256SUMS` lists the parts, so each upload can be checked on its own as well.
+    """
     root = Path(root) if root else REPOSITORY_BUNDLE_ROOT
     report = verify(root)
     manifest = read_manifest(root)
     name = f"{manifest.get('bundle', 'lexibeat-bundle')}-v{manifest.get('version', 1)}"
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    archive = out / f"{name}.tar"
-    temporary = archive.with_suffix(".partial.tar")
-    try:
-        with tarfile.open(temporary, "w") as tar:
+    for stale in out.glob(f"{name}.tar.*"):
+        stale.unlink()
+    with tempfile.TemporaryDirectory(prefix="lexibeat-publish-", dir=out) as workspace:
+        whole = Path(workspace) / f"{name}.tar"
+        with tarfile.open(whole, "w") as tar:
             tar.add(root, arcname=name, recursive=True, filter=_reproducible)
-        temporary.replace(archive)
-    finally:
-        temporary.unlink(missing_ok=True)
-    (out / CHECKSUMS_NAME).write_text(checksums([archive], out), encoding="utf-8")
-    return {**report, "archive": str(archive), "bytes": archive.stat().st_size,
-            "sha256": sha256(archive)}
+        digest = sha256(whole)
+        size = whole.stat().st_size
+        parts: list[Path] = []
+        with whole.open("rb") as source:
+            while True:
+                part = out / f"{name}.tar.{len(parts) + 1:03d}"
+                written = 0
+                with part.open("wb") as handle:
+                    while written < part_bytes and (chunk := source.read(
+                            min(BLOCK, part_bytes - written))):
+                        handle.write(chunk)
+                        written += len(chunk)
+                if not written:
+                    part.unlink()
+                    break
+                parts.append(part)
+    (out / CHECKSUMS_NAME).write_text(checksums(parts, out), encoding="utf-8")
+    return {**report, "root_name": name, "parts": [part.name for part in parts],
+            "bytes": size, "sha256": digest}
 
 
 def _reproducible(info: tarfile.TarInfo) -> tarfile.TarInfo:
@@ -132,39 +202,58 @@ def _reproducible(info: tarfile.TarInfo) -> tarfile.TarInfo:
     return info
 
 
-def fetch(url: str, *, into: Path, expected_sha256: str = "",
+def fetch(urls: str | Sequence[str], *, into: Path, expected_sha256: str = "",
           progress: Callable[[int, int], None] | None = None) -> dict[str, Any]:
     """Download and verify a published bundle archive, then extract it into ``into``.
+
+    ``urls`` are the archive's parts in order (see `publish`); they are joined into one tar and the
+    digest checked is the whole one's.
 
     Nothing is extracted before the digest matches. A bundle half-written by an interrupted
     download is the failure mode worth designing against, because the engine would then render with
     some samples missing rather than refusing.
+
+    ``into`` is a volume that holds *one* bundle. The root verified is the one this archive names,
+    and once it verifies, any other bundle root beside it is removed: an upgrade then frees the
+    gigabytes of the one it supersedes, and leaves nothing a host could mount by mistake. Nothing is
+    removed before the new bundle has verified, so a failed upgrade keeps the old one.
     """
     import urllib.request
 
+    urls = [urls] if isinstance(urls, str) else list(urls)
     into = Path(into)
     into.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="lexibeat-bundle-") as workspace:
         archive = Path(workspace) / "bundle.tar"
-        with urllib.request.urlopen(url) as response, archive.open("wb") as handle:
-            total = int(response.headers.get("content-length") or 0)
-            read = 0
-            while chunk := response.read(BLOCK):
-                handle.write(chunk)
-                read += len(chunk)
-                if progress:
-                    progress(read, total)
+        read = 0
+        with archive.open("wb") as handle:
+            for url in urls:
+                with urllib.request.urlopen(url) as response:
+                    total = int(response.headers.get("content-length") or 0)
+                    while chunk := response.read(BLOCK):
+                        handle.write(chunk)
+                        read += len(chunk)
+                        if progress:
+                            progress(read, total)
         digest = sha256(archive)
         if expected_sha256 and digest != expected_sha256:
             raise BundleError(
                 f"The downloaded bundle is {digest}, not the expected {expected_sha256}.")
         with tarfile.open(archive) as tar:
+            names = {Path(member.name).parts[0] for member in tar.getmembers()
+                     if Path(member.name).parts}
+            if len(names) != 1:
+                raise BundleError(f"The archive holds {len(names)} top-level entries, not one "
+                                  "bundle root.")
             tar.extractall(into, filter="data")
-    roots = [path for path in into.iterdir()
-             if path.is_dir() and (path / MANIFEST_NAME).is_file()]
-    root = roots[0] if len(roots) == 1 else into
+    root = into / names.pop()
     report = verify(root)
-    return {**report, "sha256": digest, "url": url}
+    replaced = []
+    for other in sorted(into.iterdir()):
+        if other != root and other.is_dir() and (other / MANIFEST_NAME).is_file():
+            shutil.rmtree(other)
+            replaced.append(other.name)
+    return {**report, "sha256": digest, "urls": urls, "replaced": replaced}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -178,8 +267,12 @@ def main(argv: list[str] | None = None) -> int:
 
     get = commands.add_parser("fetch", help="download, verify and extract a published bundle")
     get.add_argument("--into", type=Path, required=True)
-    get.add_argument("--from", dest="url", required=True)
+    get.add_argument("--from", dest="urls", action="append", required=True,
+                     help="an archive part's URL; repeat for every part, in order")
     get.add_argument("--sha256", default="")
+
+    state = commands.add_parser("status", help="which bundle is mounted, and is every file present")
+    state.add_argument("--root", type=Path, default=None)
 
     put = commands.add_parser("publish", help="pack a bundle and write its SHA256SUMS")
     put.add_argument("--root", type=Path, default=None)
@@ -192,8 +285,10 @@ def main(argv: list[str] | None = None) -> int:
                             progress=lambda done, total, name:
                             print(f"\r  {done}/{total}  {name[:60]:<60}", end="", flush=True))
             print()
+        elif args.command == "status":
+            report = status(args.root)
         elif args.command == "fetch":
-            report = fetch(args.url, into=args.into, expected_sha256=args.sha256)
+            report = fetch(args.urls, into=args.into, expected_sha256=args.sha256)
         else:
             report = publish(args.root, out=args.out)
     except BundleError as exc:

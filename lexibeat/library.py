@@ -509,7 +509,7 @@ class SampleLibrary:
                          "limit_bytes": EXTERNAL_LIMIT},
             "local": {"path": str(self.local), "bytes": local,
                       "warning": local >= LOCAL_WARN, "limit_bytes": LOCAL_LIMIT},
-            "bundled": {"path": "assets/production-core/v1",
+            "bundled": {"path": str(BUNDLED_ROOT),
                         "bytes": directory_size(BUNDLED_ROOT),
                         "available": self.bundled_catalog_path.exists()},
         }

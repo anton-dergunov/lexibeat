@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 REPOSITORY_BUNDLE_ROOT = (
-    Path(__file__).resolve().parents[1] / "assets" / "production-core" / "v1"
+    Path(__file__).resolve().parents[1] / "assets" / "production-core" / "v3"
 )
 
 

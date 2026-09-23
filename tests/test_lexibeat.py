@@ -1602,6 +1602,90 @@ class BundlePresenceTests(unittest.TestCase):
                 self.assertEqual(library.assets(), [])
 
 
+class BundleStatusTests(unittest.TestCase):
+    """`status` answers *which* bundle and *whether all of it*, not merely whether one is there."""
+
+    def bundle(self, root: Path, *, policy: dict | None = None) -> Path:
+        import sqlite3
+        sqlite3.connect(root / "catalog.sqlite3").execute("create table t (x)").connection.close()
+        (root / "samples").mkdir()
+        entries = []
+        for index in range(3):
+            path = root / "samples" / f"{index}.wav"
+            path.write_bytes(b"RIFF" + bytes([index]))
+            entries.append({"bundle_path": f"samples/{index}.wav", "sha256": "0" * 64})
+        manifest = {"bundle": "lexibeat-production-core", "version": "3",
+                    "catalog_assets": entries, "named_pack_assets": []}
+        if policy is not None:
+            manifest["expansion_policy"] = policy
+        (root / "manifest.json").write_text(json.dumps(manifest))
+        return root
+
+    def test_a_complete_bundle_reports_its_identity_and_its_expansion(self) -> None:
+        from lexibeat.bundle import status
+        with tempfile.TemporaryDirectory() as tmp:
+            report = status(self.bundle(Path(tmp), policy={"accepted_banks": []}))
+        self.assertEqual(report, {"present": True, "complete": True,
+                                  "bundle": "lexibeat-production-core", "version": "3",
+                                  "assets": 3, "missing": 0, "expanded": True})
+
+    def test_a_bundle_with_a_missing_file_is_present_but_not_complete(self) -> None:
+        """The engine drops a candidate whose sample is missing, so this renders thinner beds."""
+        from lexibeat.bundle import status
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.bundle(Path(tmp))
+            (root / "samples" / "1.wav").unlink()
+            report = status(root)
+        self.assertTrue(report["present"])
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["missing"], 1)
+        self.assertFalse(report["expanded"])
+
+    def test_no_bundle_is_neither_present_nor_complete(self) -> None:
+        from lexibeat.bundle import status
+        with tempfile.TemporaryDirectory() as tmp:
+            report = status(Path(tmp))
+        self.assertFalse(report["present"])
+        self.assertFalse(report["complete"])
+
+
+class BundleFetchTests(unittest.TestCase):
+    def test_fetching_a_new_bundle_replaces_the_one_it_supersedes_only_once_it_verifies(self) -> None:
+        """Two roots in one volume used to make fetch verify the volume itself, and fail."""
+        import tarfile
+        from lexibeat.bundle import BundleError, fetch, publish, sha256
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            source = tmp / "src"
+            source.mkdir()
+            BundleStatusTests().bundle(source)
+            manifest = json.loads((source / "manifest.json").read_text())
+            for entry in manifest["catalog_assets"]:
+                entry["sha256"] = sha256(source / entry["bundle_path"])
+            (source / "manifest.json").write_text(json.dumps(manifest))
+            published = publish(source, out=tmp / "dist", part_bytes=4096)
+            # Several parts, so joining them is what this exercises.
+            self.assertGreater(len(published["parts"]), 1)
+            urls = [(tmp / "dist" / part).as_uri() for part in published["parts"]]
+            volume = tmp / "volume"
+            old = volume / "lexibeat-production-core-v1"
+            old.mkdir(parents=True)
+            (old / "manifest.json").write_text("{}")
+
+            report = fetch(urls, into=volume, expected_sha256=published["sha256"])
+            self.assertTrue(report["ok"])
+            self.assertEqual(report["replaced"], ["lexibeat-production-core-v1"])
+            self.assertEqual(sorted(path.name for path in volume.iterdir()),
+                             ["lexibeat-production-core-v3"])
+
+            kept = volume / "lexibeat-production-core-v0"
+            kept.mkdir()
+            (kept / "manifest.json").write_text("{}")
+            with self.assertRaises(BundleError):
+                fetch(urls, into=volume, expected_sha256="0" * 64)
+            self.assertTrue(kept.is_dir(), "a failed fetch must not remove anything")
+
+
 class BenchmarkTests(unittest.TestCase):
     def test_voice_benchmark_resolves_a_shared_production_bed(self) -> None:
         args = types.SimpleNamespace(

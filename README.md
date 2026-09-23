@@ -96,13 +96,18 @@ transcript text to their provider. Kokoro additionally needs `brew install espea
 
 ```bash
 lexibeat-bundle verify                                   # every asset against its own digest
-lexibeat-bundle fetch --into /data/lexibeat --from URL --sha256 DIGEST
-lexibeat-bundle publish --out dist/bundle                # an archive plus SHA256SUMS, for a release
-export LEXIBEAT_BUNDLE_ROOT=/data/lexibeat/lexibeat-production-core-v1
+lexibeat-bundle fetch --into /data/lexibeat --from URL.001 --from URL.002 --sha256 DIGEST
+lexibeat-bundle publish --out dist/bundle                # archive parts plus SHA256SUMS, for a release
+export LEXIBEAT_BUNDLE_ROOT=/data/lexibeat/lexibeat-production-core-v3
 ```
 
-It is 1.8 GB, so it never rides a wheel or a release of source: it is fetched once into a volume and
-named by `LEXIBEAT_BUNDLE_ROOT`. Licensing is not the reason — the one attribution-bearing source is
+It is the listener-approved Wave 3 library — 2,440 assets, 3.1 GB — so it never rides a wheel or a
+release of source: it is fetched once into a volume and named by `LEXIBEAT_BUNDLE_ROOT`. Its
+manifest carries the expansion policy that switches on the sustained strings, natural contrabasses,
+Wave 3 leads and their audited gains; a bundle without one renders the plainer control behaviour.
+`/api/v1/schema` reports which bundle is mounted and whether every file is present. It is published
+as numbered parts under 1.9 GiB, because GitHub refuses a release asset of 2 GiB or more; `fetch`
+joins them, checks the whole archive's digest, and replaces any older bundle in the directory. Licensing is not the reason — the one attribution-bearing source is
 CC-BY 3.0 and its credit already travels inside the bundle — size is.
 
 ## The loop service
@@ -280,7 +285,7 @@ LEXIBEAT_BUNDLE_ROOT=out/library-expansion/final-v3 \
   uv run python -m scripts.samples.sample_bundle verify
 ```
 
-The final bundle is the Step 3B production candidate. Its policy automatically
+The final bundle is the production bundle, committed as `assets/production-core/v3`. Its policy automatically
 applies the approved role treatment whenever one of these banks is selected;
 rejected source collections may remain on the external archive, but none of
 their assets or catalog rows are shipped in this bundle.
@@ -300,7 +305,7 @@ LEXIBEAT_BUNDLE_ROOT=out/library-expansion/candidate-v2 \
 Selecting this bundle through `LEXIBEAT_BUNDLE_ROOT` enables its audited safe
 registers, per-bank gains, sustained-string pads, natural contrabasses and
 expanded organic percussion. Every resolved choice and gain remains serialized
-in the saved BedSpec. The existing production-v1 bundle is not modified.
+in the saved BedSpec.
 
 The library contains VCSL, VSCO 2 CE, FreePats World Percussion, FreePats
 Spanish Classical Guitar, Karoryfer Fashionbass and the Stargate public-domain

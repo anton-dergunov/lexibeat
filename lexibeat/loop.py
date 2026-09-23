@@ -283,7 +283,9 @@ def render_loop(
         duration_seconds=len(track) / SR,
         pattern=request.pattern,
         style_id=resolved.fingerprint.family,
-        seed=int(spec.seed),
+        # The seed the request carried (or the one minted for it), never the winning candidate's:
+        # that is what the same request replays from, and a candidate's seed is not a request's.
+        seed=int(resolved.request.seed),
         engine_version=resolved.engine_version,
         profile_version=resolved.profile_version,
         bed_fingerprint=bed_fingerprint(resolved.fingerprint),

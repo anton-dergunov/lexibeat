@@ -24,6 +24,13 @@ package has never heard of works exactly as well as one it ships.
 offers only the sample-free `electronic` palette and says so in `production_bundle`. A readiness gate
 would fail the installation of a service that is working correctly.
 
+**`production_bundle` means complete, not merely present.** The engine rejects a candidate whose
+sample file is missing rather than failing the render, so a half-installed bundle would quietly make
+thinner beds. `/schema` also carries `bundle` — `{present, complete, bundle, version, assets,
+missing, expanded}` — so a host can require the version it pinned: a deployment that ran the earlier
+1.96 GB library looked exactly as healthy as one running the current one, and sounded plainer.
+`expanded` says the manifest carries the expansion policy that switches on the Wave 2/3 instruments.
+
 **The catalogues are LexiBeat's.** `/schema` reports the patterns, the families, the limits and the
 audio format. A host reads them rather than copying them, so a family added in a later version
 appears in its dialog with nothing changing there.
@@ -33,7 +40,7 @@ appears in its dialog with nothing changing there.
 | Route | Answers |
 |---|---|
 | `GET /api/v1/health` | `{status, api_version, engine_version, production_bundle}` |
-| `GET /api/v1/schema` | patterns, profiles, families, energy, rhythm, palette, limits, audio |
+| `GET /api/v1/schema` | bundle, patterns, profiles, families, energy, rhythm, palette, limits, audio |
 | `POST /api/v1/loops` | `202` with an operation |
 | `GET /api/v1/operations/{id}` | the operation, with `result` once it has completed |
 | `DELETE /api/v1/operations/{id}` | cancels between utterances |
@@ -105,7 +112,7 @@ The completed `result`:
   "duration_seconds": 124.53,
   "pattern": "retrieval",
   "style_id": "acoustic-flow",
-  "seed": 104740,
+  "seed": 4711,
   "engine_version": "1.4.0",
   "profile_version": "1.4.0",
   "bed_fingerprint": "90c6ad267d159b0e",
@@ -114,6 +121,10 @@ The completed `result`:
   "timeline": [ … ]
 }
 ```
+
+`seed` is the one the request carried, or the one minted for it when it carried none — never the
+seed of the candidate that won, which is not something a request can be given. The same request
+with the same seed, engine version and bundle replays the bed.
 
 The **resolved BedSpec is deliberately not in it**. Style, seed and engine version replay the bed
 exactly, and `bed_fingerprint` is what proves a replay produced the same one — so sending kilobytes
@@ -191,4 +202,6 @@ run, and a default backend would be exactly the provider credential this package
 `LEXIBEAT_SERVICE_OUT`, `LEXIBEAT_SERVICE_QUEUE` and `LEXIBEAT_SERVICE_RETAIN` configure the output
 root, how many renders may be outstanding, and how many finished tracks are kept.
 `LEXIBEAT_BUNDLE_ROOT` points at the sample bundle, which is fetched once with
-`lexibeat-bundle fetch --into DIR --from URL --sha256 DIGEST`.
+`lexibeat-bundle fetch --into DIR --from URL.001 --from URL.002 … --sha256 DIGEST` — one `--from`
+per published part, in order; the digest is the whole archive's. `DIR` holds one bundle: once the fetched one verifies, a bundle it
+supersedes there is removed, and `lexibeat-bundle status` says which one is mounted.

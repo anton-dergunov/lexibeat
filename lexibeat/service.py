@@ -50,7 +50,7 @@ from .loop import (
     LoopResult,
     render_loop,
 )
-from .paths import bundle_present
+from .bundle import status as bundle_status
 from .profiles import PROFILES, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
@@ -350,11 +350,15 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
     version appears in the host's dialog with nothing changing there.
     """
     del config
-    bundle = bundle_present()
+    identity = bundle_status()
+    bundle = identity["complete"]
     return {
         "api_version": API_VERSION,
         "engine_version": ENGINE_VERSION,
+        # Complete, not merely readable: a bundle missing files renders thinner beds rather than
+        # failing, so "present" would promise music this deployment cannot make.
         "production_bundle": bundle,
+        "bundle": identity,
         "patterns": [
             {"id": name,
              "bars_per_item": len(slots),
@@ -456,7 +460,7 @@ def create_service(*, config: ServiceConfig | None = None,
             "status": "ok",
             "api_version": API_VERSION,
             "engine_version": ENGINE_VERSION,
-            "production_bundle": bundle_present(),
+            "production_bundle": bundle_status()["complete"],
         }
 
     @app.get(f"{API_PREFIX}/schema")

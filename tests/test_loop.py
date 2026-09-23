@@ -146,6 +146,8 @@ class RenderTests(unittest.TestCase):
                                  output=Path(tmp) / "b.mp3")
         self.assertEqual(first.style_id, second.style_id)
         self.assertEqual(first.seed, second.seed)
+        # The request's seed, which is what a host can send again; not the winning candidate's.
+        self.assertEqual(first.seed, request().seed)
         self.assertEqual(first.bed_fingerprint, second.bed_fingerprint)
         self.assertEqual(len(first.bed_fingerprint), 16)
 

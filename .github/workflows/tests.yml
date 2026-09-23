@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ inputs.ref || github.ref }}
-          # Fetched below instead, so the 1.8 GB of audio comes from the cache on all but the
+          # Fetched below instead, so the 3.1 GB of audio comes from the cache on all but the
           # first run of a given bundle.
           lfs: false
 
@@ -43,7 +43,7 @@ jobs:
           path: .git/lfs
           # manifest.json is not itself LFS-tracked, so this hashes the real file: a new bundle
           # changes the manifest, and nothing else does.
-          key: production-core-${{ hashFiles('assets/production-core/v1/manifest.json') }}
+          key: production-core-${{ hashFiles('assets/production-core/v3/manifest.json') }}
 
       - name: Materialize the sample bundle
         # Without this the checkout holds Git LFS *pointers* at every audio path. The code treats

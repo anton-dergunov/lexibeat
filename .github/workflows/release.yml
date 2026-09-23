@@ -7,11 +7,16 @@ name: Release
 # it: publishing artifacts built from a tree nobody tested is the failure this guards against, and
 # two drifting copies of the test job is the failure the reuse guards against.
 #
-# The 1.8 GB sample bundle is deliberately not built here: it is Git-LFS tracked, so a runner would
+# The 3.1 GB sample bundle is deliberately not built here: it is Git-LFS tracked, so a runner would
 # have to pull the whole of it to repack it. It is published from a workstation instead:
 #
 #     lexibeat-bundle publish --out dist/bundle
-#     gh release upload "$TAG" dist/bundle/*.tar dist/bundle/SHA256SUMS
+#     gh release upload "$TAG" dist/bundle/*.tar.[0-9][0-9][0-9]
+#
+# Not its SHA256SUMS: the job below attaches one for the wheel under that name, and a host pins the
+# bundle's digest inline anyway.
+# It is written as numbered parts under 1.9 GiB because a release asset must be under 2 GiB, and
+# the bundle is larger. The digest publish prints is the whole archive's, and is what a host pins.
 on:
   push:
     tags: ["v*"]
