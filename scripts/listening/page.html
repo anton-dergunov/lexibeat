@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LexiBeat listening</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --ink: #1e1d1a; --muted: #6d6a62; --line: #e2ded4;
+    --accent: #3f6f5a; --fine: #3f6f5a; --meh: #b7852f; --bad: #b0453b; --chip: #efece4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151513; --card: #1f1e1b; --ink: #ecebe6; --muted: #9c998f; --line: #34322d;
+            --accent: #7fb89c; --fine: #7fb89c; --meh: #d9ad5c; --bad: #e07a6f; --chip: #2a2925; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         -webkit-tap-highlight-color: transparent; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--bg);
+           border-bottom: 1px solid var(--line); padding: 12px 16px;
+           display: flex; gap: 12px; align-items: center; }
+  header h1 { font-size: 17px; margin: 0; flex: 1; }
+  #status { font-size: 13px; color: var(--muted); }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .card.done { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .top h2 { font-size: 16px; margin: 0; flex: 1; }
+  .hint { color: var(--muted); font-size: 14px; }
+  button { font: inherit; color: inherit; background: var(--chip); border: 1px solid var(--line);
+           border-radius: 10px; min-height: 44px; padding: 8px 14px; cursor: pointer; }
+  button.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  button.fine.on { background: var(--fine); border-color: var(--fine); }
+  button.meh.on { background: var(--meh); border-color: var(--meh); }
+  button.bad.on, button.reject.on { background: var(--bad); border-color: var(--bad); }
+  .play { min-width: 64px; font-weight: 600; }
+  .seek { width: 100%; margin: 4px 0 12px; accent-color: var(--accent); }
+  .ab { display: flex; gap: 8px; }
+  .ab button { flex: 1; font-weight: 600; }
+  .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .part { border-top: 1px solid var(--line); padding: 12px 0; }
+  .part:first-of-type { border-top: 0; }
+  .part .name { font-weight: 600; }
+  .part .fact { color: var(--muted); font-size: 14px; margin: 2px 0 8px; overflow-wrap: anywhere; }
+  .verdicts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .verdicts button { flex: 1; min-width: 80px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chips button { min-height: 36px; padding: 4px 10px; font-size: 14px; border-radius: 18px; }
+  textarea { width: 100%; font: inherit; color: inherit; background: var(--bg); min-height: 44px;
+             border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+  .overall { border-top: 2px solid var(--line); padding-top: 12px; margin-top: 4px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<header><h1 id="title">Listening</h1><span id="progress"></span><span id="status"></span></header>
+<main id="list"></main>
+<script>
+const PARTS = [
+  ["lead", "Lead (melody)", f => `${f.source} · ${f.register}`],
+  ["pad", "Pad and chords", f => `${f.source} · ${f.texture}${f.extension && f.extension !== "none" ? " · " + f.extension : ""}`],
+  ["bass", "Bass", f => `${f.source} · ${f.grammar}`],
+  ["percussion", "Percussion", f => f.lanes.length ? f.lanes.join(" · ") : "none"],
+  ["harmony", "Harmony", f => `${f.key} · ${f.progression.join(" – ")}`],
+  ["feel", "Tempo and feel", f => `${f.family} · ${f.bpm} BPM · ${f.meter}`],
+];
+const REASONS = ["too high", "electronic", "harsh attack", "too loud", "too quiet", "too busy",
+                 "sour / off-key", "boring", "other"];
+const audio = new Audio();
+audio.preload = "auto";
+let round, labels = {}, playing = null, saveTimer = null;
+const draftKey = () => "lexibeat-listening:" + round.clips.map(c => c.id + (c.file || c.a)).join(",");
+const el = (tag, attrs = {}, ...kids) => {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "on") for (const [e, f] of Object.entries(v)) node.addEventListener(e, f);
+    else if (k === "class") node.className = v; else node.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null) node.append(kid);
+  return node;
+};
+
+function status(text) { document.getElementById("status").textContent = text; }
+
+function save(id) {
+  labels[id] = { ...(labels[id] || {}), updatedAt: new Date().toISOString() };
+  try { localStorage.setItem(draftKey(), JSON.stringify(labels)); } catch {}
+  refreshProgress();
+  clearTimeout(saveTimer);
+  status("Saving…");
+  saveTimer = setTimeout(async () => {
+    try {
+      const response = await fetch("labels.json", { method: "PUT", body: JSON.stringify(labels),
+                                                    headers: { "Content-Type": "application/json" } });
+      status(response.ok ? "Saved" : "Not saved — kept on this tablet");
+    } catch { status("Offline — kept on this tablet"); }
+  }, 500);
+}
+
+function isDone(clip) {
+  const label = labels[clip.id] || {};
+  return round.kind === "pairs" ? Boolean(label.choice) : Boolean(label.overall);
+}
+function refreshProgress() {
+  const done = round.clips.filter(isDone).length;
+  document.getElementById("progress").textContent = `${done} / ${round.clips.length}`;
+  for (const clip of round.clips) document.getElementById(clip.id)?.classList.toggle("done", isDone(clip));
+}
+
+// One audio element for the page: pressing play on a card stops whatever else was playing, and
+// switching A/B keeps the position, so the same bar is heard both ways.
+function player(clip, sources) {
+  const play = el("button", { class: "play" }, "▶");
+  const seek = el("input", { type: "range", class: "seek", min: 0, max: 1000, value: 0 });
+  let side = Object.keys(sources)[0];
+  const load = (keepTime) => {
+    const t = keepTime ? audio.currentTime : 0;
+    audio.src = sources[side];
+    audio.addEventListener("loadedmetadata", () => { audio.currentTime = t; audio.play(); }, { once: true });
+    playing = { clip: clip.id, play, seek };
+  };
+  play.addEventListener("click", () => {
+    if (playing?.clip === clip.id && !audio.paused) { audio.pause(); return; }
+    if (playing?.clip === clip.id) { audio.play(); return; }
+    if (playing) playing.play.textContent = "▶";
+    load(false);
+  });
+  seek.addEventListener("input", () => {
+    if (playing?.clip === clip.id && audio.duration) audio.currentTime = seek.value / 1000 * audio.duration;
+  });
+  const switcher = (name) => {
+    side = name;
+    if (playing?.clip === clip.id) load(true);
+  };
+  return { play, seek, switcher, side: () => side };
+}
+audio.addEventListener("play", () => playing && (playing.play.textContent = "⏸"));
+audio.addEventListener("pause", () => playing && (playing.play.textContent = "▶"));
+audio.addEventListener("timeupdate", () => {
+  if (playing && audio.duration) playing.seek.value = Math.round(audio.currentTime / audio.duration * 1000);
+});
+
+function pairCard(clip, index) {
+  const label = labels[clip.id] || {};
+  const p = player(clip, { a: clip.a, b: clip.b });
+  const abButtons = ["a", "b"].map(side => el("button", { on: { click: () => {
+    p.switcher(side);
+    abButtons.forEach(b => b.classList.toggle("on", b.dataset.side === side));
+  } } }, side.toUpperCase()));
+  abButtons.forEach((b, i) => { b.dataset.side = "ab"[i]; });
+  abButtons[0].classList.add("on");
+  const choices = [["a", "A is better"], ["same", "Same"], ["b", "B is better"]].map(([value, text]) =>
+    el("button", { class: label.choice === value ? "on" : "", on: { click: (event) => {
+      labels[clip.id] = { ...(labels[clip.id] || {}), choice: value };
+      choices.forEach(b => b.classList.toggle("on", b === event.currentTarget));
+      save(clip.id);
+    } } }, text));
+  const note = el("textarea", { placeholder: "What did you hear? (optional)" });
+  note.value = label.note || "";
+  note.addEventListener("input", () => { labels[clip.id] = { ...(labels[clip.id] || {}), note: note.value }; save(clip.id); });
+  return el("section", { class: "card", id: clip.id },
+    el("div", { class: "top" }, p.play, el("h2", {}, `Pair ${index + 1} of ${round.clips.length}`)),
+    el("div", { class: "hint" }, `Listen to ${clip.listen_for}. Switch between A and B while it plays.`),
+    p.seek, el("div", { class: "ab" }, abButtons), el("div", { class: "choices" }, choices), note);
+}
+
+function partRow(clip, [key, title, describe]) {
+  const state = () => (labels[clip.id]?.parts || {})[key] || {};
+  const update = (change) => {
+    const label = labels[clip.id] || {};
+    const parts = { ...(label.parts || {}) };
+    parts[key] = { ...state(), ...change };
+    labels[clip.id] = { ...label, parts };
+    save(clip.id);
+  };
+  const chips = el("div", { class: "chips" }, REASONS.map(reason => el("button", {
+    class: (state().reasons || []).includes(reason) ? "on" : "",
+    on: { click: (event) => {
+      const reasons = new Set(state().reasons || []);
+      reasons.has(reason) ? reasons.delete(reason) : reasons.add(reason);
+      event.currentTarget.classList.toggle("on");
+      update({ reasons: [...reasons] });
+    } } }, reason)));
+  const note = el("textarea", { placeholder: `About the ${title.toLowerCase()} (optional)` });
+  note.value = state().note || "";
+  note.addEventListener("input", () => update({ note: note.value }));
+  const extra = el("div", { class: state().verdict && state().verdict !== "fine" ? "" : "hidden" }, chips, note);
+  const verdicts = [["fine", "Fine"], ["meh", "Meh"], ["bad", "Dislike"]].map(([value, text]) =>
+    el("button", { class: `${value}${state().verdict === value ? " on" : ""}`, on: { click: (event) => {
+      verdicts.forEach(b => b.classList.toggle("on", b === event.currentTarget));
+      extra.classList.toggle("hidden", value === "fine");
+      update({ verdict: value });
+    } } }, text));
+  return el("div", { class: "part" }, el("div", { class: "name" }, title),
+    el("div", { class: "fact" }, describe(clip.facts[key])), el("div", { class: "verdicts" }, verdicts), extra);
+}
+
+function partsCard(clip, index) {
+  const label = labels[clip.id] || {};
+  const p = player(clip, { main: clip.file });
+  const overall = [["keep", "Keep"], ["ok", "OK"], ["reject", "Reject"]].map(([value, text]) =>
+    el("button", { class: `${value}${label.overall === value ? " on" : ""}`, on: { click: (event) => {
+      labels[clip.id] = { ...(labels[clip.id] || {}), overall: value };
+      overall.forEach(b => b.classList.toggle("on", b === event.currentTarget));
+      save(clip.id);
+    } } }, text));
+  const note = el("textarea", { placeholder: "Anything else about this clip (optional)" });
+  note.value = label.note || "";
+  note.addEventListener("input", () => { labels[clip.id] = { ...(labels[clip.id] || {}), note: note.value }; save(clip.id); });
+  return el("section", { class: "card", id: clip.id },
+    el("div", { class: "top" }, p.play,
+       el("h2", {}, `Clip ${index + 1} of ${round.clips.length}${clip.replayed ? " · heard before" : ""}`)),
+    p.seek, PARTS.map(part => partRow(clip, part)),
+    el("div", { class: "overall" }, el("div", { class: "name" }, "Overall"),
+       el("div", { class: "verdicts" }, overall), note));
+}
+
+async function start() {
+  round = await (await fetch("round.json")).json();
+  document.getElementById("title").textContent =
+    round.kind === "pairs" ? "Round 0 · which is better?" : "Rate each part";
+  const server = await (await fetch("labels.json")).json().catch(() => ({}));
+  let draft = {};
+  try { draft = JSON.parse(localStorage.getItem(draftKey()) || "{}"); } catch {}
+  // Per clip, whichever copy was changed last: the server's, or a draft this tablet kept offline.
+  labels = { ...server };
+  for (const [id, label] of Object.entries(draft)) {
+    if (!labels[id] || (label.updatedAt || "") > (labels[id].updatedAt || "")) labels[id] = label;
+  }
+  const list = document.getElementById("list");
+  round.clips.forEach((clip, index) => list.append(round.kind === "pairs" ? pairCard(clip, index) : partsCard(clip, index)));
+  refreshProgress();
+  status("");
+}
+start();
+</script>
+</body>
+</html>

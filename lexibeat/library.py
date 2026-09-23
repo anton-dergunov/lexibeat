@@ -463,11 +463,25 @@ class SampleLibrary:
         return bundle_catalog(BUNDLED_ROOT) is not None
 
     @property
+    def local_catalog_has_assets(self) -> bool:
+        """A local catalog that indexes nothing is not a preference, only a leftover.
+
+        One is created by merely opening the library tooling, and while it existed it silently
+        replaced the bundle: every render on that machine got no catalog samples at all and
+        reported nothing, which made a laptop listening session sound plainer than production.
+        """
+        try:
+            with sqlite3.connect(f"file:{self.local_catalog_path}?mode=ro", uri=True) as db:
+                return db.execute("select 1 from assets limit 1").fetchone() is not None
+        except sqlite3.Error:
+            return False
+
+    @property
     def catalog_path(self) -> Path:
-        """Prefer a mutable local catalog, then the shipped read-only catalog."""
+        """Prefer a local catalog that indexes something, then the shipped read-only catalog."""
         return (self.local_catalog_path
-                if self.local_catalog_path.exists() or not self.use_bundled
-                or not self.bundled_catalog_is_readable
+                if (self.local_catalog_path.exists() and self.local_catalog_has_assets)
+                or not self.use_bundled or not self.bundled_catalog_is_readable
                 else self.bundled_catalog_path)
 
     @property

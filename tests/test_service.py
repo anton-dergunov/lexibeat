@@ -110,6 +110,14 @@ class ServiceTests(unittest.TestCase):
                                                  "assets", "missing", "expanded"})
         self.assertEqual(schema["production_bundle"], schema["bundle"]["complete"])
 
+    def test_every_family_comes_with_words_to_choose_it_by(self) -> None:
+        schema = self.client.get(f"{API_PREFIX}/schema").json()
+        details = schema["family_details"]
+        self.assertEqual([row["id"] for row in details], schema["families"][1:])
+        self.assertNotIn("auto", [row["id"] for row in details])
+        for row in details:
+            self.assertTrue(row["label"] and row["description"], row["id"])
+
     def test_a_render_is_an_operation_and_the_track_is_fetched_from_it(self) -> None:
         created = self.client.post(f"{API_PREFIX}/loops", json=body())
         self.assertEqual(created.status_code, 202)

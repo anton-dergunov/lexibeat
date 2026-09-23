@@ -9,6 +9,7 @@ import sys
 import tempfile
 import types
 import unittest
+from dataclasses import asdict
 from pathlib import Path
 from unittest import mock
 
@@ -1684,6 +1685,118 @@ class BundleFetchTests(unittest.TestCase):
             with self.assertRaises(BundleError):
                 fetch(urls, into=volume, expected_sha256="0" * 64)
             self.assertTrue(kept.is_dir(), "a failed fetch must not remove anything")
+
+
+class ListenerPolicyTests(unittest.TestCase):
+    """Each switch changes only a bed that shows its defect — which is what lets it be A/B'd."""
+
+    @staticmethod
+    def off_key_fifths(spec: BedSpec) -> int:
+        in_scale = {(spec.root + step) % 12 for step in spec.scale_steps()}
+        per_bar = spec.steps_per_bar
+        count = 0
+        for chord in spec.phrase.chords:
+            degree = spec.progression[(chord.step // per_bar) % len(spec.progression)]
+            fifth = (spec.chord_root(degree) + 7) % 12
+            count += sum(1 for note in chord.midi_notes
+                         if note % 12 == fifth and note % 12 not in in_scale)
+        return count
+
+    def beds(self, count: int = 60):
+        from lexibeat.profiles import POSITIVE_FAMILIES
+        for index in range(count):
+            family = POSITIVE_FAMILIES[index % len(POSITIVE_FAMILIES)]
+            yield family, index
+
+    def test_diatonic_fifths_moves_only_the_off_key_fifths(self) -> None:
+        from lexibeat.generator import apply_listener_policy
+        from lexibeat.profiles import ListenerPolicy
+        seen_defect = seen_clean = 0
+        for family, seed in self.beds():
+            before = BedSpec.from_style(family, seed)
+            after = BedSpec.from_style(family, seed)
+            apply_listener_policy(after, ListenerPolicy(diatonic_fifths=True))
+            self.assertEqual(self.off_key_fifths(after), 0)
+            if self.off_key_fifths(before):
+                seen_defect += 1
+            else:
+                seen_clean += 1
+                self.assertEqual(asdict(before), asdict(after), (family, seed))
+        self.assertTrue(seen_defect and seen_clean)
+
+    def test_the_lead_cap_folds_only_notes_above_it(self) -> None:
+        from lexibeat.generator import apply_listener_policy
+        from lexibeat.profiles import ListenerPolicy
+        for family, seed in self.beds():
+            before = BedSpec.from_style(family, seed)
+            after = BedSpec.from_style(family, seed)
+            apply_listener_policy(after, ListenerPolicy(lead_register_cap=88))
+            self.assertTrue(all(event.midi_note <= 88 for event in after.phrase.lead))
+            if all(event.midi_note <= 88 for event in before.phrase.lead):
+                self.assertEqual(asdict(before), asdict(after), (family, seed))
+            for old, new in zip(before.phrase.lead, after.phrase.lead):
+                self.assertEqual(old.midi_note % 12, new.midi_note % 12)
+
+    @unittest.skipUnless(bundle_present(BUNDLED_ROOT), "needs the production bundle")
+    def test_approved_catalog_only_replaces_only_an_unapproved_lead(self) -> None:
+        from lexibeat.generator import _safe_inventory, enrich_with_catalog_samples
+        from lexibeat.profiles import ListenerPolicy
+        with tempfile.TemporaryDirectory() as cache, \
+                mock.patch.dict(os.environ, {"LEXIBEAT_CACHE": cache}):
+            library = SampleLibrary(Path(cache) / "external", Path(cache) / "local",
+                                    use_bundled=True)
+            policy = library.expansion_policy()
+            accepted = {bank["name"] for bank in policy["accepted_banks"]}
+            assets, instruments, _ = _safe_inventory(library)
+        switched = 0
+        for family, seed in self.beds(84):
+            specs = []
+            for listener in (ListenerPolicy(), ListenerPolicy(approved_catalog_only=True)):
+                spec = BedSpec.from_style(family, seed)
+                enrich_with_catalog_samples(spec, assets, instruments, seed,
+                                            expansion_policy=policy, listener=listener)
+                specs.append(spec)
+            before, after = specs
+            lead = before.phrase.lead_instrument
+            if lead is None or lead.name in accepted:
+                self.assertEqual(asdict(before), asdict(after), (family, seed))
+            else:
+                switched += 1
+                replaced = after.phrase.lead_instrument
+                self.assertTrue(replaced is None or replaced.name in accepted)
+                # Only the lead: the bass drew what it would have drawn anyway, and so did the
+                # pad — unless the replacement is an organ, whose Wave 3 role *is* the pad.
+                self.assertEqual(before.phrase.bass_instrument, after.phrase.bass_instrument)
+                organ = after.phrase.lead_instrument is None and after.phrase.pad_instrument \
+                    not in (None, before.phrase.pad_instrument)
+                if not organ:
+                    self.assertEqual(before.phrase.pad_instrument, after.phrase.pad_instrument)
+        self.assertGreater(switched, 0)
+
+
+class ReplayTests(unittest.TestCase):
+    def test_a_bed_asked_for_by_its_family_is_the_bed_auto_chose(self) -> None:
+        """A host keeps a bed as (style id, seed); asking for that family by name must replay it."""
+        first = resolve_music(MusicRequest(seed=4242, palette="electronic"))
+        again = resolve_music(MusicRequest(family=first.fingerprint.family, seed=4242,
+                                           palette="electronic"))
+        self.assertEqual(first.fingerprint, again.fingerprint)
+        self.assertEqual(first.request.seed, again.request.seed)
+
+
+class LocalCatalogTests(unittest.TestCase):
+    @unittest.skipUnless(bundle_present(BUNDLED_ROOT), "needs the production bundle")
+    def test_an_empty_local_catalog_does_not_shadow_the_bundle(self) -> None:
+        import sqlite3
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / "local"
+            local.mkdir()
+            sqlite3.connect(local / "catalog.sqlite3").execute(
+                "create table assets (asset_id text)").connection.close()
+            library = SampleLibrary(Path(tmp) / "external", local, use_bundled=True)
+            self.assertFalse(library.local_catalog_has_assets)
+            self.assertEqual(library.catalog_path, library.bundled_catalog_path)
+            self.assertTrue(library.uses_bundled_catalog)
 
 
 class BenchmarkTests(unittest.TestCase):

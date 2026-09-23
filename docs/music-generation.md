@@ -298,6 +298,11 @@ One request does not simply return the first random phrase:
 5. The preference score rewards nearly straight timing, a low hit on each
    downbeat, restrained drum level, major/Lydian colour, and metrical clarity.
    These are explicit priors distilled from the project's listening tests.
+6. The profile's `ListenerPolicy` then applies what the listener has ruled out:
+   an unapproved catalogue lead, a lead above a register cap, an off-key chord
+   fifth. Each switch changes only a candidate that shows its defect. They are
+   off until a listening round adopts them; the method is
+   [`plans/music-listening.md`](plans/music-listening.md).
 6. Accepted candidates are ranked by quality plus optional distance from recent
    `BedFingerprint`s. The engine takes the top 34% (normally two of six) and
    makes a final seeded choice within that tier. This retains controlled variety

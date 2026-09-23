@@ -51,7 +51,7 @@ from .loop import (
     render_loop,
 )
 from .bundle import status as bundle_status
-from .profiles import PROFILES, get_profile
+from .profiles import FAMILY_DESCRIPTIONS, PROFILES, family_label, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
 
@@ -372,6 +372,14 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
             for name, profile in PROFILES.items()
         },
         "families": ["auto", *get_profile("production-v1").families],
+        # The same families, each with a label and a sentence a listener can choose by. `auto` is
+        # not among them: it is not a kind of music but the absence of a choice, and a host names
+        # it in its own words ("Surprise me").
+        "family_details": [
+            {"id": family, "label": family_label(family),
+             "description": FAMILY_DESCRIPTIONS.get(family, "")}
+            for family in get_profile("production-v1").families
+        ],
         "energy": ["calm", "balanced", "bright"],
         "rhythm": ["sparse", "steady", "groovy"],
         "palette": list(TIMBRE_PALETTES) if bundle else ["electronic"],

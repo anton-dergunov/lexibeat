@@ -202,6 +202,12 @@ uv run lexibeat --bed-only --music-family auto \
   --out out/production-bed.wav
 ```
 
+## Tuning the music by ear
+
+[`docs/plans/music-listening.md`](docs/plans/music-listening.md) is the method: blind A/B pairs for
+the known defects, then rounds of clips rated part by part on a tablet, summarised into rules. The
+tools are `scripts/listening/`.
+
 ## Large sample library and varied procedural beds
 
 The exploration profile retains six procedural families used by the listening

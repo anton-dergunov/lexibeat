@@ -34,7 +34,7 @@ from .library import (
     instrument_refs,
 )
 from .music import Grid, render_bed, render_stems
-from .profiles import GenerationProfile, get_profile
+from .profiles import GenerationProfile, ListenerPolicy, get_profile
 from .quality import (
     Candidate,
     evaluate_preview,
@@ -180,6 +180,7 @@ def enrich_with_catalog_samples(
     *,
     palette: str = "hybrid",
     expansion_policy: dict | None = None,
+    listener: ListenerPolicy | None = None,
 ) -> None:
     """Resolve safe catalog choices without consulting network availability."""
     if not assets or palette == "electronic":
@@ -292,19 +293,26 @@ def enrich_with_catalog_samples(
             for instrument in choices
         ], dtype=np.float64)
         weights /= weights.sum()
-        spec.phrase.lead_instrument = choices[int(rng.choice(
-            len(choices), p=weights))]
-        selected_bank = accepted_banks.get(spec.phrase.lead_instrument.name, {})
-        selected_family = selected_bank.get("family")
-        if selected_family in FINAL_ACCEPTED_FAMILIES:
-            apply_final_wave3_role_profile(
-                spec, selected_family, spec.phrase.lead_instrument)
-        else:
-            articulation = spec.phrase.lead_instrument.zones[0].articulation
-            for event in spec.phrase.lead:
-                event.articulation = articulation
-                event.midi_note = _fit_instrument_note(
-                    event.midi_note, spec.phrase.lead_instrument)
+        chosen: InstrumentRef | None = choices[int(rng.choice(len(choices), p=weights))]
+        if listener and listener.approved_catalog_only and chosen.name not in accepted_banks:
+            # From a stream of its own, so every draw after this one — the pad, the bass — is the
+            # draw the bed would have made anyway, and only the lead differs.
+            approved = sorted((instrument for instrument in compatible
+                               if instrument.name in accepted_banks),
+                              key=lambda instrument: instrument.name)
+            chosen = (approved[int(np.random.default_rng(seed * 6007 + 71).integers(
+                0, len(approved)))] if approved else None)
+        if chosen is not None:
+            spec.phrase.lead_instrument = chosen
+            selected_bank = accepted_banks.get(chosen.name, {})
+            selected_family = selected_bank.get("family")
+            if selected_family in FINAL_ACCEPTED_FAMILIES:
+                apply_final_wave3_role_profile(spec, selected_family, chosen)
+            else:
+                articulation = chosen.zones[0].articulation
+                for event in spec.phrase.lead:
+                    event.articulation = articulation
+                    event.midi_note = _fit_instrument_note(event.midi_note, chosen)
 
     sustained_strings = [
         instrument for instrument in instruments
@@ -343,6 +351,36 @@ def enrich_with_catalog_samples(
             event.articulation = articulation
             event.midi_note = _fit_instrument_note(
                 event.midi_note, spec.phrase.bass_instrument)
+
+
+def apply_listener_policy(spec: BedSpec, listener: ListenerPolicy) -> None:
+    """The post-resolution half of a `ListenerPolicy`: fifths and the lead's ceiling.
+
+    Both only move notes that show the defect, and draw nothing, so a bed without it is unchanged.
+    """
+    if listener.diatonic_fifths:
+        steps = spec.scale_steps()
+        in_scale = {(spec.root + step) % 12 for step in steps}
+        per_bar = spec.steps_per_bar
+
+        def fifth_of(step: int) -> int:
+            degree = spec.progression[(step // per_bar) % len(spec.progression)]
+            return (spec.chord_root(degree) + 7) % 12
+
+        # Only the chord's own fifth, and only where it leaves the scale: the passing bass
+        # deliberately walks chromatically, and those notes are not this defect. A perfect fifth
+        # that is off-key is always a semitone above the scale's own, diminished one.
+        def diatonic(note: int, step: int) -> int:
+            return note - 1 if note % 12 == fifth_of(step) and note % 12 not in in_scale else note
+
+        for chord in spec.phrase.chords:
+            chord.midi_notes = [diatonic(note, chord.step) for note in chord.midi_notes]
+        for event in (*spec.phrase.bass, *spec.phrase.lead):
+            event.midi_note = diatonic(event.midi_note, event.step)
+    if listener.lead_register_cap is not None:
+        for event in spec.phrase.lead:
+            while event.midi_note > listener.lead_register_cap:
+                event.midi_note -= 12
 
 
 def _fit_instrument_note(note: int, instrument: InstrumentRef) -> int:
@@ -462,6 +500,37 @@ def _safe_inventory(
     return assets, instruments, False
 
 
+def build_bed(
+    family: str,
+    bed_seed: int,
+    request: MusicRequest,
+    profile: GenerationProfile,
+    assets: list[SampleAsset],
+    instruments: list[InstrumentRef],
+    *,
+    expansion_policy: dict | None = None,
+    listener: ListenerPolicy | None = None,
+) -> BedSpec:
+    """One candidate, exactly as the pool builds it — before it is rendered or scored.
+
+    The listening tools rebuild a winning candidate through this with one switch flipped, so a pair
+    differs in that switch and nothing else; resolving twice would let the switch re-rank the pool
+    and hand back a different bed entirely.
+    """
+    listener = listener if listener is not None else profile.listener
+    spec = BedSpec.from_style(family, bed_seed)
+    spec.engine_version = ENGINE_VERSION
+    spec.profile_version = profile.name
+    _apply_request(spec, request, profile)
+    if assets and request.palette != "electronic":
+        enrich_with_catalog_samples(
+            spec, assets, instruments, bed_seed, palette=request.palette,
+            expansion_policy=expansion_policy, listener=listener,
+        )
+    apply_listener_policy(spec, listener)
+    return spec
+
+
 def build_candidates(
     count: int,
     multiplier: int,
@@ -477,10 +546,12 @@ def build_candidates(
     progress_callback: ProgressCallback | None = None,
     cancel_check: CancelCheck | None = None,
     expansion_policy: dict | None = None,
+    listener: ListenerPolicy | None = None,
 ) -> tuple[list[Candidate], list[dict]]:
     """Build and validate a deterministic candidate pool."""
     request = request or MusicRequest(seed=seed)
     profile = profile or get_profile(request.profile)
+    listener = listener if listener is not None else profile.listener
     families = families or profile.families
     resolved_pool_size = (pool_size if pool_size is not None
                           else max(count * multiplier, len(families) * 2))
@@ -502,15 +573,8 @@ def build_candidates(
                                   f"Analyzing candidate {index + 1} of {resolved_pool_size}")
         family = families[index % len(families)]
         bed_seed = (seed + index * SEED_STEP) % (2 ** 64)
-        spec = BedSpec.from_style(family, bed_seed)
-        spec.engine_version = ENGINE_VERSION
-        spec.profile_version = profile.name
-        _apply_request(spec, request, profile)
-        if assets and request.palette != "electronic":
-            enrich_with_catalog_samples(
-                spec, assets, instruments or [], bed_seed, palette=request.palette,
-                expansion_policy=expansion_policy,
-            )
+        spec = build_bed(family, bed_seed, request, profile, assets, instruments or [],
+                         expansion_policy=expansion_policy, listener=listener)
         grid = Grid.from_spec(spec)
         if 20 * grid.bar + 1.0 > 90.0:
             rejected.append({
@@ -720,7 +784,9 @@ def resolve_request(
     library: SampleLibrary | None = None,
     progress_callback: ProgressCallback | None = None,
     cancel_check: CancelCheck | None = None,
+    listener: ListenerPolicy | None = None,
 ) -> MusicGenerationResult:
+    """`listener` overrides the profile's policy; the listening tools use it to A/B a switch."""
     request.validated()
     profile = get_profile(request.profile)
     seed = request.seed if request.seed is not None else secrets.randbits(64)
@@ -758,6 +824,7 @@ def resolve_request(
         progress_callback=progress_callback,
         cancel_check=cancel_check,
         expansion_policy=expansion_policy,
+        listener=listener,
     )
     ranked = sorted(
         candidates,

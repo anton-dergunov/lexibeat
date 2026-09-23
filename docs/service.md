@@ -32,7 +32,9 @@ missing, expanded}` — so a host can require the version it pinned: a deploymen
 `expanded` says the manifest carries the expansion policy that switches on the Wave 2/3 instruments.
 
 **The catalogues are LexiBeat's.** `/schema` reports the patterns, the families, the limits and the
-audio format. A host reads them rather than copying them, so a family added in a later version
+audio format. `family_details` gives each production family a `label` and a one-sentence
+`description` to choose it by; `auto` is not among them, because it is the absence of a choice rather
+than a kind of music. A host reads them rather than copying them, so a family added in a later version
 appears in its dialog with nothing changing there.
 
 ## Routes
