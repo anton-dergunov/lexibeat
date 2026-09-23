@@ -101,8 +101,12 @@ class GenerationProfile:
 
 PRODUCTION_V1 = GenerationProfile(
     name="production-v1",
-    version="1.4.0",
+    version="1.5.0",
     families=POSITIVE_FAMILIES,
+    # Adopted after round 0 of `docs/plans/music-listening.md`, heard blind on the same seeds: the
+    # approved-only lead won 4–2 and the cap at 88 won 5–0 (one "same"). Diatonic fifths lost 1–5 —
+    # the perfect fifth on every chord is preferred by ear — and stays off.
+    listener=ListenerPolicy(approved_catalog_only=True, lead_register_cap=88),
 )
 
 EXPLORATION_V1 = GenerationProfile(

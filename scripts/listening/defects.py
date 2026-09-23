@@ -15,17 +15,17 @@ import argparse
 import json
 import random
 import secrets
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
-
-from lexibeat.profiles import ListenerPolicy
 
 from .common import Production, render_clip, write_round
 
+# Each switch is laid over production's *own* policy, so a pair differs in that switch alone even
+# once others have been adopted — and a defect production already rules out is simply not found.
 SWITCHES = {
-    "unapproved_lead": (ListenerPolicy(approved_catalog_only=True), "the lead instrument"),
-    "high_lead": (ListenerPolicy(lead_register_cap=88), "the highest notes of the melody"),
-    "off_key_fifth": (ListenerPolicy(diatonic_fifths=True), "the chords"),
+    "unapproved_lead": ({"approved_catalog_only": True}, "the lead instrument"),
+    "high_lead": ({"lead_register_cap": 88}, "the highest notes of the melody"),
+    "off_key_fifth": ({"diatonic_fifths": True}, "the chords"),
 }
 
 
@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
         spec = production.resolve(seed).bed_spec
         # The rebuild must reproduce the winner exactly, or a pair would differ in more than the
         # switch; this is the check that `build_bed` is still what the pool builds.
-        if asdict(production.rebuild(spec, ListenerPolicy())) != asdict(spec):
+        if asdict(production.rebuild(spec, production.profile.listener)) != asdict(spec):
             raise SystemExit(f"Rebuilding seed {seed} did not reproduce its bed.")
         shown = [kind for kind, present in production.defects(spec).items()
                  if present and len(found[kind]) < args.per_defect]
@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         # One pair per seed, for the defect with the fewest pairs so far: more distinct music.
         kind = min(shown, key=lambda name: len(found[name]))
-        fixed = production.rebuild(spec, SWITCHES[kind][0])
+        fixed = production.rebuild(spec, replace(production.profile.listener, **SWITCHES[kind][0]))
         if asdict(fixed) == asdict(spec):
             continue
         found[kind].append({"seed": seed, "family": spec.phrase.family, "bed_seed": spec.seed,

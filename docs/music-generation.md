@@ -298,10 +298,11 @@ One request does not simply return the first random phrase:
 5. The preference score rewards nearly straight timing, a low hit on each
    downbeat, restrained drum level, major/Lydian colour, and metrical clarity.
    These are explicit priors distilled from the project's listening tests.
-6. The profile's `ListenerPolicy` then applies what the listener has ruled out:
-   an unapproved catalogue lead, a lead above a register cap, an off-key chord
-   fifth. Each switch changes only a candidate that shows its defect. They are
-   off until a listening round adopts them; the method is
+6. The profile's `ListenerPolicy` then applies what the listener has ruled out.
+   `production-v1` takes a catalogue lead only from the listener-approved banks
+   and keeps every lead note at or below MIDI 88; both were adopted after a blind
+   round. A third switch, diatonic chord fifths, lost that round and stays off.
+   Each switch changes only a candidate that shows its defect; the method is
    [`plans/music-listening.md`](plans/music-listening.md).
 6. Accepted candidates are ranked by quality plus optional distance from recent
    `BedFingerprint`s. The engine takes the top 34% (normally two of six) and
@@ -360,7 +361,7 @@ result = resolve_music(MusicRequest(
 ))
 ```
 
-With engine version 1.4.0 and profile `production-v1`, the request resolves to
+With engine version 1.5.0 and profile `production-v1`, the request resolves to
 candidate seed `523687`—candidate index 5, because
 `42 + 5 × 104729 = 523687`. Its main choices are:
 

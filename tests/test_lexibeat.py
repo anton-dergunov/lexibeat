@@ -718,7 +718,7 @@ class PublicGenerationApiTests(unittest.TestCase):
     def test_fixed_request_is_fully_deterministic_and_versioned(self) -> None:
         self.assertEqual(self.first.bed_spec.to_json(), self.second.bed_spec.to_json())
         self.assertEqual(self.first.fingerprint, self.second.fingerprint)
-        self.assertEqual(self.first.engine_version, "1.4.0")
+        self.assertEqual(self.first.engine_version, "1.5.0")
         self.assertEqual(self.first.profile_version, "production-v1")
         self.assertEqual(self.first.bed_spec.profile_version, "production-v1")
         self.assertTrue(self.first.quality.accepted)

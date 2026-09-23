@@ -78,6 +78,19 @@ that one part and nothing else.
    resolves to a different bed. Then release and re-pin the host. Every labelling round after this
    one hears the fixed engine.
 
+### Round 0, as heard (September 2026)
+
+| Switch | Fixed better | As is better | Same | Decision |
+|---|---:|---:|---:|---|
+| Approved lead instruments only | 4 | 2 | 0 | **Adopted** |
+| Lead notes at or below MIDI 88 | 5 | 0 | 1 | **Adopted** |
+| Diatonic chord fifths | 1 | 5 | 0 | Rejected — the perfect fifth is preferred by ear |
+
+Both adopted switches are on `PRODUCTION_V1` from engine 1.5.0. The rejected one stays in the code,
+off, because it is a finding too: the "off-key" fifth was the suspected defect, and by ear it is not
+one. Running `defects` again now finds only that defect, because production no longer makes the
+other two.
+
 ## Labelling rounds — rating each part
 
 **Steps, for round N (starting at 1)**

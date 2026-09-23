@@ -48,7 +48,7 @@ class ExplorerCoreTests(unittest.TestCase):
     def test_schema_reports_versions_controls_and_hosted_limits(self) -> None:
         schema = explorer_schema(ExplorerConfig(hosted=True))
         self.assertEqual(schema["api_version"], "explorer-v1")
-        self.assertEqual(schema["engine_version"], "1.4.0")
+        self.assertEqual(schema["engine_version"], "1.5.0")
         self.assertEqual(schema["limits"]["render_seconds"], 30.0)
         self.assertFalse(schema["capabilities"]["sample_promotion"])
         self.assertIn("/bpm", schema["lockable_paths"])

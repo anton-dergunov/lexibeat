@@ -36,7 +36,7 @@ BASS_GRAMMARS = ("drone", "sustain", "root_fifth", "passing", "syncopated")
 MOTIF_GRAMMARS = ("random_walk",)
 TIMBRE_PALETTES = ("acoustic", "hybrid", "electronic")
 BED_SPEC_SCHEMA_VERSION = 3
-ENGINE_VERSION = "1.4.0"
+ENGINE_VERSION = "1.5.0"
 
 
 @dataclass
