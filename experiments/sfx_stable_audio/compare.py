@@ -72,12 +72,14 @@ def write_page(out: Path, round_: dict, cells: dict) -> None:
                 continue
             players = "".join(
                 f"""<div class="take"><span>{k}</span><audio controls preload="none" src="{html.escape(t['file'])}"></audio>
-<small>{t['centroid_hz'] / 1000:.1f} kHz{' · ' + ', '.join(t['problems']) if t['problems'] else ''}</small></div>"""
+<small>{t['centroid_hz'] / 1000:.1f} kHz{' · ' + ', '.join(t['problems']) if t['problems'] else ''}{' · ' + t['caption'] if t.get('caption') else ''}</small></div>"""
                 for k, t in enumerate(takes, 1))
-            prompt = html.escape(row["prompts"][column["id"]])
-            tds.append(f'<td><div class="takes">{players}</div><p class="prompt">{prompt}</p></td>')
-        body.append(f"""<tr><th scope="row">{html.escape(row['word'])}<small>{html.escape(row['meaning'])}
-· {row['seconds']} s</small></th>{''.join(tds)}</tr>""")
+            # A take's caption is trusted HTML (a source link); a prompt is text.
+            prompt = row.get("prompts", {}).get(column["id"])
+            prompt = f'<p class="prompt">{html.escape(prompt)}</p>' if prompt else ""
+            tds.append(f'<td><div class="takes">{players}</div>{prompt}</td>')
+        seconds = f" · {row['seconds']} s" if "seconds" in row else ""
+        body.append(f"""<tr><th scope="row">{html.escape(row['word'])}<small>{html.escape(row['meaning'])}{seconds}</small></th>{''.join(tds)}</tr>""")
     out.joinpath("index.html").write_text(f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(round_['title'])}</title>
@@ -105,6 +107,7 @@ tbody th {{ width: 180px; font-size: 1.05rem; }}
 .take small {{ grid-column: 2; margin-top: 0; }}
 audio {{ width: 100%; height: 34px; }}
 audio.playing {{ outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 18px; }}
+small a {{ color: inherit; }}
 .prompt {{ color: var(--muted); font-size: .82rem; margin: .3rem 0 0; }}
 .legend {{ color: var(--muted); font-size: .82rem; margin-top: 1.2rem; max-width: 80ch; }}
 </style></head><body><main>
@@ -114,8 +117,8 @@ audio.playing {{ outline: 2px solid var(--accent); outline-offset: 2px; border-r
 {''.join(body)}
 </tbody></table></div>
 <p class="legend">All clips at {TARGET_LUFS:.0f} LUFS unless the −1 dBFS peak ceiling holds one lower. <b>kHz</b> is
-the spectral centroid: lower is darker and warmer. Stable Audio 3 {MODEL}, fp32 on MPS, 8 steps. Starting one
-clip pauses the others.</p>
+the spectral centroid: lower is darker and warmer. {round_.get('legend', f'Stable Audio 3 {MODEL}, fp32 on MPS, 8 steps.')}
+Starting one clip pauses the others.</p>
 </main>
 <script>
 const players = [...document.querySelectorAll("audio")];

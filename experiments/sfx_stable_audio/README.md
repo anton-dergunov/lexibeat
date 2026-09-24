@@ -78,27 +78,66 @@ centroid, a rough measure of how bright it is.
 soft and distant, warm lo-fi, and a character such as a sleepy cat, a puppy, a haunted door or a toy
 siren.
 
-- **The prompt alone moves a sound a long way.** At equal loudness the cat's centroid falls from
-  2.2 kHz to 0.6–1.1 kHz in all three directions, and the lo-fi dog sits at 0.4 kHz. The distant
-  siren stops yelping and becomes one slow wail. The character versions are recognisably what they
-  describe: a run of short chirps for the cat, yips with rising pitch for the puppy.
+- **By ear, steering hardly works on this model.** The measurements moved: at equal loudness the
+  cat's spectral centroid fell from 2.2 kHz to 0.6–1.1 kHz. But the listener heard something else.
+  Where the source is unmistakable (the siren, the train), the steered versions sound much like the
+  original. Where it is not, the prompt changes *what* the sound is rather than its character: the
+  cat variants sound like different cats, and the haunted door became a spacious, reverberant scene
+  in a hall rather than a door. Steering towards "sits inside the music" needs a larger model, or
+  processing after generation.
 - **Put the source and its action first.** "An old wooden door gently creaking open … heard from the
   next room" came out as knocks and thumps. "Door hinge creaking slowly as an old wooden door opens,
-  soft and gentle …" kept the creak. The more production words a prompt carries, the more the
-  source has to lead.
-- **Describe the result, not the genre.** "lo-fi" and "tape texture" can bring in crackle like a
-  vinyl record's (it did on the door). "Warm, mellow, muffled" did not, but also did not darken the
-  door the way it darkened the animals.
+  soft and gentle …" kept the creak.
+- **"lo-fi" and "tape texture" can bring in crackle** like a vinyl record's (it did on the door).
 
-**Range.** Twenty words from a real vocabulary: bee, woodpecker, frog, wolf, nightingale, parrots,
-snake, cliff, stream, storm, bonfire, uncorking, zipper, sweeping, frying pan, kettle, padlock, yawn,
-snoring and braking. By spectrogram, 19 of the 20 have the shape their word needs: the woodpecker's
-drum rolls, the wolf's single long glide, the kettle's rising whistle, the broom's regular strokes,
-the tyre squeal's sustained harmonics. The frying pan is uniform broadband noise in both takes, so it
-is either a sizzle or the failure mode above; it needs a listen.
+**Range.** Twenty words from a real vocabulary. The listener's verdict:
+
+| Verdict | Words |
+|---|---|
+| Good | woodpecker, frog, wolf, wild parrots, storm, uncorking, zipper, sweeping (surprisingly), kettle, yawn (realistic), snoring, braking |
+| Passable | bonfire (a little like fire), snake (a snake, or a rope being dragged), frying pan (noise, but not the worst), padlock (a little strange) |
+| Wrong | bee (a musical instrument), nightingale (a person whistling), cliff (not waves), stream |
+
+That is 12 of 20 good and 16 of 20 usable: roughly 70–80%, with no way to tell in advance which
+word will fail. The clips also sound limited in dynamic range. The two that fail most clearly were
+the ones whose spectrograms looked most convincing (a harmonic buzz, a tonal song), so **a
+spectrogram shows a sound's shape, not what it is: only listening decides.**
 
 - **Takes vary little.** Two seeds 1000 apart usually give the same gesture: the same croak rhythm,
-  the same broom strokes. That is good for precision. For variety, change the prompt, not the seed.
+  the same broom strokes. For variety, change the prompt, not the seed.
+
+## Against the catalogues
+
+```bash
+uv run python catalogue.py                      # needs a Freesound API key; see its docstring
+open out/catalogue/index.html
+```
+
+All 30 words: each generated clip next to three clips from each of three open sources, taken by the
+source's own ranking, not picked by ear.
+
+| Source | Words covered | How the clips are chosen |
+|---|---|---|
+| ESC-50 | 16 of 30 | The first clips of the matching class, one per source recording. CC BY-NC (ESC-10: CC BY). |
+| FSD50K | 21 of 30 | CC0 clips with the label, every rater calling it the predominant sound, fewest other labels first. |
+| Freesound search | 30 of 30 | The first CC0 results of a plain query, at most 30 s long. |
+
+The downloads stay small: ESC-50 one file at a time, FSD50K only its 7 MB of labels and metadata,
+and Freesound's MP3 previews: about 110 MB in all, under `~/.cache/lexibeat/catalogue-sfx`.
+
+- **FSD50K puts numbers on "noisy".** Of the clips people labelled "door", 85 of 191 are CC0 and only
+  13 have a door as the predominant sound; for a siren 132 → 69 → 15, for a frog 110 → 37 → 7. A
+  label says the sound is in the clip somewhere, not that the clip is that sound.
+- **First listening (cat only):** of the three clips, two were good and one was several cats at once.
+- **The listener's view so far:** availability will be spotty, and community uploads vary in what
+  they contain, so a catalogue is hard to keep consistent. A model promises more consistency. Not
+  every word needs a sound, so gaps in coverage are acceptable either way.
+
+## Next
+
+- **A larger model, for steering.** Stable Audio 3 Medium (1.4B parameters, against small's 0.4B)
+  is released but documented as CUDA-only; whether it runs on MPS, in about 6 GB of fp32 weights on
+  a 16 GB machine, is untested. Large is available only through Stability's API.
 
 ## Licence
 
