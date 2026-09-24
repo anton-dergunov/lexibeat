@@ -1,0 +1,14 @@
+[project]
+name = "sfx-stable-audio-experiment"
+version = "0"
+description = "Can Stable Audio 3 Small SFX make short, precise word sounds on a laptop?"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "psutil>=7.0.0",
+    # Not on PyPI. Pinned to the commit this experiment ran against; it pins torch 2.7.1 itself.
+    "stable-audio-3 @ git+https://github.com/Stability-AI/stable-audio-3@779434a908193105335fd8d833418603625b2859",
+]
+
+# A script, not a package, and deliberately its own environment: torch must never reach lexibeat's.
+[tool.uv]
+package = false

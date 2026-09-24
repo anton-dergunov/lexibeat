@@ -1,0 +1,22 @@
+[
+  {"word": "gato", "meaning": "cat", "seconds": 3.0, "seed": 101,
+   "prompt": "A single domestic cat meowing once, close-miked indoors, clean recording with no background noise."},
+  {"word": "perro", "meaning": "dog", "seconds": 3.0, "seed": 102,
+   "prompt": "A medium-sized dog barking twice, loud and clear, recorded outdoors in a quiet backyard."},
+  {"word": "puerta", "meaning": "door", "seconds": 3.0, "seed": 103,
+   "prompt": "An old wooden door slowly creaking open on rusty hinges, close-miked in a quiet room."},
+  {"word": "llaves", "meaning": "keys", "seconds": 3.0, "seed": 104,
+   "prompt": "A bunch of metal house keys jingling in a hand, close-miked in a dry room."},
+  {"word": "tren", "meaning": "train", "seconds": 4.0, "seed": 105,
+   "prompt": "A passing train blowing its horn, a diesel locomotive rumbling along the tracks."},
+  {"word": "lluvia", "meaning": "rain", "seconds": 4.0, "seed": 106,
+   "prompt": "Steady rain falling on a roof, soft and even, with no thunder."},
+  {"word": "sirena", "meaning": "siren", "seconds": 4.0, "seed": 107,
+   "prompt": "A police car siren wailing as it drives past on a city street."},
+  {"word": "reloj", "meaning": "clock", "seconds": 3.0, "seed": 108,
+   "prompt": "A mechanical clock ticking steadily, close-miked in a quiet room."},
+  {"word": "estornudar", "meaning": "to sneeze", "seconds": 2.0, "seed": 109,
+   "prompt": "An adult sneezing once loudly, close-miked in a dry room."},
+  {"word": "aplaudir", "meaning": "to clap", "seconds": 3.0, "seed": 110,
+   "prompt": "A small audience applauding enthusiastically in a room."}
+]
