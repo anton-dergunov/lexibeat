@@ -104,9 +104,10 @@ def arrange(
                     completed, total_utterances,
                     f"Synthesizing {completed + 1} of {total_utterances}: "
                     f"{language.name} — {text}")
-            # Leave a little of the bar clear so the next downbeat stays audible.
+            # Aim to leave a little of the bar clear so the next downbeat stays audible; a take that
+            # still runs past the bar fades under the next voice rather than being cut off.
             audio = speaker.say(text, language, delivery,
-                                target_seconds=grid.bar * 0.92)
+                                target_seconds=grid.bar * 0.92, slot_seconds=grid.bar)
             event = Event(grid.bar_start(bar), audio, f"{kind}:{text}")
             events.append(event)
             item_events[kind].append((event, text, delivery))
@@ -131,7 +132,7 @@ def arrange(
                         f"Retrying an unusually long {languages[kind].name} repetition — {text}")
                 replacement = speaker.say(
                     text, languages[kind], delivery,
-                    target_seconds=grid.bar * 0.92, retry=True)
+                    target_seconds=grid.bar * 0.92, slot_seconds=grid.bar, retry=True)
                 if abs(len(replacement) - peer_median) < \
                         abs(len(event.audio) - peer_median):
                     event.audio = replacement

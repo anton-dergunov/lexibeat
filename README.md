@@ -208,6 +208,9 @@ uv run lexibeat --bed-only --music-family auto \
 the known defects, then rounds of clips rated part by part on a tablet, summarised into rules. The
 tools are `scripts/listening/`.
 
+What a loop could become beyond the drill — examples, commentary, a final review, sound effects,
+formats to choose from — is planned in [`docs/plans/programme-loops.md`](docs/plans/programme-loops.md).
+
 ## Large sample library and varied procedural beds
 
 The exploration profile retains six procedural families used by the listening

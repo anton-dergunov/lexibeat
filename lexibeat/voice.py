@@ -37,7 +37,7 @@ from typing import Any, Protocol
 
 import numpy as np
 
-from .dsp import fit, pitch_shift, resample, time_stretch, trim
+from .dsp import fit, resample, time_stretch, trim
 from .language import ENGLISH, SPANISH, Language
 from .music import SR
 
@@ -1288,12 +1288,17 @@ class Speaker:
 
     def say(self, text: str, language: Language, delivery: Delivery = Delivery(),
             target_seconds: float | None = None, *,
-            retry: bool = False) -> np.ndarray:
+            slot_seconds: float | None = None, retry: bool = False) -> np.ndarray:
+        """One take, fitted to ``target_seconds``; anything past ``slot_seconds`` fades out.
+
+        ``slot_seconds`` is how long this utterance has before the next one may start. A take that
+        still overflows it after a gentle squeeze is not cut: its tail fades under the next voice.
+        """
         # Checked here as well as inside each backend, because this is the dispatcher: a backend
         # that forgets the guard must not turn a language it cannot speak into a KeyError out of a
         # voice table three frames down.
         _require_language(self.backend, language)
-        key = (text, language, delivery, target_seconds)
+        key = (text, language, delivery, target_seconds, slot_seconds)
         if not retry and key in self._cache:
             return self._cache[key]
         seed = self.voice_seed + self._call_index
@@ -1306,17 +1311,19 @@ class Speaker:
         rate = result.sample_rate
         post_process: dict[str, float] = {}
         if self.post_process_speed and abs(prosody.speed - 1.0) > 0.001:
-            audio = time_stretch(audio, rate, prosody.speed)
             post_process["speed"] = prosody.speed
         if self.post_process_pitch and abs(prosody.semitones) > 0.01:
-            audio = pitch_shift(audio, rate, prosody.semitones)
             post_process["semitones"] = prosody.semitones
+        if post_process:
+            # One pass for both, so a take goes through the phase vocoder once rather than twice.
+            audio = time_stretch(audio, rate, post_process.get("speed", 1.0),
+                                 semitones=post_process.get("semitones", 0.0))
         if rate != SR:
             audio = resample(audio, rate, SR)
         before_fit = len(audio) / SR
         fitted = False
         if target_seconds is not None and before_fit > target_seconds:
-            fitted_audio = fit(audio, target_seconds, SR)
+            fitted_audio = fit(audio, target_seconds, SR, slot_seconds=slot_seconds)
             fitted = len(fitted_audio) != len(audio)
             audio = fitted_audio
         # Normalise *then* apply the take's gain. The other way round — which is how this stood

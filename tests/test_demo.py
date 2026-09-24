@@ -83,7 +83,7 @@ class DemoConfigTests(unittest.TestCase):
             capabilities = CAPABILITIES["gemini"]
 
             @staticmethod
-            def say(text, language, delivery, target_seconds=None):
+            def say(text, language, delivery, target_seconds=None, slot_seconds=None):
                 del text, language, delivery, target_seconds
                 return np.ones(SR // 20, dtype=np.float32)
 

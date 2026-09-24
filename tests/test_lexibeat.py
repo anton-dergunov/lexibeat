@@ -450,14 +450,14 @@ class VoiceTests(unittest.TestCase):
         with mock.patch("lexibeat.voice.make_backend", return_value=FakeBackend()), \
                 mock.patch("lexibeat.voice.warnings.warn"), \
                 mock.patch("lexibeat.voice.time_stretch",
-                           return_value=np.ones(90, dtype=np.float32)) as stretch, \
-                mock.patch("lexibeat.voice.pitch_shift",
-                           side_effect=lambda audio, *_: audio) as pitch:
+                           return_value=np.ones(90, dtype=np.float32)) as stretch:
             speaker = Speaker(backend="cloudflare-aura2", voice_seed=3)
             speaker.say("hola", SPANISH, Delivery(prosody=Prosody(
                 speed=1.02, semitones=0.4, gain_db=0.6)))
+        # Pitch and speed in one pass: a second, separate pitch shift is what sounded metallic.
         stretch.assert_called_once()
-        pitch.assert_called_once()
+        self.assertEqual(stretch.call_args.args[2], 1.02)
+        self.assertEqual(stretch.call_args.kwargs["semitones"], 0.4)
         applied = speaker.stats[0]["controls"]["local_post_process"]
         self.assertEqual(applied, {
             "speed": 1.02, "semitones": 0.4, "gain_db": 0.6})
@@ -505,9 +505,15 @@ class VoiceTests(unittest.TestCase):
                 mock.patch("lexibeat.voice.warnings.warn"):
             speaker = Speaker(backend="voxcpm2", voice_seed=90)
             audio = speaker.say("hola", SPANISH, target_seconds=1.0)
+            slotted = speaker.say("hola", SPANISH, target_seconds=1.0, slot_seconds=1.1)
+        # With no slot to fade into it is cut at its target, as before.
         self.assertLessEqual(len(audio), SR)
-        self.assertEqual(backend.calls, [(1.0, 90)])
+        self.assertEqual(backend.calls[0], (1.0, 90))
         self.assertTrue(speaker.stats[0]["post_fit_applied"])
+        # With one, what overflows the slot fades out rather than being cut off.
+        slot = int(1.1 * SR)
+        self.assertGreater(len(slotted), slot)
+        self.assertLess(np.abs(slotted[-200:]).max(), np.abs(slotted[:slot]).max() * 0.05)
 
     def test_index_worker_request_carries_vector_and_duration_target(self) -> None:
         class Input:
@@ -1529,7 +1535,7 @@ class RenderAndMixTests(unittest.TestCase):
             def take(self, index, direction=""):
                 return Delivery.for_take(index, direction)
 
-            def say(self, text, language, delivery, target_seconds=None):
+            def say(self, text, language, delivery, target_seconds=None, slot_seconds=None):
                 self.targets.append(target_seconds)
                 return np.ones(100, dtype=np.float32)
 
@@ -1556,7 +1562,7 @@ class RenderAndMixTests(unittest.TestCase):
                                          capabilities=self.capabilities)
 
             def say(self, text, language, delivery, target_seconds=None,
-                    *, retry=False):
+                    *, slot_seconds=None, retry=False):
                 del text, target_seconds
                 bias = delivery.prosody.exaggeration_bias
                 self.calls.append((language.code, bias, retry))
@@ -1601,6 +1607,39 @@ class BundlePresenceTests(unittest.TestCase):
                 self.assertFalse(library.uses_bundled_catalog)
                 # And the query that used to raise now simply finds nothing.
                 self.assertEqual(library.assets(), [])
+
+
+class TailFadeTests(unittest.TestCase):
+    """A take that runs past its slot fades under the next voice instead of being cut mid-word."""
+
+    def test_the_tail_ducks_then_fades_lazily_and_ends_silent(self) -> None:
+        from lexibeat.dsp import TAIL_DUCK_DB, TAIL_MAX_SECONDS, fade_tail
+        tone = np.ones(SR * 4, dtype=np.float32)
+        slot = SR
+        faded = fade_tail(tone, slot, SR)
+        self.assertEqual(len(faded), slot + int(TAIL_MAX_SECONDS * SR))
+        self.assertTrue(np.all(faded[:slot] == 1.0), "full level up to the next downbeat")
+        just_after = 20 * np.log10(faded[slot + int(0.3 * SR)])
+        self.assertAlmostEqual(just_after, TAIL_DUCK_DB, delta=1.5)
+        later = 20 * np.log10(faded[slot + int(0.9 * SR)])
+        self.assertLess(later, just_after - 6, "and keeps falling, slowly")
+        self.assertLess(abs(faded[-1]), 1e-3)
+        self.assertTrue(np.all(np.diff(faded[slot:]) <= 1e-7), "never swells back")
+
+    def test_a_take_that_fits_its_slot_is_left_alone(self) -> None:
+        from lexibeat.dsp import fade_tail
+        tone = np.ones(SR // 2, dtype=np.float32)
+        self.assertIs(fade_tail(tone, SR, SR), tone)
+
+    def test_fit_squeezes_gently_then_fades_rather_than_cutting(self) -> None:
+        from lexibeat.dsp import MAX_SQUEEZE, fit
+        take = np.sin(np.linspace(0, 2 * np.pi * 220 * 3, SR * 3)).astype(np.float32)
+        with mock.patch("lexibeat.dsp.time_stretch",
+                        side_effect=lambda audio, sr, rate, semitones=0.0:
+                        audio[:int(len(audio) / rate)]) as stretch:
+            fitted = fit(take, 1.0, SR, slot_seconds=1.1)
+        self.assertEqual(stretch.call_args.args[2], MAX_SQUEEZE)
+        self.assertGreater(len(fitted), int(1.1 * SR), "the overflow is heard, not dropped")
 
 
 class BundleStatusTests(unittest.TestCase):

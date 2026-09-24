@@ -148,6 +148,10 @@ matches.
 `source_reveal` and `target_reveal` are what a retrieval display turns on: the answer must not be on
 screen before the recall gap has passed.
 
+An utterance's `end` is where its audio ends, and a long one may run a little past the next
+utterance's `start`: a take that overflows its bar fades under the next voice rather than being cut.
+An item's own `end` is still the next item's `start`, so items never overlap.
+
 ## Audio
 
 **MP3 at 128 kbps, constant bitrate**, written by `soundfile` over libsndfile with no ffmpeg and no

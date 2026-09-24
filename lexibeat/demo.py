@@ -140,7 +140,7 @@ def resolve_demo_specs(config: DemoConfig) -> dict[str, BedSpec]:
 
 
 def cache_key(speaker: Speaker, text: str, language: Language, delivery: Delivery,
-              target_seconds: float | None) -> str:
+              target_seconds: float | None, slot_seconds: float | None = None) -> str:
     """Return a stable key for one fully directed, post-fit utterance."""
     backend = speaker.backend
     backend_name = getattr(backend, "name", type(backend).__name__)
@@ -160,6 +160,10 @@ def cache_key(speaker: Speaker, text: str, language: Language, delivery: Deliver
         "target_seconds": target_seconds,
         "sample_rate": SR,
     }
+    # A take fitted to a slot has a faded tail, so it is a different take; one fitted without a slot
+    # keeps the key it always had.
+    if slot_seconds is not None:
+        payload["slot_seconds"] = slot_seconds
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"),
                          ensure_ascii=False).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
@@ -183,8 +187,9 @@ class PersistentSpeaker:
         return self.speaker.stats
 
     def say(self, text: str, language: Language, delivery: Delivery,
-            target_seconds: float | None = None, *, retry: bool = False) -> np.ndarray:
-        key = cache_key(self.speaker, text, language, delivery, target_seconds)
+            target_seconds: float | None = None, *, slot_seconds: float | None = None,
+            retry: bool = False) -> np.ndarray:
+        key = cache_key(self.speaker, text, language, delivery, target_seconds, slot_seconds)
         wav_path = self.cache_dir / f"{key}.wav"
         metadata_path = self.cache_dir / f"{key}.json"
         if not self.refresh and not retry and wav_path.is_file() and metadata_path.is_file():
@@ -207,7 +212,7 @@ class PersistentSpeaker:
 
         before = len(self.speaker.stats)
         audio = self.speaker.say(text, language, delivery, target_seconds,
-                                 retry=retry)
+                                 slot_seconds=slot_seconds, retry=retry)
         if len(self.speaker.stats) <= before:
             raise RuntimeError("Speech backend did not record take metadata.")
         metadata = dict(self.speaker.stats[-1])

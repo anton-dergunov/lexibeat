@@ -386,8 +386,11 @@ Two details that make or break the result:
 
 - **Onset alignment, not file alignment.** TTS output carries leading silence.
   Trim to the first onset and align *that* to the downbeat.
-- **Overrun handling.** If an utterance is longer than its slot, time-stretch it
-  slightly (pitch-preserving) rather than letting it drift off the grid.
+- **Overrun handling.** If an utterance is longer than its slot, squeeze it gently
+  (at most 1.2×, pitch- and formant-preserving, in one pass) and let whatever still
+  overflows the next downbeat fade under the next voice — ducked about 8 dB, then a
+  slow fall over about a second. It is never cut mid-word, and never drifts off the
+  grid: the onset stays on its downbeat.
 
 **Loudness balance** — fixed gains are the wrong tool. Use:
 
