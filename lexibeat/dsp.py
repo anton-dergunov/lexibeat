@@ -78,9 +78,9 @@ MAX_SQUEEZE_WITHOUT_SLOT = 1.35
 # The tail of a take that runs past its slot — the next downbeat. It stays audible under the next
 # voice rather than competing with it: down to TAIL_DUCK_DB over TAIL_DUCK_SECONDS, then a lazy
 # fall to TAIL_FLOOR_DB by TAIL_MAX_SECONDS, where it ends with a short cosine so nothing clicks.
-TAIL_DUCK_DB = -8.0
+TAIL_DUCK_DB = -4.0
 TAIL_DUCK_SECONDS = 0.25
-TAIL_FLOOR_DB = -30.0
+TAIL_FLOOR_DB = -10.0
 TAIL_MAX_SECONDS = 1.2
 TAIL_END_FADE_SECONDS = 0.08
 
