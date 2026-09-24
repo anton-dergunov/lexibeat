@@ -60,6 +60,46 @@ Apple M1, 16 GB, macOS 26.5, torch 2.7.1, 8 steps, the ten prompts in `prompts.j
   durations as long ones. Descriptive prompts in the library's SFX style (source, action, recording
   character) worked.
 
+## Steering and range
+
+Two follow-up rounds, rendered side by side for listening with fp32 on MPS:
+
+```bash
+uv run python compare.py rounds/steer.json      # five sounds, original vs three directions
+uv run python compare.py rounds/expand.json     # twenty less common words
+open out/steer/index.html out/expand/index.html
+```
+
+A round is a JSON grid: words by prompt variants, each rendered in two takes. Every clip is matched
+to −20 LUFS, so a comparison hears character rather than level. The page shows each clip's spectral
+centroid, a rough measure of how bright it is.
+
+**Steering** (cat, dog, door, train, siren). Each keeps its original prompt next to three versions:
+soft and distant, warm lo-fi, and a character such as a sleepy cat, a puppy, a haunted door or a toy
+siren.
+
+- **The prompt alone moves a sound a long way.** At equal loudness the cat's centroid falls from
+  2.2 kHz to 0.6–1.1 kHz in all three directions, and the lo-fi dog sits at 0.4 kHz. The distant
+  siren stops yelping and becomes one slow wail. The character versions are recognisably what they
+  describe: a run of short chirps for the cat, yips with rising pitch for the puppy.
+- **Put the source and its action first.** "An old wooden door gently creaking open … heard from the
+  next room" came out as knocks and thumps. "Door hinge creaking slowly as an old wooden door opens,
+  soft and gentle …" kept the creak. The more production words a prompt carries, the more the
+  source has to lead.
+- **Describe the result, not the genre.** "lo-fi" and "tape texture" can bring in crackle like a
+  vinyl record's (it did on the door). "Warm, mellow, muffled" did not, but also did not darken the
+  door the way it darkened the animals.
+
+**Range.** Twenty words from a real vocabulary: bee, woodpecker, frog, wolf, nightingale, parrots,
+snake, cliff, stream, storm, bonfire, uncorking, zipper, sweeping, frying pan, kettle, padlock, yawn,
+snoring and braking. By spectrogram, 19 of the 20 have the shape their word needs: the woodpecker's
+drum rolls, the wolf's single long glide, the kettle's rising whistle, the broom's regular strokes,
+the tyre squeal's sustained harmonics. The frying pan is uniform broadband noise in both takes, so it
+is either a sizzle or the failure mode above; it needs a listen.
+
+- **Takes vary little.** Two seeds 1000 apart usually give the same gesture: the same croak rhythm,
+  the same broom strokes. That is good for precision. For variety, change the prompt, not the seed.
+
 ## Licence
 
 Output is covered by the Stability AI Community License (commercial use above a revenue threshold

@@ -1,0 +1,89 @@
+{
+  "title": "Steering five sounds",
+  "intro": "Can the prompt alone make a sound that sits inside a music bed rather than on top of it? Each row keeps the original prompt and seed, then three directions. Every clip is matched to the same loudness, so what differs is character, not level.",
+  "takes": 2,
+  "columns": [
+    {
+      "id": "original",
+      "label": "Original",
+      "note": "The prompt from the first round, same seed."
+    },
+    {
+      "id": "soft",
+      "label": "Soft, distant",
+      "note": "The same source, performed gently and heard from further away."
+    },
+    {
+      "id": "lofi",
+      "label": "Warm, lo-fi",
+      "note": "Rounded and filtered, like a sample in a lo-fi track."
+    },
+    {
+      "id": "character",
+      "label": "Character",
+      "note": "A personality: sleepy, playful, eerie, toy-like."
+    }
+  ],
+  "rows": [
+    {
+      "word": "gato",
+      "meaning": "cat",
+      "seconds": 3,
+      "seed": 101,
+      "prompts": {
+        "original": "A single domestic cat meowing once, close-miked indoors, clean recording with no background noise.",
+        "soft": "A cat giving a soft, quiet meow from across a room, gentle and relaxed, recorded from a distance with natural room reverb.",
+        "lofi": "A cat's gentle meow as a warm lo-fi sample, rounded and mellow, soft high end, vintage tape texture, low volume.",
+        "character": "A sleepy, content cat giving a small, curious chirping meow while stretching, cute and soft."
+      }
+    },
+    {
+      "word": "perro",
+      "meaning": "dog",
+      "seconds": 3,
+      "seed": 102,
+      "prompts": {
+        "original": "A medium-sized dog barking twice, loud and clear, recorded outdoors in a quiet backyard.",
+        "soft": "A friendly dog giving two soft woofs in the distance, heard across a quiet park, gentle and relaxed, natural outdoor ambience.",
+        "lofi": "Two mellow dog woofs as a warm lo-fi sample, rounded and muffled, soft high end, vintage tape texture.",
+        "character": "A happy, playful puppy giving two small, cute yips, excited but gentle, close and soft."
+      }
+    },
+    {
+      "word": "puerta",
+      "meaning": "door",
+      "seconds": 3,
+      "seed": 103,
+      "prompts": {
+        "original": "An old wooden door slowly creaking open on rusty hinges, close-miked in a quiet room.",
+        "soft": "Door hinge creaking slowly as an old wooden door opens, soft and gentle, recorded from a distance in a quiet house.",
+        "lofi": "Creaking wooden door opening slowly, the creak warm, mellow and muffled, soft high end.",
+        "character": "A spooky old door in a haunted house slowly creaking open, eerie but gentle, with a soft echo."
+      }
+    },
+    {
+      "word": "tren",
+      "meaning": "train",
+      "seconds": 4,
+      "seed": 105,
+      "prompts": {
+        "original": "A passing train blowing its horn, a diesel locomotive rumbling along the tracks.",
+        "soft": "A train horn sounding far away across the countryside at dusk, soft and hazy, with a long gentle echo.",
+        "lofi": "A distant train horn as a warm lo-fi sample, mellow and rounded, soft high end, vintage tape texture.",
+        "character": "An old steam train gently puffing and chugging along, with a soft, friendly whistle, nostalgic and calm."
+      }
+    },
+    {
+      "word": "sirena",
+      "meaning": "siren",
+      "seconds": 4,
+      "seed": 107,
+      "prompts": {
+        "original": "A police car siren wailing as it drives past on a city street.",
+        "soft": "A police siren wailing far away across a city at night, soft and muffled by distance, with quiet city ambience.",
+        "lofi": "A police siren as a warm lo-fi sample, muffled and rounded as if heard through a closed window, soft high end.",
+        "character": "A small toy police car siren, cute and playful, quiet and close."
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "title": "Twenty less common sounds",
+  "intro": "Words from a real Spanish vocabulary that a sound could demonstrate, beyond the obvious cat and dog. Two takes of each, to hear how reliably the model hits the word as well as whether it can. Every clip is matched to the same loudness.",
+  "takes": 2,
+  "columns": [
+    {"id": "plain", "label": "Sound", "note": "A descriptive prompt: source, action, recording."}
+  ],
+  "rows": [
+    {"word": "la abeja", "meaning": "bee", "seconds": 4, "seed": 201, "prompts": {
+      "plain": "A single honey bee buzzing around a flower, close-miked outdoors on a calm summer day."}},
+    {"word": "el pájaro carpintero", "meaning": "woodpecker", "seconds": 4, "seed": 202, "prompts": {
+      "plain": "A woodpecker rapidly drumming its beak on a hollow tree trunk in a quiet forest."}},
+    {"word": "la rana", "meaning": "frog", "seconds": 4, "seed": 203, "prompts": {
+      "plain": "A frog croaking at a pond on a warm night, a few clear ribbit calls."}},
+    {"word": "el lobo", "meaning": "wolf", "seconds": 5, "seed": 204, "prompts": {
+      "plain": "A lone wolf howling at night in a snowy forest, long and mournful, with a distant echo."}},
+    {"word": "el ruiseñor", "meaning": "nightingale", "seconds": 5, "seed": 205, "prompts": {
+      "plain": "A nightingale singing a rich, melodic song in a garden at dusk."}},
+    {"word": "el loro salvaje", "meaning": "wild parrot", "seconds": 4, "seed": 206, "prompts": {
+      "plain": "A flock of wild parrots squawking and chattering in the treetops of a tropical forest."}},
+    {"word": "la serpiente", "meaning": "snake", "seconds": 3, "seed": 207, "prompts": {
+      "plain": "A snake giving a sharp, sustained hiss, close-miked in a dry room."}},
+    {"word": "el acantilado", "meaning": "cliff", "seconds": 5, "seed": 208, "prompts": {
+      "plain": "Ocean waves crashing against rocks at the foot of a high cliff, with wind and seagulls calling."}},
+    {"word": "el arroyo", "meaning": "stream, brook", "seconds": 4, "seed": 209, "prompts": {
+      "plain": "A small mountain stream gently babbling over stones in a quiet forest."}},
+    {"word": "la tormenta", "meaning": "storm", "seconds": 5, "seed": 210, "prompts": {
+      "plain": "A rolling clap of thunder during a heavy rainstorm."}},
+    {"word": "la hoguera", "meaning": "bonfire", "seconds": 4, "seed": 211, "prompts": {
+      "plain": "A campfire crackling and popping at night, close-miked outdoors."}},
+    {"word": "descorchar una botella", "meaning": "to uncork a bottle", "seconds": 3, "seed": 212, "prompts": {
+      "plain": "A cork popping out of a bottle of sparkling wine, followed by a short fizz."}},
+    {"word": "la cremallera", "meaning": "zipper", "seconds": 2, "seed": 213, "prompts": {
+      "plain": "A jacket zipper being pulled up in one quick motion, close-miked."}},
+    {"word": "barrer", "meaning": "to sweep", "seconds": 4, "seed": 214, "prompts": {
+      "plain": "A broom sweeping a wooden floor with a few steady strokes, close-miked in a quiet room."}},
+    {"word": "la sartén", "meaning": "frying pan", "seconds": 4, "seed": 215, "prompts": {
+      "plain": "Food sizzling in a hot frying pan on the stove, close-miked in a kitchen."}},
+    {"word": "la pava", "meaning": "kettle", "seconds": 5, "seed": 216, "prompts": {
+      "plain": "A kettle on the stove coming to the boil and starting to whistle."}},
+    {"word": "el candado", "meaning": "padlock", "seconds": 2, "seed": 217, "prompts": {
+      "plain": "A metal padlock being snapped shut with a firm click, close-miked."}},
+    {"word": "el bostezo", "meaning": "yawn", "seconds": 3, "seed": 218, "prompts": {
+      "plain": "A person giving a long, tired yawn, close-miked in a quiet room."}},
+    {"word": "roncar como un mamut", "meaning": "to snore very loudly", "seconds": 5, "seed": 219, "prompts": {
+      "plain": "A man snoring loudly and deeply while fast asleep, close-miked in a bedroom."}},
+    {"word": "frenar", "meaning": "to brake", "seconds": 3, "seed": 220, "prompts": {
+      "plain": "A car braking hard with its tires screeching on asphalt."}}
+  ]
+}
