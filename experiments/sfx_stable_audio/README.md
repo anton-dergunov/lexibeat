@@ -128,13 +128,118 @@ and Freesound's MP3 previews: about 110 MB in all, under `~/.cache/lexibeat/cata
 - **FSD50K puts numbers on "noisy".** Of the clips people labelled "door", 85 of 191 are CC0 and only
   13 have a door as the predominant sound; for a siren 132 → 69 → 15, for a frog 110 → 37 → 7. A
   label says the sound is in the clip somewhere, not that the clip is that sound.
-- **First listening (cat only):** of the three clips, two were good and one was several cats at once.
-- **The listener's view so far:** availability will be spotty, and community uploads vary in what
-  they contain, so a catalogue is hard to keep consistent. A model promises more consistency. Not
-  every word needs a sound, so gaps in coverage are acceptable either way.
+
+### What the listener heard
+
+Per word, which was better: the generated clip or the best catalogue clip.
+
+| Better | Words |
+|---|---|
+| Catalogue (11) | cat, dog (Freesound); train (Freesound: traditional, if a little intense; the others were a quiet high-speed train or wind); rain (ESC-50, FSD50K; Freesound was abstract, rain on an object); siren (Freesound; an ESC-50 clip is an air-raid siren, with a bad connotation); clapping (ESC-50, FSD50K; Freesound's sounded like TV, from one uploader); bee (ESC-50, FSD50K, far better than the model's); nightingale (every source; the model's is a person whistling); snake (weakly: one Freesound clip); uncorking (slightly); snoring (slightly more realistic) |
+| Model (9) | wolf (Freesound's were synth notes and a siren); wild parrot (Freesound's were random birds); frying pan (no source was good); braking (the sources were bad); woodpecker (only one Freesound clip was right); yawn; storm, zipper, sweeping (slightly) |
+| Both good (5) | clock, sneezing, frog (the Freesound frogs came with a whole pond around them), stream, bonfire |
+| Neither (2) | cliff, padlock |
+| Not compared (3) | keys (the catalogue clips were nice), door (usable, but the heavy doors sound funny if heard the wrong way), kettle (the model's was liked) |
+
+The catalogues win the common, well-recorded sounds. The model wins where the catalogues are thin or
+polluted.
+
+- **Catalogue clips have better dynamic range** and more realism than the model's.
+- **The catalogues' worst failure is human imitation.** People make the sound with their mouth: a
+  bee, a snake, a cork. Next come ambience around the sound (a frog in a whole pond), synth or
+  electronic stand-ins (the wolves), and a label on the wrong thing: FSD50K's "Hiss" returned a
+  frying pan for "snake".
+- **Connotation matters as well as identity.** The air-raid siren and the funny-sounding doors were
+  right and still unusable. Curation has to judge what a sound suggests, not only what it is.
+- **Lengths and edges vary.** Clips run up to 10 s and often start or end in silence. Before a sound
+  can be laid over music it needs trimming, levelling and a fade (what the demo below does).
+- **Freesound search vs FSD50K:** plain search was best for cat, dog, train and siren. It was worst
+  where uploaders imitate or add ambience, which the FSD50K predominance filter mostly avoids.
+
+## Sounds in a loop
+
+```bash
+uv run python experiments/sfx_stable_audio/demo_mix.py   # from the repository root
+open experiments/sfx_stable_audio/out/demo/index.html
+```
+
+It needs the README demo's speech and timeline in `out/readme-demo/`, which
+`python -m scripts.demos.generate_readme_demo` writes.
+
+The README demo's 13 words over a freshly rendered "acoustic" bed, with a sound before 8 of them:
+far more than the product would use, so there is plenty to judge. The sounds are clips the listener
+rated well: thunder, wolf howl and yawn from the model; a clock, cork pop, applause, train and
+nightingale from the catalogues. Each is trimmed of silence, starts on a beat and ends just before
+its word, in the gap after the previous word. It sits 5–8 dB under the voice, and the bed ducks under
+it. **Dry** is the sound as it is; **glued** adds a band filter, light compression and a little room,
+to test whether processing gets the "inside the music" feel that prompt steering could not. This
+script, unlike the rest, runs in the repository's own environment, because it mixes with LexiBeat
+itself.
+
+## What this means for the product
+
+**Aim for high precision, low recall.** A sound should be exactly its word, or absent. Neither
+source does that unattended. The model gets roughly 70–80% of words right, and the catalogues' first
+results fail in the ways listed above. So sounds come from a **curated library**, not from live
+generation or live search.
+
+**How big the library needs to be.** In one real Spanish vocabulary of 919 entries, about 83 (9%)
+have an obvious sound and another 40 or so a plausible one: a rough count by reading. Many share a
+sound ("golpe", "golpear" and "trompada" are all a punch; "hoguera" and "encender el fuego" are both a
+fire), leaving about 65 distinct sounds. Soundable concepts grow much more slowly than vocabulary:
+AudioSet's ontology names 527 sound classes in total. **300–500 concepts with two or three approved
+clips each (1,000–1,500 clips) would cover nearly every soundable word** a learner is likely to have.
+Two weeks at about 100 approvals a day reaches that. Spend the effort on concepts in order of how
+often they come up, and on a second or third clip per concept for variety, rather than on breadth.
+
+**Make approval cheap:**
+
+1. **Candidates.** For each concept, gather about six: two generated, two from FSD50K's
+   predominant-and-CC0 filter, two from Freesound search.
+2. **Automatic pre-filter,** so the listener only hears plausible ones:
+   - **mechanical checks** (length, silence, clipping), which this experiment shows do work;
+   - **an audio tagger** trained on AudioSet (PANNs, AST or BEATs; each runs locally) to veto clips
+     whose top labels include speech, human voice, whistling, music or a musical instrument. That
+     rule targets the actual failures heard here: the imitations, the whistling nightingale, the
+     bee that sounds like an instrument;
+   - **an audio-text model** (LAION-CLAP or Microsoft CLAP) to rank the rest by how well they match
+     the concept's text, against the other concepts as distractors;
+   - optionally, **an audio-understanding LLM** (Gemini takes audio input) to answer "is this a real
+     X or an imitation, and does it suggest anything alarming?". That is the connotation check a
+     classifier cannot do.
+3. **Approve on a tablet:** one page per concept, tap to keep. Store the clip trimmed, levelled and
+   faded, with its source and licence.
+
+**Calibrate the pre-filter before trusting it.** The catalogue page's 231 clips, 30 words' worth,
+now carry the listener's verdicts, many of them per clip. Scoring those clips with the tagger and CLAP shows at once whether
+the scores separate good from bad, before anything is built on them. That is the obvious next
+experiment, and it is cheap. Likelihood under a generative model (the "perplexity" idea) is harder
+to compute for a diffusion model, and it measures typicality rather than correctness.
+
+**Licences, for a paid product** (a summary, not legal advice):
+
+| Licence | Ship it in a paid product? |
+|---|---|
+| CC0 | Yes. No attribution needed. |
+| CC BY | Yes, with credit to each author, the licence and a link, for example on a credits screen. |
+| CC BY-NC | No. "NonCommercial" rules out a paid product. That is most of ESC-50, so ESC-50 is a reference, not a source. |
+| Sampling+ | Transformed use only. Avoid. |
+| Stability AI Community License (the model's output) | Free for commercial use below a revenue threshold (US$1M a year at the time of writing); an enterprise licence above it. Check the current terms. |
+
+Two caveats:
+
+- **Freesound's API terms reserve commercial use of the API itself** for case-by-case agreement
+  with its operator, separately from each sound's licence. A one-off, curated download for a shipped
+  pack is worth confirming with them first.
+- **Previews are lossy MP3s.** A shipped pack should use the original files.
+
+Having an online model help curate raises no licence issue for CC0 or CC BY clips: that is use, not
+redistribution.
 
 ## Next
 
+- **Calibrate an automatic pre-filter** (an AudioSet tagger and CLAP) on the catalogue page's clips,
+  which now have the listener's verdicts.
 - **A larger model, for steering.** Stable Audio 3 Medium (1.4B parameters, against small's 0.4B)
   is released but documented as CUDA-only; whether it runs on MPS, in about 6 GB of fp32 weights on
   a 16 GB machine, is untested. Large is available only through Stability's API.
