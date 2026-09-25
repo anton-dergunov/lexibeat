@@ -1613,7 +1613,8 @@ class TailFadeTests(unittest.TestCase):
     """A take that runs past its slot fades under the next voice instead of being cut mid-word."""
 
     def test_the_tail_ducks_then_fades_lazily_and_ends_silent(self) -> None:
-        from lexibeat.dsp import TAIL_DUCK_DB, TAIL_MAX_SECONDS, fade_tail
+        from lexibeat.dsp import (TAIL_DUCK_DB, TAIL_DUCK_SECONDS, TAIL_FLOOR_DB,
+                                   TAIL_MAX_SECONDS, fade_tail)
         tone = np.ones(SR * 4, dtype=np.float32)
         slot = SR
         faded = fade_tail(tone, slot, SR)
@@ -1622,7 +1623,10 @@ class TailFadeTests(unittest.TestCase):
         just_after = 20 * np.log10(faded[slot + int(0.3 * SR)])
         self.assertAlmostEqual(just_after, TAIL_DUCK_DB, delta=1.5)
         later = 20 * np.log10(faded[slot + int(0.9 * SR)])
-        self.assertLess(later, just_after - 6, "and keeps falling, slowly")
+        expected_later = TAIL_DUCK_DB + (TAIL_FLOOR_DB - TAIL_DUCK_DB) * (
+            (0.9 - TAIL_DUCK_SECONDS) / (TAIL_MAX_SECONDS - TAIL_DUCK_SECONDS))
+        self.assertAlmostEqual(later, expected_later, delta=1.5)
+        self.assertLess(later, just_after, "and keeps falling, slowly")
         self.assertLess(abs(faded[-1]), 1e-3)
         self.assertTrue(np.all(np.diff(faded[slot:]) <= 1e-7), "never swells back")
 
