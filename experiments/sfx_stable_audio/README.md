@@ -170,8 +170,9 @@ The README demo's 13 words over a freshly rendered "acoustic" bed, with a sound 
 far more than the product would use, so there is plenty to judge. The sounds are clips the listener
 rated well: thunder, wolf howl and yawn from the model; a clock, cork pop, applause, train and
 nightingale from the catalogues. Each is trimmed of silence, starts on a beat and ends just before
-its word, in the gap after the previous word. It sits 5–8 dB under the voice, and the bed ducks under
-it. **Dry** is the sound as it is; **glued** adds a band filter, light compression and a little room,
+its word, in the gap after the previous word, and the bed ducks under it. At 5–8 dB under the voice
+(−20 LUFS a clip) the listener found the sounds well placed but too loud; they now sit 11–15 dB
+under (−30 LUFS). **Dry** is the sound as it is; **glued** adds a band filter, light compression and a little room,
 to test whether processing gets the "inside the music" feel that prompt steering could not. This
 script, unlike the rest, runs in the repository's own environment, because it mixes with LexiBeat
 itself.
@@ -237,6 +238,9 @@ Having an online model help curate raises no licence issue for CC0 or CC BY clip
 redistribution.
 
 ## Next
+
+The plan that follows from this experiment is `docs/plans/sound-library.md`.
+
 
 - **Calibrate an automatic pre-filter** (an AudioSet tagger and CLAP) on the catalogue page's clips,
   which now have the listener's verdicts.
