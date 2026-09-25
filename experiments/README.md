@@ -7,3 +7,6 @@ own environment. Outputs go to the folder's `out/`, which is not tracked.
 
 - [`sfx_stable_audio/`](sfx_stable_audio/) — can a local text-to-audio model make the short word
   sounds that `docs/plans/programme-loops.md` (P4) wants, instead of a noisy CC0 catalogue?
+- [`programme_blocks/`](programme_blocks/) — the blocks `docs/plans/programme-loops.md` would build
+  programmes from (drill structures over music, syllables, mixed-language voices, examples,
+  stories, callbacks, commentary, framing), each tried alone and scored 1–5 on a tablet.

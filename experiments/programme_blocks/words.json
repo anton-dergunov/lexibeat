@@ -1,0 +1,4879 @@
+[
+ {
+  "language": "es",
+  "headword": "a través de",
+  "lemma": "a través de",
+  "ipa": "/a tɾaˈbes de/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🪟",
+  "shortGloss": "through; across; over",
+  "primaryGloss": "through",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Pasando de un lado a otro o por el medio de un espacio u objeto.",
+  "notes": [
+   "Used for moving through a physical space or medium, progressing through a period of time, or doing something by means of an intermediary (person, channel, or tool)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "abundar",
+  "lemma": "abundar",
+  "ipa": "/abunˈdaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🌾",
+  "shortGloss": "to abound; to be plentiful",
+  "primaryGloss": "to abound",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Haber o existir en gran cantidad.",
+  "notes": [
+   "When followed by 'en', it can mean either 'to be rich in' (e.g. 'un río que abunda en peces') or 'to elaborate on / agree with an idea' (e.g. 'abundar en el mismo punto')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "acabar de",
+  "lemma": "acabar de",
+  "ipa": "/akaˈbaɾ de/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "⏱️",
+  "shortGloss": "to have just done",
+  "primaryGloss": "to have just done",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Haber realizado una acción muy poco tiempo antes del momento en que se habla.",
+  "notes": [
+   "Used with an infinitive (acabar de + infinitive) in the present or imperfect indicative to express that an action was completed moments earlier (\"to have just done\").",
+   "In the preterite tense, it shifts meaning to \"to finish doing\" (e.g. \"Acabé de comer a las tres\")."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "agotarse",
+  "lemma": "agotarse",
+  "ipa": "/aɣoˈtaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🪫",
+  "shortGloss": "to run out; to sell out; to get exhausted",
+  "primaryGloss": "to run out",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Terminarse o acabarse del todo algo disponible, como productos, entradas o energía.",
+  "notes": [
+   "`agotarse` is the pronominal/reflexive form of `agotar` (to exhaust, to deplete). It is used intransitively when a supply runs out (`las entradas se agotaron`) or when a person becomes thoroughly exhausted."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "al tanto",
+  "lemma": "al tanto",
+  "ipa": "/al ˈtanto/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔔",
+  "shortGloss": "up to date; in the loop; informed",
+  "primaryGloss": "up",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Informado de algo que ocurre o de las novedades sobre un asunto.",
+  "notes": [
+   "Almost always used with verbs like 'estar' (to be informed/aware), 'poner' (to bring someone up to speed), or 'mantener(se)' (to keep/stay updated). It is followed by 'de' when introducing the topic: 'estar al tanto de todo'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "aleatorio",
+  "lemma": "aleatorio",
+  "ipa": "/aleaˈtoɾjo/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🎲",
+  "shortGloss": "random; chance",
+  "primaryGloss": "random",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que depende del azar o de la suerte y no sigue un orden fijo o previsible.",
+  "notes": [
+   "\"Aleatorio\" is the standard adjective for \"random\" (e.g., in statistics, computing, or formal contexts). For everyday conversational speech, Spanish often uses prepositional phrases like \"al azar\" instead of the adjective."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "anhelar",
+  "lemma": "anhelar",
+  "ipa": "/an.eˈlaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🌠",
+  "shortGloss": "to long for; to yearn for",
+  "primaryGloss": "long",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Desear algo con mucha intensidad o pasión.",
+  "notes": [
+   "More intense, literary, and emotionally charged than everyday verbs like \"querer\" or \"desear\". It conveys a deep longing or yearning, often for something distant, idealized, or hard to reach."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "asustar",
+  "lemma": "asustar",
+  "ipa": "/asusˈtaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😨",
+  "shortGloss": "to scare; to frighten",
+  "primaryGloss": "scare",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Causar miedo, temor o sobresalto repentino a alguien.",
+  "notes": [
+   "Used transitively to mean 'to scare someone' (e.g., 'me asustas'). When used reflexively as 'asustarse', it means 'to get scared' or 'to take fright' ('me asusté' = 'I got scared').",
+   "To express ongoing fear rather than a sudden scare, Spanish often uses 'dar miedo' or 'tener miedo' instead."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "añorar",
+  "lemma": "añorar",
+  "ipa": "/aɲoˈɾaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "💭",
+  "shortGloss": "to long for; to yearn for; to miss",
+  "primaryGloss": "yearn",
+  "emotion": "a soft, sighing quality of gentle melancholy",
+  "glossLang": "en",
+  "definition": "Sentir nostalgia o tristeza por la ausencia o el recuerdo de algo o alguien del pasado.",
+  "notes": [
+   "Carries a stronger sense of nostalgia and poetic longing than everyday alternatives. While 'extrañar' or 'echar de menos' are used for missing people or routine things, 'añorar' is typically used for bygone times, homeland, or past stages of life."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "broncearse",
+  "lemma": "broncearse",
+  "ipa": "/bɾonθeˈaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "☀️",
+  "shortGloss": "to get a tan; to tan",
+  "primaryGloss": "to get a tan",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Adquirir la piel un color moreno por la exposición a los rayos del sol.",
+  "notes": [
+   "Reflexive verb referring to the result of darkening one's skin in the sun. Contrast with \"tomar el sol\" (to sunbathe, the activity itself) and \"quemarse\" (to get sunburned)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "coincidir",
+  "lemma": "coincidir",
+  "ipa": "/koinθiˈðiɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🤝",
+  "shortGloss": "to coincide; to agree; to match",
+  "primaryGloss": "to coincide",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Ocurrir al mismo tiempo o encontrarse en el mismo lugar por casualidad.",
+  "notes": [
+   "Use 'coincidir con [alguien]' to mean 'to agree with someone' or 'to bump into someone'.",
+   "Use 'coincidir en [algo]' to indicate the point of agreement, or the shared time/place."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "con menos prisa",
+  "lemma": "con menos prisa",
+  "ipa": "/kom ˈmenos ˈpɾisa/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⏳",
+  "shortGloss": "with less haste; without rushing",
+  "primaryGloss": "leisurely",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "De manera más tranquila, pausada o sin tanto apuro.",
+  "notes": [
+   "Used adverbially to describe doing an activity in a more relaxed, unhurried manner.",
+   "Often functions as the opposite of 'a toda prisa' (in a huge rush)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "con poca antelación",
+  "lemma": "con poca antelación",
+  "ipa": "/kom ˈpoka ante.laˈsjon/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⏱️",
+  "shortGloss": "on short notice; at short notice",
+  "primaryGloss": "on short notice",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Con muy poco tiempo de advertencia o preparación antes de que algo suceda.",
+  "notes": [
+   "Frequently used with verbs like 'avisar', 'cancelar', 'organizar', or 'reservar'. Its opposite is 'con mucha antelación' or 'con suficiente antelación' (well in advance)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "conmovedor",
+  "lemma": "conmovedor",
+  "ipa": "/kommoβeˈðoɾ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🥲",
+  "shortGloss": "moving; touching; poignant",
+  "primaryGloss": "moving",
+  "emotion": "warm, tender, and deeply empathetic",
+  "glossLang": "en",
+  "definition": "Que produce una emoción intensa o profunda, especialmente de compasión, ternura o tristeza.",
+  "notes": [
+   "Used for stories, speeches, gestures, or scenes that deeply stir emotions—especially tenderness, sympathy, or tears.",
+   "Do not confuse with 'emocionante', which often emphasizes excitement or thrill (like a nail-biting match or a thrilling adventure), whereas 'conmovedor' is strictly about being emotionally touched or moved."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "costar",
+  "lemma": "costar",
+  "ipa": "/kosˈtaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🏷️",
+  "shortGloss": "to cost; to be difficult; to take effort",
+  "primaryGloss": "to cost",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Tener un precio determinado para ser comprado o pagado.",
+  "notes": [
+   "Irregular stem-changing verb (o → ue): 'cuesto', 'cuestas', 'cuesta', 'costamos', 'costáis', 'cuestan'.",
+   "When expressing difficulty, it is commonly used like 'gustar' with an indirect object pronoun: 'Me cuesta madrugar' (It's hard for me to get up early)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "dar bola",
+  "lemma": "dar bola",
+  "ipa": "/daɾ ˈbola/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🎱",
+  "shortGloss": "to pay attention; to give someone the time of day",
+  "primaryGloss": "to pay attention",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Prestar atención, hacer caso o tomar en cuenta a alguien o algo.",
+  "notes": [
+   "Very common across Latin America, especially in the Rioplatense region (Argentina and Uruguay). It is frequently used in the negative (no dar bola) to express that someone is ignoring you or refusing to engage.",
+   "A close everyday synonym with identical usage in the Southern Cone is dar pelota."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "denunciar",
+  "lemma": "denunciar",
+  "ipa": "/denunˈθjaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "📢",
+  "shortGloss": "to report (a crime); to denounce",
+  "primaryGloss": "to report",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Avisar a la policía o a una autoridad sobre un delito o una falta.",
+  "notes": [
+   "In everyday Spanish, \"denunciar\" is the standard term for officially reporting a crime, theft, or infraction to the police or authorities (to file a complaint/police report). Do not use \"reportar\" here, which generally means to report news or send status updates."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "desaprovechar",
+  "lemma": "desaprovechar",
+  "ipa": "/desapɾoβeˈt͡ʃaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "⏳",
+  "shortGloss": "to waste; to miss (an opportunity)",
+  "primaryGloss": "waste",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "No aprovechar algo o no sacar el debido rendimiento o beneficio de una ocasión o recurso.",
+  "notes": [
+   "Direct antonym of 'aprovechar' (to take advantage of, make the most of).",
+   "Used specifically for failing to make good use of opportunities, time, talent, or advantages. To express actively squandering money or resources, 'malgastar' or 'despilfarrar' is often preferred."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "despedido",
+  "lemma": "despedido",
+  "ipa": "/despeˈdiðo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🚪",
+  "shortGloss": "fired; dismissed",
+  "primaryGloss": "fired",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que ha sido expulsado o apartado de un trabajo o empleo.",
+  "notes": [
+   "Commonly used with 'estar' to describe the resulting state of having lost one's job ('está despedido' — 'he is fired'), or with 'ser' for the passive action ('fue despedido' — 'he was fired')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el acierto",
+  "lemma": "acierto",
+  "ipa": "/aˈθjeɾto/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🎯",
+  "shortGloss": "good decision; right move; correct answer",
+  "primaryGloss": "decision",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Acción o decisión correcta que produce un resultado positivo.",
+  "notes": [
+   "Comes from the verb 'acertar' (to hit the target, to get right). In daily use, 'ser un acierto' means something turned out to be a great move or a wise decision.",
+   "The direct opposite is 'el desacierto' or 'el error'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el alforfón",
+  "lemma": "alforfón",
+  "ipa": "/alfoɾˈfon/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🌾",
+  "shortGloss": "buckwheat",
+  "primaryGloss": "buckwheat",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Planta herbácea cuyas semillas se consumen y muelen como cereal.",
+  "notes": [
+   "More commonly referred to in everyday cooking and packaging as \"trigo sarraceno\". Despite the name in both Spanish and English, it is not a true wheat or grass cereal, but a naturally gluten-free pseudocereal."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el aseo",
+  "lemma": "aseo",
+  "ipa": "/aˈseo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🧼",
+  "shortGloss": "cleanliness, hygiene; restroom, bathroom",
+  "primaryGloss": "cleanliness",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Limpieza y cuidado del cuerpo o de un lugar.",
+  "notes": [
+   "In Spain and Latin America, «el aseo» or «los aseos» is very commonly used for a public toilet or restroom (similar to «el baño» or «los servicios»).",
+   "It also refers to personal hygiene («el aseo personal») or general tidying and cleaning up."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el atasco",
+  "lemma": "atasco",
+  "ipa": "/aˈtasko/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Travel",
+   "Places"
+  ],
+  "emoji": "🚗",
+  "shortGloss": "traffic jam",
+  "primaryGloss": "traffic jam",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Congestión de vehículos que impide circular con normalidad.",
+  "notes": [
+   "Peninsular. In Mexico you will hear el embotellamiento or el tráfico."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el ayuntamiento",
+  "lemma": "ayuntamiento",
+  "ipa": "/aʝuntaˈmjento/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Places"
+  ],
+  "emoji": "🏛️",
+  "shortGloss": "town hall; city council",
+  "primaryGloss": "town hall",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Edificio donde se encuentran las oficinas del gobierno local de un municipio.",
+  "notes": [
+   "Refers both to the local municipal government (city council) and the physical building (town hall / city hall).",
+   "Commonly used in Spain. In many Latin American countries, terms like «la alcaldía» or «la municipalidad» are more common."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el banco",
+  "lemma": "banco",
+  "ipa": "/ˈbaŋko/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Places"
+  ],
+  "emoji": "🏦",
+  "shortGloss": "bank; bench",
+  "primaryGloss": "bank",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Establecimiento público o privado donde se realizan operaciones financieras con dinero.",
+  "notes": [
+   "Covers both a financial institution (\"bank\") and a long seat (\"bench\").",
+   "For a backless stool or small kitchen stool, Spanish often uses \"taburete\" or \"banqueta\" rather than \"banco\"."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el bigote",
+  "lemma": "bigote",
+  "ipa": "/biˈɡote/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🥸",
+  "shortGloss": "mustache; whiskers",
+  "primaryGloss": "mustache",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Pelo que nace sobre el labio superior en los seres humanos.",
+  "notes": [
+   "Frequently used in the plural (los bigotes) to refer to a person's mustache as well as an animal's whiskers.",
+   "Do not confuse with barba (beard) or perilla/chiva (goatee)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el buzo",
+  "lemma": "buzo",
+  "ipa": "/ˈbuso/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🤿",
+  "shortGloss": "sweatshirt, hoodie; diver",
+  "primaryGloss": "sweatshirt",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Prenda de vestir deportiva y abrigada, de manga larga, que cubre el torso.",
+  "notes": [
+   "In much of Latin America (especially the Southern Cone, Andean region, and parts of Central America), *un buzo* means a sweatshirt, hoodie, or tracksuit top. In Spain and general Spanish, *un buzo* refers to an underwater diver, while a sweatshirt is called *una sudadera*."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el cepillo de dientes",
+  "lemma": "cepillo de dientes",
+  "ipa": "/θeˈpiʎo ðe ˈdjentes/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Health"
+  ],
+  "emoji": "🪥",
+  "shortGloss": "toothbrush",
+  "primaryGloss": "toothbrush",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Utensilio con cerdas pequeñas que se usa con pasta dental para la higiene de la boca y los dientes.",
+  "notes": [
+   "Often shortened to just 'el cepillo' when the context of brushing teeth is already clear. You may also see 'cepillo dental', especially on product packaging or in clinical contexts."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el chamuyo",
+  "lemma": "chamuyo",
+  "ipa": "/t͡ʃaˈmuʃo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "💬",
+  "shortGloss": "smooth talk; bluff, sweet talk",
+  "primaryGloss": "smooth talk",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Palabrería hábil y seductora que se usa para conquistar a alguien o conseguir algo.",
+  "notes": [
+   "A staple of Rioplatense Lunfardo in Argentina and Uruguay, originally from Caló (Spanish Romani) *chamar* ('to speak').",
+   "It covers two related concepts: the art of charming or seducing someone with words ('smooth talk'), and feeding someone excuses, lies, or hot air ('bluff', 'bullshit'). The verb form is *chamuyar*."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el chongo",
+  "lemma": "chongo",
+  "ipa": "/ˈtʃoŋɡo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🫦",
+  "shortGloss": "casual partner, fling; hair bun",
+  "primaryGloss": "fling",
+  "emotion": "chatty and casual, talking about dating life with friends",
+  "glossLang": "en",
+  "definition": "Persona con la que se mantiene una relación afectiva o sexual casual sin compromiso formal.",
+  "notes": [
+   "In Argentina and Uruguay, a 'chongo' (feminine 'chonga') is someone you hook up with or date casually without serious commitment—similar to a fling, casual partner, or booty call.",
+   "In Mexico, 'chongo' refers to a hair bun or topknot (synonymous with 'moño')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el desierto",
+  "lemma": "desierto",
+  "ipa": "/deˈsjeɾto/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🏜️",
+  "shortGloss": "desert",
+  "primaryGloss": "desert",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Territorio muy seco y árido, con escasa vegetación y pocas precipitaciones.",
+  "notes": [
+   "Do not confuse with the adjective 'desierto/a', which means 'deserted' or 'uninhabited' (e.g., 'calles desiertas')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el discurso",
+  "lemma": "discurso",
+  "ipa": "/disˈkuɾso/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🎙️",
+  "shortGloss": "speech; address; discourse",
+  "primaryGloss": "speech",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Texto o exposición oral sobre un tema que se pronuncia en público.",
+  "notes": [
+   "Commonly used with verbs like 'dar un discurso' or 'pronunciar un discurso' (to give / deliver a speech).",
+   "Beyond a formal speech, it also translates to 'discourse' or 'rhetoric' in political and social contexts (e.g., 'el discurso oficial')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el esquí",
+  "lemma": "esquí",
+  "ipa": "/esˈki/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🎿",
+  "shortGloss": "skiing; ski",
+  "primaryGloss": "skiing",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Deporte de invierno que consiste en deslizarse por la nieve con dos tablas sujetas a los pies.",
+  "notes": [
+   "Refers both to the sport itself (skiing) and to each individual board (a ski).",
+   "The plural can be written as either 'los esquís' or 'los esquíes', though 'esquís' is more common in modern usage."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el frailecillo",
+  "lemma": "frailecillo",
+  "ipa": "/fɾajleˈθiʝo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🐧",
+  "shortGloss": "puffin",
+  "primaryGloss": "puffin",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Ave marina de plumaje negro y blanco con un pico grande, comprimido y de colores vivos.",
+  "notes": [
+   "Literally means \"little friar\" (diminutive of fraile), named for its black-and-white plumage resembling a monk's habit."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el gráfico de torta",
+  "lemma": "gráfico de torta",
+  "ipa": "/ˈɡɾafiko ðe ˈtoɾta/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Technology"
+  ],
+  "emoji": "📊",
+  "shortGloss": "pie chart",
+  "primaryGloss": "pie chart",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Diagrama en forma de círculo dividido en porciones que representan las proporciones de un total.",
+  "notes": [
+   "Commonly used in Southern Cone countries (Argentina, Chile, Uruguay). In Spain and formal contexts, it is often called 'gráfico de sectores' or 'gráfico circular', while in Mexico and parts of Latin America 'gráfico de pastel' is also widespread."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el hierro",
+  "lemma": "hierro",
+  "ipa": "/ˈje.ro/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔩",
+  "shortGloss": "iron",
+  "primaryGloss": "iron",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Elemento químico metálico, duro y maleable, de color gris plateado, muy usado en la industria y la construcción.",
+  "notes": [
+   "Do not confuse with \"acero\" (steel), which is an alloy made primarily of iron and carbon."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el hongo",
+  "lemma": "hongo",
+  "ipa": "/ˈoŋɡo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🍄",
+  "shortGloss": "fungus; mushroom",
+  "primaryGloss": "fungus",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Organismo que carece de clorofila y se reproduce por esporas, que incluye las levaduras, los mohos y las setas.",
+  "notes": [
+   "In Spain, \"hongo\" is usually reserved for fungi in the biological or medical sense, while edible cap mushrooms are called \"setas\" (and button mushrooms \"champiñones\"). In most of Latin America, \"hongo\" is the standard everyday word for mushrooms as well."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el inquilino",
+  "lemma": "inquilino",
+  "ipa": "/iŋkiˈlino/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔑",
+  "shortGloss": "tenant; renter",
+  "primaryGloss": "tenant",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Persona que alquila una vivienda o un local para habitarlo o usarlo.",
+  "notes": [
+   "Used specifically for someone renting a place to live or work. The landlord is el casero (colloquial/everyday) or el propietario / el arrendador (more formal). In formal or legal contexts, inquilino is often replaced by arrendatario."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el moretón",
+  "lemma": "moretón",
+  "ipa": "/moɾeˈton/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Health"
+  ],
+  "emoji": "🩹",
+  "shortGloss": "bruise",
+  "primaryGloss": "bruise",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Mancha morada o azulada en la piel producida por un golpe.",
+  "notes": [
+   "Widely used throughout Latin America. In Spain, the standard equivalents are 'moratón' or 'cardenal'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el pasillo",
+  "lemma": "pasillo",
+  "ipa": "/paˈsiʝo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Places"
+  ],
+  "emoji": "🚪",
+  "shortGloss": "hallway, corridor; aisle",
+  "primaryGloss": "hallway",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Espacio largo y estrecho de un edificio que conecta unas habitaciones con otras.",
+  "notes": [
+   "Spanish uses *pasillo* for both a corridor/hallway in a building and an aisle in a supermarket, plane, train, or theatre.",
+   "A frequent travel phrase is *asiento de pasillo* (aisle seat), contrasted with *asiento de ventanilla* (window seat)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el perejil",
+  "lemma": "perejil",
+  "ipa": "/peɾeˈxil/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🌿",
+  "shortGloss": "parsley",
+  "primaryGloss": "parsley",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Hierba aromática de hojas verdes y divididas, muy utilizada como condimento en la cocina.",
+  "notes": [
+   "Commonly confused visually with 'cilantro' (coriander), but it has a milder, grassy flavor and pointed leaves rather than rounded ones.",
+   "In Argentine slang, 'un perejil' also refers to a nobody, scapegoat, or low-level fool."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el presupuesto",
+  "lemma": "presupuesto",
+  "ipa": "/pɾesuˈpwesto/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "📊",
+  "shortGloss": "budget; estimate, quote",
+  "primaryGloss": "budget",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Cálculo anticipado de los ingresos y gastos de una actividad económica o proyecto.",
+  "notes": [
+   "In business and trade, \"pedir un presupuesto\" means \"to ask for a quote/estimate\" from a contractor or vendor, rather than setting a budget."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el recordatorio",
+  "lemma": "recordatorio",
+  "ipa": "/rekordaˈtoɾjo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⏰",
+  "shortGloss": "reminder; memento",
+  "primaryGloss": "reminder",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Aviso, nota o mensaje que sirve para hacer presente algo o no olvidarlo.",
+  "notes": [
+   "Do not confuse with 'recuerdo'. A 'recordatorio' is a prompt or notification set to make sure you remember something in the future, while a 'recuerdo' is a past memory in your mind or a keepsake/souvenir."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el ruido",
+  "lemma": "ruido",
+  "ipa": "/ˈrwido/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [],
+  "emoji": "🔊",
+  "shortGloss": "noise; sound",
+  "primaryGloss": "noise",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Sonido inarticulado y confuso que suele ser molesto o fuerte.",
+  "notes": [
+   "While 'ruido' is the standard term for noise, it often carries a negative connotation of being unwanted, loud, or annoying. For neutral, pleasant, or musical sounds, use 'el sonido' instead."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el sudor",
+  "lemma": "sudor",
+  "ipa": "/suˈðoɾ/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [],
+  "emoji": "💦",
+  "shortGloss": "sweat",
+  "primaryGloss": "sweat",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Líquido transparente y salado que segregan las glándulas de la piel.",
+  "notes": [
+   "Note the shift in stress: the noun is 'el sudor', while the first-person present indicative of the verb 'sudar' is 'yo sudo'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el suelo",
+  "lemma": "suelo",
+  "ipa": "/ˈswelo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🌱",
+  "shortGloss": "floor; ground; soil",
+  "primaryGloss": "floor",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Superficie sobre la que se pisa o camina, tanto dentro de un edificio como al aire libre.",
+  "notes": [
+   "In Spain, \"suelo\" is used for both the indoor floor and the outdoor ground, while \"piso\" refers to an apartment or a story/level of a building. In parts of Latin America, \"piso\" is commonly used for the indoor floor instead.",
+   "For soil or dirt in gardening and agriculture, \"suelo\" refers to the type of terrain or ground, while \"tierra\" refers to the actual earth or dirt itself."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "el villero",
+  "lemma": "villero",
+  "ipa": "/biˈʃeɾo/",
+  "pos": "noun",
+  "gender": "masculine",
+  "register": "slang",
+  "topics": [
+   "Slang",
+   "Social"
+  ],
+  "emoji": "🏘️",
+  "shortGloss": "shantytown dweller; slum resident",
+  "primaryGloss": "shantytown dweller",
+  "emotion": "proud and defiant against social stigma",
+  "glossLang": "en",
+  "definition": "Persona que habita en una villa miseria o asentamiento precario, o que se asocia a la cultura popular de estos barrios.",
+  "notes": [
+   "In Argentina and Uruguay, 'villero' originates from 'villa miseria' (an informal settlement or shantytown).",
+   "Be cautious: it is frequently used with strong classist and derogatory overtones to insult people based on social class, appearance, or urban subculture, although it has also been reappropriated with pride within youth and musical movements like 'cumbia villera'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "empapado",
+  "lemma": "empapado",
+  "ipa": "/empaˈpaðo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [],
+  "emoji": "🌧️",
+  "shortGloss": "soaked; drenched",
+  "primaryGloss": "soaked",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que está completamente lleno de agua o de otro líquido.",
+  "notes": [
+   "Comparison: 'empapado' describes being thoroughly saturated. 'Mojado' (wet) is broader and can mean anything from damp to dripping. 'Calado' emphasizes deep penetration, especially in the phrase 'calado hasta los huesos' (soaked to the bone).",
+   "Etymology: Comes from the verb «empapar» (to soak), derived from the prefix «en-» (in/into) and the Latin word «papa» (pap/porridge), referencing the soft, thick consistency of soaked food."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "engañar",
+  "lemma": "engañar",
+  "ipa": "/eŋɡaˈɲaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🤥",
+  "shortGloss": "to deceive; to cheat on",
+  "primaryGloss": "deceive",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Hacer creer a alguien algo que no es verdad, o actuar con falsedad para obtener un beneficio.",
+  "notes": [
+   "Used both for general deception or trickery ('engañar a alguien') and specifically for romantic infidelity ('to cheat on someone').",
+   "In the pronominal form 'engañarse', it means 'to deceive oneself' or 'to be mistaken' ('no te engañes' = 'don't kid yourself')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "escalofriante",
+  "lemma": "escalofriante",
+  "ipa": "/eskaloˈfɾjante/",
+  "pos": "adj",
+  "gender": "common",
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🥶",
+  "shortGloss": "chilling; hair-raising; spine-tingling",
+  "primaryGloss": "chilling",
+  "emotion": "a cold, unsettling whisper of unease and dread",
+  "glossLang": "en",
+  "definition": "Que causa escalofríos, miedo intenso o una fuerte impresión de horror.",
+  "notes": [
+   "Derived from 'escalofrío' (a chill / shiver). It describes something that causes an involuntary shudder of fear, horror, or shock, closely mirroring 'chilling' or 'spine-chilling' in English."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "esconder",
+  "lemma": "esconder",
+  "ipa": "/eskonˈdeɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🫣",
+  "shortGloss": "to hide; to conceal",
+  "primaryGloss": "hide",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Poner algo o a alguien en un lugar secreto o donde no se pueda ver.",
+  "notes": [
+   "Used transitively to mean hiding an object or person. Use the pronominal form *esconderse* when hiding yourself (*se escondió detrás de la puerta*).",
+   "Synonymous with *ocultar*, though *esconder* is far more common in everyday physical contexts, while *ocultar* is slightly more formal and often used for abstract things like facts or emotions."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "esfumarse",
+  "lemma": "esfumarse",
+  "ipa": "/esfuˈmaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "💨",
+  "shortGloss": "to vanish; to disappear into thin air; to evaporate",
+  "primaryGloss": "vanish",
+  "emotion": "mysterious and fleeting, sounding like something disappearing suddenly",
+  "glossLang": "en",
+  "definition": "Desaparecer una persona o cosa de forma rápida, inesperada o sin dejar rastro.",
+  "notes": [
+   "Derived from 'humo' (smoke), it literally suggests vanishing into thin air like smoke.",
+   "Unlike the neutral 'desaparecer', 'esfumarse' emphasizes a sudden, elusive, or mysterious disappearance, and is very common when talking about people slipping away unnoticed or money and hopes dissipating quickly."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "estar con el agua al cuello",
+  "lemma": "estar con el agua al cuello",
+  "ipa": "/esˈtaɾ kon el ˈaɡwa al ˈkweʝo/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🌊",
+  "shortGloss": "to be up to one's neck; to be in deep water",
+  "primaryGloss": "drowning",
+  "emotion": "frantic and overwhelmed, conveying a sense of suffocating stress",
+  "glossLang": "en",
+  "definition": "Encontrarse en una situación de gran apuro, peligro o dificultad, especialmente por deudas o falta de tiempo.",
+  "notes": [
+   "Used when someone is in extreme difficulty, particularly overwhelmed by financial debts or pressed for time.",
+   "Commonly varies with verbs like 'tener el agua al cuello' (to have the water up to one's neck) or 'verse con el agua al cuello'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "estar de visita",
+  "lemma": "estar de visita",
+  "ipa": "/esˌtaɾ de biˈsita/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Travel"
+  ],
+  "emoji": "🧳",
+  "shortGloss": "to be visiting; to be on a visit",
+  "primaryGloss": "visiting",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Permanecer de forma temporal en un lugar ajeno o con una persona en calidad de huésped o turista.",
+  "notes": [
+   "Emphasizes the ongoing, temporary state of being in a place as a guest or tourist, whereas \"visitar\" focuses on the specific action or event of going to see someone or somewhere."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "estar quedando",
+  "lemma": "estar quedando",
+  "ipa": "/esˈtaɾ keˈðjando/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "✨",
+  "shortGloss": "to turn out; to come along",
+  "primaryGloss": "turning",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Evolucionar o desarrollarse un trabajo o situación hacia un resultado visible.",
+  "notes": [
+   "Used with adverbs or adjectives (like bien, mal, lindo, súper) to describe how an ongoing project, creative work, or look is shaping up in real time."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "fiel",
+  "lemma": "fiel",
+  "ipa": "/ˈfjel/",
+  "pos": "adj",
+  "gender": "common",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🤝",
+  "shortGloss": "faithful; loyal",
+  "primaryGloss": "faithful",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que no falla a una persona, a una idea o a un compromiso; que mantiene su lealtad y devoción.",
+  "notes": [
+   "Takes the preposition 'a' when specifying what or who someone is faithful to: 'fiel a sus principios', 'fiel a su palabra'.",
+   "While 'fiel' and 'leal' are often interchangeable, 'fiel' emphasizes steadfast devotion and consistency (e.g., in relationships, translations, habits), whereas 'leal' focuses more on allegiance, duty, and honor toward a person or cause."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "gastar una broma",
+  "lemma": "gastar una broma",
+  "ipa": "/ɡasˈtaɾ ˈuna ˈbɾoma/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🃏",
+  "shortGloss": "to play a joke; to play a prank",
+  "primaryGloss": "prank",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Hacer o decir algo para divertirse a costa de alguien, generalmente sin mala intención.",
+  "notes": [
+   "Takes an indirect object pronoun or 'a + person' to indicate the target of the prank: 'le gasté una broma a mi hermano' (I played a joke on my brother).",
+   "Particularly common in Spain. In Latin America, 'hacer una broma' or 'jugar una broma' are often preferred for the same idea."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "girar en torno a",
+  "lemma": "girar en torno a",
+  "ipa": "/xiˈɾaɾ en ˈtoɾno a/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔄",
+  "shortGloss": "to revolve around; to center on",
+  "primaryGloss": "revolve around",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Tener como tema principal, eje o motivo central a alguien o algo.",
+  "notes": [
+   "Used mainly in a figurative sense to indicate the central subject, theme, or focus of a conversation, story, controversy, or system.",
+   "Similar to *centrarse en* (to focus on) or *girar alrededor de* (to revolve around), though *en torno a* sounds slightly more formal and is predominantly used for abstract ideas rather than physical rotation."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "imprescindible",
+  "lemma": "imprescindible",
+  "ipa": "/impɾesinˈdible/",
+  "pos": "adj",
+  "gender": "common",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔑",
+  "shortGloss": "essential; indispensable",
+  "primaryGloss": "essential",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Dicho de una persona o cosa: de la que no se puede prescindir; totalmente necesario.",
+  "notes": [
+   "Stronger than \"necesario\". While \"necesario\" means something is needed, \"imprescindible\" literally means you cannot do without it (from the verb \"prescindir\")."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "inusual",
+  "lemma": "inusual",
+  "ipa": "/inuˈswal/",
+  "pos": "adj",
+  "gender": "common",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🦄",
+  "shortGloss": "unusual; uncommon",
+  "primaryGloss": "unusual",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que no es habitual, frecuente o común.",
+  "notes": [
+   "Unlike 'raro' or 'extraño', which often imply that something is weird or bizarre, 'inusual' is a more objective word meaning simply infrequent, atypical, or out of the ordinary."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "ir andando",
+  "lemma": "ir andando",
+  "ipa": "/iɾ anˈdando/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🚶",
+  "shortGloss": "to walk; to go on foot",
+  "primaryGloss": "walk",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Desplazarse de un lugar a otro a pie.",
+  "notes": [
+   "Commonly used to describe walking as a mode of transportation, functioning synonymously with 'ir a pie' or 'caminar'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la abeja",
+  "lemma": "abeja",
+  "ipa": "/aˈbexa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🐝",
+  "shortGloss": "bee",
+  "primaryGloss": "bee",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Insecto volador que produce miel y cera y vive en colonias o colmenas.",
+  "notes": [
+   "Not to be confused with la avispa (wasp). An abeja produces honey (miel) and typically dies after stinging, while an avispa does not make honey and can sting multiple times."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la arcilla de moldear",
+  "lemma": "arcilla de moldear",
+  "ipa": "/aɾˈθiʝa de moldeˈaɾ/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🏺",
+  "shortGloss": "modeling clay",
+  "primaryGloss": "modeling clay",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Masa blanda y maleable que se usa para crear figuras, esculturas o piezas de manualidades.",
+  "notes": [
+   "Refers specifically to clay used for sculpting, pottery, or craft modeling. For reusable, wax-based play dough commonly used by children, Spanish typically uses \"plastilina\" instead."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la avellana",
+  "lemma": "avellana",
+  "ipa": "/aβeˈʝana/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🌰",
+  "shortGloss": "hazelnut",
+  "primaryGloss": "hazelnut",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Fruto seco comestible del avellano, de cáscara dura y semilla redondeada y dulce.",
+  "notes": [
+   "Follows the standard Spanish pattern where the tree is masculine (el avellano) and the fruit or nut is feminine (la avellana).",
+   "Also used to describe eye or hair color: «ojos color avellana» (hazel eyes)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la balsa",
+  "lemma": "balsa",
+  "ipa": "/ˈbalsa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Travel",
+   "Nature"
+  ],
+  "emoji": "🛶",
+  "shortGloss": null,
+  "primaryGloss": "raft",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Embarcación plana formada por maderos unidos entre sí.",
+  "notes": []
+ },
+ {
+  "language": "es",
+  "headword": "la basura al tacho",
+  "lemma": "la basura al tacho",
+  "ipa": "/la baˈsuɾa al ˈtatʃo/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🗑️",
+  "shortGloss": "trash in the bin",
+  "primaryGloss": "trash",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Expresión que recuerda o indica la obligación o costumbre de arrojar los desperdicios dentro del basurero.",
+  "notes": [
+   "A common public slogan and everyday reminder in the Rioplatense region and parts of South America (like Peru), where \"tacho\" is standard for \"trash can\" or \"rubbish bin\"."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la berenjena",
+  "lemma": "berenjena",
+  "ipa": "/beɾeŋˈxena/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🍆",
+  "shortGloss": "eggplant; aubergine",
+  "primaryGloss": "eggplant",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Fruto comestible de forma alargada, piel morada y pulpa blanca y esponjosa.",
+  "notes": [
+   "Called 'eggplant' in American English and 'aubergine' in British English."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la bocha",
+  "lemma": "bocha",
+  "ipa": "/ˈbot͡ʃa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "⚪",
+  "shortGloss": "a ton, a lot; head; bocce ball",
+  "primaryGloss": "a ton",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Gran cantidad o intensidad de algo.",
+  "notes": [
+   "Extremely common in Argentine slang as an intensifier or quantifier meaning 'a ton' or 'a lot' (often used without an article, or as 'una bocha').",
+   "It is also colloquially used to mean someone's head or brain (e.g. 'usá la bocha' — 'use your head')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la boludez",
+  "lemma": "boludez",
+  "ipa": "/boluˈdes/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🤦",
+  "shortGloss": "nonsense; triviality; piece of cake",
+  "primaryGloss": "nonsense",
+  "emotion": "dismissive and irritated, mocking foolish behavior",
+  "glossLang": "en",
+  "definition": "Dicho, hecho o cosa tonta, absurda o de poca importancia.",
+  "notes": [
+   "Extremely common in Rioplatense Spanish (Argentina and Uruguay), derived from 'boludo'. While very informal, it is widely used in everyday speech.",
+   "It covers both 'nonsense / stupid behavior' and 'trivial, unimportant things' (often in the plural, 'boludeces'). Informally, it can also describe an easy task ('es una boludez')."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la canela",
+  "lemma": "canela",
+  "ipa": "/kaˈnela/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": null,
+  "shortGloss": "cinnamon",
+  "primaryGloss": "cinnamon",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Corteza seca y aromática del canelo, usada como especia en repostería, cocina y bebidas.",
+  "notes": [
+   "Cinnamon sticks are called 'canela en rama', while ground cinnamon is 'canela molida'.",
+   "The colloquial idiom 'ser canela en rama' (or 'ser canela fina') means that something or someone is of superb quality or top-notch."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la carrera de ratas",
+  "lemma": "carrera de ratas",
+  "ipa": "/la kaˈreɾa de ˈratas/",
+  "pos": "idiom",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🐀",
+  "shortGloss": "rat race",
+  "primaryGloss": "rat",
+  "emotion": "cynical, weary, and exhausted when speaking about corporate life",
+  "glossLang": "en",
+  "definition": "Competencia agotadora y continua en el ámbito profesional o económico para alcanzar el éxito material.",
+  "notes": [
+   "A direct calque of the English idiom 'rat race'. It describes an endless, exhausting, and fiercely competitive routine in modern professional life."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la cebolla",
+  "lemma": "cebolla",
+  "ipa": "/θeˈboʝa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🧅",
+  "shortGloss": "onion",
+  "primaryGloss": "onion",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Planta hortícola con bulbo comestible formado por capas tiernas y jugosas, de olor y sabor fuertes.",
+  "notes": []
+ },
+ {
+  "language": "es",
+  "headword": "la corte",
+  "lemma": "corte",
+  "ipa": "/ˈkoɾte/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⚖️",
+  "shortGloss": "court; royal court",
+  "primaryGloss": "court",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Tribunal de justicia o lugar donde los jueces resuelven los asuntos legales.",
+  "notes": [
+   "Do not confuse with the masculine noun *el corte*, which means a cut, an incision, a haircut, a power outage (*corte de luz*), or the fit/cut of a garment.",
+   "The verbal phrase *hacer la corte* (a alguien) means to woo or court someone."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la cuenta corriente",
+  "lemma": "cuenta corriente",
+  "ipa": "/ˌkwenta koˈrjente/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🏦",
+  "shortGloss": "checking account; current account",
+  "primaryGloss": "checking account",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Contrato bancario por el que el cliente puede ingresar y retirar dinero en cualquier momento, además de domiciliar pagos y realizar transferencias.",
+  "notes": [
+   "Contrasts with una cuenta de ahorros (savings account), which is designed to store money and earn interest rather than handle daily expenses.",
+   "Frequently abbreviated as c/c in formal and banking documents."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la frontera",
+  "lemma": "frontera",
+  "ipa": "/fɾonˈteɾa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Travel"
+  ],
+  "emoji": "🛂",
+  "shortGloss": "border; frontier",
+  "primaryGloss": "border",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Línea divisoria real o imaginaria que separa dos países o territorios.",
+  "notes": [
+   "Used specifically for national and regional borders between countries or territories. For general boundaries or limits (physical or abstract), \"límite\" is often used instead."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la fuerza",
+  "lemma": "fuerza",
+  "ipa": "/ˈfweɾ.θa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "💪",
+  "shortGloss": "strength; force; power",
+  "primaryGloss": "strength",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Capacidad física y vigor para mover peso, resistir o realizar un esfuerzo muscular.",
+  "notes": [
+   "Often used in the plural ('con todas mis fuerzas') to mean 'with all my might' or 'with all my strength'.",
+   "Common idioms include 'a la fuerza' (by force / reluctantly) and 'tener fuerza de voluntad' (to have willpower)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la función",
+  "lemma": "función",
+  "ipa": "/funˈsjon/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Culture"
+  ],
+  "emoji": "🎟️",
+  "shortGloss": "show, performance; function, role",
+  "primaryGloss": "performance",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Representación de un espectáculo, película u obra de teatro en un horario determinado.",
+  "notes": [
+   "In entertainment, «función» refers to a specific showing or performance (like a matinee or evening session), whereas «obra» refers to the play or piece of work itself."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la hoguera",
+  "lemma": "hoguera",
+  "ipa": "/oˈɡeɾa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🔥",
+  "shortGloss": "bonfire; campfire; pyre",
+  "primaryGloss": "bonfire",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Fuego grande hecho al aire libre con leña u otros materiales combustibles.",
+  "notes": [
+   "Used for large outdoor fires made with wood, such as festive bonfires (e.g. las hogueras de San Juan). For a smaller campfire, particularly in Latin America, 'fogata' is more common."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la jerga",
+  "lemma": "jerga",
+  "ipa": "/ˈxeɾ.ɣa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🗣️",
+  "shortGloss": "slang; jargon; lingo",
+  "primaryGloss": "slang",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Lenguaje especial utilizado por un grupo social determinado o por personas de una misma profesión.",
+  "notes": [
+   "Used both for informal social slang (youth slang, street lingo) and specialized professional jargon (medical, legal, technical).",
+   "Synonymous with 'argot' in many contexts, though 'argot' often refers more narrowly to street or underworld cant, while 'jerga' is used more broadly."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la mina",
+  "lemma": "mina",
+  "ipa": "/ˈmi.na/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "slang",
+  "topics": [
+   "Slang",
+   "Social"
+  ],
+  "emoji": "👩",
+  "shortGloss": "girl, woman, chick; mine",
+  "primaryGloss": "girl",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Mujer o chica joven.",
+  "notes": [
+   "In the Southern Cone (especially Argentina, Uruguay, and Chile), 'mina' is very common everyday slang for a woman or girl (similar to 'chick' or 'girl'). It is neutral to informal, not inherently derogatory, though context matters.",
+   "In standard Spanish, 'mina' means a mineral mine, a landmine/naval mine, or the graphite lead inside a pencil."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la mostaza",
+  "lemma": "mostaza",
+  "ipa": "/mosˈtaθa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🌭",
+  "shortGloss": "mustard",
+  "primaryGloss": "mustard",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Salsa espesa y picante que se prepara con semillas trituradas de la planta del mismo nombre.",
+  "notes": []
+ },
+ {
+  "language": "es",
+  "headword": "la mueca",
+  "lemma": "mueca",
+  "ipa": "/ˈmweka/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🤪",
+  "shortGloss": "grimace; funny face",
+  "primaryGloss": "grimace",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Contorsión o gesto de la cara hecho para divertir, burlarse o expresar dolor o disgusto.",
+  "notes": [
+   "Most commonly used in the plural with the verb *hacer* (*hacer muecas* = 'to make faces', 'to pull faces'). It covers both playful, funny expressions and involuntary grimaces caused by pain or disgust."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la multa",
+  "lemma": "multa",
+  "ipa": "/ˈmul.ta/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "💸",
+  "shortGloss": "fine; ticket; penalty",
+  "primaryGloss": "fine",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Sanción de dinero que se impone por no respetar una ley o norma.",
+  "notes": [
+   "Commonly used with the verbs 'poner' (to issue/give a fine: 'poner una multa') and 'pagar' (to pay a fine: 'pagar una multa').",
+   "A traffic ticket is specifically called 'una multa de tráfico' or 'una multa de tránsito'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la pelea",
+  "lemma": "pelea",
+  "ipa": "/peˈlea/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🥊",
+  "shortGloss": "fight; argument, quarrel",
+  "primaryGloss": "fight",
+  "emotion": "aggressive and harsh, reflecting conflict",
+  "glossLang": "en",
+  "definition": "Enfrentamiento físico violento entre dos o más personas o animales.",
+  "notes": [
+   "Pelea can refer both to a physical brawl and a verbal argument. For strictly verbal disputes, discusión or disputa are also common; for physical combat or broader struggles, lucha is often used."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la pelota",
+  "lemma": "pelota",
+  "ipa": "/peˈlota/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [],
+  "emoji": "⚽",
+  "shortGloss": "ball",
+  "primaryGloss": "ball",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Objeto esférico que se usa en diversos juegos y deportes para golpear, lanzar o patear.",
+  "notes": [
+   "Use 'pelota' for round balls used in sports and games. In many Spanish-speaking regions, 'balón' is preferred for larger balls used in football, basketball, or volleyball, while 'pelota' is used for smaller ones like tennis or baseball, though regional usage varies."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la predisposición",
+  "lemma": "predisposición",
+  "ipa": "/pɾedisposiˈθjon/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc",
+   "Health"
+  ],
+  "emoji": "🧠",
+  "shortGloss": "predisposition; willingness; inclination",
+  "primaryGloss": "willingness",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Actitud favorable, ánimo o inclinación hacia una persona, actividad o idea.",
+  "notes": [
+   "In everyday Spanish, \"tener buena/mala predisposición\" is very commonly used to describe someone's attitude, openness, or willingness to cooperate or help.",
+   "In medical contexts, it specifically refers to a genetic or biological susceptibility (\"predisposición genética\")."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "la villa",
+  "lemma": "villa",
+  "ipa": "/ˈbiʝa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Places"
+  ],
+  "emoji": "🏡",
+  "shortGloss": "town; villa; shantytown",
+  "primaryGloss": "town",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Población que cuenta con algunos privilegios históricos y suele tener un tamaño intermedio entre una aldea y una ciudad.",
+  "notes": [
+   "In standard Spanish, 'villa' refers either to a small town (historically distinct from a 'pueblo' or 'ciudad') or a luxurious country residence / holiday estate.",
+   "In Argentina and Uruguay, 'villa' is very commonly used as shorthand for 'villa miseria', meaning a shantytown or slum."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "las cerillas",
+  "lemma": "cerilla",
+  "ipa": "/θeˈɾiʝa/",
+  "pos": "noun",
+  "gender": "feminine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔥",
+  "shortGloss": "matches; earwax",
+  "primaryGloss": "match",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Varilla fina de madera, cartón o cera con una cabeza inflamable que sirve para encender fuego.",
+  "notes": [
+   "In Spain, \"cerilla\" is the standard everyday term for a match. In most of Latin America, \"fósforo\" is preferred instead (or \"cerillo\" in Mexico).",
+   "It is also used informally to refer to earwax, alongside the medical term \"cerumen\"."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "los años mozos",
+  "lemma": "años mozos",
+  "ipa": "/los ˈaɲos ˈmoθos/",
+  "pos": "phrase",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🧑‍🦱",
+  "shortGloss": "younger days; youth",
+  "primaryGloss": "youth",
+  "emotion": "nostalgic and wistful, reflecting on the past",
+  "glossLang": "en",
+  "definition": "Época de la juventud o primeros años de la vida adulta de una persona.",
+  "notes": [
+   "Most commonly heard in the phrase *en mis años mozos* ('in my younger days' / 'in my youth'), usually with a nostalgic or reminiscent tone.",
+   "*Mozo* is a traditional word for a youth or unmarried young man."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "marcharse",
+  "lemma": "marcharse",
+  "ipa": "/maɾˈtʃaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🚶",
+  "shortGloss": "to leave; to go away",
+  "primaryGloss": "to leave",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Salir de un lugar para ir a otro o alejarse de él.",
+  "notes": [
+   "Closely synonymous with 'irse'. 'Marcharse' can sound slightly more formal or deliberate, and sometimes conveys a sense of leaving for good or departing on a journey."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "merendar",
+  "lemma": "merendar",
+  "ipa": "/meɾenˈdaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Food"
+  ],
+  "emoji": "🥪",
+  "shortGloss": "to have an afternoon snack; to have tea",
+  "primaryGloss": "to have an afternoon snack",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Comer algo ligero por la tarde, entre la comida del mediodía y la cena.",
+  "notes": [
+   "Refers specifically to having a light meal or snack in the late afternoon (la merienda), bridging the gap between lunch and a late dinner.",
+   "Has an e -> ie stem change in the present indicative (meriendo, meriendas, merienda, meriendan) and subjunctive."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "meter mano",
+  "lemma": "meter mano",
+  "ipa": "/meˌteɾ ˈmano/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "✋",
+  "shortGloss": "to step in; to intervene; to grope",
+  "primaryGloss": "to step in",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Intervenir en un asunto, proyecto o mecanismo para modificarlo, arreglarlo o resolverlo.",
+  "notes": [
+   "Context is critical for this idiom: when applied to a task, project, or problem (\"meter mano a un asunto\"), it means to step in, take action, or get one's hands dirty.",
+   "When directed toward a person (\"meterle mano a alguien\"), it almost always carries a sexual connotation meaning to grope or feel someone up."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "meterse en una conversación",
+  "lemma": "meterse en una conversación",
+  "ipa": "/meˈteɾse en ˈuna kombeɾsaˈsjon/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "💬",
+  "shortGloss": "to jump into a conversation; to butt in",
+  "primaryGloss": "to jump into a conversation",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Intervenir o participar en una charla entre otras personas, a veces sin haber sido invitado.",
+  "notes": [
+   "Used both neutrally or politely (when excusing oneself to chime in) and critically (when someone is intruding or eavesdropping without invitation)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "ni en pedo",
+  "lemma": "ni en pedo",
+  "ipa": "/ni em ˈpeðo/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🙅",
+  "shortGloss": "no way; not a chance; no way in hell",
+  "primaryGloss": "no way",
+  "emotion": "blunt, emphatic, and completely rejecting",
+  "glossLang": "en",
+  "definition": "De ninguna manera o bajo ninguna circunstancia.",
+  "notes": [
+   "Very common in Rioplatense Spanish (Argentina and Uruguay) to strongly reject an idea or proposal, equivalent to 'no way in hell' or 'not even if I were drunk'.",
+   "Contains 'pedo' (literally 'fart', colloquially 'drunkenness' in Argentina), making it quite informal and slightly vulgar; avoid using it in formal or polite situations."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "para nada",
+  "lemma": "para nada",
+  "ipa": "/paɾa ˈnaða/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🙅",
+  "shortGloss": "not at all; for nothing",
+  "primaryGloss": "not at all",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "En absoluto o de ningún modo; se usa para reforzar una negación.",
+  "notes": [
+   "Used as an intensifier with negative statements ('en absoluto') or as a standalone answer meaning 'not at all!' or 'not in the least!'.",
+   "It can also mean 'in vain' or 'for nothing' when referring to an effort that brought no useful result, equivalent to 'en vano'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "pifiar",
+  "lemma": "pifiar",
+  "ipa": "/piˈfjaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Actions",
+   "Slang"
+  ],
+  "emoji": "🤦",
+  "shortGloss": "to mess up; to blunder; to miss; to boo",
+  "primaryGloss": "mess",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Cometer un error, fallar o equivocarse en algo.",
+  "notes": [
+   "In the Southern Cone (especially Argentina and Uruguay), it is frequently used with an indirect object pronoun and the preposition 'a': 'pifiarle a algo' (to mess something up, to get something wrong, or to miss hitting a ball).",
+   "In Spain, it often means to jeer, hiss, or boo at someone (like a referee or performer), though 'pifiarla' (reflexive with 'la') is also used colloquially for making a blunder."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "predecir",
+  "lemma": "predecir",
+  "ipa": "/pɾeðeˈθiɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔮",
+  "shortGloss": "to predict; to foretell",
+  "primaryGloss": "predict",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Decir o anunciar algo que va a suceder antes de que ocurra.",
+  "notes": [
+   "Conjugated like 'decir' in most tenses (predigo, predices, predijo, predicho), but regular in the future and conditional (predeciré, predeciría, not prediré) and in the singular affirmative imperative (predice, not predí)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "predispuesto",
+  "lemma": "predispuesto",
+  "ipa": "/pɾeðisˈpwesto/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🙋",
+  "shortGloss": "willing; predisposed; inclined",
+  "primaryGloss": "willing",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que tiene una inclinación, ánimo favorable o buena disposición hacia algo.",
+  "notes": [
+   "Commonly followed by the preposition 'a' or 'para'.",
+   "In everyday conversation, 'estar bien predispuesto' conveys having an open, cooperative, or positive attitude towards doing something."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "pésimo",
+  "lemma": "pésimo",
+  "ipa": "/ˈpesimo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "👎",
+  "shortGloss": "terrible; awful; very bad",
+  "primaryGloss": "terrible",
+  "emotion": "a sharp, disgusted tone of extreme disapproval",
+  "glossLang": "en",
+  "definition": "Extremadamente malo o de muy baja calidad.",
+  "notes": [
+   "Pésimo is an absolute superlative corresponding to malo ('bad'). Because it inherently means 'extremely bad', it cannot be modified by adverbs of degree like muy or más."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "quemar",
+  "lemma": "quemar",
+  "ipa": "/keˈmaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🔥",
+  "shortGloss": "to burn; to scorch; to burn oneself",
+  "primaryGloss": "burn",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Destruir, dañar o consumir algo por la acción del fuego o de un calor excesivo.",
+  "notes": [
+   "Often used pronominally as *quemarse* when referring to accidentally burning oneself or getting sunburned (*me quemé con la plancha*, *te vas a quemar con el sol*).",
+   "In everyday speech, *quemar* is also used intransitively to mean that something is scalding or burning hot to the touch or taste (*el café quema*)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "realizarse",
+  "lemma": "realizarse",
+  "ipa": "/realiˈsaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🎯",
+  "shortGloss": "to take place, to be held; to feel fulfilled",
+  "primaryGloss": "take",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Llevarse a cabo o tener lugar un evento, proyecto o actividad.",
+  "notes": [
+   "Beware of the false friend: 'realizar(se)' does not mean 'to realize' in the sense of becoming aware (which is 'darse cuenta').",
+   "When applied to events or plans, 'realizarse' means to take place or be carried out. When applied to people, it means to achieve personal or professional fulfillment."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "requerir",
+  "lemma": "requerir",
+  "ipa": "/rekeˈɾiɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "📋",
+  "shortGloss": "to require; to need; to request",
+  "primaryGloss": "require",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Necesitar algo de manera indispensable para un fin determinado.",
+  "notes": [
+   "It is stem-changing (e -> ie/i): 'yo requiero', 'él requirió', 'requiriendo'.",
+   "More formal than 'necesitar'. It is standard in official documents, job requirements, and legal contexts."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "ridículo",
+  "lemma": "ridículo",
+  "ipa": "/riˈdikulo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🤡",
+  "shortGloss": "ridiculous; absurd; paltry",
+  "primaryGloss": "ridiculous",
+  "emotion": "mocking and amused at how absurd something appears",
+  "glossLang": "en",
+  "definition": "Que provoca risa o burla por ser extravagante, grotesco o inadecuado.",
+  "notes": [
+   "Used both for things that invite mockery or look absurd, and for amounts that are laughably small or insignificant (e.g. un precio ridículo).",
+   "To say 'to make a fool of oneself', Spanish uses the fixed verbal phrase hacer el ridículo (where ridículo functions as a masculine noun)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "rizado",
+  "lemma": "rizado",
+  "ipa": "/riˈθaðo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🧑‍🦱",
+  "shortGloss": "curly",
+  "primaryGloss": "curly",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que tiene rizos u ondas pronunciadas, especialmente dicho del pelo.",
+  "notes": [
+   "Used mainly for hair. To distinguish hair types: 'liso' is straight, 'ondulado' is wavy, 'rizado' is curly, and 'crespo' is commonly used in Latin America for tightly curled or frizzy hair."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "se suele",
+  "lemma": "se suele",
+  "ipa": "/se ˈswele/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Culture"
+  ],
+  "emoji": "🔁",
+  "shortGloss": "it is customary to; people usually",
+  "primaryGloss": "it is customary to",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Expresa que una acción o situación es habitual, común o una costumbre general.",
+  "notes": [
+   "Used with an infinitive to describe general habits, cultural customs, or widespread practices in an impersonal way ('people usually...', 'it is common to...').",
+   "Contrasts with the personal forms of *soler* (such as *suelo* 'I usually' or *suelen* 'they usually'), which describe the habits of specific people rather than general customs."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "seco",
+  "lemma": "seco",
+  "ipa": "/ˈseko/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🌵",
+  "shortGloss": "dry; curt, brusque",
+  "primaryGloss": "dry",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que carece de agua, humedad o líquido.",
+  "notes": [
+   "When applied to people or their tone of voice, \"seco\" means curt, blunt, or distant rather than literally dry.",
+   "In Chilean slang, \"ser seco/a (para algo)\" means to be extremely skilled or an expert at something."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "señores apreciados",
+  "lemma": "señor apreciado",
+  "ipa": "/seˈɲoɾes apɾeˈθjados/",
+  "pos": "phrase",
+  "gender": "masculine",
+  "register": "formal",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "✉️",
+  "shortGloss": "dear sirs; esteemed gentlemen",
+  "primaryGloss": "dear sirs",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Tratamiento de cortesía formal dirigido a un grupo de hombres o a los destinatarios de una carta.",
+  "notes": [
+   "Used as a respectful formal address or salutation in letters and formal speeches.",
+   "In business correspondence, 'Apreciados señores' (with the adjective before the noun) or 'Estimados señores' is much more common as an opening greeting."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "sin embargo",
+  "lemma": "sin embargo",
+  "ipa": "/sin emˈbaɾɡo/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⚖️",
+  "shortGloss": "however; nevertheless",
+  "primaryGloss": "however",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Locución que se utiliza para introducir una objeción, contraste o límite a lo que se acaba de decir.",
+  "notes": [
+   "More formal than 'pero'. Unlike 'pero', 'sin embargo' is usually isolated by commas or placed after a semicolon or period."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "soñar con",
+  "lemma": "soñar con",
+  "ipa": "/soˈɲaɾ kon/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "💭",
+  "shortGloss": "to dream of; to dream about",
+  "primaryGloss": "to dream of",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Ver imágenes o representarse sucesos en la mente mientras se duerme.",
+  "notes": [
+   "Spanish uses the preposition 'con' (literally 'with') where English uses 'of' or 'about' (e.g., 'soñar con alguien', not '*soñar de' or '*soñar sobre'). When combined with 'ti' or 'mí', it becomes 'contigo' and 'conmigo'.",
+   "It is a stem-changing verb (o → ue) in the present tense: 'sueño', 'sueñas', 'sueña', 'soñamos', 'soñáis', 'sueñan'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "suspender",
+  "lemma": "suspender",
+  "ipa": "/suspenˈdeɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🛑",
+  "shortGloss": "to fail (an exam); to cancel; to suspend",
+  "primaryGloss": "to fail",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "No aprobar un examen o asignatura, o calificar a un estudiante con una nota insuficiente.",
+  "notes": [
+   "In Spain, 'suspender' is the standard verb for failing an exam or a student (e.g., 'he suspendido el examen'). In Latin America, 'reprobar' or 'desaprobar' is far more common for this meaning.",
+   "When referring to events, meetings, or services, 'suspender' means to call off, postpone, or suspend temporarily."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "súbitamente",
+  "lemma": "súbitamente",
+  "ipa": "/ˌsubitaˈmente/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "⚡",
+  "shortGloss": "suddenly; all of a sudden",
+  "primaryGloss": "suddenly",
+  "emotion": "abrupt and startling, describing a sudden unexpected change",
+  "glossLang": "en",
+  "definition": "De manera repentina, brusca o inesperada.",
+  "notes": [
+   "More formal and literary than everyday equivalents like 'de repente' or 'de pronto', which are much more common in spoken Spanish."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "tener enamorado/a",
+  "lemma": "tener enamorado",
+  "ipa": "/teˈneɾ enamoˈɾado/",
+  "pos": "phrase",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🥰",
+  "shortGloss": "to have someone smitten; to captivate someone",
+  "primaryGloss": "smitten",
+  "emotion": "dreamy and affectionate, reflecting the glow of being in love",
+  "glossLang": "en",
+  "definition": "Hacer que alguien sienta gran atracción, amor o fascinación por una persona o cosa.",
+  "notes": [
+   "Used with an object pronoun (e.g., me tiene enamorado/a) to say that someone or something has completely charmed or infatuated you.",
+   "The ending of enamorado/a agrees in gender and number with the person who feels the love, not the subject causing it."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "tener razón",
+  "lemma": "tener razón",
+  "ipa": "/teˈneɾ raˈson/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "✅",
+  "shortGloss": "to be right; to be correct",
+  "primaryGloss": "right",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Estar en lo cierto o sostener una opinión o juicio acertado.",
+  "notes": [
+   "Spanish uses the verb tener (to have) with razón (reason) where English uses 'to be right'. Do not use *estar correcto* or *ser correcto* for a person—correct or incorrect apply to answers, statements, or objects, while people 'have reason' (tienen razón)."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "tranquilizarse",
+  "lemma": "tranquilizarse",
+  "ipa": "/tɾaŋkiliˈθaɾse/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😌",
+  "shortGloss": "to calm down; to soothe oneself",
+  "primaryGloss": "to calm down",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Recuperar la calma o el sosiego después de un estado de nerviosismo, enfado o agitación.",
+  "notes": [
+   "Used reflexively when calming yourself down; the non-reflexive 'tranquilizar' means to calm someone else down.",
+   "Commonly heard in the imperative as '¡Tranquilízate!' (Calm down!) or the colloquial shortening '¡Tranqui!'."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "trasero",
+  "lemma": "trasero",
+  "ipa": "/tɾaˈseɾo/",
+  "pos": "adj",
+  "gender": "masculine",
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔙",
+  "shortGloss": "back; rear",
+  "primaryGloss": "back",
+  "emotion": null,
+  "glossLang": "en",
+  "definition": "Que está situado en la parte de atrás o posterior de algo.",
+  "notes": [
+   "Used as an adjective to describe things located at the back (e.g., 'el asiento trasero', 'la puerta trasera').",
+   "When used as a masculine noun ('el trasero'), it refers politely or colloquially to a person's backside or bottom."
+  ]
+ },
+ {
+  "language": "es",
+  "headword": "zarandear",
+  "lemma": "zarandear",
+  "ipa": "/θaɾandeˈaɾ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🫨",
+  "shortGloss": "to shake vigorously; to jostle",
+  "primaryGloss": "to shake vigorously",
+  "emotion": "rough and abrupt, like a sudden violent movement",
+  "glossLang": "en",
+  "definition": "Mover a una persona o una cosa de un lado a otro con rapidez y fuerza.",
+  "notes": [
+   "Unlike 'sacudir' (to shake off dust, to shake gently) or 'agitar' (to shake a liquid or wave a hand), 'zarandear' implies rough, forceful, or chaotic shaking, often by grabbing someone or handling an object roughly."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "a shiver runs down someone's spine",
+  "lemma": "a shiver runs down someone's spine",
+  "ipa": "/ə ˈʃɪvər rʌnz daʊn ˌsʌmwʌnz ˈspaɪn/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🥶",
+  "shortGloss": "мурашки бегут по спине; мороз по коже",
+  "primaryGloss": "мурашки",
+  "emotion": "spooked and unsettled, anticipating danger",
+  "glossLang": "ru",
+  "definition": "To feel a sudden physical sensation of cold or trembling caused by intense fear, dread, or excitement.",
+  "notes": [
+   "Used to describe an intense physical or emotional reaction to fear, dread, excitement, or profound aesthetic pleasure.",
+   "Often appears with variations such as 'send a shiver down someone's spine' (causative) or using 'chill' instead of 'shiver'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "aggravation",
+  "lemma": "aggravation",
+  "ipa": "/ˌæɡ.rəˈveɪ.ʃən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions",
+   "Health"
+  ],
+  "emoji": "😤",
+  "shortGloss": "раздражение; обострение",
+  "primaryGloss": "раздражение",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A feeling of irritation, annoyance, or frustration, or a situation that causes it.",
+  "notes": [
+   "In everyday speech, \"aggravation\" typically refers to exasperation, annoyance, or hassle (\"I don't need the aggravation\"). In formal or medical contexts, it retains its root meaning of making an existing injury, illness, or problem worse."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "belligerent",
+  "lemma": "belligerent",
+  "ipa": "/bəˈlɪdʒ.ɚ.ənt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions",
+   "Social"
+  ],
+  "emoji": "🥊",
+  "shortGloss": "воинственный; агрессивный; воюющий",
+  "primaryGloss": "воинственный",
+  "emotion": "combative and tense, ready for a fight",
+  "glossLang": "ru",
+  "definition": "Hostile, aggressive, and eager to fight or argue.",
+  "notes": [
+   "Implies an active, aggressive eagerness to pick a fight or argue. It is stronger and more overtly hostile than \"argumentative\".",
+   "Can also function as a formal noun meaning a nation, group, or person engaged in an armed conflict (e.g., \"the belligerents agreed to a truce\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "bellow",
+  "lemma": "bellow",
+  "ipa": "/ˈbɛloʊ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🗣️",
+  "shortGloss": "реветь; орать; рявкать",
+  "primaryGloss": "реветь",
+  "emotion": "deep and resonant, demanding absolute attention",
+  "glossLang": "ru",
+  "definition": "To shout in a loud, deep, and resonant voice, typically in anger or pain.",
+  "notes": [
+   "Unlike scream or shriek, which are high-pitched, bellow specifically describes a deep, loud, booming voice or sound, often associated with rage or large animals like bulls."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "blush",
+  "lemma": "blush",
+  "ipa": "/blʌʃ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😳",
+  "shortGloss": "краснеть; смущаться",
+  "primaryGloss": "краснеть",
+  "emotion": "shy and vulnerable, caught off guard by unexpected warmth",
+  "glossLang": "ru",
+  "definition": "To become red in the face because of embarrassment, shyness, or shame.",
+  "notes": [
+   "Difference from \"flush\": \"blush\" is almost always caused by emotional reactions like embarrassment, shyness, or shame, whereas \"flush\" often refers to becoming red from heat, physical exertion, fever, or anger."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "brat",
+  "lemma": "brat",
+  "ipa": "/bɹæt/",
+  "pos": "noun",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "👶",
+  "shortGloss": "сорванец; избалованный ребёнок",
+  "primaryGloss": "сорванец",
+  "emotion": "annoyed and exasperated by bad behavior",
+  "glossLang": "ru",
+  "definition": "A child, especially one who is annoying, badly behaved, or spoiled.",
+  "notes": [
+   "Most commonly paired with \"spoiled\" (\"spoiled brat\") to describe a child or adult who throws tantrums when they do not get their way.",
+   "While usually derogatory, it can occasionally be used in playful teasing among friends or family."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "chivalrous",
+  "lemma": "chivalrous",
+  "ipa": "/ˈʃɪv.əl.rəs/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🛡️",
+  "shortGloss": "галантный; рыцарский",
+  "primaryGloss": "галантный",
+  "emotion": "admiring and respectful, praising good manners",
+  "glossLang": "ru",
+  "definition": "Polite, kind, and honorable, especially of a man behaving with traditional courtesy toward women.",
+  "notes": [
+   "Derived from the medieval code of chivalry (knighthood). Today, it typically describes a man being polite, considerate, and protective, especially toward women."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "chuckle",
+  "lemma": "chuckle",
+  "ipa": "/ˈtʃʌk.əl/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions",
+   "Emotions"
+  ],
+  "emoji": "🤭",
+  "shortGloss": "посмеиваться; тихо смеяться",
+  "primaryGloss": "посмеиваться",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To laugh quietly, especially to oneself or with low amusement.",
+  "notes": [
+   "A \"chuckle\" is a quiet, low-pitched laugh, often private or suppressed, showing quiet amusement rather than loud hilarity.",
+   "Unlike \"giggle\" (high-pitched, nervous, or childish) or \"snicker\" (often disrespectful or mocking), \"chuckle\" is warm and understated."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "chump",
+  "lemma": "chump",
+  "ipa": "/tʃʌmp/",
+  "pos": "noun",
+  "gender": null,
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🤡",
+  "shortGloss": "простак; болван; лох",
+  "primaryGloss": "простак",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A foolish or easily deceived person.",
+  "notes": [
+   "Used to describe someone who is easily fooled, cheated, or taken advantage of.",
+   "Do not confuse with 'champ' (short for champion), despite the similar spelling and sound. Also commonly appears in the phrase 'chump change', meaning an insultingly small or trivial amount of money."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "cling",
+  "lemma": "cling",
+  "ipa": "/klɪŋ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🧗",
+  "shortGloss": "цепляться; прилипать; держаться",
+  "primaryGloss": "цепляться",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To hold on tightly to someone or something, often for support, protection, or fear.",
+  "notes": [
+   "Irregular verb: cling – clung – clung.",
+   "Almost always used with the preposition \"to\" or \"onto\" (e.g., \"cling to a hope\", \"cling onto a rope\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "coax",
+  "lemma": "coax",
+  "ipa": "/koʊks/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions",
+   "Social"
+  ],
+  "emoji": null,
+  "shortGloss": "уговаривать; выманивать",
+  "primaryGloss": "уговаривать",
+  "emotion": "gentle, patient, and persuasive, trying to put someone at ease",
+  "glossLang": "ru",
+  "definition": "To persuade someone gently and patiently to do something.",
+  "notes": [
+   "Implies gentle, patient persistence, often using soothing words, affection, or small incentives. It is commonly used when dealing with children, timid animals, or stubborn people.",
+   "Unlike 'persuade' (which often relies on reason or argument) or 'cajole' (which suggests flattery or sweet-talking), 'coax' emphasizes gradual effort and tenderness."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "concussion",
+  "lemma": "concussion",
+  "ipa": "/kənˈkʌʃ.ən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Health"
+  ],
+  "emoji": "🤕",
+  "shortGloss": "сотрясение мозга",
+  "primaryGloss": "сотрясение мозга",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A temporary injury to the brain caused by a hard hit to the head.",
+  "notes": [
+   "Most often used in medical or sports contexts. It frequently collocates with verbs like 'suffer', 'sustain', or 'diagnose' (e.g., 'to suffer a concussion')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "condemn",
+  "lemma": "condemn",
+  "ipa": "/kənˈdɛm/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "⚖️",
+  "shortGloss": "осуждать; обрекать; признавать непригодным",
+  "primaryGloss": "осуждать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To express strong and public disapproval of someone or something.",
+  "notes": [
+   "The final letter 'n' is silent (/kənˈdɛm/), but it is pronounced in derivatives such as 'condemnation' (/ˌkɒndɛmˈneɪʃn/).",
+   "Frequently used with the preposition 'to' when expressing an inescapable bad fate: 'condemned to repeat the past', 'condemned to poverty'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "condone",
+  "lemma": "condone",
+  "ipa": "/kənˈdoʊn/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social",
+   "Actions"
+  ],
+  "emoji": "🙈",
+  "shortGloss": "потворствовать; закрывать глаза на",
+  "primaryGloss": "потворствовать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To accept, overlook, or allow bad or offensive behavior to continue.",
+  "notes": [
+   "Most commonly used in negative constructions, such as \"I cannot condone this behavior\" or \"we do not condone violence\".",
+   "It differs from \"forgive\": forgiving is a deliberate emotional release of resentment, whereas condoning means overlooking, tolerating, or implicitly approving of wrongful behavior by failing to object."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "confabulate",
+  "lemma": "confabulate",
+  "ipa": "/kənˈfæbjəleɪt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social",
+   "Health"
+  ],
+  "emoji": "🗣️",
+  "shortGloss": "беседовать; выдумывать ложные воспоминания",
+  "primaryGloss": "беседовать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To engage in conversation; to chat or talk together.",
+  "notes": [
+   "In formal or literary English, it simply means to have a casual conversation or chat.",
+   "In psychiatry and neurology, it has a specific technical meaning: unconsciously producing false or distorted memories without any intention to deceive, often seen in conditions like Korsakoff syndrome or dementia."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "congeniality",
+  "lemma": "congeniality",
+  "ipa": "/kənˌdʒiːniˈæləti/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🤝",
+  "shortGloss": "дружелюбие; приятность; сходство характеров",
+  "primaryGloss": "дружелюбие",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "The quality of being friendly, pleasant, and easy to get along with.",
+  "notes": [
+   "Do not confuse with 'congenital' (present from birth, e.g. a congenital condition). 'Congeniality' comes from 'congenial' (agreeable, compatible, or pleasant).",
+   "Often used to describe a friendly, harmonious atmosphere among colleagues, or the likeability and easygoing nature of a person (as in the title 'Miss Congeniality')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "consonant",
+  "lemma": "consonant",
+  "ipa": "/ˈkɒnsənənt/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔤",
+  "shortGloss": "согласный звук; согласная буква",
+  "primaryGloss": "согласный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A speech sound produced by completely or partly stopping the flow of air, or a letter that represents this sound.",
+  "notes": [
+   "In phonetics, a consonant refers to the sound produced by obstructing the vocal tract, while in spelling, it refers to the written letters representing these sounds (all alphabet letters except A, E, I, O, U, and sometimes Y). It contrasts directly with vowel."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "consummate",
+  "lemma": "consummate",
+  "ipa": "/ˈkɒnsəmət/",
+  "pos": "adj",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🌟",
+  "shortGloss": "непревзойдённый; совершенный",
+  "primaryGloss": "непревзойдённый",
+  "emotion": "admiring and deeply appreciative of absolute mastery",
+  "glossLang": "ru",
+  "definition": "Showing supreme skill, flair, or artistry; complete and perfect.",
+  "notes": [
+   "Pronunciation differs between parts of speech: the adjective ends in /-ət/ (/ˈkɒnsəmət/), whereas the verb ends in /-eɪt/ (/ˈkɒnsəmeɪt/).",
+   "Primarily used before a noun (attributively), such as in 'a consummate professional' or 'a consummate liar', rather than after a linking verb."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "contemplate",
+  "lemma": "contemplate",
+  "ipa": "/ˈkɒntəmpleɪt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🤔",
+  "shortGloss": "обдумывать; размышлять; созерцать",
+  "primaryGloss": "обдумывать",
+  "emotion": "thoughtful and calm, absorbed in deep inner reflection",
+  "glossLang": "ru",
+  "definition": "To think deeply or carefully about something, especially as a future possibility.",
+  "notes": [
+   "When followed by another verb expressing a possible action, 'contemplate' takes the gerund (-ing form), not an infinitive: 'She is contemplating moving abroad', not 'to move'.",
+   "Compared to 'consider', 'contemplate' implies deeper, more deliberate, and often prolonged reflection."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "contemplate",
+  "lemma": "contemplate",
+  "ipa": "/ˈkɒntəmpleɪt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🤔",
+  "shortGloss": "обдумывать; размышлять; созерцать",
+  "primaryGloss": "обдумывать",
+  "emotion": "thoughtful and calm, absorbed in deep inner reflection",
+  "glossLang": "ru",
+  "definition": "To think deeply or carefully about something, especially as a future possibility.",
+  "notes": [
+   "When followed by another verb expressing a possible action, 'contemplate' takes the gerund (-ing form), not an infinitive: 'She is contemplating moving abroad', not 'to move'.",
+   "Compared to 'consider', 'contemplate' implies deeper, more deliberate, and often prolonged reflection."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "contingency",
+  "lemma": "contingency",
+  "ipa": "/kənˈtɪndʒənsi/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🛡️",
+  "shortGloss": "непредвиденное обстоятельство; резерв",
+  "primaryGloss": "непредвиденное обстоятельство",
+  "emotion": "prudent, cautious, and thoroughly prepared for unexpected events",
+  "glossLang": "ru",
+  "definition": "A future event or circumstance that is possible but cannot be predicted with certainty.",
+  "notes": [
+   "Most frequently encountered in set phrases like 'contingency plan' (a backup plan for emergencies) or 'contingency fund' (money saved for unexpected expenses)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "coup",
+  "lemma": "coup",
+  "ipa": "/kuː/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🏛️",
+  "shortGloss": "государственный переворот; большой успех, удачный ход",
+  "primaryGloss": "государственный переворот",
+  "emotion": "dramatic and weighty, describing a major upheaval",
+  "glossLang": "ru",
+  "definition": "A sudden, illegal, and often violent seizure of power from a government.",
+  "notes": [
+   "Pronounced like \"coo\" (/kuː/)—the final \"p\" is always silent, as in French.",
+   "Often used in politics as a shorthand for \"coup d'état\" (a sudden overthrow of a government), but also widely used in business, sports, and media to describe an impressive, unexpected victory or achievement."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "courtship",
+  "lemma": "courtship",
+  "ipa": "/ˈkɔːrtʃɪp/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "💐",
+  "shortGloss": "ухаживание; брачный период",
+  "primaryGloss": "ухаживание",
+  "emotion": "warm and romantic, with a touch of gentle nostalgia",
+  "glossLang": "ru",
+  "definition": "The period or process in which a couple develops a romantic relationship with the intention of getting married.",
+  "notes": [
+   "\"Courtship\" refers to the period during which a couple gets to know each other with the intention of marriage. Compared to \"dating\", it sounds more traditional, formal, or old-fashioned.",
+   "In biology, it refers specifically to the mating rituals and displays animals use to attract a partner."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "coyly",
+  "lemma": "coyly",
+  "ipa": "/ˈkɔɪ.li/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😏",
+  "shortGloss": "кокетливо; уклончиво",
+  "primaryGloss": "кокетливо",
+  "emotion": "playful and teasing, hinting at a flirty and coy demeanor",
+  "glossLang": "ru",
+  "definition": "In a playfully shy, modest, or alluring manner.",
+  "notes": [
+   "Often describes behavior where someone is pretending to be shy, innocent, or hesitant in order to flirt, tease, or avoid revealing information directly."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "crusade",
+  "lemma": "crusade",
+  "ipa": "/kruːˈseɪd/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "⚔️",
+  "shortGloss": "кампания; борьба; крестовый поход",
+  "primaryGloss": "кампания",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A vigorous and determined campaign for social, political, or moral change.",
+  "notes": [
+   "Most commonly used in modern English for a passionate, determined campaign to fix a problem or achieve reform, typically paired with 'for' or 'against'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dainty",
+  "lemma": "dainty",
+  "ipa": "/ˈdeɪnti/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🩰",
+  "shortGloss": "изящный; миниатюрный",
+  "primaryGloss": "изящный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Small, delicately made, and attractive.",
+  "notes": [
+   "Dainty describes things that are small, delicate, and graceful or pretty. Unlike fragile, which focuses on being easily broken, dainty carries an aesthetic compliment about charm, fine detail, or careful movement."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "darned tootin'",
+  "lemma": "darned tootin'",
+  "ipa": "/ˌdɑːrnd ˈtuːtɪn/",
+  "pos": "expression",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🤠",
+  "shortGloss": "чертовски прав; точно так",
+  "primaryGloss": "чертовски прав",
+  "emotion": "enthusiastic and folksy, expressing firm agreement with strong conviction",
+  "glossLang": "ru",
+  "definition": "Absolutely right, correct, or certain.",
+  "notes": [
+   "A folksy American expression used for emphatic agreement, serving as a mild euphemism for 'damned tootin''.",
+   "Almost always used in the phrase 'You're darned tootin'!' (meaning 'You're absolutely right!' or 'You bet!')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "decipher",
+  "lemma": "decipher",
+  "ipa": "/dɪˈsaɪfər/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🔍",
+  "shortGloss": "расшифровывать; разбирать (почерк)",
+  "primaryGloss": "расшифровывать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To succeed in reading or understanding something that is written in code or very hard to read.",
+  "notes": [
+   "While 'decode' often refers to automated or rule-based conversion of data, 'decipher' usually implies conscious effort to interpret something messy, obscure, or encoded by hand (like illegible handwriting or ancient scripts)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "deplorable",
+  "lemma": "deplorable",
+  "ipa": "/dɪˈplɔːrəbl/",
+  "pos": "adj",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "👎",
+  "shortGloss": "плачевный; прискорбный",
+  "primaryGloss": "прискорбный",
+  "emotion": "indignant and appalled, expressing harsh moral judgment",
+  "glossLang": "ru",
+  "definition": "Deserving strong moral disapproval or condemnation; shockingly bad.",
+  "notes": [
+   "Carries stronger moral condemnation or severity than 'regrettable'. While a mistake might be 'regrettable', unacceptable conduct, extreme negligence, or squalid living conditions are 'deplorable'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "despise",
+  "lemma": "despise",
+  "ipa": "/dɪˈspaɪz/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😒",
+  "shortGloss": "презирать",
+  "primaryGloss": "презирать",
+  "emotion": "bitter and hateful, showing deep-seated disgust",
+  "glossLang": "ru",
+  "definition": "To feel a strong dislike and a complete lack of respect for someone or something.",
+  "notes": [
+   "Unlike 'hate', which expresses intense anger or hostility, 'despise' emphasizes deep contempt and a feeling that someone or something is completely beneath respect or worthless."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dignity",
+  "lemma": "dignity",
+  "ipa": "/ˈdɪɡnəti/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": null,
+  "shortGloss": "достоинство; чувство собственного достоинства",
+  "primaryGloss": "достоинство",
+  "emotion": "calm, elevated, and deeply respectful",
+  "glossLang": "ru",
+  "definition": "The state or quality of being worthy of honor and respect, or the sense of one's own value.",
+  "notes": [
+   "\"Dignity\" refers to quiet self-respect, moral worth, or composed behavior, whereas \"pride\" often carries a connotation of vanity, arrogance, or satisfaction in an achievement."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "discontent",
+  "lemma": "discontent",
+  "ipa": "/dɪskənˈtɛnt/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😒",
+  "shortGloss": "недовольство; неудовлетворённость",
+  "primaryGloss": "недовольство",
+  "emotion": "grunty and dissatisfied, showing inner tension",
+  "glossLang": "ru",
+  "definition": "A feeling of dissatisfaction or unhappiness with one's circumstances, life, or a state of affairs.",
+  "notes": [
+   "\"Discontent\" is often used to describe a general, lingering feeling of unhappiness or grievance, frequently shared across a group or public (e.g., \"growing discontent\"), whereas \"dissatisfaction\" tends to be more specific to an outcome, service, or personal expectation."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dismay",
+  "lemma": "dismay",
+  "ipa": "/dɪsˈmeɪ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😧",
+  "shortGloss": "смятение; тревога; уныние",
+  "primaryGloss": "смятение",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A strong feeling of distress, disappointment, or shock caused by something unexpected.",
+  "notes": [
+   "Often used in set phrases like 'to someone's dismay' or 'in dismay'.",
+   "Differs from pure 'disappointment' by including a strong element of distress, shock, or a sense of helplessness when facing an unwelcome surprise."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dismaying",
+  "lemma": "dismaying",
+  "ipa": "/dɪsˈmeɪ.ɪŋ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😧",
+  "shortGloss": "тревожащий; удручающий",
+  "primaryGloss": "тревожащий",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Causing distress, discouragement, or disappointment.",
+  "notes": [
+   "Used to describe news, statistics, trends, or situations that cause a sudden mixture of disappointment, discouragement, and concern.",
+   "Differs from 'terrifying' or 'horrifying' in being less about fear and more about disheartening or unwelcome surprise."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dismaying",
+  "lemma": "dismaying",
+  "ipa": "/dɪsˈmeɪ.ɪŋ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😧",
+  "shortGloss": "тревожащий; удручающий",
+  "primaryGloss": "тревожащий",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Causing distress, discouragement, or disappointment.",
+  "notes": [
+   "Used to describe news, statistics, trends, or situations that cause a sudden mixture of disappointment, discouragement, and concern.",
+   "Differs from 'terrifying' or 'horrifying' in being less about fear and more about disheartening or unwelcome surprise."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "divulge",
+  "lemma": "divulge",
+  "ipa": "/daɪˈvʌldʒ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🤫",
+  "shortGloss": "разглашать; раскрывать (тайну)",
+  "primaryGloss": "разглашать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To make private or sensitive information known to others.",
+  "notes": [
+   "Used mainly for making private, sensitive, or confidential information known to others.",
+   "Unlike 'reveal', which can describe uncovering physical objects or showing emotions, 'divulge' almost exclusively applies to secrets, sources, or classified facts."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dodge the question",
+  "lemma": "dodge the question",
+  "ipa": "/dɑːdʒ ðə ˈkwɛstʃən/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "↩️",
+  "shortGloss": "уклоняться от ответа; увиливать от ответа",
+  "primaryGloss": "уклоняться",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To deliberately avoid answering a direct question.",
+  "notes": [
+   "Used when someone deliberately avoids giving a direct or honest answer, often by changing the topic, being vague, or giving irrelevant information.",
+   "More informal and vivid than 'evade the question', which carries a formal or legal tone."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "doppelganger",
+  "lemma": "doppelganger",
+  "ipa": "/ˈdɑːpəlɡæŋɚ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "👥",
+  "shortGloss": "двойник",
+  "primaryGloss": "двойник",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A person who looks uncannily identical to someone else, without being related to them.",
+  "notes": [
+   "Borrowed from German Doppelgänger (literally 'double-walker'). In everyday modern English, it usually means an unrelated living person who looks remarkably identical to you, rather than a paranormal phantom."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "dread",
+  "lemma": "dread",
+  "ipa": "/dred/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😨",
+  "shortGloss": "страх; ужас; дурное предчувствие",
+  "primaryGloss": "страх",
+  "emotion": "heavy and ominous, as if something bad is looming",
+  "glossLang": "ru",
+  "definition": "Great fear or apprehension about something that is going to happen or may happen.",
+  "notes": [
+   "\"Dread\" emphasizes persistent, heavy anxiety or fear about something in the future, whereas \"fear\" is more general and \"terror\" implies sudden, overwhelming panic."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "drizzle",
+  "lemma": "drizzle",
+  "ipa": "/ˈdrɪz.əl/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature",
+   "Food"
+  ],
+  "emoji": "🌦️",
+  "shortGloss": "моросить; сбрызгивать",
+  "primaryGloss": "моросить",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To rain lightly in very fine, small drops.",
+  "notes": [
+   "In culinary contexts, 'drizzle' refers to pouring a thin, gentle stream of liquid (like oil, glaze, or sauce) over food, in contrast to 'pour' (larger volume) or 'sprinkle' (usually for dry ingredients)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "encumber",
+  "lemma": "encumber",
+  "ipa": "/ɪnˈkʌmbər/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🎒",
+  "shortGloss": "обременять; затруднять",
+  "primaryGloss": "обременять",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To restrict or burden someone or something in a way that makes free movement or action difficult.",
+  "notes": [
+   "Most frequently used in the passive voice: 'to be encumbered with/by something'.",
+   "Unlike 'hinder' or 'burden', 'encumber' often specifically conveys physical or practical restriction caused by carrying too much weight, baggage, or administrative red tape."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "eschew",
+  "lemma": "eschew",
+  "ipa": "/ɪsˈtʃuː/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🚫",
+  "shortGloss": "избегать; сторониться; воздерживаться",
+  "primaryGloss": "избегать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To deliberately avoid, shun, or stay away from something.",
+  "notes": [
+   "Formal. Implies a conscious, deliberate choice to avoid or abstain from something on moral, practical, or stylistic grounds (e.g., *eschew meat*, *eschew publicity*, *eschew jargon*).",
+   "Unlike *avoid*, which can be incidental or physical (*avoid the pothole*), *eschew* is always intentional and usually refers to habits, practices, or principles."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "faction",
+  "lemma": "faction",
+  "ipa": "/ˈfæk.ʃən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "👥",
+  "shortGloss": "фракция; группировка",
+  "primaryGloss": "фракция",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A small organized group within a larger one, especially in politics, that has different opinions or interests from the rest.",
+  "notes": [
+   "A \"faction\" is a sub-group within a larger organization (like a political party, government, or union) that works against other members to promote its own specific interests. It differs from a general \"party\" or \"group\" because it implies internal division or conflict."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "fiendish",
+  "lemma": "fiendish",
+  "ipa": "/ˈfiːndɪʃ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😈",
+  "shortGloss": "дьявольский; головоломный",
+  "primaryGloss": "дьявольский",
+  "emotion": "sinister and menacing, dripping with dark intent",
+  "glossLang": "ru",
+  "definition": "Extremely cruel, wicked, or evil.",
+  "notes": [
+   "Can mean literally wicked or cruel, but is very commonly used in everyday speech to describe something extraordinarily difficult, complex, or cunning (e.g., 'a fiendish puzzle', 'fiendishly difficult')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "filthy",
+  "lemma": "filthy",
+  "ipa": "/ˈfɪl.θi/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🗑️",
+  "shortGloss": "очень грязный; непристойный",
+  "primaryGloss": "грязный",
+  "emotion": "disgusted and repulsed, as if touching something unclean",
+  "glossLang": "ru",
+  "definition": "Extremely dirty or stained.",
+  "notes": [
+   "Much stronger than 'dirty'—it implies extreme grime, contamination, or disgust.",
+   "Commonly used in fixed informal expressions like 'filthy rich' (extremely wealthy) and 'a filthy mood' (a very bad temper)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "flattery",
+  "lemma": "flattery",
+  "ipa": "/ˈflætəri/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🍯",
+  "shortGloss": "лесть",
+  "primaryGloss": "лесть",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Excessive, exaggerated, or insincere praise, especially given to win favor or please someone.",
+  "notes": [
+   "Unlike genuine praise or compliments, 'flattery' typically implies insincerity or an ulterior motive—praising someone simply to win their favor or get what you want."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "foul",
+  "lemma": "foul",
+  "ipa": "/faʊl/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🤢",
+  "shortGloss": "отвратительный; скверный; ненастный",
+  "primaryGloss": "отвратительный",
+  "emotion": "repulsed and disgusted, turning away from something foul",
+  "glossLang": "ru",
+  "definition": "Having an extremely unpleasant taste or smell, or looking very dirty.",
+  "notes": [
+   "Commonly paired with sensory words (a foul smell, a foul taste), speech (foul language), mood (a foul mood), and weather (foul weather).",
+   "In sports and crime contexts, 'foul play' refers to unfair tactics or criminal/violent involvement in an event."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "frantically",
+  "lemma": "frantically",
+  "ipa": "/ˈfræntɪkli/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions",
+   "Emotions"
+  ],
+  "emoji": "😰",
+  "shortGloss": "лихорадочно; отчаянно",
+  "primaryGloss": "лихорадочно",
+  "emotion": "panicked and rushed, feeling the intense pressure of time running out",
+  "glossLang": "ru",
+  "definition": "In a hurried, disorganized, or desperate way, typically out of fear, panic, or extreme urgency.",
+  "notes": [
+   "Differs from simply 'quickly' or 'hurriedly' by carrying a strong sense of panic, chaos, or anxiety.",
+   "Very frequently collocated with verbs of searching, waving, calling, or rushing: 'searched frantically', 'waved frantically'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "full blast",
+  "lemma": "full blast",
+  "ipa": "/ˌfʊl ˈblæst/",
+  "pos": "idiom",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🔊",
+  "shortGloss": "на полную мощность; во всю мощь",
+  "primaryGloss": "на полную мощность",
+  "emotion": "energetic and loud, operating at maximum intensity",
+  "glossLang": "ru",
+  "definition": "At maximum volume, power, speed, or capacity.",
+  "notes": [
+   "Often preceded by \"at\" (e.g., \"at full blast\"). Commonly used with verbs like \"run\", \"play\", or \"blow\" to describe equipment, sound systems, or activities operating at maximum output or intensity."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "fumble",
+  "lemma": "fumble",
+  "ipa": "/ˈfʌm.bəl/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🏈",
+  "shortGloss": "шарить, нащупывать; запинаться; выронить",
+  "primaryGloss": "шарить",
+  "emotion": "clumsy and flustered, struggling with awkward physical actions",
+  "glossLang": "ru",
+  "definition": "To touch, hold, or search for something in a clumsy or awkward way using your hands.",
+  "notes": [
+   "Frequently used with 'for' (e.g. 'fumble for keys', 'fumble for words') when searching blindly or awkwardly, and with 'with' (e.g. 'fumble with the lock') when handling something clumsily.",
+   "In modern slang, 'fumble the bag' means to ruin a great opportunity or lose a large amount of money through careless mistakes."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "furious",
+  "lemma": "furious",
+  "ipa": "/ˈfjʊəriəs/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😡",
+  "shortGloss": "разъярённый; бешеный",
+  "primaryGloss": "разъярённый",
+  "emotion": "burning with intense and overwhelming anger",
+  "glossLang": "ru",
+  "definition": "Extremely angry.",
+  "notes": [
+   "Furious is an extreme adjective meaning 'very angry', so avoid saying *very furious*. Use intensifying adverbs like 'absolutely furious' or 'completely furious' instead.",
+   "Collocates with prepositions: 'furious with' or 'furious at' someone, and 'furious about' or 'furious over' a situation."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "fury",
+  "lemma": "fury",
+  "ipa": "/ˈfjʊəri/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😡",
+  "shortGloss": "ярость; неистовство",
+  "primaryGloss": "ярость",
+  "emotion": "overwhelming, boiling rage and fury",
+  "glossLang": "ru",
+  "definition": "Wild, violent, or uncontrolled anger.",
+  "notes": [
+   "\"Fury\" denotes extreme, often uncontrolled rage, much stronger than \"anger\". It is frequently used in fixed phrases like \"in a blind fury\" or \"to fly into a fury\".",
+   "When applied to natural forces like storms or fire, it emphasizes their destructive, violent energy."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "garbled",
+  "lemma": "garbled",
+  "ipa": "/ˈɡɑːr.bəld/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "📻",
+  "shortGloss": "искажённый; неразборчивый",
+  "primaryGloss": "искажённый",
+  "emotion": "frustrated and confused by poor communication",
+  "glossLang": "ru",
+  "definition": "Distorted, confused, or jumbled in such a way that the meaning is unclear or difficult to understand.",
+  "notes": [
+   "Used especially for speech, messages, or audio signals that are distorted, scrambled, or mixed up so that the meaning is hard to decipher.",
+   "Unlike 'muffled' (which describes sound that is quiet, muffled, or deadened by a barrier), 'garbled' emphasizes that the content or sequence itself has been corrupted or jumbled."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "goner",
+  "lemma": "goner",
+  "ipa": "/ˈɡɔː.nɚ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "💀",
+  "shortGloss": "обречённый; не жилец",
+  "primaryGloss": "обречённый",
+  "emotion": "Fatalistic and resigned to an inevitable tragic end.",
+  "glossLang": "ru",
+  "definition": "A person or thing that is doomed, ruined, or about to die or fail.",
+  "notes": [
+   "Used informally to describe someone or something that is doomed, beyond saving, or bound to fail or die.",
+   "Almost always used with the indefinite article in the predicate: \"to be a goner\"."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "grievance",
+  "lemma": "grievance",
+  "ipa": "/ˈɡriːvəns/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "📋",
+  "shortGloss": "жалоба; обида; претензия",
+  "primaryGloss": "обида",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A real or perceived reason for feeling resentment or being treated unfairly.",
+  "notes": [
+   "A *grievance* is a formal complaint or a persistent feeling of resentment based on perceived unfair treatment, especially in a workplace or political setting.",
+   "Unlike a casual *complaint*, a grievance implies a violation of rights, contracts, or established rules. Common collocations include *file a grievance*, *air a grievance*, and *nurse a grievance*."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "helluva",
+  "lemma": "helluva",
+  "ipa": "/ˈhɛləvə/",
+  "pos": "adj",
+  "gender": null,
+  "register": "slang",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "💥",
+  "shortGloss": "чертовский; офигенный",
+  "primaryGloss": "офигенный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Extremely good, impressive, or remarkable.",
+  "notes": [
+   "A contraction of \"hell of a\". It is used before nouns for emphasis, and can describe something remarkably good, bad, or difficult depending on context.",
+   "Although \"helluva\" already includes \"a\" (of a), in speech and writing it almost always follows \"a\" (e.g., \"a helluva guy\", \"a helluva lot\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hindsight",
+  "lemma": "hindsight",
+  "ipa": "/ˈhaɪndsaɪt/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🔙",
+  "shortGloss": "взгляд назад; знание задним умом",
+  "primaryGloss": "взгляд",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "The understanding of a situation or event only after it has happened.",
+  "notes": [
+   "Most frequently used in the prepositional phrases \"in hindsight\" or \"with hindsight\".",
+   "Direct opposite of \"foresight\" (the ability to predict what will happen in the future)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hogwash",
+  "lemma": "hogwash",
+  "ipa": "/ˈhɑːɡ.wɑːʃ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "colloquial",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": "🐷",
+  "shortGloss": "чепуха; чушь",
+  "primaryGloss": "чепуха",
+  "emotion": "dismissive and contemptuous, rejecting something as complete nonsense",
+  "glossLang": "ru",
+  "definition": "Statements, ideas, or beliefs that are completely untrue, ridiculous, or meaningless.",
+  "notes": [
+   "Originally referring to slops or kitchen scraps fed to pigs (hogs), it is now used to dismiss a claim, theory, or excuse as complete nonsense.",
+   "It conveys strong skepticism or contempt, similar to 'nonsense' or 'rubbish', but serves as a milder, non-vulgar alternative to 'bullshit'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hollow",
+  "lemma": "hollow",
+  "ipa": "/ˈhɒloʊ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🕳️",
+  "shortGloss": "полый, пустой; глухой; бессмысленный",
+  "primaryGloss": "полый",
+  "emotion": "sounding detached and descriptive",
+  "glossLang": "ru",
+  "definition": "Having an empty space or cavity inside; not solid.",
+  "notes": [
+   "Literally describes objects with an empty space inside (e.g. \"a hollow tree\", \"hollow cheeks\").",
+   "Frequently used figuratively for promises, apologies, or victories that lack real substance, sincerity, or value (e.g. \"a hollow promise\", \"a hollow victory\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hollow",
+  "lemma": "hollow",
+  "ipa": "/ˈhɒloʊ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature"
+  ],
+  "emoji": "🕳️",
+  "shortGloss": "полый, пустой; глухой; бессмысленный",
+  "primaryGloss": "полый",
+  "emotion": "sounding detached and descriptive",
+  "glossLang": "ru",
+  "definition": "Having an empty space or cavity inside; not solid.",
+  "notes": [
+   "Literally describes objects with an empty space inside (e.g. \"a hollow tree\", \"hollow cheeks\").",
+   "Frequently used figuratively for promises, apologies, or victories that lack real substance, sincerity, or value (e.g. \"a hollow promise\", \"a hollow victory\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "homeless people",
+  "lemma": "homeless people",
+  "ipa": "/ˈhoʊmləs ˈpiːpəl/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🏚️",
+  "shortGloss": "бездомные; бездомные люди",
+  "primaryGloss": "бездомные",
+  "emotion": "compassionate and serious, speaking with social awareness",
+  "glossLang": "ru",
+  "definition": "Individuals who lack a permanent, safe, and stable place to live.",
+  "notes": [
+   "Used as a plural noun phrase. It is generally preferred over 'the homeless' in modern writing to emphasize humanity (person-first language). In formal or policy contexts, you may also encounter 'people experiencing homelessness'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "humiliate",
+  "lemma": "humiliate",
+  "ipa": "/hjuːˈmɪlieɪt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😳",
+  "shortGloss": "унижать; унизить",
+  "primaryGloss": "унижать",
+  "emotion": "sharp and disapproving, condemning cruel behavior",
+  "glossLang": "ru",
+  "definition": "To make someone feel very ashamed, foolish, or lose their dignity and respect, especially in front of other people.",
+  "notes": [
+   "Stronger than 'embarrass'. While 'embarrass' refers to awkwardness or mild discomfort, 'humiliate' involves severely wounding someone's dignity, pride, or self-respect, often in public."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "humiliation",
+  "lemma": "humiliation",
+  "ipa": "/hjuːˌmɪliˈeɪʃən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions",
+   "Social"
+  ],
+  "emoji": "😳",
+  "shortGloss": "унижение; позор",
+  "primaryGloss": "унижение",
+  "emotion": "painful and heavy, describing deep emotional distress",
+  "glossLang": "ru",
+  "definition": "A deep feeling of shame or embarrassment caused by losing one's dignity or self-respect.",
+  "notes": [
+   "Much stronger than \"embarrassment\". Embarrassment comes from minor, awkward social slip-ups, whereas humiliation involves a severe blow to one's pride, status, or dignity, often in public."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hurdle",
+  "lemma": "hurdle",
+  "ipa": "/ˈhɜːrdl/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🚧",
+  "shortGloss": "препятствие; барьер",
+  "primaryGloss": "препятствие",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A problem, difficulty, or obstacle that you must deal with before you can make progress or achieve a goal.",
+  "notes": [
+   "Most commonly used metaphorically for obstacles or challenges that need to be resolved. Common collocations include 'overcome a hurdle', 'face a hurdle', and 'clear a hurdle'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "hypocrite",
+  "lemma": "hypocrite",
+  "ipa": "/ˈhɪp.ə.krɪt/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🎭",
+  "shortGloss": "лицемер, ханжа",
+  "primaryGloss": "лицемер",
+  "emotion": "scornful and accusing, pointing out shameful double standards",
+  "glossLang": "ru",
+  "definition": "A person who pretends to have certain moral standards or beliefs that their actual behavior contradicts.",
+  "notes": [
+   "The related adjective is 'hypocritical' and the abstract noun is 'hypocrisy'.",
+   "Commonly used in conversational accusations such as 'Don't be such a hypocrite!' when someone's actions contradict their stated principles."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "indulgent",
+  "lemma": "indulgent",
+  "ipa": "/ɪnˈdʌl.dʒənt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🍰",
+  "shortGloss": "снисходительный; потакающий",
+  "primaryGloss": "снисходительный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Allowing someone to do or have whatever they want, often without enforcing strict rules.",
+  "notes": [
+   "Used for people who are overly lenient or prone to spoiling others (like indulgent parents), as well as experiences or foods that feel luxurious and self-gratifying (like an indulgent dessert)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "infatuation",
+  "lemma": "infatuation",
+  "ipa": "/ɪnˌfætʃ.uˈeɪ.ʃən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "💘",
+  "shortGloss": "слепое увлечение; влюбленность",
+  "primaryGloss": "слепое увлечение",
+  "emotion": "infatuated and slightly dizzy, caught up in intense romance",
+  "glossLang": "ru",
+  "definition": "An intense, strong, and often unreasoning passion or attraction for someone, usually lasting only a short time.",
+  "notes": [
+   "Differs from 'love' in being intense, short-lived, and often unreasoning. While a 'crush' is informal and can be mild, 'infatuation' carries a stronger implication of foolish or obsessive passion that blinds someone to reality."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "infuriate",
+  "lemma": "infuriate",
+  "ipa": "/ɪnˈfjʊərieɪt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "😡",
+  "shortGloss": "приводить в ярость; бесить",
+  "primaryGloss": "приводить в ярость",
+  "emotion": "fuming and incandescent with anger, boiling over with rage",
+  "glossLang": "ru",
+  "definition": "To make someone extremely angry or furious.",
+  "notes": [
+   "Much stronger than \"annoy\" or \"irritate\"—it means to make someone extremely angry or furious.",
+   "Very frequently used in the passive (\"to be infuriated by...\") or as the adjective \"infuriating\" (\"an infuriating habit\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "inquisitive",
+  "lemma": "inquisitive",
+  "ipa": "/ɪnˈkwɪzətɪv/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🧐",
+  "shortGloss": "любознательный; любопытный",
+  "primaryGloss": "любознательный",
+  "emotion": "bright and eager, burning with a desire to discover more",
+  "glossLang": "ru",
+  "definition": "Having a strong desire to learn, explore, or ask questions about things.",
+  "notes": [
+   "\"Inquisitive\" suggests an active desire to ask questions and explore, often used positively for a sharp, eager mind (\"an inquisitive student\").",
+   "It can occasionally carry a negative nuance similar to \"nosy\" or \"prying\" when someone asks too many intrusive personal questions."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "insurmountable",
+  "lemma": "insurmountable",
+  "ipa": "/ˌɪnsərˈmaʊntəbl/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🏔️",
+  "shortGloss": "непреодолимый; неодолимый",
+  "primaryGloss": "непреодолимый",
+  "emotion": "grim and heavy, acknowledging a massive block in the path",
+  "glossLang": "ru",
+  "definition": "Too great or difficult to be dealt with or overcome.",
+  "notes": [
+   "Commonly collocates with nouns like 'obstacle', 'challenge', 'difficulty', 'problem', 'barrier', and 'odds'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "jab",
+  "lemma": "jab",
+  "ipa": "/dʒæb/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions",
+   "Health"
+  ],
+  "emoji": "🥊",
+  "shortGloss": "прямой удар; тычок; укол, прививка",
+  "primaryGloss": "прямой удар",
+  "emotion": "sharp, energetic, and aggressive like a sudden motion",
+  "glossLang": "ru",
+  "definition": "A quick, sharp punch or poke with a fist, finger, or sharp object.",
+  "notes": [
+   "In British, Australian, and New Zealand English, 'jab' is the everyday informal term for a vaccination or injection, whereas American English more commonly uses 'shot'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "judgement call",
+  "lemma": "judgement call",
+  "ipa": "/ˈdʒʌdʒ.mənt ˌkɔːl/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "⚖️",
+  "shortGloss": "решение, основанное на личном мнении; субъективное решение",
+  "primaryGloss": "субъективное решение",
+  "emotion": "thoughtful and hesitant, weighing difficult choices",
+  "glossLang": "ru",
+  "definition": "A decision that must be made by an individual based on their own opinion rather than on clear rules or facts.",
+  "notes": [
+   "A 'judgement call' is a decision that cannot be based on hard facts or rules, but rather on an individual's personal assessment of a situation.",
+   "It is often used in professional or competitive contexts where there is no single 'correct' answer."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "juvenile",
+  "lemma": "juvenile",
+  "ipa": "/ˈdʒuːvənaɪl/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🧒",
+  "shortGloss": "несовершеннолетний; ребяческий, инфантильный",
+  "primaryGloss": "несовершеннолетний",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Relating to young people who are not yet adults.",
+  "notes": [
+   "In formal and legal contexts, 'juvenile' neutrally refers to minors or young people (e.g. 'juvenile court', 'juvenile crime').",
+   "In everyday contexts, it often carries a negative tone meaning immature or childish, similar to 'infantile'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "leniency",
+  "lemma": "leniency",
+  "ipa": "/ˈliːniənsi/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "⚖️",
+  "shortGloss": "снисходительность; мягкость",
+  "primaryGloss": "снисходительность",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "The quality of being more merciful, mild, or tolerant than expected, especially when punishing someone.",
+  "notes": [
+   "Often used in legal, academic, or disciplinary contexts with verbs like 'show', 'plead for', or 'grant'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "lethargy",
+  "lemma": "lethargy",
+  "ipa": "/ˈlɛθərdʒi/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Health"
+  ],
+  "emoji": "🥱",
+  "shortGloss": "вялость; апатия, летаргия",
+  "primaryGloss": "вялость",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A state of having little energy or enthusiasm and feeling unwilling to do anything.",
+  "notes": [
+   "Refers to a state of profound sluggishness, weariness, or lack of energy. Unlike \"apathy\" (which is an emotional indifference), \"lethargy\" carries a strong sense of physical fatigue and dullness."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "meager",
+  "lemma": "meager",
+  "ipa": "/ˈmiːɡɚ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🤏",
+  "shortGloss": "скудный; мизерный",
+  "primaryGloss": "скудный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Very small in amount or quality; not enough to satisfy a need.",
+  "notes": [
+   "Spelled \"meager\" in American English and \"meagre\" in British English.",
+   "Commonly collocates with words related to income, food, or resources: \"a meager salary\", \"a meager diet\", \"meager resources\"."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "meek",
+  "lemma": "meek",
+  "ipa": "/miːk/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🐑",
+  "shortGloss": "кроткий; смиренный",
+  "primaryGloss": "кроткий",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Quiet, gentle, and unwilling to argue or express strong opinions, often easily dominated by others.",
+  "notes": [
+   "Often carries a mildly negative connotation implying a lack of spirit, courage, or backbone (easily dominated or pushed around).",
+   "In traditional, literary, or religious contexts (such as 'the meek shall inherit the earth'), it has a positive meaning of humble, patient, and gentle."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "mischievously",
+  "lemma": "mischievously",
+  "ipa": "/ˈmɪs.tʃɪ.vəs.li/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "😏",
+  "shortGloss": "озорно; лукаво; шаловливо",
+  "primaryGloss": "озорно",
+  "emotion": "playful and teasing, with a hint of secret fun",
+  "glossLang": "ru",
+  "definition": "In a playful way that shows a fondness for teasing or causing harmless trouble.",
+  "notes": [
+   "Note the pronunciation: the stress is on the first syllable (/ˈmɪs.tʃɪ.vəs.li/), not the second. It commonly collocates with verbs like 'smile', 'grin', 'wink', or 'laugh' to indicate playful, harmless trouble."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "nibble",
+  "lemma": "nibble",
+  "ipa": "/ˈnɪb.əl/",
+  "pos": "verb",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Food",
+   "Actions"
+  ],
+  "emoji": "🐭",
+  "shortGloss": "грызть; покусывать",
+  "primaryGloss": "грызть",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To take small, gentle bites of food.",
+  "notes": [
+   "Often used with the prepositions 'at' or 'on' when referring to eating casually or in tiny bites (e.g., 'to nibble on some cheese').",
+   "Unlike 'bite' (a single, firm action) or 'chew' (grinding food in the mouth), 'nibble' describes taking light, repeated, very small bites."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "opportunistic",
+  "lemma": "opportunistic",
+  "ipa": "/ˌɑːpərtuːˈnɪstɪk/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social",
+   "Health"
+  ],
+  "emoji": "🦊",
+  "shortGloss": "оппортунистический; приспособленческий",
+  "primaryGloss": "оппортунистический",
+  "emotion": "cynical and sharp, judging self-serving behavior",
+  "glossLang": "ru",
+  "definition": "Taking immediate advantage of chances or circumstances, often without regard for principles or consequences.",
+  "notes": [
+   "In general use, it often carries a negative connotation, describing someone who exploits a situation for self-gain without regard to principles.",
+   "In medicine and biology, it is neutral and technical, referring to microorganisms that cause illness only when the host's immune system is weakened."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "overt",
+  "lemma": "overt",
+  "ipa": "/oʊˈvɜːrt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "📢",
+  "shortGloss": "открытый; явный",
+  "primaryGloss": "открытый",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Done or shown openly, and not secret or hidden.",
+  "notes": [
+   "The direct antonym of \"covert\". Used to describe actions, attitudes, or behavior that are done publicly and plainly, with no effort to hide or disguise them (e.g., \"overt discrimination\", \"overt hostility\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "perseverance",
+  "lemma": "perseverance",
+  "ipa": "/ˌpɜːrsəˈvɪrəns/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🧗",
+  "shortGloss": "настойчивость; упорство",
+  "primaryGloss": "настойчивость",
+  "emotion": "firm, steady and unwavering resolve",
+  "glossLang": "ru",
+  "definition": "The quality of continuing to try to achieve something despite difficulties, delays, or obstacles.",
+  "notes": [
+   "Perseverance carries an overwhelmingly positive nuance: continuing through hardship, delay, or failure to reach a worthwhile goal. In contrast, \"persistence\" can sometimes tilt negative (e.g., an annoying telemarketer), while perseverance is always a virtue."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "pockmarked",
+  "lemma": "pockmarked",
+  "ipa": "/ˈpɑːkmɑːrkt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🕳️",
+  "shortGloss": "рябой; изрытый",
+  "primaryGloss": "рябой",
+  "emotion": "crude and tactile, focusing on a rough appearance",
+  "glossLang": "ru",
+  "definition": "Having skin scarred with small hollow marks left by smallpox, acne, or another skin disease.",
+  "notes": [
+   "Originally refers to scars left by smallpox or severe acne on skin, but commonly extended metaphorically to physical surfaces covered in pits, craters, or bullet holes."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "pretense",
+  "lemma": "pretense",
+  "ipa": "/prɪˈtɛns/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🎭",
+  "shortGloss": "притворство; видимость",
+  "primaryGloss": "притворство",
+  "emotion": "deceptive and slightly cold, like an actor hiding their true intent",
+  "glossLang": "ru",
+  "definition": "An act of appearing or claiming to be something you are not; a false show.",
+  "notes": [
+   "Spelled *pretense* in American English and *pretence* in British English.",
+   "Often used in fixed phrases like *under the pretense of* (under a false excuse) or *make a pretense of* (to fake doing something)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "progeny",
+  "lemma": "progeny",
+  "ipa": "/ˈprɒdʒəni/",
+  "pos": "noun",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social",
+   "Nature"
+  ],
+  "emoji": "👶",
+  "shortGloss": "потомство; отпрыск",
+  "primaryGloss": "потомство",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "The children, young, or descendants of a person, animal, or plant.",
+  "notes": [
+   "A formal or scientific term for children or offspring of humans, animals, or plants.",
+   "Usually treated as a collective or uncountable noun (meaning 'offspring' as a group), though it can refer to a single child or descendant."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "quaint",
+  "lemma": "quaint",
+  "ipa": "/kweɪnt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance",
+   "Places"
+  ],
+  "emoji": "🏡",
+  "shortGloss": "причудливый; колоритный; старомодный",
+  "primaryGloss": "причудливый",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Attractively unusual or old-fashioned in a charming way.",
+  "notes": [
+   "\"Quaint\" is typically positive and affectionate, used to describe something charming because it is old-fashioned or pleasantly unusual (like a cottage or village). Unlike \"outdated\", it does not imply that something needs replacing."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "rebellion",
+  "lemma": "rebellion",
+  "ipa": "/rɪˈbɛljən/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "✊",
+  "shortGloss": "восстание; бунт",
+  "primaryGloss": "восстание",
+  "emotion": "dramatic and intense",
+  "glossLang": "ru",
+  "definition": "An organized, usually violent attempt to overthrow a government or leader.",
+  "notes": [
+   "A \"rebellion\" is an act of defiance or armed resistance against authority. Unlike a \"revolution\", it does not necessarily succeed in replacing the system.",
+   "\"Mutiny\" is a specific kind of rebellion, restricted to soldiers or sailors rising up against their commanding officers."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "refute",
+  "lemma": "refute",
+  "ipa": "/rɪˈfjuːt/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "❌",
+  "shortGloss": "опровергать; доказывать ложность",
+  "primaryGloss": "опровергать",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To prove that a statement, claim, or theory is wrong or false using evidence or logical argument.",
+  "notes": [
+   "Careful writers distinguish \"refute\" from \"deny\": to \"deny\" is merely to claim something is false, while to \"refute\" means to successfully prove it wrong with evidence or reasoning."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "relinquish",
+  "lemma": "relinquish",
+  "ipa": "/rɪˈlɪŋkwɪʃ/",
+  "pos": "verb",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🏳️",
+  "shortGloss": "отказываться от; уступать; отпускать",
+  "primaryGloss": "отказываться",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "To voluntarily give up or surrender power, control, a right, or a position, often unwillingly.",
+  "notes": [
+   "`relinquish` carries a sense of giving up something important (power, control, a right, or custody), often with reluctance or under formal circumstances. Unlike `give up`, which is neutral and everyday, `relinquish` is formal and usually takes an abstract noun as its direct object (*relinquish power*, *relinquish a claim*)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "riddle",
+  "lemma": "riddle",
+  "ipa": "/ˈrɪd.əl/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Culture"
+  ],
+  "emoji": "🧩",
+  "shortGloss": "загадка; тайна",
+  "primaryGloss": "загадка",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A clever question or statement asked as a puzzle to be solved.",
+  "notes": [
+   "A \"riddle\" is usually a word puzzle with an ingenious answer, whereas a \"mystery\" or \"enigma\" often refers to a real-life puzzling situation, person, or fact that is hard to explain."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "screechy",
+  "lemma": "screechy",
+  "ipa": "/ˈskriːtʃi/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "🙉",
+  "shortGloss": "визгливый; пронзительный",
+  "primaryGloss": "визгливый",
+  "emotion": "unpleasant, sharp, and grating",
+  "glossLang": "ru",
+  "definition": "Making or having a high-pitched, loud, and unpleasant sound.",
+  "notes": [
+   "Used to describe sounds that are unpleasant, sharp, and high-pitched, like bad violin playing, worn-out car brakes, or a piercing voice. While 'shrill' emphasizes pure high pitch, 'screechy' specifically implies a grating or abrasive quality."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "shallow",
+  "lemma": "shallow",
+  "ipa": "/ˈʃæləʊ/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature",
+   "Social"
+  ],
+  "emoji": "🌊",
+  "shortGloss": "мелкий, неглубокий; поверхностный",
+  "primaryGloss": "мелкий",
+  "emotion": "cautious and observant, measuring depth or substance",
+  "glossLang": "ru",
+  "definition": "Having only a short distance from the top to the bottom; not deep.",
+  "notes": [
+   "Used literally for water or containers that are not deep, and figuratively for people, arguments, or feelings that lack substance or emotional depth.",
+   "The direct antonym is 'deep' for physical depth, and 'deep' or 'profound' for thoughts and feelings."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "skank",
+  "lemma": "skank",
+  "ipa": "/skæŋk/",
+  "pos": "noun",
+  "gender": null,
+  "register": "vulgar",
+  "topics": [
+   "Slang"
+  ],
+  "emoji": null,
+  "shortGloss": "шалава; дрянь",
+  "primaryGloss": "шалава",
+  "emotion": "contemptuous, harsh, and heavily derogatory",
+  "glossLang": "ru",
+  "definition": "An unpleasant, untrustworthy, or sexually promiscuous person, especially a woman.",
+  "notes": [
+   "Highly offensive and derogatory slang, typically used as an insult toward women to attack their character, hygiene, or sexual behavior.",
+   "In music (ska, punk, reggae), 'skank' can also refer to a specific energetic dance style or rhythm, but outside musical contexts it is almost exclusively an insult."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "slender",
+  "lemma": "slender",
+  "ipa": "/ˈslɛndər/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "🎋",
+  "shortGloss": "стройный, тонкий; незначительный",
+  "primaryGloss": "стройный",
+  "emotion": "appreciative and admiring of delicate grace",
+  "glossLang": "ru",
+  "definition": "Gracefully thin and attractive in build or shape.",
+  "notes": [
+   "'Slender' carries a positive connotation of elegance and grace when describing bodies or objects (unlike 'skinny', which suggests being underweight).",
+   "In abstract contexts, it means very small or narrow, as in 'a slender margin' or 'slender hopes'."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "sloth",
+  "lemma": "sloth",
+  "ipa": "/sloʊθ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Nature",
+   "Culture"
+  ],
+  "emoji": "🦥",
+  "shortGloss": "ленивец; лень, праздность",
+  "primaryGloss": "ленивец",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A slow-moving tree-dwelling mammal of tropical Central and South America that hangs upside down from branches.",
+  "notes": [
+   "As an animal, it is countable. As a sin or personal quality meaning habitual laziness, it is uncountable and formal or literary (traditionally one of the seven deadly sins).",
+   "In everyday conversation, English speakers usually say 'laziness' rather than 'sloth' when describing people."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "solvent",
+  "lemma": "solvent",
+  "ipa": "/ˈsɒlvənt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Misc"
+  ],
+  "emoji": "💳",
+  "shortGloss": "платёжеспособный; растворяющий",
+  "primaryGloss": "платёжеспособный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Having enough money to pay all debts and financial obligations.",
+  "notes": [
+   "In finance, the opposite is 'insolvent' (unable to pay debts, bankrupt).",
+   "Also commonly used as a noun meaning a substance (usually a liquid) that dissolves another substance, such as paint thinner or acetone."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "sternly",
+  "lemma": "sternly",
+  "ipa": "/ˈstɜːrnli/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "😠",
+  "shortGloss": "строго; сурово",
+  "primaryGloss": "строго",
+  "emotion": "authoritative, stern, and demanding immediate obedience",
+  "glossLang": "ru",
+  "definition": "In a serious, strict, and severe manner that shows disapproval.",
+  "notes": [
+   "Used to describe tone of voice, facial expression, or demeanor showing strong disapproval. Do not confuse with 'strictly', which usually relates to adhering closely to rules or limits (e.g. 'strictly forbidden' vs. 'he spoke sternly')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "stout",
+  "lemma": "stout",
+  "ipa": "/staʊt/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Appearance"
+  ],
+  "emoji": "💪",
+  "shortGloss": "полный, коренастый; прочный; стойкий",
+  "primaryGloss": "полный",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Rather fat and heavy, with a solid, thick-set body.",
+  "notes": [
+   "When describing people, 'stout' is often a polite or traditional word for someone who is heavy and solidly built, implying strength and bulk rather than just soft fat. Compare with 'stocky' (short and thick-set) and 'plump' (softly rounded).",
+   "Also note that as a noun, 'stout' refers to a very dark, roasted malt beer (such as Guinness)."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "suffrage",
+  "lemma": "suffrage",
+  "ipa": "/ˈsʌf.rɪdʒ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🗳️",
+  "shortGloss": "избирательное право; право голоса",
+  "primaryGloss": "избирательное право",
+  "emotion": "solemn, civic, and proud of hard-won fundamental rights",
+  "glossLang": "ru",
+  "definition": "The legal right to vote in political elections.",
+  "notes": [
+   "Do not confuse with \"suffering\" — despite the similar spelling and sound, \"suffrage\" comes from Latin suffragium (a vote, ballot) and has no connection to pain or endurance.",
+   "Most frequently encountered in historical or political contexts, such as \"women's suffrage\" and \"universal suffrage\"."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "tantalizingly",
+  "lemma": "tantalizingly",
+  "ipa": "/ˈtæntəlaɪzɪŋli/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🤏",
+  "shortGloss": "дразняще; заманчиво",
+  "primaryGloss": "дразняще",
+  "emotion": "tantalizing and teasing, holding something just out of reach",
+  "glossLang": "ru",
+  "definition": "In a way that creates interest or desire for something that remains just out of reach.",
+  "notes": [
+   "Most often used in the collocation *tantalizingly close*, describing something very desirable that is just barely out of reach."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "tentatively",
+  "lemma": "tentatively",
+  "ipa": "/ˈtɛntətɪvli/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "🤔",
+  "shortGloss": "неуверенно; предварительно",
+  "primaryGloss": "неуверенно",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "In a hesitant, cautious, or uncertain manner.",
+  "notes": [
+   "Used in two distinct ways: describing hesitation or lack of confidence in an action (e.g., 'knocked tentatively'), and describing provisional arrangements that are not yet final (e.g., 'tentatively scheduled')."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "throng",
+  "lemma": "throng",
+  "ipa": "/θrɒŋ/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "👥",
+  "shortGloss": "толпа; скопление людей",
+  "primaryGloss": "толпа",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "A large, densely packed crowd of people or animals.",
+  "notes": [
+   "Slightly more literary or vivid than *crowd*, usually emphasizing density and movement or pressing closeness."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "travail",
+  "lemma": "travail",
+  "ipa": "/ˈtræveɪl/",
+  "pos": "noun",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Actions"
+  ],
+  "emoji": "😓",
+  "shortGloss": "тяжелый труд; тяготы; муки",
+  "primaryGloss": "тяжелый труд",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Painful, exhausting, or difficult physical or mental effort.",
+  "notes": [
+   "A formal and literary word. In the singular, it refers to painful or exhausting physical or mental labor. In the plural (travails), it often refers to trials, tribulations, and hardships.",
+   "Easily confused with 'travel' in pronunciation and spelling; both share an etymology, but 'travail' strictly implies agonizing effort or suffering."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "unreciprocated",
+  "lemma": "unreciprocated",
+  "ipa": "/ˌʌnrɪˈsɪprəkeɪtɪd/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "💔",
+  "shortGloss": "безответный; неразделённый",
+  "primaryGloss": "безответный",
+  "emotion": "melancholic and heavy with longing",
+  "glossLang": "ru",
+  "definition": "Not returned, shared, or responded to in kind.",
+  "notes": [
+   "Most often used with feelings (love, affection) or efforts and gestures (kindness, invitations).",
+   "Compare with 'unrequited', which is practically only used for romantic love or passion ('unrequited love'), whereas 'unreciprocated' is broader and can describe actions, favors, or feelings."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "unscrupulous",
+  "lemma": "unscrupulous",
+  "ipa": "/ʌnˈskruːpjələs/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🦹",
+  "shortGloss": "бессовестный; недобросовестный; беспринципный",
+  "primaryGloss": "бессовестный",
+  "emotion": "contemptuous and sharp, condemning dishonest behavior",
+  "glossLang": "ru",
+  "definition": "Having or showing no moral principles; not honest or fair.",
+  "notes": [
+   "Describes someone who lacks moral principles and is willing to act dishonestly or unfairly to achieve their goals. It frequently collocates with roles that involve power or trust, such as *unscrupulous landlords*, *unscrupulous politicians*, or *unscrupulous dealers*."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "vicariously",
+  "lemma": "vicariously",
+  "ipa": "/vaɪˈkeəriəsli/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "👀",
+  "shortGloss": "опосредованно; через других",
+  "primaryGloss": "опосредованно",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "In a way that is experienced in the imagination through the feelings or actions of another person.",
+  "notes": [
+   "Most commonly used in the phrase 'to live vicariously through someone', which means to enjoy or experience things through another person's actions rather than doing them yourself."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "vicious",
+  "lemma": "vicious",
+  "ipa": "/ˈvɪʃ.əs/",
+  "pos": "adj",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🐺",
+  "shortGloss": "злобный; жестокий; порочный",
+  "primaryGloss": "злобный",
+  "emotion": "aggressive and hostile, carrying a threatening edge",
+  "glossLang": "ru",
+  "definition": "Deliberately cruel, violent, or aggressively fierce.",
+  "notes": [
+   "Often used in the set phrase \"vicious circle\" (or \"vicious cycle\"), which describes a bad situation where a problem causes another problem that makes the original one even worse.",
+   "Unlike \"violent\", which simply describes physical force, \"vicious\" emphasizes cruelty, malicious intent, or fierce hostility."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "virtue",
+  "lemma": "virtue",
+  "ipa": "/ˈvɜːtʃuː/",
+  "pos": "noun",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Culture"
+  ],
+  "emoji": "😇",
+  "shortGloss": "добродетель; достоинство",
+  "primaryGloss": "добродетель",
+  "emotion": null,
+  "glossLang": "ru",
+  "definition": "Behavior showing high moral standards, or a specific good moral quality.",
+  "notes": [
+   "The opposite of a virtue is a \"vice\".",
+   "Commonly used in the formal idiom \"by virtue of\", which means \"because of\" or \"by reason of\" (e.g. \"by virtue of her position\")."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "viscerally",
+  "lemma": "viscerally",
+  "ipa": "/ˈvɪs.ər.əl.i/",
+  "pos": "adv",
+  "gender": null,
+  "register": "neutral",
+  "topics": [
+   "Emotions"
+  ],
+  "emoji": "🫀",
+  "shortGloss": "нутром; интуитивно; на физическом уровне",
+  "primaryGloss": "нутром",
+  "emotion": "deeply felt and instinctive, speaking from a place of raw physical awareness",
+  "glossLang": "ru",
+  "definition": "In a way that is based on deep emotional instincts or physical feelings rather than intellect or logic.",
+  "notes": [
+   "Refers to feelings or reactions originating from deep instinct or bodily intuition ('the gut') rather than reasoned logic or intellect. It often carries a connotation of an overwhelming, physical emotional response."
+  ]
+ },
+ {
+  "language": "en",
+  "headword": "vituperative",
+  "lemma": "vituperative",
+  "ipa": "/vaɪˈtuːpərətɪv/",
+  "pos": "adj",
+  "gender": null,
+  "register": "formal",
+  "topics": [
+   "Social"
+  ],
+  "emoji": "🤬",
+  "shortGloss": "бранный; оскорбительный",
+  "primaryGloss": "бранный",
+  "emotion": "harsh and aggressive, loaded with fierce hostility",
+  "glossLang": "ru",
+  "definition": "Expressing bitter, harsh, and abusive criticism.",
+  "notes": [
+   "Formal and literary. Used to describe speech, writing, or attacks that are intensely harsh, abusive, and bitter.",
+   "Do not confuse with 'pejorative': a pejorative term simply carries negative or disparaging connotations, while vituperative language involves aggressive, full-throated verbal abuse."
+  ]
+ }
+]
