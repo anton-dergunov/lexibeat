@@ -242,6 +242,40 @@ class RenderTests(unittest.TestCase):
         self.assertTrue(cues and set(cues) <= {"Sua vez.", "Agora você.", "Diga."})
 
 
+class GeminiWriterTests(unittest.TestCase):
+    def test_a_busy_model_is_waited_out_and_one_out_of_quota_passed_over(self) -> None:
+        try:
+            from google.genai import types as _  # noqa: F401
+        except ImportError:
+            self.skipTest("the hosted-tts extra is not installed")
+        from unittest import mock
+
+        from lexibeat.writer import GeminiWriter, WriteRequest, WriterError
+
+        calls = []
+
+        def answer(model, contents, config):
+            calls.append(model)
+            if model == "a":
+                raise RuntimeError("429 RESOURCE_EXHAUSTED quota")
+            if model == "b" and calls.count("b") < 3:
+                raise RuntimeError("503 UNAVAILABLE high demand")
+            return mock.Mock(text="{}")
+
+        writer = GeminiWriter.__new__(GeminiWriter)
+        writer._client = mock.Mock()
+        writer._client.models.generate_content.side_effect = answer
+        writer.models, writer.temperature = ("a", "b", "c"), None
+        with mock.patch.object(GeminiWriter, "_sleep") as sleep:
+            self.assertEqual(writer.write(WriteRequest("p")), "{}")
+        self.assertEqual(calls, ["a", "b", "b", "b"])
+        self.assertEqual(sleep.call_count, 2)
+        self.assertEqual(writer.last_model, "b")
+        writer._client.models.generate_content.side_effect = RuntimeError("400 INVALID_ARGUMENT")
+        with self.assertRaisesRegex(WriterError, "a refused: 400"):
+            writer.write(WriteRequest("p"))
+
+
 class ServiceTests(unittest.TestCase):
     def test_the_service_builds_a_writer_per_render(self) -> None:
         try:

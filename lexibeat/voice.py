@@ -62,6 +62,7 @@ TADA_TOKENIZER_MODEL = "gafiatulin/tada-3b-ml-mlx"
 QWEN_VOICES = {"es": "Serena", "en": "Ryan"}
 QWEN_LANGUAGE_NAMES = {"es": "spanish", "en": "english"}
 GEMINI_VOICES = {"es": "Sulafat", "en": "Achird"}
+GEMINI_EMPTY_AUDIO_ATTEMPTS = 3
 GEMINI_LOCALES = {"es": "es-US", "en": "en-GB"}
 AURA2_VOICES = {"es": "aquila", "en": "luna"}
 GEMINI_FREE_TIER_INTERVALS = {
@@ -699,17 +700,26 @@ class GeminiBackend:
         prompt = director_prompt(request)
         voice = self.voices[code]
         started = time.perf_counter()
-        interaction = self._generate(prompt, voice, code)
-        if getattr(self, "vertex", False):
-            candidates = getattr(interaction, "candidates", None) or []
-            content = getattr(candidates[0], "content", None) if candidates else None
-            parts = getattr(content, "parts", None) or []
-            output = getattr(parts[0], "inline_data", None) if parts else None
+        # The preview model now and then answers with no audio at all — measured in a real render,
+        # once in thirty-seven lines. It is a blip, not a refusal, so the line is asked for again
+        # a couple of times before the render is failed.
+        finish = ""
+        for _attempt in range(GEMINI_EMPTY_AUDIO_ATTEMPTS):
+            interaction = self._generate(prompt, voice, code)
+            if getattr(self, "vertex", False):
+                candidates = getattr(interaction, "candidates", None) or []
+                content = getattr(candidates[0], "content", None) if candidates else None
+                parts = getattr(content, "parts", None) or []
+                output = getattr(parts[0], "inline_data", None) if parts else None
+                finish = str(getattr(candidates[0], "finish_reason", "") if candidates else "")
+            else:
+                output = getattr(interaction, "output_audio", None)
+            encoded = getattr(output, "data", None)
+            if encoded:
+                break
         else:
-            output = getattr(interaction, "output_audio", None)
-        encoded = getattr(output, "data", None)
-        if not encoded:
-            raise RuntimeError("Gemini response contained no audio data.")
+            raise RuntimeError(f"Gemini answered {GEMINI_EMPTY_AUDIO_ATTEMPTS} times with no audio "
+                               f"data{f' (finish reason {finish})' if finish else ''}.")
         if isinstance(encoded, bytes):
             raw = encoded
         else:

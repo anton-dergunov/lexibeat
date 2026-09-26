@@ -329,6 +329,24 @@ class VoiceTests(unittest.TestCase):
         sleep.assert_called_once_with(20.5)
         self.assertEqual(backend._min_request_interval, 20.5)
 
+    def test_gemini_asks_again_when_an_answer_holds_no_audio(self) -> None:
+        pcm = (np.array([0, 16384], dtype="<i2")).tobytes()
+        answers = [types.SimpleNamespace(output_audio=None),
+                   types.SimpleNamespace(output_audio=types.SimpleNamespace(
+                       data=pcm, mime_type="audio/l16; rate=24000"))]
+        backend = GeminiBackend.__new__(GeminiBackend)
+        backend._generate = mock.Mock(side_effect=answers)
+        backend.model_id = "gemini-3.1-flash-tts-preview"
+        backend.voices = {"es": "Sulafat", "en": "Achird"}
+        backend.sample_rate = 24000
+        result = backend.synth(ask("hola", SPANISH, seed=9))
+        self.assertEqual(backend._generate.call_count, 2)
+        np.testing.assert_allclose(result.audio, [0.0, 0.5])
+        backend._generate = mock.Mock(return_value=types.SimpleNamespace(output_audio=None))
+        with self.assertRaisesRegex(RuntimeError, "3 times with no audio"):
+            backend.synth(ask("hola", SPANISH, seed=9))
+        self.assertEqual(backend._generate.call_count, 3)
+
     def test_gemini_does_not_retry_daily_quota(self) -> None:
         class DailyLimitError(Exception):
             status_code = 429
