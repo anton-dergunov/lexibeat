@@ -3,7 +3,9 @@
 LexiBeat makes **loops**: a handful of words, each spoken in the language you are learning,
 followed by its translation, over a calm procedural music bed. Speech lands on a known beat grid,
 repeats are delivered slightly differently, and the music ducks gently while either speaker is
-talking. The `retrieval` pattern leaves a silent bar between the word and its answer to recall it in.
+talking. What a loop is made of is its **format**: the `classic` drill leaves a silent bar between
+the word and its answer to recall it in, and a format is a small JSON document
+([`docs/programme-format.md`](docs/programme-format.md)).
 
 The music engine is procedural, not a model: numpy and `scipy.signal` over CC0 samples, no GPU, no
 network, and byte-identical from a seed. That is what lets a loop be built on a small always-on

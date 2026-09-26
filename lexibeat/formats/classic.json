@@ -1,0 +1,13 @@
+{
+  "id": "classic",
+  "label": "Classic drill",
+  "description": "Each word three times with its translation, with a pause to recall the meaning the first time.",
+  "sections": [
+    {"kind": "words", "block": [
+      {"say": "word"}, {"gap": 1}, {"say": "translation"},
+      {"say": "word"}, {"say": "translation"},
+      {"say": "word"}, {"say": "translation"},
+      {"rest": 1}
+    ]}
+  ]
+}

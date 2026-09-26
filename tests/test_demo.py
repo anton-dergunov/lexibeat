@@ -91,8 +91,7 @@ class DemoConfigTests(unittest.TestCase):
         spec = next(iter(resolve_demo_specs(config).values()))
         grid = Grid.from_spec(spec)
         events, total_bars = arrange_demo(config, DemoFakeSpeaker(), grid)
-        timeline = build_timeline(config.items, events, grid, total_bars,
-                                  config.pattern)
+        timeline = build_timeline(config.items, events, grid, total_bars, config.format)
         self.assertEqual(len(events), 120)
         self.assertEqual(total_bars, 170)
         self.assertTrue(all(abs(event.start / grid.bar -

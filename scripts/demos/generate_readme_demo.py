@@ -85,12 +85,11 @@ def main() -> None:
 
     speech_path = args.out_dir / "shared-speech.wav"
     sf.write(speech_path, speech, SR, subtype="PCM_16")
-    timeline = build_timeline(config.items, events, grid, total_bars,
-                              config.pattern)
+    timeline = build_timeline(config.items, events, grid, total_bars, config.format)
     timeline_payload = {
         "schema_version": 1,
         "title": config.title,
-        "pattern": config.pattern,
+        "format": config.format.id,
         "bpm": grid.bpm,
         "meter": f"{grid.beats_per_bar}/{grid.beat_unit}",
         "total_bars": total_bars,

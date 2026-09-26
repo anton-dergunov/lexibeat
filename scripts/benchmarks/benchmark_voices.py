@@ -109,7 +109,7 @@ def run_backend(backend: str, args: argparse.Namespace, bed: Path,
         "lexibeat.cli",
         "--backend", backend,
         "--words", str(args.words), "--seed", str(args.seed),
-        "--voice-seed", str(args.voice_seed), "--pattern", "retrieval",
+        "--voice-seed", str(args.voice_seed), "--format", "classic",
         "--bed-spec", str(bed), "--out", str(output),
         "--stats-json", str(stats_path), "--vocab", *map(str, args.vocab),
     ]

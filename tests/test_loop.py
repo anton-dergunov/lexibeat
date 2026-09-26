@@ -10,6 +10,7 @@ import numpy as np
 import soundfile as sf
 
 from lexibeat.arrange import SOURCE, TARGET, Cancelled
+from lexibeat.formats import renderable
 from lexibeat.language import ENGLISH, SPANISH, Language
 from lexibeat.loop import (
     MAX_ITEMS,
@@ -62,8 +63,10 @@ def request(**overrides) -> LoopRequest:
 
 class LoopRequestTests(unittest.TestCase):
     def test_a_bad_request_is_refused_by_the_part_that_is_wrong(self) -> None:
-        with self.assertRaisesRegex(LoopError, "pattern"):
-            request(pattern="waltz").validated()
+        with self.assertRaisesRegex(LoopError, "unknown format 'waltz'"):
+            request(format="waltz").validated()
+        with self.assertRaisesRegex(LoopError, "no switch 'fast'"):
+            request(switches={"fast": True}).validated()
         with self.assertRaisesRegex(LoopError, "at least one word"):
             request(items=()).validated()
         with self.assertRaisesRegex(LoopError, "direction"):
@@ -77,7 +80,7 @@ class LoopRequestTests(unittest.TestCase):
         self.assertEqual(len(request(items=many).validated().items), 40)
 
     def test_a_loop_estimates_its_own_length_before_a_note_is_synthesised(self) -> None:
-        self.assertAlmostEqual(estimated_seconds(12, "retrieval", bpm=80),
+        self.assertAlmostEqual(estimated_seconds(12, renderable("classic"), bpm=80),
                                (2 + 12 * 8 + 2) * 3.0, places=5)
 
 
@@ -101,7 +104,7 @@ class TimelineTests(unittest.TestCase):
 
     def test_a_timeline_refuses_events_that_are_not_the_words_it_was_given(self) -> None:
         with self.assertRaises(LoopError):
-            build_timeline(list(WORDS), [], None, 10, "retrieval")
+            build_timeline(list(WORDS), [], None, 10, renderable("classic"))
 
 
 class RenderTests(unittest.TestCase):
@@ -176,7 +179,7 @@ class RenderTests(unittest.TestCase):
             render_loop(request(), backend=SpanishOnly(),
                         output=Path(tmp) / "loop.mp3")
 
-    def test_a_pattern_teaches_any_pair_of_languages(self) -> None:
+    def test_a_format_teaches_any_pair_of_languages(self) -> None:
         backend = RecordingBackend()
         mandarin = Language("zh-Hans", "Mandarin Chinese")
         portuguese = Language("pt-BR", "Brazilian Portuguese")

@@ -35,7 +35,8 @@ from typing import Any, Callable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .arrange import PATTERNS, Cancelled
+from .arrange import Cancelled
+from . import formats as programme_formats
 from .bedspec import TIMBRE_PALETTES
 from .generator import ENGINE_VERSION
 from .language import Language
@@ -55,7 +56,9 @@ from .profiles import FAMILY_DESCRIPTIONS, PROFILES, family_label, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
 
-API_VERSION = "1.0.0"
+# The contract's version. It moves with the wire, not the path: `/api/v1` has one host, which pins a
+# package version and moves in step with it.
+API_VERSION = "2.0.0"
 API_PREFIX = "/api/v1"
 MAX_REQUEST_BYTES = 1_000_000
 
@@ -320,7 +323,10 @@ class LoopBody(StrictModel):
     items: list[ItemBody] = Field(min_length=1, max_length=MAX_ITEMS)
     source_language: LanguageBody
     target_language: LanguageBody
-    pattern: str = "retrieval"
+    # A built-in format's id from `/schema`, or an inline format for experiments and the CLI; a
+    # host sends an id. `switches` sets the ones the format declares, and nothing else.
+    format: str | dict[str, Any] = "classic"
+    switches: dict[str, bool | str] = Field(default_factory=dict)
     family: str = "auto"
     energy: str = "balanced"
     rhythm: str = "steady"
@@ -336,7 +342,8 @@ class LoopBody(StrictModel):
             items=tuple(Item(row.source, row.target, row.direction) for row in self.items),
             source_language=Language(self.source_language.code, self.source_language.name),
             target_language=Language(self.target_language.code, self.target_language.name),
-            pattern=self.pattern, family=self.family, energy=self.energy,
+            format=self.format, switches=dict(self.switches),
+            family=self.family, energy=self.energy,
             rhythm=self.rhythm, palette=self.palette, seed=self.seed,
             profile=self.profile, prosody_strength=self.prosody_strength,
             voice_seed=self.voice_seed,
@@ -346,8 +353,9 @@ class LoopBody(StrictModel):
 def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
     """What this deployment can be asked for. The host reads its catalogues from here.
 
-    Patterns and families are LexiBeat's, never copied into the host: a family added in a later
-    version appears in the host's dialog with nothing changing there.
+    Formats and families are LexiBeat's, never copied into the host: a format or a family added in
+    a later version appears in the host's dialog with nothing changing there. Only the formats this
+    version can render are listed.
     """
     del config
     identity = bundle_status()
@@ -359,13 +367,9 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
         # failing, so "present" would promise music this deployment cannot make.
         "production_bundle": bundle,
         "bundle": identity,
-        "patterns": [
-            {"id": name,
-             "bars_per_item": len(slots),
-             "utterances_per_item": sum(1 for kind, _ in slots
-                                        if kind not in ("gap", "rest")),
-             "has_recall_gap": any(kind == "gap" for kind, _ in slots)}
-            for name, slots in sorted(PATTERNS.items())
+        "formats": [
+            fmt.summary() for _, fmt in sorted(programme_formats.builtin().items())
+            if not programme_formats.unsupported(programme_formats.resolve(fmt))
         ],
         "profiles": {
             name: {"version": profile.version, "families": list(profile.families)}

@@ -278,7 +278,7 @@ class ExplorerHttpTests(unittest.TestCase):
                 if block.fn is not None and block.fn.__name__ == "announce_loop")
             # Seven rows, which the six-pair cap used to refuse outright.
             rows = [[f"palabra {index}", f"word {index}", ""] for index in range(7)]
-            self.assertIn("7 words", announce.fn(rows, "retrieval"))
+            self.assertIn("7 words", announce.fn(rows, "classic"))
             tabs = next(block for block in demo.blocks.values()
                         if block.__class__.__name__ == "Tabs")
             self.assertEqual(tabs.selected, "loop")

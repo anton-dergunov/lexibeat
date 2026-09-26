@@ -15,7 +15,8 @@ from typing import Any, Sequence
 import numpy as np
 import soundfile as sf
 
-from .arrange import PATTERNS, SOURCE, TARGET, Event
+from .arrange import SOURCE, TARGET, Event
+from .formats import Format, FormatError, renderable, slots
 from .bedspec import STYLES, BedSpec
 from .language import ENGLISH, SPANISH, Language
 from .loop import build_timeline
@@ -40,7 +41,7 @@ class DemoVariant:
 @dataclass(frozen=True)
 class DemoConfig:
     title: str
-    pattern: str
+    format: Format
     bpm: float
     beats_per_bar: int
     beat_unit: int
@@ -59,9 +60,10 @@ def load_demo_config(path: Path) -> DemoConfig:
     title = str(data.get("title") or "").strip()
     if not title:
         raise ValueError("Demo manifest title cannot be empty.")
-    pattern = str(data.get("pattern") or "")
-    if pattern not in PATTERNS:
-        raise ValueError(f"Unknown demo pattern '{pattern}'.")
+    try:
+        fmt = renderable(str(data.get("format") or ""))
+    except FormatError as exc:
+        raise ValueError(f"Demo format: {exc}") from exc
     bpm = float(data.get("bpm") or 0)
     if bpm <= 0:
         raise ValueError("Demo manifest bpm must be positive.")
@@ -107,7 +109,7 @@ def load_demo_config(path: Path) -> DemoConfig:
             raise ValueError(f"Unknown bed style '{variant.style}'.")
         names.add(variant.name)
         variants.append(variant)
-    return DemoConfig(title, pattern, bpm, beats_per_bar, beat_unit,
+    return DemoConfig(title, fmt, bpm, beats_per_bar, beat_unit,
                       tuple(items), tuple(bars_per_utterance), tuple(variants),
                       Language.from_value(data.get("source_language") or "es"),
                       Language.from_value(data.get("target_language") or "en"))
@@ -247,7 +249,7 @@ class PersistentSpeaker:
 def arrange_demo(config: DemoConfig, speaker: PersistentSpeaker, grid: Grid, *,
                  intro_bars: int = 2,
                  outro_bars: int = 2) -> tuple[list[Event], int]:
-    """Arrange the retrieval pattern with optional longer per-item speech slots."""
+    """Arrange the demo's format with optional longer per-item speech slots."""
     events: list[Event] = []
     bar = intro_bars
     for index, (item, span) in enumerate(
@@ -255,7 +257,7 @@ def arrange_demo(config: DemoConfig, speaker: PersistentSpeaker, grid: Grid, *,
         print(f"  [{index}/{len(config.items)}] {item.source} — {item.target}  "
               f"({item.direction or 'plain'}, "
               f"{span} bar{'s' if span != 1 else ''}/utterance)", flush=True)
-        for kind, repetition in PATTERNS[config.pattern]:
+        for kind, repetition in slots(config.format):
             if kind in ("gap", "rest"):
                 bar += 1
                 continue
@@ -276,7 +278,7 @@ def write_tracklist(path: Path, variant: str, config: DemoConfig,
                     timeline: Sequence[dict[str, Any]], spec: BedSpec) -> None:
     lines = [
         f"{variant} — {len(config.items)} items, {spec.bpm:g} BPM, "
-        f"pattern '{config.pattern}'",
+        f"format '{config.format.id}'",
         "",
     ]
     for row in timeline:

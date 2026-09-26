@@ -63,11 +63,15 @@ class SchemaTests(unittest.TestCase):
     def test_the_catalogues_are_this_service_s_and_the_host_copies_none_of_them(self) -> None:
         schema = service_schema()
         self.assertEqual(schema["api_version"], API_VERSION)
-        names = {row["id"] for row in schema["patterns"]}
-        self.assertEqual(names, {"retrieval", "alternating"})
-        retrieval = next(row for row in schema["patterns"] if row["id"] == "retrieval")
-        self.assertTrue(retrieval["has_recall_gap"])
-        self.assertEqual(retrieval["utterances_per_item"], 6)
+        names = {row["id"] for row in schema["formats"]}
+        self.assertEqual(names, {"classic", "alternating"})
+        classic = next(row for row in schema["formats"] if row["id"] == "classic")
+        self.assertTrue(classic["has_recall_gap"])
+        self.assertEqual(classic["utterances_per_item"], 6)
+        self.assertEqual(classic["bars_per_item"], 8)
+        self.assertEqual(classic["label"], "Classic drill")
+        self.assertTrue(classic["description"])
+        self.assertEqual(classic["switches"], {})
         self.assertIn("auto", schema["families"])
         self.assertEqual(schema["audio"]["mime"], "audio/mpeg")
         self.assertEqual(schema["audio"]["bitrate_kbps"], 128)
@@ -202,7 +206,10 @@ class ServiceTests(unittest.TestCase):
             self.client.post(f"{API_PREFIX}/loops", json=body(items=[])).status_code, 422)
         self.assertEqual(
             self.client.post(f"{API_PREFIX}/loops",
-                             json=body(pattern="waltz")).status_code, 422)
+                             json=body(format="waltz")).status_code, 422)
+        self.assertEqual(
+            self.client.post(f"{API_PREFIX}/loops",
+                             json=body(pattern="retrieval")).status_code, 422)
         self.assertEqual(
             self.client.post(f"{API_PREFIX}/loops",
                              json=body(unexpected="field")).status_code, 422)

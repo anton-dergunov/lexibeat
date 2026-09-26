@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "LexiBeat",
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
   "paths": {
     "/api/v1/health": {
@@ -287,10 +287,32 @@
           "target_language": {
             "$ref": "#/components/schemas/LanguageBody"
           },
-          "pattern": {
-            "type": "string",
-            "title": "Pattern",
-            "default": "retrieval"
+          "format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "title": "Format",
+            "default": "classic"
+          },
+          "switches": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Switches"
           },
           "family": {
             "type": "string",

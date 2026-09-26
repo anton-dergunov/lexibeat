@@ -23,7 +23,8 @@ import numpy as np
 import soundfile as sf
 
 from lexibeat.api import MusicRequest, resolve_music
-from lexibeat.arrange import PATTERNS, arrange, render_speech
+from lexibeat import formats
+from lexibeat.arrange import arrange, render_speech
 from lexibeat.bedspec import BedSpec
 from lexibeat.language import Language
 from lexibeat.mix import mix_stems
@@ -48,8 +49,12 @@ def parse_args() -> argparse.Namespace:
     src.add_argument("--seed", type=int, default=7, help="item selection seed")
 
     loop = p.add_argument_group("loop shape")
-    loop.add_argument("--pattern", choices=sorted(PATTERNS), default="retrieval",
-                      help="'retrieval' leaves a silent bar to recall the answer in")
+    loop.add_argument("--format", choices=sorted(formats.builtin()), default="classic",
+                      help="the loop's format; 'classic' leaves a silent bar to recall the "
+                           "answer in")
+    loop.add_argument("--format-file", type=Path,
+                      help="an inline format as JSON (docs/programme-format.md), instead of "
+                           "--format")
     loop.add_argument("--source-language", default="es",
                       help="language code of the words, e.g. es")
     loop.add_argument("--source-language-name", default="Spanish",
@@ -177,14 +182,19 @@ def main() -> None:
 
     if not args.vocab:
         raise SystemExit("--vocab is required: point it at your markdown notes.")
-    slots = len(PATTERNS[args.pattern])
+    try:
+        fmt = formats.renderable(json.loads(args.format_file.read_text(encoding="utf-8"))
+                                 if args.format_file else args.format)
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f"Format: {exc}") from exc
+    slots = len(formats.slots(fmt))
     items = load(args.vocab, mode=args.mode, limit=args.words, seed=args.seed)
     if not items:
         raise SystemExit("No vocabulary items found — check --vocab.")
 
     minutes = (len(items) * slots + 4) * grid.bar / 60
     print(f"{len(items)} items · {spec.bpm:g} BPM · bar {grid.bar:.2f}s · "
-          f"{slots} bars each · ~{minutes:.1f} min · pattern '{args.pattern}' · "
+          f"{slots} bars each · ~{minutes:.1f} min · format '{fmt.id}' · "
           f"bed '{bed_label}' · voice '{args.backend}'")
 
     if args.dry_run:
@@ -212,7 +222,7 @@ def main() -> None:
     speaker_init_seconds = time.perf_counter() - speaker_started
     speech_started = time.perf_counter()
     events, total_bars = arrange(
-        items, speaker, grid, pattern=args.pattern,
+        items, speaker, grid, format=fmt,
         source_language=Language(args.source_language, args.source_language_name),
         target_language=Language(args.target_language, args.target_language_name))
     speech = render_speech(events, total_bars, grid)
@@ -238,7 +248,7 @@ def main() -> None:
     # A sidecar tracklist makes it possible to skip to a word while listening.
     listing = args.out.with_suffix(".txt")
     lines = [f"{args.out.name} — {len(items)} items, {spec.bpm:g} BPM, "
-             f"pattern '{args.pattern}', bed '{bed_label}', "
+             f"format '{fmt.id}', bed '{bed_label}', "
              f"voice '{args.backend}'", ""]
     capabilities = CAPABILITIES[args.backend]
     if capabilities.experimental:

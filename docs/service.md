@@ -31,10 +31,12 @@ missing, expanded}` — so a host can require the version it pinned: a deploymen
 1.96 GB library looked exactly as healthy as one running the current one, and sounded plainer.
 `expanded` says the manifest carries the expansion policy that switches on the Wave 2/3 instruments.
 
-**The catalogues are LexiBeat's.** `/schema` reports the patterns, the families, the limits and the
-audio format. `family_details` gives each production family a `label` and a one-sentence
-`description` to choose it by; `auto` is not among them, because it is the absence of a choice rather
-than a kind of music. A host reads them rather than copying them, so a family added in a later version
+**The catalogues are LexiBeat's.** `/schema` reports the formats, the families, the limits and the
+audio format. Each format has an `id` to send, a `label` and a one-sentence `description` to choose
+it by, and the `switches` it offers; what a format is made of is `docs/programme-format.md`.
+`family_details` gives each production family a `label` and a one-sentence `description` to
+choose it by; `auto` is not among them, because it is the absence of a choice rather than a kind of
+music. A host reads them rather than copying them, so a format or a family added in a later version
 appears in its dialog with nothing changing there.
 
 ## Routes
@@ -42,7 +44,7 @@ appears in its dialog with nothing changing there.
 | Route | Answers |
 |---|---|
 | `GET /api/v1/health` | `{status, api_version, engine_version, production_bundle}` |
-| `GET /api/v1/schema` | bundle, patterns, profiles, families, energy, rhythm, palette, limits, audio |
+| `GET /api/v1/schema` | bundle, formats, profiles, families, energy, rhythm, palette, limits, audio |
 | `POST /api/v1/loops` | `202` with an operation |
 | `GET /api/v1/operations/{id}` | the operation, with `result` once it has completed |
 | `DELETE /api/v1/operations/{id}` | cancels between utterances |
@@ -58,12 +60,19 @@ appears in its dialog with nothing changing there.
   ],
   "source_language": {"code": "es", "name": "Spanish"},
   "target_language": {"code": "en", "name": "English"},
-  "pattern": "retrieval",
+  "format": "classic",
+  "switches": {},
   "family": "auto",
   "seed": 4711,
   "speech": {"token": "…", "delivery": "directed"}
 }
 ```
+
+`format` is a format's `id` from `/schema`, and defaults to `classic`. `switches` sets the switches
+that format declares and nothing else; one left out takes its default. An unknown format, an unknown
+switch, a value a switch does not offer, or a format this version cannot render is refused with a
+422 that names it, before anything is queued. A whole format may be sent inline in place of the id,
+which is for experiments; a host sends an id.
 
 `direction` is **free text** and may be empty. It is appended to the per-take prosody words to make
 the director note a model actually receives. There is no enum, no emoji column and no punctuation
@@ -112,7 +121,7 @@ The completed `result`:
   "audio_mime": "audio/mpeg",
   "bitrate_kbps": 128,
   "duration_seconds": 124.53,
-  "pattern": "retrieval",
+  "format": "classic",
   "style_id": "acoustic-flow",
   "seed": 4711,
   "engine_version": "1.5.0",

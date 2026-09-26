@@ -19,22 +19,14 @@ import json
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
 import soundfile as sf
 
 from .api import MusicRequest, resolve_music
-from .arrange import (
-    PATTERNS,
-    SOURCE,
-    TARGET,
-    Cancelled,
-    Event,
-    arrange,
-    render_speech,
-    spoken_slots,
-)
+from .arrange import SOURCE, TARGET, Cancelled, Event, arrange, render_speech
+from .formats import Format, FormatError, renderable, slots, spoken_slots
 from .language import Language
 from .mix import mix_stems
 from .music import SR, Grid, render_stems
@@ -69,7 +61,10 @@ class LoopRequest:
     items: tuple[Item, ...]
     source_language: Language
     target_language: Language
-    pattern: str = "retrieval"
+    # A built-in format's id, or an inline format (`docs/programme-format.md`), and the values of
+    # the switches that format declares.
+    format: str | Mapping[str, Any] = "classic"
+    switches: Mapping[str, Any] = field(default_factory=dict)
     family: str = "auto"
     energy: str = "balanced"
     rhythm: str = "steady"
@@ -79,10 +74,15 @@ class LoopRequest:
     prosody_strength: float = 1.0
     voice_seed: int | None = None
 
+    def resolved_format(self) -> Format:
+        """The format as this render runs it: loaded, switches applied, and checked renderable."""
+        try:
+            return renderable(self.format, self.switches)
+        except FormatError as exc:
+            raise LoopError(f"Format: {exc}") from exc
+
     def validated(self) -> "LoopRequest":
-        if self.pattern not in PATTERNS:
-            raise LoopError(f"Unknown pattern '{self.pattern}'. "
-                            f"Try: {', '.join(sorted(PATTERNS))}")
+        self.resolved_format()
         if not self.items:
             raise LoopError("A loop needs at least one word.")
         if len(self.items) > MAX_ITEMS:
@@ -118,7 +118,7 @@ class LoopResult:
     audio_path: str
     audio_mime: str
     duration_seconds: float
-    pattern: str
+    format: str
     style_id: str
     seed: int
     engine_version: str
@@ -146,7 +146,7 @@ def bed_fingerprint(fingerprint: Any) -> str:
 
 
 def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
-                   total_bars: int, pattern: str) -> list[dict[str, Any]]:
+                   total_bars: int, format: Format) -> list[dict[str, Any]]:
     """Describe progressive reveals and active utterances from arranged events.
 
     This lived in `demo.py`, which is a script for making a README video — so the one exposure rich
@@ -154,15 +154,15 @@ def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
     rows the old lesson path produced held a caption until the next utterance and could not say
     when the answer arrives, which is the single thing a retrieval loop's display turns on.
     """
-    slots = spoken_slots(pattern)
-    expected = len(items) * len(slots)
+    spoken = spoken_slots(format)
+    expected = len(items) * len(spoken)
     if len(events) != expected:
         raise LoopError(f"Expected {expected} speech events, received {len(events)}.")
     timeline: list[dict[str, Any]] = []
     cursor = 0
     for item_index, item in enumerate(items):
         utterances = []
-        for kind, repetition in slots:
+        for kind, repetition in spoken:
             event = events[cursor]
             expected_text = item.source if kind == SOURCE else item.target
             if event.label != f"{kind}:{expected_text}":
@@ -217,6 +217,7 @@ def render_loop(
 ) -> LoopResult:
     """Speak every line, render the bed, duck it under the speech, and write the MP3."""
     request = request.validated()
+    fmt = request.resolved_format()
     output = Path(output)
 
     def report(fraction: float, message: str) -> None:
@@ -244,15 +245,14 @@ def render_loop(
             list(request.items), speaker, grid,
             source_language=request.source_language,
             target_language=request.target_language,
-            pattern=request.pattern, progress=False,
+            format=fmt, progress=False,
             cancel_check=cancel_check,
             progress_callback=(lambda completed, total, message:
                                report(0.05 + 0.70 * completed / max(total, 1), message)))
         speech = render_speech(events, total_bars, grid)
         if not len(speech) or not np.isfinite(speech).all():
             raise LoopError("The speech renderer produced invalid audio.")
-        timeline = build_timeline(list(request.items), events, grid, total_bars,
-                                  request.pattern)
+        timeline = build_timeline(list(request.items), events, grid, total_bars, fmt)
     finally:
         speaker.close()
 
@@ -281,7 +281,7 @@ def render_loop(
         audio_path=str(output),
         audio_mime=MP3_MIME,
         duration_seconds=len(track) / SR,
-        pattern=request.pattern,
+        format=fmt.id,
         style_id=resolved.fingerprint.family,
         # The seed the request carried (or the one minted for it), never the winning candidate's:
         # that is what the same request replays from, and a candidate's seed is not a request's.
@@ -296,10 +296,10 @@ def render_loop(
     )
 
 
-def estimated_seconds(item_count: int, pattern: str, bpm: float = 80.0,
+def estimated_seconds(item_count: int, format: Format, bpm: float = 80.0,
                       beats_per_bar: int = 4, beat_unit: int = 4,
                       intro_bars: int = 2, outro_bars: int = 2) -> float:
     """How long a loop of this shape will run, before a note of it is synthesised."""
     grid = Grid(bpm=bpm, beats_per_bar=beats_per_bar, beat_unit=beat_unit)
-    bars = intro_bars + item_count * len(PATTERNS[pattern]) + outro_bars
+    bars = intro_bars + item_count * len(slots(format)) + outro_bars
     return bars * grid.bar

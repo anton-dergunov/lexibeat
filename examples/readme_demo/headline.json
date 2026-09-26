@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "title": "LexiBeat",
-  "pattern": "retrieval",
+  "format": "classic",
   "bpm": 78,
   "meter": "4/4",
   "items": [

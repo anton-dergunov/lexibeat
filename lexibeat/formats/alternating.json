@@ -1,0 +1,13 @@
+{
+  "id": "alternating",
+  "label": "Alternating",
+  "description": "Each word three times with its translation, straight through with no pause to recall.",
+  "sections": [
+    {"kind": "words", "block": [
+      {"say": "word"}, {"say": "translation"},
+      {"say": "word"}, {"say": "translation"},
+      {"say": "word"}, {"say": "translation"},
+      {"rest": 2}
+    ]}
+  ]
+}

@@ -16,7 +16,7 @@ that: does it make a word more memorable, or come back more easily a day later? 
   sticks; an accurate dictionary sentence does not. A joke, a sound, a callback to an earlier word is
   worth more than another repetition.
 - **Participatory beats passive.** A silence you are invited to fill ("your turn") is recall, and
-  recall is what the retrieval pattern already turns on.
+  recall is what the classic drill already turns on.
 - **Choice beats one method.** No single format suits every mood or every set of words. The owner
   picks a format when making a loop, or asks to be surprised.
 
@@ -108,17 +108,22 @@ Commentary is where invented facts are likeliest. See the risks section.
 
 ## Formats — presets built from blocks
 
-| Format | Built from |
-|---|---|
-| Classic drill | Today's loop, unchanged |
-| Quick fire | Two repetitions each at pace, then a speed-round review |
-| Radio lesson | Intro; per word: classic plus an example plus one line of commentary; midpoint quiz; final review; outro |
-| Story mode | Intro; the mini-story told between short drills; callbacks; final review |
-| Review | Reverse drills and a speed round only — for words already known |
-| Surprise me | A random, sensible mix, different every time |
+A format is now a JSON document with a grammar of its own, and that grammar is designed, not
+planned: [`docs/programme-format.md`](../programme-format.md). A host chooses a format by id and
+sets the switches it declares; it never builds one. What remains here is which formats to ship and
+what they need:
 
-In Acervo, the format is chosen in the make dialog next to the music, the same way: a short list,
-each with a sentence saying what it is, and Surprise me first.
+| Format | Built from | Needs |
+|---|---|---|
+| `classic` | Today's loop, unchanged | Nothing: ships |
+| `alternating` | Today's second drill | Nothing: ships |
+| `echo` | Word, a "your turn" cue, a silent bar, the word again | Guide voice, cue bank |
+| `review` | Reverse drills, then every word at 1.2× | The `review` section, stretch |
+| `radio-lesson` | Intro; per word a drill, an example and sometimes a remark; a quiz halfway; a review; outro | Writer, guide voice |
+| `story` | Intro; a story told between pairs of words; a review; outro | Writer, guide voice |
+
+In Acervo, the format is chosen in the make dialog next to the music: a short list from `/schema`,
+each with its sentence, and the chosen format's switches beneath it.
 
 ## Ordering the words
 
@@ -164,8 +169,8 @@ later feature). Within a programme they can be reordered:
 the voice guesses. Instead:
 - time-stretch the master, which the take cache holds losslessly, in one formant-preserving pass;
 - let the direction ("briskly") only nudge;
-- measure the usable bound by ear with the listening tools. The fit squeeze is now capped at 1.2×
-  for exactly this reason, and a deliberate speed round may tolerate 1.3–1.4×.
+- measured by ear in the programme-blocks experiment: 1.2× holds, 1.3–1.4× starts to sound
+  processed, so a format's `stretch` is capped at 1.2.
 
 **Overlap** is now possible and safe: a take that runs past its bar fades under the next voice. A
 speed round can lean on that.
@@ -249,10 +254,12 @@ Each full URL is written out, so it can be copied.
 
 ## Roadmap
 
-| Phase | What | First concrete step |
+| Stage | What | State |
 |---|---|---|
-| **P1** | New drill patterns (two or four, reverse, echo, slow-normal-fast), a final review, a speed round, a templated intro | Add patterns to `arrange.PATTERNS` beside `retrieval`, and a `final_review` section that says each pair once; the cue timeline for the host |
-| **P2** | LexiBeat-written examples: one per word, then joint ones for neighbours | The injected writer backend and its first prompt; the script schema and parser; the host's writer call home |
-| **P3** | The full programme script: commentary, callbacks, mini-story, critique pass | A `radio lesson` format end to end, judged blind against the classic drill |
-| **P4** | Sound effects | The label vocabulary; a first CC0 pack of about 50 sounds from Freesound and Kenney; tagging in the writer's call |
-| **P5** | Format picker and Surprise me in Acervo | The make dialog lists formats beside music; the cue-list player |
+| **1** | The format in the API: `format` and `switches` replace `pattern`, `/schema` lists formats, and `classic` and `alternating` render exactly as the two drills did | Built |
+| **2a** | Template formats with no writer: `echo`, `review`, the quiz and review sections, the guide voice and cue bank, stretch. The cue-list timeline replaces the row per word | Next |
+| **2b** | Writer formats: `radio-lesson` and `story`, the injected writer, the programme script and its parser, the named `when` checks | After 2a |
+| **3** | Acervo: the format dropdown and switches, the cue-list player, the writer call home, the stored record's `format` | Last |
+| **Later** | Sound effects | The label vocabulary and a first CC0 pack; tagging in the writer's call |
+
+Each stage updates the spec's "What renders today" table in the same change as its code.

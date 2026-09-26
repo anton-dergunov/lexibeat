@@ -31,7 +31,7 @@ from .explorer import (
 )
 from .generator import sample_refs
 from .language import Language
-from .arrange import PATTERNS
+from . import formats
 from .loop import LoopRequest, estimated_seconds, render_loop
 from .vocab import Item
 
@@ -312,8 +312,10 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                                                      max_lines=1, scale=1)
                             target_name = gr.Textbox(value="English", label="called",
                                                      max_lines=1, scale=2)
-                        loop_pattern = gr.Radio(
-                            sorted(PATTERNS), value="retrieval", label="Pattern")
+                        loop_format = gr.Radio(
+                            [(fmt.label, fmt.id) for fmt in formats.builtin().values()
+                             if not formats.unsupported(formats.resolve(fmt))],
+                            value="classic", label="Format")
                         loop_button = gr.Button("Generate loop", variant="primary")
                         loop_open_lab = gr.Button("Open bed in Lab")
                     with gr.Column(scale=4, min_width=420):
@@ -645,14 +647,14 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
 
         def generate_loop(rows: object, source_code: str, source_name: str,
                           target_code: str, target_name: str,
-                          pattern: str, state: dict, progress=gr.Progress()):
+                          format_id: str, state: dict, progress=gr.Progress()):
             items = loop_items(rows)
             try:
                 request = LoopRequest(
                     items=tuple(items),
                     source_language=Language(source_code, source_name),
                     target_language=Language(target_code, target_name),
-                    pattern=pattern, palette=loop_palette)
+                    format=format_id, palette=loop_palette).validated()
             except ValueError as exc:
                 raise gr.Error(str(exc)) from exc
             progress(0.01, desc="Preparing the voice")
@@ -683,19 +685,19 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             loop_value = audio_value(result.audio_path, label="Loop", autoplay=True)
             return [*values, status, loop_value, result.audio_path]
 
-        def announce_loop(rows: object, pattern: str) -> str:
+        def announce_loop(rows: object, format_id: str) -> str:
             items = loop_items(rows)
-            seconds = estimated_seconds(len(items), pattern)
+            seconds = estimated_seconds(len(items), formats.renderable(format_id))
             return ("### Preparing the loop\n"
                     f"{len(items)} word{'s' if len(items) != 1 else ''}, "
                     f"about {seconds / 60:.1f} minutes of audio.")
 
-        loop_button.click(announce_loop, [vocabulary, loop_pattern], loop_status,
+        loop_button.click(announce_loop, [vocabulary, loop_format], loop_status,
                           api_name=False, queue=False, show_progress="hidden")
         loop_button.click(
             generate_loop,
             [vocabulary, source_code, source_name, target_code, target_name,
-             loop_pattern, current],
+             loop_format, current],
             [*full_outputs, loop_status, loop_audio, loop_download], api_name=False)
         loop_open_lab.click(lambda: gr.Tabs(selected="lab"), outputs=tabs,
                             api_name=False)

@@ -1,9 +1,8 @@
 """A language, as far as LexiBeat needs to know one.
 
-LexiBeat used to be Spanish-and-English shaped: pattern slots were literally ``("es", 0)`` and
-``("en", 0)``, and the Gemini director note said *"native Spanish"* or *"native English"* on a
-two-way branch. Nothing about the engine needed that, and a host that teaches Mandarin from
-Portuguese could not ask for it.
+Nothing about the engine is shaped by a particular pair of languages: a format says `word` and
+`translation`, never a language, and a host that teaches Mandarin from Portuguese asks for it the
+same way as one teaching Spanish from English.
 
 So a language is a pair. ``code`` is what voices, references and locales are keyed on; ``name`` is
 what goes into a director note a model reads. The host supplies both, because the host is the one

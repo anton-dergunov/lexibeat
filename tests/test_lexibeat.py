@@ -19,6 +19,7 @@ import soundfile as sf
 from lexibeat.api import MusicRequest, render_music, resolve_music
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
+from lexibeat.formats import renderable
 from lexibeat.language import ENGLISH, SPANISH, Language
 from lexibeat.cli import build_spec, parse_args
 from lexibeat.generator import (
@@ -1543,7 +1544,7 @@ class RenderAndMixTests(unittest.TestCase):
         speaker = FakeSpeaker()
         events, _ = arrange([Item("hola", "hello")], speaker, grid,
                             source_language=SPANISH, target_language=ENGLISH,
-                            progress=False)
+                            format=renderable("classic"), progress=False)
         self.assertEqual(len(events), 6)
         self.assertTrue(all(event.start % grid.bar == 0 for event in events))
         self.assertTrue(all(value == grid.bar * 0.92
@@ -1574,7 +1575,8 @@ class RenderAndMixTests(unittest.TestCase):
         events, _ = arrange(
             [Item("hola", "hello")], speaker,
             Grid(bpm=60, beats_per_bar=4, beat_unit=4),
-            source_language=SPANISH, target_language=ENGLISH, progress=False)
+            source_language=SPANISH, target_language=ENGLISH,
+            format=renderable("classic"), progress=False)
         spanish = [event for event in events if event.label.startswith("source:")]
         self.assertEqual(
             [bias for lang, bias, retry in speaker.calls

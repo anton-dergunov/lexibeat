@@ -17,7 +17,7 @@ import numpy as np
 import soundfile as sf
 
 from .compare_gemini_batched import split_on_long_silences
-from lexibeat.arrange import PATTERNS
+from lexibeat import formats
 from lexibeat.api import MusicRequest
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.generator import (
@@ -147,7 +147,7 @@ def _speech_track(spec: BedSpec, segments: dict) -> tuple[np.ndarray, int, list[
     events: list[dict] = []
     bar = 2
     for item_index, item in enumerate(ITEMS):
-        for kind, rep in PATTERNS["retrieval"]:
+        for kind, rep in formats.slots(formats.renderable("classic")):
             if kind in ("gap", "rest"):
                 bar += 1
                 continue

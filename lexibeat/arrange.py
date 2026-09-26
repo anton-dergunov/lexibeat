@@ -1,13 +1,10 @@
 """Lay utterances onto the beat grid.
 
-Each vocabulary item gets a fixed block of bars. Within the block, every utterance starts exactly
-on a downbeat; the rest of its bar is silence. This preserves the downbeat-aligned structure
-established by the prototype.
+Each vocabulary item gets the block of bars its format's `words` section describes. Within the
+block, every utterance starts exactly on a downbeat; the rest of its bar is silence.
 
-The pattern used to be bilingual in the literal sense: its slots were ``("es", 0)`` and
-``("en", 0)``. They are ``("source", 0)`` and ``("target", 0)`` now, and which language each one is
-comes from the request — so the same two presets teach Mandarin from Portuguese without a line
-changing here.
+A format's slots are `source` and `target`, never languages: which language each one is comes from
+the request, so the same format teaches Mandarin from Portuguese without a line changing here.
 """
 
 from __future__ import annotations
@@ -17,37 +14,11 @@ from typing import Callable
 
 import numpy as np
 
+from .formats import SOURCE, TARGET, Format, slots as format_slots, spoken_slots
 from .language import Language
 from .music import Grid
 from .vocab import Item
 from .voice import Delivery, Speaker
-
-SOURCE = "source"
-TARGET = "target"
-
-# Each entry is one bar: (source | target | "gap" | "rest", repetition index).
-#   "gap"  - deliberate silence for the learner to recall the translation
-#   "rest" - breathing room before the next word
-PATTERNS: dict[str, list[tuple[str, int]]] = {
-    # The word, silence to recall in, then the answer. Retrieval practice.
-    "retrieval": [
-        (SOURCE, 0), ("gap", 0), (TARGET, 0),
-        (SOURCE, 1), (TARGET, 1),
-        (SOURCE, 2), (TARGET, 2),
-        ("rest", 0),
-    ],
-    # Straight alternation without a retrieval gap.
-    "alternating": [
-        (SOURCE, 0), (TARGET, 0),
-        (SOURCE, 1), (TARGET, 1),
-        (SOURCE, 2), (TARGET, 2),
-        ("rest", 0), ("rest", 0),
-    ],
-}
-
-
-def spoken_slots(pattern: str) -> list[tuple[str, int]]:
-    return [(kind, rep) for kind, rep in PATTERNS[pattern] if kind in (SOURCE, TARGET)]
 
 
 class Cancelled(RuntimeError):
@@ -68,20 +39,24 @@ def arrange(
     *,
     source_language: Language,
     target_language: Language,
-    pattern: str = "retrieval",
+    format: Format,
     intro_bars: int = 2,
     outro_bars: int = 2,
     progress: bool = True,
     progress_callback: Callable[[int, int, str], None] | None = None,
     cancel_check: Callable[[], bool] | None = None,
 ) -> tuple[list[Event], int]:
-    """Return the scheduled utterances and the total number of bars needed."""
-    slots = PATTERNS[pattern]
+    """Return the scheduled utterances and the total number of bars needed.
+
+    `format` is resolved and renderable (`formats.renderable`): each bar of its `words` block is a
+    line on its downbeat, a recall gap, or a rest.
+    """
+    slots = format_slots(format)
     languages = {SOURCE: source_language, TARGET: target_language}
     events: list[Event] = []
     bar = intro_bars
     completed = 0
-    total_utterances = len(items) * len(spoken_slots(pattern))
+    total_utterances = len(items) * len(spoken_slots(format))
 
     for n, item in enumerate(items, 1):
         if progress:
