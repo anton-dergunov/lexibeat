@@ -1,0 +1,9 @@
+{
+  "id": "review",
+  "label": "Review",
+  "description": "For words you know: the meaning first, a pause to find the word, then a quick run through all of them.",
+  "sections": [
+    {"kind": "words", "block": [{"say": "translation"}, {"gap": 1}, {"say": "word"}, {"rest": 1}]},
+    {"kind": "review", "block": [{"say": "word"}, {"say": "translation"}], "stretch": 1.2}
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "language": "es",
+  "word_forms": {
+    "one": "palabra",
+    "other": "palabras"
+  },
+  "your_turn": [
+    "Tu turno.",
+    "Ahora tú.",
+    "Dilo.",
+    "Repite.",
+    "Inténtalo.",
+    "Dilo tú.",
+    "En voz alta.",
+    "Venga, dilo.",
+    "¿Y tú?",
+    "Repite conmigo.",
+    "Te toca.",
+    "Ahora dilo tú.",
+    "Prueba tú."
+  ],
+  "intro": [
+    "Hoy, {count_words}.",
+    "Hoy tenemos {count_words}.",
+    "{count_words}. ¡Vamos!",
+    "Aquí vienen {count_words}."
+  ],
+  "outro": [
+    "Eso es todo por hoy.",
+    "Muy bien. Eso es todo.",
+    "Hasta aquí por hoy.",
+    "Y esas han sido las palabras de hoy."
+  ]
+}

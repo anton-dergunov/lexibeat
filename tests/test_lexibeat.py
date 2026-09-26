@@ -1533,10 +1533,11 @@ class RenderAndMixTests(unittest.TestCase):
             capabilities = CAPABILITIES["gemini"]
             targets: list[float] = []
 
-            def take(self, index, direction=""):
-                return Delivery.for_take(index, direction)
+            def take(self, index, direction="", *, pace=""):
+                return Delivery.for_take(index, direction, pace=pace)
 
-            def say(self, text, language, delivery, target_seconds=None, slot_seconds=None):
+            def say(self, text, language, delivery, target_seconds=None, slot_seconds=None,
+                    retry=False, role="native"):
                 self.targets.append(target_seconds)
                 return np.ones(100, dtype=np.float32)
 
@@ -1558,12 +1559,12 @@ class RenderAndMixTests(unittest.TestCase):
             def __init__(self):
                 self.calls = []
 
-            def take(self, index, direction=""):
+            def take(self, index, direction="", *, pace=""):
                 return Delivery.for_take(index, direction,
-                                         capabilities=self.capabilities)
+                                         capabilities=self.capabilities, pace=pace)
 
             def say(self, text, language, delivery, target_seconds=None,
-                    *, slot_seconds=None, retry=False):
+                    *, slot_seconds=None, retry=False, role="native"):
                 del text, target_seconds
                 bias = delivery.prosody.exaggeration_bias
                 self.calls.append((language.code, bias, retry))

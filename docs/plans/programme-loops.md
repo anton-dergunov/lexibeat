@@ -257,9 +257,9 @@ Each full URL is written out, so it can be copied.
 | Stage | What | State |
 |---|---|---|
 | **1** | The format in the API: `format` and `switches` replace `pattern`, `/schema` lists formats, and `classic` and `alternating` render exactly as the two drills did | Built |
-| **2a** | Template formats with no writer: `echo`, `review`, the quiz and review sections, the guide voice and cue bank, stretch. The cue-list timeline replaces the row per word | Next |
-| **2b** | Writer formats: `radio-lesson` and `story`, the injected writer, the programme script and its parser, the named `when` checks | After 2a |
-| **3** | Acervo: the format dropdown and switches, the cue-list player, the writer call home, the stored record's `format` | Last |
+| **2a** | Template formats with no writer: `echo`, `review`, the quiz and review sections, roles and phrase files, stretch. The timeline becomes `items` and `cues` | Built |
+| **2b** | Writer formats: `radio-lesson` and `story`, the injected writer, the programme script and its parser, the named `when` checks | Built |
+| **3** | Acervo: the format dropdown and switches, the cue-list player, the writer call home, the stored record's `format` | Next |
 | **Later** | Sound effects | The label vocabulary and a first CC0 pack; tagging in the writer's call |
 
 Each stage updates the spec's "What renders today" table in the same change as its code.

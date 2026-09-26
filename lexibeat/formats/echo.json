@@ -1,0 +1,11 @@
+{
+  "id": "echo",
+  "label": "Say it back",
+  "description": "Hear the word, say it yourself in the pause, then hear it again.",
+  "sections": [
+    {"kind": "words", "block": [
+      {"say": "word"}, {"cue": "your_turn"}, {"gap": 1},
+      {"say": "word"}, {"say": "translation"}, {"rest": 1}
+    ]}
+  ]
+}

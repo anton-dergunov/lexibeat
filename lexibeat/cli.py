@@ -28,6 +28,9 @@ from lexibeat.arrange import arrange, render_speech
 from lexibeat.bedspec import BedSpec
 from lexibeat.language import Language
 from lexibeat.mix import mix_stems
+from lexibeat.loop import write_script
+from lexibeat.programme import estimated_bars
+from lexibeat.writer import GeminiWriter
 from lexibeat.music import SR, Grid, render_bed, render_stems
 from lexibeat.profiles import POSITIVE_FAMILIES
 from lexibeat.samples import PACKS, PACK_GROUPS, download_target
@@ -55,6 +58,9 @@ def parse_args() -> argparse.Namespace:
     loop.add_argument("--format-file", type=Path,
                       help="an inline format as JSON (docs/programme-format.md), instead of "
                            "--format")
+    loop.add_argument("--writer", choices=["none", "gemini"], default="none",
+                      help="the model that writes a format's lines (examples, remarks, a story); "
+                           "'gemini' uses GEMINI_API_KEY")
     loop.add_argument("--source-language", default="es",
                       help="language code of the words, e.g. es")
     loop.add_argument("--source-language-name", default="Spanish",
@@ -192,7 +198,21 @@ def main() -> None:
     if not items:
         raise SystemExit("No vocabulary items found — check --vocab.")
 
-    minutes = (len(items) * slots + 4) * grid.bar / 60
+    source_language = Language(args.source_language, args.source_language_name)
+    target_language = Language(args.target_language, args.target_language_name)
+    writer = GeminiWriter() if args.writer == "gemini" else None
+    missing = formats.missing_requirements(
+        fmt, mixes_languages=CAPABILITIES[args.backend if args.backend in CAPABILITIES
+                                          else "chatterbox"].mixes_languages,
+        has_writer=writer is not None)
+    if missing and fmt.fallback:
+        print(f"Format '{fmt.id}' requires {', '.join(missing)}; rendering "
+              f"'{fmt.fallback}' instead.")
+        fmt = formats.renderable(fmt.fallback)
+        slots = len(formats.slots(fmt))
+    elif missing:
+        raise SystemExit(f"Format '{fmt.id}' requires {', '.join(missing)}.")
+    minutes = (estimated_bars(fmt, len(items)) + 4) * grid.bar / 60
     print(f"{len(items)} items · {spec.bpm:g} BPM · bar {grid.bar:.2f}s · "
           f"{slots} bars each · ~{minutes:.1f} min · format '{fmt.id}' · "
           f"bed '{bed_label}' · voice '{args.backend}'")
@@ -205,6 +225,12 @@ def main() -> None:
         return
 
     started = time.perf_counter()
+    script = None
+    if formats.needs_writer(fmt):
+        print("Writing the programme…")
+        script = write_script(fmt, items, source_language=source_language,
+                              target_language=target_language, writer=writer)
+        print(f"  written by {writer.last_model} in {writer.last_seconds:.1f} s")
     print("Synthesising speech…")
     voices = {key: value for key, value in {
         "es": args.voice_es, "en": args.voice_en}.items() if value}
@@ -222,9 +248,8 @@ def main() -> None:
     speaker_init_seconds = time.perf_counter() - speaker_started
     speech_started = time.perf_counter()
     events, total_bars = arrange(
-        items, speaker, grid, format=fmt,
-        source_language=Language(args.source_language, args.source_language_name),
-        target_language=Language(args.target_language, args.target_language_name))
+        items, speaker, grid, format=fmt, seed=args.seed, script=script,
+        source_language=source_language, target_language=target_language)
     speech = render_speech(events, total_bars, grid)
     speech_seconds = time.perf_counter() - speech_started
     speaker.close()

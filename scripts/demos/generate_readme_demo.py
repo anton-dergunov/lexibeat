@@ -18,6 +18,7 @@ from lexibeat.demo import (
     PersistentSpeaker,
     arrange_demo,
     audio_summary,
+    demo_timeline,
     encode_visual_track,
     load_demo_config,
     mux_audio,
@@ -25,7 +26,6 @@ from lexibeat.demo import (
     resolve_font,
     write_tracklist,
 )
-from lexibeat.loop import build_timeline
 from lexibeat.mix import mix_stems
 from lexibeat.music import SR, Grid, render_stems
 from lexibeat.voice import DEFAULT_MODELS, Speaker
@@ -85,7 +85,7 @@ def main() -> None:
 
     speech_path = args.out_dir / "shared-speech.wav"
     sf.write(speech_path, speech, SR, subtype="PCM_16")
-    timeline = build_timeline(config.items, events, grid, total_bars, config.format)
+    timeline = demo_timeline(config.items, events, grid, total_bars)
     timeline_payload = {
         "schema_version": 1,
         "title": config.title,

@@ -47,6 +47,14 @@ def switched() -> dict:
         ])
 
 
+# Parses, and uses the two things this version still does not render: a review that changes the
+# bed, and a remark after a chunk.
+UNRENDERED = minimal(sections=[
+    {"kind": "words", "chunk": 2, "block": [{"say": "word"}, {"say": "translation"}],
+     "after_chunk": [{"remark": {"kinds": ["joke"]}, "when": "writer_decides"}]},
+    {"kind": "review", "block": [{"say": "word"}], "bed": "quicker"}])
+
+
 def spec_examples() -> list[dict]:
     blocks = re.findall(r"```json\n(.*?)```", SPEC.read_text(encoding="utf-8"), re.S)
     return [data for data in (json.loads(block) for block in blocks)
@@ -54,8 +62,9 @@ def spec_examples() -> list[dict]:
 
 
 class BuiltinTests(unittest.TestCase):
-    def test_the_built_in_formats_are_today_s_two_drills_bar_for_bar(self) -> None:
-        self.assertEqual(sorted(formats.builtin()), ["alternating", "classic"])
+    def test_the_two_drills_are_built_in_bar_for_bar(self) -> None:
+        self.assertEqual(sorted(formats.builtin()),
+                         ["alternating", "classic", "echo", "radio-lesson", "review", "story"])
         self.assertEqual(formats.slots(formats.renderable("classic")), CLASSIC)
         self.assertEqual(formats.slots(formats.renderable("alternating")), ALTERNATING)
 
@@ -80,10 +89,11 @@ class GrammarTests(unittest.TestCase):
             with self.subTest(data["id"]):
                 self.assertEqual(formats.parse(data).id, data["id"])
 
-    def test_the_spec_s_classic_example_is_the_built_in_file(self) -> None:
-        example = next(data for data in spec_examples() if data["id"] == "classic")
-        shipped = json.loads((formats.HERE / "classic.json").read_text(encoding="utf-8"))
-        self.assertEqual(example, shipped)
+    def test_the_spec_s_examples_of_built_in_formats_are_the_shipped_files(self) -> None:
+        for format_id in ("classic", "echo", "radio-lesson", "story"):
+            example = next(data for data in spec_examples() if data["id"] == format_id)
+            shipped = json.loads((formats.HERE / f"{format_id}.json").read_text(encoding="utf-8"))
+            self.assertEqual(example, shipped)
 
     def test_a_refusal_names_where_the_format_is_wrong(self) -> None:
         cases = [
@@ -155,25 +165,23 @@ class SwitchTests(unittest.TestCase):
 
 class RenderableTests(unittest.TestCase):
     def test_what_this_version_cannot_render_is_named_not_dropped(self) -> None:
-        story = next(data for data in spec_examples() if data["id"] == "story")
-        with self.assertRaisesRegex(FormatError, r"format 'story' uses .*story_beat.*cannot "
-                                                 r"render yet"):
-            formats.renderable(story)
-        missing = formats.unsupported(formats.resolve(formats.parse(story)))
-        self.assertIn("order 'writer'", missing)
-        self.assertIn("the 'review' section", missing)
+        with self.assertRaisesRegex(FormatError, r"format 'test' uses 'remark' after a chunk, "
+                                                 r"'bed' on the 'review' section, which this "
+                                                 r"version cannot render yet"):
+            formats.renderable(UNRENDERED)
 
-    def test_a_words_block_must_say_both_sides_for_now(self) -> None:
-        one_sided = minimal(sections=[{"kind": "words", "block": [{"say": "word"}, {"gap": 1}]}])
-        with self.assertRaisesRegex(FormatError, r"does not say both"):
-            formats.renderable(one_sided)
+    def test_a_second_words_section_is_refused_for_now(self) -> None:
+        twice = minimal(sections=[{"kind": "words", "block": [{"say": "word"}]},
+                                  {"kind": "words", "block": [{"say": "translation"}]}])
+        with self.assertRaisesRegex(FormatError, r"more than one 'words' section"):
+            formats.renderable(twice)
 
     def test_a_request_with_an_unrenderable_format_is_refused_before_any_speech(self) -> None:
-        story = next(data for data in spec_examples() if data["id"] == "story")
         backend = RecordingBackend()
         with tempfile.TemporaryDirectory() as tmp, \
                 self.assertRaisesRegex(LoopError, r"cannot render yet"):
-            render_loop(request(format=story), backend=backend, output=Path(tmp) / "x.mp3")
+            render_loop(request(format=UNRENDERED), backend=backend,
+                        output=Path(tmp) / "x.mp3")
         self.assertEqual(backend.seen, [])
 
     def test_an_inline_copy_of_classic_renders_exactly_as_classic_does(self) -> None:
@@ -186,7 +194,8 @@ class RenderableTests(unittest.TestCase):
                                    output=Path(tmp) / "b.mp3")
         self.assertEqual(by_name.format, "classic")
         self.assertEqual(by_value.format, "my-classic")
-        self.assertEqual(by_name.timeline, by_value.timeline)
+        self.assertEqual(by_name.items, by_value.items)
+        self.assertEqual(by_name.cues, by_value.cues)
         self.assertEqual(by_name.total_bars, by_value.total_bars)
 
     def test_a_switch_changes_what_is_rendered(self) -> None:
@@ -199,9 +208,9 @@ class RenderableTests(unittest.TestCase):
                                 output=Path(tmp) / "a.mp3")
             again = render_loop(request(format=data, switches={"again": True}),
                                 backend=RecordingBackend(), output=Path(tmp) / "b.mp3")
-        self.assertEqual(len(plain.timeline[0]["utterances"]), 2)
-        self.assertEqual(len(again.timeline[0]["utterances"]), 3)
-        self.assertEqual(again.total_bars - plain.total_bars, len(again.timeline))
+        self.assertEqual(len(plain.cues), 2 * len(plain.items))
+        self.assertEqual(len(again.cues), 3 * len(again.items))
+        self.assertEqual(again.total_bars - plain.total_bars, len(again.items))
 
 
 if __name__ == "__main__":

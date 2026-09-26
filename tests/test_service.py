@@ -64,7 +64,11 @@ class SchemaTests(unittest.TestCase):
         schema = service_schema()
         self.assertEqual(schema["api_version"], API_VERSION)
         names = {row["id"] for row in schema["formats"]}
-        self.assertEqual(names, {"classic", "alternating"})
+        self.assertEqual(names, {"classic", "alternating", "echo", "review", "radio-lesson",
+                                 "story"})
+        radio = next(row for row in schema["formats"] if row["id"] == "radio-lesson")
+        self.assertEqual(radio["requires"], ["writer", "multilingual_voice"])
+        self.assertEqual(radio["switches"]["review"]["choices"], ["off", "normal", "fast"])
         classic = next(row for row in schema["formats"] if row["id"] == "classic")
         self.assertTrue(classic["has_recall_gap"])
         self.assertEqual(classic["utterances_per_item"], 6)
@@ -133,8 +137,10 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(operation["progress"]["fraction"], 1.0)
         result = operation["result"]
         self.assertEqual(result["bitrate_kbps"], 128)
-        self.assertEqual(len(result["timeline"]), 1)
-        self.assertEqual(result["timeline"][0]["source"], "asco")
+        self.assertEqual(len(result["items"]), 1)
+        self.assertEqual(result["items"][0]["source"], "asco")
+        self.assertEqual(len(result["cues"]), 6)
+        self.assertIsNone(result["fallback_from"])
         audio = self.client.get(result["audio_url"])
         self.assertEqual(audio.status_code, 200)
         self.assertEqual(audio.headers["content-type"], "audio/mpeg")

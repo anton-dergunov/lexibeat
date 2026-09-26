@@ -1,0 +1,131 @@
+{
+  "id": "radio-lesson",
+  "label": "Radio lesson",
+  "description": "An intro, each word with an example and sometimes a remark, a quiz halfway, then every word again.",
+  "requires": [
+    "writer",
+    "multilingual_voice"
+  ],
+  "fallback": "classic",
+  "order": "group_by_topic",
+  "switches": {
+    "remarks": {
+      "label": "Remarks about words",
+      "default": true
+    },
+    "quiz": {
+      "label": "Quiz halfway",
+      "default": true
+    },
+    "review": {
+      "label": "Final review",
+      "default": "normal",
+      "choices": [
+        "off",
+        "normal",
+        "fast"
+      ]
+    }
+  },
+  "sections": [
+    {
+      "kind": "intro",
+      "text": "writer"
+    },
+    {
+      "kind": "words",
+      "group_headers": true,
+      "block": [
+        {
+          "say": "word"
+        },
+        {
+          "gap": 1
+        },
+        {
+          "say": "translation"
+        },
+        {
+          "say": "word"
+        },
+        {
+          "say": "translation"
+        },
+        {
+          "example": "writer",
+          "translate": true
+        },
+        {
+          "remark": {
+            "kinds": [
+              "contrast",
+              "register",
+              "false_friend",
+              "mnemonic",
+              "culture"
+            ]
+          },
+          "when": "writer_decides",
+          "switch": "remarks",
+          "then": [
+            {
+              "say": "word"
+            },
+            {
+              "say": "word"
+            }
+          ]
+        },
+        {
+          "pronounce": "slow_whole",
+          "when": "hard_to_say",
+          "then": [
+            {
+              "say": "word"
+            }
+          ]
+        },
+        {
+          "rest": 1
+        }
+      ]
+    },
+    {
+      "kind": "quiz",
+      "at": "middle",
+      "switch": "quiz",
+      "block": [
+        {
+          "say": "translation"
+        },
+        {
+          "gap": 1
+        },
+        {
+          "say": "word"
+        }
+      ]
+    },
+    {
+      "kind": "review",
+      "switch": "review",
+      "block": [
+        {
+          "say": "word"
+        },
+        {
+          "say": "translation"
+        }
+      ],
+      "choice": {
+        "fast": {
+          "stretch": 1.2
+        }
+      }
+    },
+    {
+      "kind": "outro",
+      "text": "writer"
+    }
+  ]
+}

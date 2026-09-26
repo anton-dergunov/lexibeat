@@ -1,0 +1,35 @@
+{
+  "language": "en",
+  "word_forms": {
+    "one": "word",
+    "other": "words"
+  },
+  "your_turn": [
+    "Your turn.",
+    "Now you.",
+    "Say it.",
+    "Over to you.",
+    "You try.",
+    "Go on, say it.",
+    "Now say it yourself.",
+    "Out loud.",
+    "Your go.",
+    "Say it back.",
+    "Try it.",
+    "And you?",
+    "Say it with me.",
+    "Now, you say it."
+  ],
+  "intro": [
+    "Today: {count_words}.",
+    "{count_words} today.",
+    "{count_words}. Let's go.",
+    "Here we go: {count_words}."
+  ],
+  "outro": [
+    "That's all for today.",
+    "Well done. That's the lot.",
+    "That's it for now.",
+    "And that's today's words."
+  ]
+}

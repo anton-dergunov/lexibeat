@@ -17,7 +17,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -26,7 +26,11 @@ import soundfile as sf
 
 from .api import MusicRequest, resolve_music
 from .arrange import SOURCE, TARGET, Cancelled, Event, arrange, render_speech
-from .formats import Format, FormatError, renderable, slots, spoken_slots
+from .formats import Format, FormatError, missing_requirements, needs_writer, renderable
+from .programme import estimated_bars, needs_phrases, phrases
+from .script import Script, ScriptError, needs as script_needs, parse as parse_script
+from .script import prompt as script_prompt
+from .writer import WriteRequest, Writer
 from .language import Language
 from .mix import mix_stems
 from .music import SR, Grid, render_stems
@@ -75,11 +79,23 @@ class LoopRequest:
     voice_seed: int | None = None
 
     def resolved_format(self) -> Format:
-        """The format as this render runs it: loaded, switches applied, and checked renderable."""
+        """The format as this render runs it: loaded, switches applied, and checked renderable.
+
+        What it *requires* is not checked here, because that depends on the backend and writer a
+        render is given (`render_loop`); a request can be refused before it is queued without them.
+        """
         try:
-            return renderable(self.format, self.switches)
+            fmt = renderable(self.format, self.switches)
         except FormatError as exc:
             raise LoopError(f"Format: {exc}") from exc
+        # A writer can supply missing phrases at render time, so only a format with no writer text
+        # can be refused for them here.
+        if needs_phrases(fmt) and not needs_writer(fmt) and \
+                phrases(self.target_language.code) is None:
+            raise LoopError(f"Format: format '{fmt.id}' needs learner-language phrases, and there "
+                            f"are none for {self.target_language.name} "
+                            f"({self.target_language.code}) yet")
+        return fmt
 
     def validated(self) -> "LoopRequest":
         self.resolved_format()
@@ -110,9 +126,12 @@ class LoopRequest:
 class LoopResult:
     """Everything the host stores about a rendered loop.
 
-    These are the fields and no others because a host records *what was said* — the item text is
-    denormalised into the timeline on purpose, so editing a word afterwards cannot make a player
-    caption a recording that no longer matches it.
+    These are the fields and no others because a host records *what was said* — the text is
+    denormalised into `items` and `cues` on purpose, so editing a word afterwards cannot make a
+    player caption a recording that no longer matches it.
+
+    `format` is the format that was rendered. When the one asked for needed something this render
+    lacked and named a fallback, `format` is the fallback and `fallback_from` the one asked for.
     """
 
     audio_path: str
@@ -126,7 +145,9 @@ class LoopResult:
     bed_fingerprint: str
     total_bars: int
     bpm: float
-    timeline: list[dict[str, Any]] = field(default_factory=list)
+    items: list[dict[str, Any]] = field(default_factory=list)
+    cues: list[dict[str, Any]] = field(default_factory=list)
+    fallback_from: str | None = None
     bed_spec: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -146,50 +167,75 @@ def bed_fingerprint(fingerprint: Any) -> str:
 
 
 def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
-                   total_bars: int, format: Format) -> list[dict[str, Any]]:
-    """Describe progressive reveals and active utterances from arranged events.
+                   total_bars: int) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """The two views a player needs of an arranged loop: one row per word, and every line.
 
-    This lived in `demo.py`, which is a script for making a README video — so the one exposure rich
-    enough to drive an interface was in the one place an interface could not reach. The subtitle
-    rows the old lesson path produced held a caption until the next utterance and could not say
-    when the answer arrives, which is the single thing a retrieval loop's display turns on.
+    **`items`** is one row per word, from its block in the words section: when the block starts and
+    ends, and when each side is first heard — the reveals a retrieval display turns on, since the
+    answer must not be on screen before the recall gap has passed. A side a format never says in
+    the words section has no reveal. Rows are in the words' own order, which need not be the order
+    they are taught in. An item ends where whatever follows its own block begins — the next word, a
+    quiz, a piece of the story — or at the end of the loop.
+
+    **`cues`** is every line in the order it is heard: a word may appear in it more than once, and
+    a line may belong to no word at all (an intro, a cue).
     """
-    spoken = spoken_slots(format)
-    expected = len(items) * len(spoken)
-    if len(events) != expected:
-        raise LoopError(f"Expected {expected} speech events, received {len(events)}.")
-    timeline: list[dict[str, Any]] = []
-    cursor = 0
-    for item_index, item in enumerate(items):
-        utterances = []
-        for kind, repetition in spoken:
-            event = events[cursor]
-            expected_text = item.source if kind == SOURCE else item.target
-            if event.label != f"{kind}:{expected_text}":
+    cues: list[dict[str, Any]] = []
+    for event in events:
+        segment = event.segment
+        if segment is None:
+            raise LoopError("An arranged line has lost the segment it was planned from.")
+        if segment.kind == "say":
+            item = items[segment.item]
+            if segment.text != (item.source if segment.side == SOURCE else item.target):
                 raise LoopError("Speech events do not match the requested words.")
-            utterances.append({
-                "role": kind,
-                "repetition": repetition,
-                "start": float(event.start),
-                "end": float(event.start + len(event.audio) / grid.sr),
-            })
-            cursor += 1
-        source_reveal = next(row["start"] for row in utterances if row["role"] == SOURCE)
-        target_reveal = next(row["start"] for row in utterances if row["role"] == TARGET)
-        next_start = (float(events[cursor].start) if cursor < len(events)
-                      else float(total_bars * grid.bar))
-        timeline.append({
-            "index": item_index,
+        cues.append({
+            "kind": segment.kind,
+            "section": segment.section,
+            "item": segment.item,
+            "side": segment.side,
+            "role": segment.role,
+            "language": segment.language.code,
+            "text": segment.text,
+            "take": segment.take,
+            "start": float(event.start),
+            "end": float(event.start + len(event.audio) / grid.sr),
+        })
+
+    in_words = [cue for cue in cues if cue["section"] == "words" and cue["item"] is not None]
+    starts = {}
+    for cue in in_words:
+        starts.setdefault(cue["item"], cue["start"])
+    if len(starts) != len(items):
+        raise LoopError(f"Expected lines for {len(items)} words, found {len(starts)}.")
+    total = float(total_bars * grid.bar)
+    # Words are taught in the order the format (or its writer) chose, not necessarily by index.
+    taught = sorted(starts, key=starts.get)
+    rows: list[dict[str, Any]] = []
+    for index, item in enumerate(items):
+        mine = [cue for cue in in_words if cue["item"] == index]
+        start = starts[index]
+        position = taught.index(index)
+        following = [cue["start"] for cue in cues if cue["start"] > mine[-1]["start"]
+                     and not (cue["section"] == "words" and cue["item"] == index)]
+        if position + 1 < len(taught):
+            following.append(starts[taught[position + 1]])
+        end = min(following, default=total)
+
+        def reveal(side: str) -> float | None:
+            return next((cue["start"] for cue in mine if cue["side"] == side), None)
+
+        rows.append({
+            "index": index,
             "source": item.source,
             "target": item.target,
             "direction": item.direction,
-            "start": source_reveal,
-            "source_reveal": source_reveal,
-            "target_reveal": target_reveal,
-            "end": next_start,
-            "utterances": utterances,
+            "start": start,
+            "end": end,
+            "source_reveal": reveal(SOURCE),
+            "target_reveal": reveal(TARGET),
         })
-    return timeline
+    return rows, cues
 
 
 def write_mp3(path: Path, track: np.ndarray, sample_rate: int = SR) -> None:
@@ -210,14 +256,16 @@ def render_loop(
     *,
     backend: Backend,
     output: Path | str,
+    writer: Writer | None = None,
     progress: Callable[[float, str], None] | None = None,
     cancel_check: Callable[[], bool] | None = None,
     speech_lufs: float = SPEECH_LUFS,
     music_lufs: float = MUSIC_LUFS,
 ) -> LoopResult:
-    """Speak every line, render the bed, duck it under the speech, and write the MP3."""
+    """Write the lines if the format asks for it, speak them, render the bed, duck it under the
+    speech, and write the MP3."""
     request = request.validated()
-    fmt = request.resolved_format()
+    fmt, fallback_from = _format_for(request, backend, has_writer=writer is not None)
     output = Path(output)
 
     def report(fraction: float, message: str) -> None:
@@ -228,6 +276,11 @@ def render_loop(
         if cancel_check and cancel_check():
             raise Cancelled("The render was cancelled.")
 
+    script = None
+    if needs_writer(fmt):
+        report(0.01, "Writing the programme")
+        script = write_script(fmt, request.items, source_language=request.source_language,
+                              target_language=request.target_language, writer=writer)
     report(0.02, "Resolving the music bed")
     gate()
     resolved = resolve_music(request.music_request())
@@ -245,14 +298,14 @@ def render_loop(
             list(request.items), speaker, grid,
             source_language=request.source_language,
             target_language=request.target_language,
-            format=fmt, progress=False,
+            format=fmt, seed=int(resolved.request.seed), script=script, progress=False,
             cancel_check=cancel_check,
             progress_callback=(lambda completed, total, message:
                                report(0.05 + 0.70 * completed / max(total, 1), message)))
         speech = render_speech(events, total_bars, grid)
         if not len(speech) or not np.isfinite(speech).all():
             raise LoopError("The speech renderer produced invalid audio.")
-        timeline = build_timeline(list(request.items), events, grid, total_bars, fmt)
+        items, cues = build_timeline(list(request.items), events, grid, total_bars)
     finally:
         speaker.close()
 
@@ -291,9 +344,48 @@ def render_loop(
         bed_fingerprint=bed_fingerprint(resolved.fingerprint),
         total_bars=total_bars,
         bpm=float(spec.bpm),
-        timeline=timeline,
+        items=items,
+        cues=cues,
+        fallback_from=fallback_from,
         bed_spec=asdict(spec),
     )
+
+
+def write_script(fmt: Format, items: Sequence[Item], *, source_language: Language,
+                 target_language: Language, writer: Writer) -> Script:
+    """One writer call for the whole programme, read by the script parser.
+
+    A reply that cannot be used raises `LoopError` with the parser's own sentence, which says what
+    was wrong; retrying is the host's model chain's business, not this one's.
+    """
+    need = script_needs(fmt, phrases_missing=phrases(target_language.code) is None)
+    text = writer.write(WriteRequest(script_prompt(
+        need, items, source_language=source_language, target_language=target_language)))
+    try:
+        return parse_script(text, need, len(items))
+    except ScriptError as exc:
+        raise LoopError(f"The writer's reply could not be used: {exc}") from exc
+
+
+def _format_for(request: LoopRequest, backend: Backend, *,
+                has_writer: bool) -> tuple[Format, str | None]:
+    """The format this render runs, and the one asked for when that had to fall back.
+
+    A requirement this render lacks falls back to the format's `fallback`, with its default switches,
+    or is refused naming what is missing. Never a partial render.
+    """
+    fmt = request.resolved_format()
+    capabilities = getattr(backend, "capabilities", None)
+    missing = missing_requirements(
+        fmt, mixes_languages=bool(getattr(capabilities, "mixes_languages", False)),
+        has_writer=has_writer)
+    if not missing:
+        return fmt, None
+    if fmt.fallback is None:
+        raise LoopError(f"Format: format '{fmt.id}' requires {', '.join(missing)}, which this "
+                        "render does not have")
+    fallback = replace(request, format=fmt.fallback, switches={})
+    return _format_for(fallback, backend, has_writer=has_writer)[0], fmt.id
 
 
 def estimated_seconds(item_count: int, format: Format, bpm: float = 80.0,
@@ -301,5 +393,4 @@ def estimated_seconds(item_count: int, format: Format, bpm: float = 80.0,
                       intro_bars: int = 2, outro_bars: int = 2) -> float:
     """How long a loop of this shape will run, before a note of it is synthesised."""
     grid = Grid(bpm=bpm, beats_per_bar=beats_per_bar, beat_unit=beat_unit)
-    bars = intro_bars + item_count * len(slots(format)) + outro_bars
-    return bars * grid.bar
+    return (intro_bars + estimated_bars(format, item_count) + outro_bars) * grid.bar

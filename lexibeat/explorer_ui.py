@@ -314,7 +314,8 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
                                                      max_lines=1, scale=2)
                         loop_format = gr.Radio(
                             [(fmt.label, fmt.id) for fmt in formats.builtin().values()
-                             if not formats.unsupported(formats.resolve(fmt))],
+                             if not fmt.requires
+                             and not formats.unsupported(formats.resolve(fmt))],
                             value="classic", label="Format")
                         loop_button = gr.Button("Generate loop", variant="primary")
                         loop_open_lab = gr.Button("Open bed in Lab")

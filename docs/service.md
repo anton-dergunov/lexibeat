@@ -129,9 +129,15 @@ The completed `result`:
   "bed_fingerprint": "90c6ad267d159b0e",
   "total_bars": 68,
   "bpm": 80.0,
-  "timeline": [ … ]
+  "fallback_from": null,
+  "items": [ … ],
+  "cues": [ … ]
 }
 ```
+
+`format` is the format that was rendered. When the format asked for requires something this render
+lacks — a writer, or a voice that mixes languages — and names a `fallback`, the fallback is rendered
+instead: `format` is then the fallback and `fallback_from` the format asked for.
 
 `seed` is the one the request carried, or the one minted for it when it carried none — never the
 seed of the candidate that won, which is not something a request can be given. The same request
@@ -141,25 +147,39 @@ The **resolved BedSpec is deliberately not in it**. Style, seed and engine versi
 exactly, and `bed_fingerprint` is what proves a replay produced the same one — so sending kilobytes
 of JSON on every poll would only tempt a host into storing an opaque blob it does not need.
 
-A timeline row is one word, with the text denormalised into it on purpose: it records what was
-*said*, so editing the word afterwards cannot make a player caption a recording that no longer
-matches.
+The text is denormalised into `items` and `cues` on purpose: they record what was *said*, so
+editing a word afterwards cannot make a player caption a recording that no longer matches.
+
+**An item is one word**, from its block in the words section:
 
 ```json
 {
   "index": 0, "source": "asco", "target": "disgust",
   "direction": "repulsed, recoiling slightly",
-  "start": 8.82, "source_reveal": 8.82, "target_reveal": 17.65, "end": 44.12,
-  "utterances": [{"role": "source", "repetition": 0, "start": 8.82, "end": 10.1}, …]
+  "start": 8.82, "end": 44.12, "source_reveal": 8.82, "target_reveal": 17.65
 }
 ```
 
-`source_reveal` and `target_reveal` are what a retrieval display turns on: the answer must not be on
-screen before the recall gap has passed.
+`source_reveal` and `target_reveal` are when each side is first heard, and are what a retrieval
+display turns on: the answer must not be on screen before the recall gap has passed. A side the
+format never says in the words section has `null`. An item's `end` is the next item's `start`, or,
+for the last, where whatever follows the words begins, so items never overlap.
 
-An utterance's `end` is where its audio ends, and a long one may run a little past the next
-utterance's `start`: a take that overflows its bar fades under the next voice rather than being cut.
-An item's own `end` is still the next item's `start`, so items never overlap.
+**A cue is one line**, in the order the lines are heard:
+
+```json
+{
+  "kind": "say", "section": "words", "item": 0, "side": "source", "role": "native",
+  "language": "es", "text": "asco", "take": 0, "start": 8.82, "end": 10.1
+}
+```
+
+`kind` is `say` for a word's own line, `cue` for a prompt to speak, and `intro` or `outro`. `section`
+is the format's section the line belongs to, so a word said again in a `review` appears twice, once
+per section. `item` and `side` are `null` for a line that belongs to no word. `role` is `native` for
+a line in the language being learned and `guide` for one in the learner's own. A cue's `end` is
+where its audio ends, and a long one may run a little past the next cue's `start`: a take that
+overflows its bar fades under the next voice rather than being cut.
 
 ## Audio
 
@@ -186,8 +206,11 @@ class Backend(Protocol):
     def synth(self, request: SpeechRequest) -> SynthesisResult: ...
 ```
 
-`SpeechRequest` carries `text`, a `Language`, a `Delivery` (`take`, `direction`, `prosody`), an
-optional `target_seconds` and an optional `seed`. **`take` is on the request**, which matters to a
+`SpeechRequest` carries `text`, a `Language`, a `Delivery` (`take`, `direction`, `prosody`,
+`pace`), an optional `target_seconds`, an optional `seed`, and a `role`: `native` for a line in the
+language being learned, `guide` for one in the learner's own. The role is a hint — a backend with a
+second speaker uses it for the guide, one without says everything itself — and `pace`, when a format
+asks for one, is already in the director note `delivery_instruction` writes. **`take` is on the request**, which matters to a
 host that caches recordings: two takes of one word can produce identical director notes at low
 prosody strength, and a cache keyed without the take index would hand back one recording for both
 and make the repetition sound *more* mechanical.
@@ -200,6 +223,7 @@ and make the repetition sound *more* mechanical.
 | `rate` | `"post-process"` time-stretches locally; `"unsupported"` enables the long-take retry |
 | `voice` | documentation only |
 | `languages` | a declaration; **empty means any**, and a language not named is refused by name |
+| `mixes_languages` | the voice can say words of two languages in one line; a format that `requires` `multilingual_voice` falls back without it |
 
 ## Running it
 
@@ -207,8 +231,18 @@ and make the repetition sound *more* mechanical.
 from lexibeat.service import ServiceConfig, create_service
 
 app = create_service(config=ServiceConfig(output_root=Path("/var/lib/lexibeat")),
-                     backend_factory=lambda context: MyBackend(context.credentials))
+                     backend_factory=lambda context: MyBackend(context.credentials),
+                     writer_factory=lambda context: MyWriter(context.credentials))
 ```
+
+`writer_factory` is optional. A **writer** is the model that writes a programme's lines — examples,
+remarks, a story, an intro — for the formats that ask for them. It is injected like the voice and
+for the same reason: the host holds the credential and the model chain. It satisfies one method,
+`write(WriteRequest(prompt, purpose)) -> str`, and returns the model's text; LexiBeat owns the
+prompt and reads the reply itself (`lexibeat/script.py`), with no JSON mode and no schema. It is
+called once per render. A reply that cannot be used fails the render with a sentence saying what was
+wrong with it, and retrying is the host's model chain's business. Without a writer, a format that
+needs one renders its `fallback`, or is refused naming the writer.
 
 Then `uvicorn` it. There is no `lexibeat-service serve`: a process with no backend has nothing to
 run, and a default backend would be exactly the provider credential this package refuses to hold.

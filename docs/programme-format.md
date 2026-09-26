@@ -54,7 +54,7 @@ versioned contract, and its mistakes would surface as validation errors in someo
 | `description` | yes | One sentence saying what it is |
 | `sections` | yes | The programme, in order. At least one is a `words` section |
 | `order` | no | How the words are ordered: `as_given` (the default), `group_by_topic`, or `writer` (the writer orders them, e.g. to fit a plot) |
-| `requires` | no | What the render needs: `writer`, `guide_voice`, `multilingual_voice` |
+| `requires` | no | What the render needs: `writer` (a writer model), `multilingual_voice` (a voice that can say words of two languages in one line) |
 | `fallback` | no | The format rendered instead when a requirement is missing |
 | `switches` | no | The choices a listener may make, by name |
 
@@ -165,7 +165,6 @@ This is the built-in `classic`.
   "id": "echo",
   "label": "Say it back",
   "description": "Hear the word, say it yourself in the pause, then hear it again.",
-  "requires": ["guide_voice"],
   "sections": [
     {"kind": "words", "block": [
       {"say": "word"}, {"cue": "your_turn"}, {"gap": 1},
@@ -185,7 +184,8 @@ halfway; every word again at the end.
   "id": "radio-lesson",
   "label": "Radio lesson",
   "description": "An intro, each word with an example and sometimes a remark, a quiz halfway, then every word again.",
-  "requires": ["writer", "guide_voice"],
+  "requires": ["writer", "multilingual_voice"],
+  "fallback": "classic",
   "order": "group_by_topic",
   "switches": {
     "remarks": {"label": "Remarks about words", "default": true},
@@ -209,7 +209,7 @@ halfway; every word again at the end.
      "block": [{"say": "translation"}, {"gap": 1}, {"say": "word"}]},
     {"kind": "review", "switch": "review",
      "block": [{"say": "word"}, {"say": "translation"}],
-     "choice": {"fast": {"stretch": 1.2, "bed": "quicker"}}},
+     "choice": {"fast": {"stretch": 1.2}}},
     {"kind": "outro", "text": "writer"}
   ]
 }
@@ -222,7 +222,7 @@ halfway; every word again at the end.
   "id": "story",
   "label": "Story",
   "description": "A short story told in pieces between the words, then every word again, briskly.",
-  "requires": ["writer", "guide_voice"],
+  "requires": ["writer"],
   "order": "writer",
   "sections": [
     {"kind": "intro", "text": "writer"},
@@ -295,18 +295,76 @@ point the wanted behaviour becomes a **named capability** instead: a new `when`,
 | A callback to a related earlier word | No, and not needed | A judgement: the writer makes it (`natural_link`) |
 | Under five minutes, dropping remarks first | No | A priority policy, and the planner's |
 
+## Voices and roles
+
+Every line has a **role**. A line in the language being learned — the word, an example, a story
+line — is the **native** presenter's. A line in the learner's own language — the translation, a cue,
+a remark, an intro — is the **guide's**. The role travels with the line to the voice as a hint: a
+voice with a second speaker uses it, and one without says everything itself. So there is no
+requirement for a second voice, and a format never has to be refused for want of one.
+
+What a format *can* require is a writer, and a voice that can mix languages in one line
+(`multilingual_voice`), which a remark quoting the word in a learner-language sentence needs. A
+render missing a requirement renders the format's `fallback` instead, and says so in its result
+(`format` is the fallback, `fallback_from` the one asked for); without a fallback it is refused,
+naming the requirement.
+
+**Learner-language phrases** — the cues, and the intro and outro when their `text` is `template` —
+come from `lexibeat/formats/phrases/<language>.json`: English, Russian and Spanish for now. A format
+that needs them is refused for a learner language without a phrase file, by name.
+
+## The timeline
+
+A render's result carries two views of what was said:
+
+- **`items`**, one row per word, from its block in the words section: `index`, `source`, `target`,
+  `direction`, `start`, `end`, and `source_reveal` and `target_reveal` — when each side is first
+  heard, which is what a retrieval display turns on. A side the block never says has no reveal.
+- **`cues`**, every line in the order it is heard: `kind` (`say`, `cue`, `intro`, `outro`),
+  `section`, `item` (none for a line that belongs to no word), `side` (`source` or `target`, for a
+  word's own line), `role`, `language`, `text`, `take`, `start`, `end`. A word appears in it as
+  often as it is said — twice, in a format with a review.
+
+## Written lines
+
+A format that takes text from a writer — examples, remarks, `pronounce` and every other step gated
+by a check the writer answers, a story, a written intro or outro, topic groups — gets it from **one
+writer call per render** (`lexibeat/script.py`). The prompt is assembled from `lexibeat/prompts/`,
+one part for each thing the format will use, so the writer is never asked for a remark the format
+has switched off. It carries the rules above, plus two the listening added:
+
+- `hard_to_say` is true only for a word learners commonly say wrong — a misleading spelling, an
+  unexpected stress — never for one that is merely long;
+- a story line is at most ten words, so a listener can follow it by ear.
+
+The reply is plain text, read by `script.parse`: no JSON mode, no schema. The parser checks every
+part it relies on and refuses the reply naming the first thing wrong — "beats: needs one beat per
+group of 2 words: 4" — and a missing optional part means it did not happen. A reply that cannot be
+used fails the render; retrying belongs to the host's model chain.
+
+How the named checks read the script:
+
+- **`writer_decides`**: the step happens when the writer wrote it (an example, a remark, a
+  callback);
+- **`hard_to_say`**: the writer flagged the word;
+- **`natural_link`**: the writer wrote a callback;
+- **`then`**: runs only when its step happened.
+
+`pronounce` is the word said with `pace: "slow"` by the native voice, taking as many bars as it
+needs. A written line — an example and its translation, a remark, a story line, a header — likewise
+takes the bars it needs; it is never squeezed into one.
+
 ## What renders today
 
-The whole grammar parses. This version renders:
+The whole grammar parses. This version renders all of it except:
 
-| Part | Rendered |
+| Not yet | Why |
 |---|---|
-| Sections | One `words` section |
-| Steps | `say` (without `pace` or `stretch`), `gap`, `rest` |
-| `when` | `always` |
-| `order`, `requires`, `fallback` | `as_given`; no requirements |
-| A `words` block | Must say both the word and its translation, because each timeline row is one word with both of its reveals |
+| `bed` on a `review` | Changing the bed's tempo mid-loop is a music-engine change of its own |
+| `remark` and `callback` after a chunk | A chunk is followed by a story beat or a rest |
+| More than one `words` section | The quiz and the review are defined over the one words section |
 
-A format using anything else is refused by name — "format 'story' uses order 'writer', requires
-'writer', …, which this version cannot render yet" — never rendered in part. `/schema` lists only
-the built-in formats this version renders: `classic` and `alternating`.
+A format using any of these is refused by name — "format 'x' uses 'bed' on the 'review' section,
+which this version cannot render yet" — never rendered in part. `/schema` lists the built-in
+formats: `classic`, `alternating`, `echo`, `review`, `radio-lesson` and `story`, with what each
+requires, so a host can show the writer formats only where it has a writer.

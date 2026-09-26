@@ -34,7 +34,9 @@ STEP_KINDS = ("say", "gap", "rest", "cue", "example", "remark", "pronounce", "st
               "callback")
 WHEN = ("always", "writer_decides", "hard_to_say", "natural_link")
 ORDERS = ("as_given", "group_by_topic", "writer")
-REQUIRES = ("writer", "guide_voice", "multilingual_voice")
+# What a render must have. There is no guide-voice requirement: every line carries a role, which
+# a backend with a second speaker uses and one without ignores, so a format degrades instead.
+REQUIRES = ("writer", "multilingual_voice")
 PACES = ("slow", "natural", "fast")
 BEDS = ("same", "quicker")
 CUES = ("your_turn",)
@@ -48,8 +50,19 @@ _ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,47}$")
 _SWITCH = re.compile(r"^[a-z][a-z0-9_]{0,31}$")
 
 # What this version renders. Everything else in the grammar parses, and is refused at render.
-RENDERED_SECTIONS = {"words"}
-RENDERED_STEPS = {"say", "gap", "rest"}
+RENDERED_SECTIONS = {"intro", "words", "quiz", "review", "outro"}
+RENDERED_STEPS = {"say", "gap", "rest", "cue", "example", "remark", "pronounce", "story_beat",
+                  "callback"}
+RENDERED_SECTION_PARAMS = {"quiz": {"at"}, "review": {"stretch"}, "intro": {"text"},
+                           "outro": {"text"}, "words": {"group_headers", "chunk"}}
+RENDERED_STEP_PARAMS = {"say": {"pace", "stretch"}, "example": {"translate"}}
+RENDERED_AFTER_CHUNK = {"story_beat", "rest"}
+# Which steps each named check can decide. `hard_to_say` is about the word, so it can gate
+# anything; the others are about what the writer wrote, so they gate only a step it writes.
+WHEN_GATES = {"writer_decides": {"example", "remark", "callback"},
+              "natural_link": {"callback"}}
+# Steps whose text a writer model supplies.
+WRITTEN_STEPS = {"example", "remark", "story_beat", "callback"}
 
 
 class FormatError(ValueError):
@@ -446,8 +459,9 @@ def resolve(fmt: Format, switches: Mapping[str, Any] | None = None) -> Format:
 def unsupported(fmt: Format) -> list[str]:
     """What in a resolved format this version cannot render, each named as a reader would say it.
 
-    Empty means it renders. The limits are this version's, not the grammar's: a format that
-    parses is a valid format, and a later version renders more of it.
+    Empty means it renders, given what it requires (`missing_requirements`). The limits are this
+    version's, not the grammar's: a format that parses is a valid format, and a later version
+    renders more of it.
     """
     missing: list[str] = []
 
@@ -455,35 +469,54 @@ def unsupported(fmt: Format) -> list[str]:
         if what not in missing:
             missing.append(what)
 
-    if fmt.order != "as_given":
-        add(f"order '{fmt.order}'")
-    for need in fmt.requires:
-        add(f"requires '{need}'")
-    words = [s for s in fmt.sections if s.kind == "words"]
     for section in fmt.sections:
         if section.kind not in RENDERED_SECTIONS:
             # Named once: what is inside a section this version cannot render does not matter yet.
             add(f"the '{section.kind}' section")
             continue
         for key in section.params:
-            add(f"'{key}' on the '{section.kind}' section")
+            if key not in RENDERED_SECTION_PARAMS.get(section.kind, set()):
+                add(f"'{key}' on the '{section.kind}' section")
         for step in section.after_chunk:
-            add(step.kind)
-        for step in section.block:
+            if step.kind not in RENDERED_AFTER_CHUNK:
+                add(f"'{step.kind}' after a chunk")
+        for step in (*section.block, *(then for step in section.block for then in step.then)):
             if step.kind not in RENDERED_STEPS:
                 add(step.kind)
             for key in step.params:
-                add(f"'{key}' on '{step.kind}'")
-            if step.when != "always":
-                add(f"when '{step.when}'")
-    # Each timeline row is one word with both of its reveals, so this version renders one words
-    # section, and it must say both sides. The cue timeline lifts both limits.
-    if len(words) > 1:
+                if key not in RENDERED_STEP_PARAMS.get(step.kind, set()):
+                    add(f"'{key}' on '{step.kind}'")
+            gates = WHEN_GATES.get(step.when)
+            if gates is not None and step.kind not in gates:
+                add(f"when '{step.when}' on '{step.kind}'")
+    # One words section: the quiz and the review are defined over it, and each timeline item is one
+    # word in it. A second words section would say every word twice with nothing to tell them apart.
+    if sum(1 for s in fmt.sections if s.kind == "words") > 1:
         add("more than one 'words' section")
-    for section in words:
-        said = {step.value for step in section.block if step.kind == "say"}
-        if said != set(SAY_ROLES):
-            add("a 'words' block that does not say both the word and its translation")
+    return missing
+
+
+def needs_writer(fmt: Format) -> bool:
+    """Does any part of this resolved format take its text from a writer model?"""
+    for section in fmt.sections:
+        if section.params.get("text") == "writer" or section.params.get("group_headers"):
+            return True
+        for step in (*section.block, *section.after_chunk):
+            if step.kind in WRITTEN_STEPS or step.when in ("writer_decides", "hard_to_say",
+                                                           "natural_link"):
+                return True
+    return fmt.order != "as_given"
+
+
+def missing_requirements(fmt: Format, *, mixes_languages: bool, has_writer: bool) -> list[str]:
+    """What a format needs that this render lacks: the backend's declaration and the writer.
+
+    A format that takes text from a writer needs one whether or not it says so in `requires`.
+    """
+    have = {"multilingual_voice": mixes_languages, "writer": has_writer}
+    missing = [need for need in fmt.requires if not have[need]]
+    if needs_writer(fmt) and not has_writer and "writer" not in missing:
+        missing.append("writer")
     return missing
 
 

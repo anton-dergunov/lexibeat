@@ -8,7 +8,7 @@ import math
 import os
 import shutil
 import subprocess
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -16,7 +16,8 @@ import numpy as np
 import soundfile as sf
 
 from .arrange import SOURCE, TARGET, Event
-from .formats import Format, FormatError, renderable, slots
+from .formats import Format, FormatError, renderable
+from .programme import plan
 from .bedspec import STYLES, BedSpec
 from .language import ENGLISH, SPANISH, Language
 from .loop import build_timeline
@@ -257,19 +258,20 @@ def arrange_demo(config: DemoConfig, speaker: PersistentSpeaker, grid: Grid, *,
         print(f"  [{index}/{len(config.items)}] {item.source} — {item.target}  "
               f"({item.direction or 'plain'}, "
               f"{span} bar{'s' if span != 1 else ''}/utterance)", flush=True)
-        for kind, repetition in slots(config.format):
-            if kind in ("gap", "rest"):
-                bar += 1
+        for segment in plan(config.format, [item], source_language=config.source_language,
+                            target_language=config.target_language).segments:
+            if not segment.spoken:
+                bar += segment.bars
                 continue
-            text = item.source if kind == SOURCE else item.target
-            language = (config.source_language if kind == SOURCE
-                        else config.target_language)
-            delivery = Delivery.for_take(repetition, item.direction,
+            # The plan was made for this one word, so its item index is always 0.
+            segment = replace(segment, item=index - 1)
+            delivery = Delivery.for_take(segment.take, item.direction,
                                          strength=speaker.prosody_strength)
             audio = speaker.say(
-                text, language, delivery,
+                segment.text, segment.language, delivery,
                 target_seconds=grid.bar * span * 0.92)
-            events.append(Event(grid.bar_start(bar), audio, f"{kind}:{text}"))
+            events.append(Event(grid.bar_start(bar), audio,
+                                f"{segment.side}:{segment.text}", segment))
             bar += span
     return events, bar + outro_bars
 
@@ -379,6 +381,20 @@ def _background() -> np.ndarray:
 def _active_item(timeline: Sequence[dict[str, Any]], at: float) -> dict[str, Any] | None:
     return next((row for row in timeline
                  if float(row["start"]) <= at < float(row["end"])), None)
+
+
+def demo_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
+                  total_bars: int) -> list[dict[str, Any]]:
+    """One row per word, each with the lines it is heard in: the shape the video frames draw from.
+
+    The loop's own result keeps words and lines apart (`items` and `cues`); a frame wants to know
+    which side of the card is speaking, so the demo puts them back together here.
+    """
+    rows, cues = build_timeline(items, events, grid, total_bars)
+    for row in rows:
+        row["utterances"] = [{"role": cue["side"], "start": cue["start"], "end": cue["end"]}
+                             for cue in cues if cue["item"] == row["index"] and cue["side"]]
+    return rows
 
 
 def _active_role(row: dict[str, Any], at: float) -> str | None:

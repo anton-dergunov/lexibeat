@@ -55,6 +55,7 @@ from .bundle import status as bundle_status
 from .profiles import FAMILY_DESCRIPTIONS, PROFILES, family_label, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
+from .writer import Writer
 
 # The contract's version. It moves with the wire, not the path: `/api/v1` has one host, which pins a
 # package version and moves in step with it.
@@ -111,6 +112,9 @@ class RenderContext:
 
 
 BackendFactory = Callable[[RenderContext], Backend]
+# Built per render like the voice. A deployment without one renders every format that needs no
+# writer, and a writer format falls back or is refused, naming the writer.
+WriterFactory = Callable[[RenderContext], Writer]
 
 
 @dataclass
@@ -161,9 +165,11 @@ class Operation:
 class Operations:
     """One render at a time, a bounded queue, and the oldest finished work pruned."""
 
-    def __init__(self, config: ServiceConfig, backend_factory: BackendFactory) -> None:
+    def __init__(self, config: ServiceConfig, backend_factory: BackendFactory,
+                 writer_factory: WriterFactory | None = None) -> None:
         self.config = config
         self.backend_factory = backend_factory
+        self.writer_factory = writer_factory
         self._lock = threading.Lock()
         self._operations: dict[str, Operation] = {}
         self._order: list[str] = []
@@ -259,11 +265,12 @@ class Operations:
         self._note(operation, 0.01, "Starting")
         output = self.config.loops_root / f"{operation_id}.mp3"
         try:
-            backend = self.backend_factory(
-                RenderContext(operation_id=operation_id, request=request,
-                              credentials=credentials, delivery=delivery))
+            context = RenderContext(operation_id=operation_id, request=request,
+                                    credentials=credentials, delivery=delivery)
+            backend = self.backend_factory(context)
+            writer = self.writer_factory(context) if self.writer_factory else None
             result = render_loop(
-                request, backend=backend, output=output,
+                request, backend=backend, output=output, writer=writer,
                 progress=lambda fraction, message: self._note(operation, fraction, message),
                 cancel_check=operation.cancel.is_set)
         except Cancelled:
@@ -399,6 +406,7 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
 
 def create_service(*, config: ServiceConfig | None = None,
                    backend_factory: BackendFactory | None = None,
+                   writer_factory: WriterFactory | None = None,
                    operations: Operations | None = None):
     """Build the ASGI application. Importing web dependencies stays inside this function."""
     from fastapi import FastAPI, HTTPException, Request
@@ -412,7 +420,7 @@ def create_service(*, config: ServiceConfig | None = None,
             raise ValueError(
                 "create_service needs a backend_factory: LexiBeat holds no provider "
                 "credential, so the host supplies the voice.")
-        operations = Operations(resolved, backend_factory)
+        operations = Operations(resolved, backend_factory, writer_factory)
 
     app = FastAPI(
         title="LexiBeat",

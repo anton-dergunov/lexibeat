@@ -1,0 +1,51 @@
+{
+  "id": "story",
+  "label": "Story",
+  "description": "A short story told in pieces between the words, then every word again, briskly.",
+  "requires": [
+    "writer"
+  ],
+  "order": "writer",
+  "sections": [
+    {
+      "kind": "intro",
+      "text": "writer"
+    },
+    {
+      "kind": "words",
+      "chunk": 2,
+      "block": [
+        {
+          "say": "word"
+        },
+        {
+          "say": "translation"
+        },
+        {
+          "say": "word"
+        }
+      ],
+      "after_chunk": [
+        {
+          "story_beat": "writer"
+        }
+      ]
+    },
+    {
+      "kind": "review",
+      "block": [
+        {
+          "say": "word"
+        },
+        {
+          "say": "translation"
+        }
+      ],
+      "stretch": 1.1
+    },
+    {
+      "kind": "outro",
+      "text": "writer"
+    }
+  ]
+}

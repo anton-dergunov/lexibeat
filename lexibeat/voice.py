@@ -108,6 +108,9 @@ class BackendCapabilities:
     rate: str
     voice: str
     languages: tuple[str, ...] = ("es", "en")
+    # Can one line carry words of two languages, each said as its own language says it? A format
+    # whose lines do (a remark quoting the word in the learner's language) requires it.
+    mixes_languages: bool = False
     experimental: bool = False
     license: str = ""
     warnings: tuple[str, ...] = ()
@@ -141,12 +144,12 @@ CAPABILITIES = {
     "kokoro": BackendCapabilities("post-process", "native", "preset"),
     "chatterbox": BackendCapabilities("exaggeration", "unsupported", "clone"),
     "gemini": BackendCapabilities(
-        "instruction", "instruction", "preset", experimental=True,
+        "instruction", "instruction", "preset", mixes_languages=True, experimental=True,
         license="Google Gemini API Additional Terms",
         warnings=("Preview API; output is nondeterministic and voice_seed is not supported.",),
     ),
     "gemini-vertex": BackendCapabilities(
-        "instruction", "instruction", "preset", experimental=True,
+        "instruction", "instruction", "preset", mixes_languages=True, experimental=True,
         license="Google Cloud and Vertex AI terms",
         warnings=("Hosted output is nondeterministic and voice_seed is not supported.",),
     ),
@@ -229,17 +232,24 @@ class Prosody:
 
 @dataclass(frozen=True)
 class Delivery:
-    """One take of one line: which repetition it is, how the caller asked for it, and the prosody."""
+    """One take of one line: which repetition it is, how the caller asked for it, and the prosody.
+
+    ``pace`` is a format's ask — ``slow``, ``natural`` or ``fast`` — and when it is set it replaces
+    the pace word the prosody would otherwise give the director note. Slowness is asked for rather
+    than made by stretching, because a slowed recording sounds metallic.
+    """
 
     take: int = 0
     direction: str = ""
     prosody: Prosody = Prosody()
+    pace: str = ""
 
     @classmethod
     def for_take(cls, index: int, direction: str = "", *, strength: float = 1.0,
-                 capabilities: BackendCapabilities | None = None) -> "Delivery":
+                 capabilities: BackendCapabilities | None = None,
+                 pace: str = "") -> "Delivery":
         return cls(take=index, direction=(direction or "").strip(),
-                   prosody=Prosody.for_take(index, strength, capabilities))
+                   prosody=Prosody.for_take(index, strength, capabilities), pace=pace)
 
 
 @dataclass(frozen=True)
@@ -251,6 +261,9 @@ class SpeechRequest:
     delivery: Delivery
     target_seconds: float | None = None
     seed: int | None = None
+    # Who says it: "native" for a line in the language being learned, "guide" for one in the
+    # learner's own. A hint: a backend with a second speaker uses it, one without ignores it.
+    role: str = "native"
 
     @property
     def prosody(self) -> Prosody:
@@ -447,6 +460,9 @@ _PACE_BANDS = (
     (1.045, "slightly briskly"),
 )
 _PACE_FASTEST = "briskly"
+# What a format's `pace` asks the voice for, in place of the prosody's band.
+_PACE_ASKED = {"slow": "slowly and clearly, the whole word, without splitting it",
+               "natural": "at a natural pace", "fast": "fast"}
 _PITCH_BANDS = (
     (-0.55, "with a lower, softer pitch"),
     (-0.25, "with a slightly lower pitch"),
@@ -476,7 +492,8 @@ _NO_DIRECTION = "warmly, as if teaching someone"
 def delivery_instruction(delivery: Delivery) -> str:
     """Director notes for one take: the caller's own direction, then the prosody words."""
     prosody = delivery.prosody
-    pace = _band(prosody.speed, _PACE_BANDS, _PACE_FASTEST)
+    pace = (_PACE_ASKED[delivery.pace] if delivery.pace
+            else _band(prosody.speed, _PACE_BANDS, _PACE_FASTEST))
     pitch = _band(prosody.semitones, _PITCH_BANDS, _PITCH_HIGHEST)
     direction = delivery.direction.strip().rstrip(".,;") if delivery.direction else _NO_DIRECTION
     return f"Speak {direction}, but clearly, {pace}, {pitch}."
@@ -1282,13 +1299,14 @@ class Speaker:
         self.stats: list[dict[str, Any]] = []
         self._call_index = 0
 
-    def take(self, index: int, direction: str = "") -> Delivery:
+    def take(self, index: int, direction: str = "", *, pace: str = "") -> Delivery:
         return Delivery.for_take(index, direction, strength=self.prosody_strength,
-                                 capabilities=self.capabilities)
+                                 capabilities=self.capabilities, pace=pace)
 
     def say(self, text: str, language: Language, delivery: Delivery = Delivery(),
             target_seconds: float | None = None, *,
-            slot_seconds: float | None = None, retry: bool = False) -> np.ndarray:
+            slot_seconds: float | None = None, retry: bool = False,
+            role: str = "native") -> np.ndarray:
         """One take, fitted to ``target_seconds``; anything past ``slot_seconds`` fades out.
 
         ``slot_seconds`` is how long this utterance has before the next one may start. A take that
@@ -1298,14 +1316,14 @@ class Speaker:
         # that forgets the guard must not turn a language it cannot speak into a KeyError out of a
         # voice table three frames down.
         _require_language(self.backend, language)
-        key = (text, language, delivery, target_seconds, slot_seconds)
+        key = (text, language, delivery, target_seconds, slot_seconds, role)
         if not retry and key in self._cache:
             return self._cache[key]
         seed = self.voice_seed + self._call_index
         self._call_index += 1
         result = self.backend.synth(SpeechRequest(
             text=text, language=language, delivery=delivery,
-            target_seconds=target_seconds, seed=seed))
+            target_seconds=target_seconds, seed=seed, role=role))
         prosody = delivery.prosody
         audio = trim(result.audio)
         rate = result.sample_rate
@@ -1353,9 +1371,13 @@ class Speaker:
         return audio
 
     def remember_take(self, text: str, language: Language, delivery: Delivery,
-                      target_seconds: float | None, audio: np.ndarray) -> None:
-        """Restore or replace the cached take after comparative quality control."""
-        self._cache[(text, language, delivery, target_seconds)] = audio
+                      target_seconds: float | None, audio: np.ndarray, *,
+                      slot_seconds: float | None = None, role: str = "native") -> None:
+        """Restore or replace the cached take after comparative quality control.
+
+        The key is `say`'s own, field for field: a key missing one of them is never looked up.
+        """
+        self._cache[(text, language, delivery, target_seconds, slot_seconds, role)] = audio
 
     def close(self) -> None:
         close = getattr(self.backend, "close", None)

@@ -90,21 +90,24 @@ class TimelineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             result = render_loop(request(), backend=backend,
                                  output=Path(tmp) / "loop.mp3")
-        self.assertEqual(len(result.timeline), len(WORDS))
-        row = result.timeline[0]
+        self.assertEqual(len(result.items), len(WORDS))
+        row = result.items[0]
         self.assertEqual(row["source"], "asco")
         self.assertEqual(row["direction"], "repulsed, recoiling slightly")
         # The answer arrives after the word and after the recall gap, never before it.
         self.assertLess(row["source_reveal"], row["target_reveal"])
         self.assertLessEqual(row["target_reveal"], row["end"])
-        roles = [utterance["role"] for utterance in row["utterances"]]
-        self.assertEqual(roles, [SOURCE, TARGET] * 3)
-        self.assertEqual([utterance["repetition"] for utterance in row["utterances"]],
-                         [0, 0, 1, 1, 2, 2])
+        self.assertEqual(row["end"], result.items[1]["start"])
+        mine = [cue for cue in result.cues if cue["item"] == 0]
+        self.assertEqual([cue["side"] for cue in mine], [SOURCE, TARGET] * 3)
+        self.assertEqual([cue["take"] for cue in mine], [0, 0, 1, 1, 2, 2])
+        self.assertEqual([cue["role"] for cue in mine], ["native", "guide"] * 3)
+        self.assertEqual({cue["section"] for cue in result.cues}, {"words"})
+        self.assertEqual(result.cues, sorted(result.cues, key=lambda cue: cue["start"]))
 
     def test_a_timeline_refuses_events_that_are_not_the_words_it_was_given(self) -> None:
         with self.assertRaises(LoopError):
-            build_timeline(list(WORDS), [], None, 10, renderable("classic"))
+            build_timeline(list(WORDS), [], None, 10)
 
 
 class RenderTests(unittest.TestCase):
@@ -190,7 +193,7 @@ class RenderTests(unittest.TestCase):
                 backend=backend, output=Path(tmp) / "loop.mp3")
         self.assertEqual({row.language.name for row in backend.seen},
                          {"Mandarin Chinese", "Brazilian Portuguese"})
-        self.assertEqual(result.timeline[0]["source"], "苹果")
+        self.assertEqual(result.items[0]["source"], "苹果")
 
 
 class FingerprintTests(unittest.TestCase):

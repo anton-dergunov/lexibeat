@@ -17,6 +17,7 @@ from lexibeat.demo import (
     PersistentSpeaker,
     arrange_demo,
     cache_key,
+    demo_timeline,
     encode_visual_track,
     load_demo_config,
     mux_audio,
@@ -24,7 +25,6 @@ from lexibeat.demo import (
 )
 from lexibeat.arrange import TARGET
 from lexibeat.language import ENGLISH, SPANISH
-from lexibeat.loop import build_timeline
 from lexibeat.music import SR, Grid
 from lexibeat.voice import CAPABILITIES, Delivery, Speaker, SynthesisResult
 
@@ -91,7 +91,7 @@ class DemoConfigTests(unittest.TestCase):
         spec = next(iter(resolve_demo_specs(config).values()))
         grid = Grid.from_spec(spec)
         events, total_bars = arrange_demo(config, DemoFakeSpeaker(), grid)
-        timeline = build_timeline(config.items, events, grid, total_bars, config.format)
+        timeline = demo_timeline(config.items, events, grid, total_bars)
         self.assertEqual(len(events), 120)
         self.assertEqual(total_bars, 170)
         self.assertTrue(all(abs(event.start / grid.bar -
