@@ -1,0 +1,2250 @@
+{
+ "A.classic.retrieval": {
+  "score": 5,
+  "updatedAt": 1790334833482
+ },
+ "A.two-or-four.pair-per-bar": {
+  "score": 5,
+  "updatedAt": 1790334852986
+ },
+ "A.two-or-four.word-pause-pairs": {
+  "score": 5,
+  "updatedAt": 1790334882495
+ },
+ "A.two-or-four.doubles": {
+  "score": 3,
+  "updatedAt": 1790334964780
+ },
+ "A.two-or-four.bar-each": {
+  "score": 4,
+  "updatedAt": 1790334955364
+ },
+ "A.two-or-four.on-the-beat": {
+  "score": 3,
+  "updatedAt": 1790334990372
+ },
+ "A.reverse.pair-per-bar": {
+  "score": 5,
+  "updatedAt": 1790335021222
+ },
+ "A.reverse.word-pause-pairs": {
+  "score": 5,
+  "updatedAt": 1790335048788
+ },
+ "A.reverse.doubles": {
+  "score": 3,
+  "updatedAt": 1790335068437
+ },
+ "A.reverse.bar-each": {
+  "score": 5,
+  "updatedAt": 1790335081804
+ },
+ "A.reverse.on-the-beat": {
+  "score": 3,
+  "updatedAt": 1790335117867
+ },
+ "A.reverse.recall-gap": {
+  "score": 4,
+  "updatedAt": 1790336086630,
+  "note": "For different structures, how to put the original word and the translated word onto bars. I labeled them based on how I hear, but I think in general what I labeled as slightly lower score can still be quite useful in some contexts, like for example to repeat after it is played with normal contexts, or maybe just as an option. So I can't say that I didn't like any of these layouts definitely not, but I think that some of them are more standard and some of them are less standard."
+ },
+ "A.echo.guide-cue": {
+  "score": 5,
+  "updatedAt": 1790335373956
+ },
+ "A.echo.native-cue": {
+  "score": 5,
+  "updatedAt": 1790335468786,
+  "note": "This is actually a great idea to also insert occasionally such motivational phrases, but I think we would need some variety for them, so maybe something like 10-20 such different phrases"
+ },
+ "A.echo.no-cue": {
+  "score": 3,
+  "updatedAt": 1790335488386
+ },
+ "A.echo.reverse": {
+  "score": 5,
+  "updatedAt": 1790335509614
+ },
+ "A.slow-normal-fast.stretch": {
+  "score": 2,
+  "updatedAt": 1790335564242,
+  "note": "His voice is metallic, especially if we make it slower."
+ },
+ "A.slow-normal-fast.directed": {
+  "score": 4,
+  "updatedAt": 1790335596069,
+  "note": "This is good, but the quick one is not too quick, but the slow one is really slow."
+ },
+ "A.slow-normal-fast.both": {
+  "score": 5,
+  "updatedAt": 1790335689452,
+  "note": "That's actually a nice compromise we have played the first one quicker and it sounds good to me. So my conclusion is that for slow ones we can ask the model to produce it slowly and as I can see it can produce it as slowly as needed we don't need anything more slowly but for quick pronunciation we can use both nudging and playing faster programmatically."
+ },
+ "A.slow-normal-fast.on-the-beat": {
+  "score": 4,
+  "updatedAt": 1790335928361
+ },
+ "A.speed-round.stretch-1": {
+  "score": 5,
+  "updatedAt": 1790335984756,
+  "note": "This can be useful for recap section of course when played like that right at the start it will be hard to learn these words. But as a recap this is a good idea."
+ },
+ "A.speed-round.stretch-1.2": {
+  "score": 5,
+  "updatedAt": 1790336132665
+ },
+ "A.speed-round.stretch-1.3": {
+  "score": 4,
+  "updatedAt": 1790336164685
+ },
+ "A.speed-round.stretch-1.4": {
+  "score": 4,
+  "updatedAt": 1790336179132
+ },
+ "A.speed-round.directed": {
+  "score": 5,
+  "updatedAt": 1790336262432,
+  "note": "Of course, with the instruction like that, it reads as something more natural, and there is even the increase in intonation. So, of course, this produces more naturally in more interesting. And yes, I do like how the intonation goes up. So, this approach is definitely quite useful."
+ },
+ "A.speed-round.directed-1.2": {
+  "score": 3,
+  "updatedAt": 1790336298417,
+  "note": "This one is probably too much because we are just saying that way too fast and sometimes hard to hear what they are saying."
+ },
+ "A.speed-round.two-per-bar": {
+  "score": 2,
+  "updatedAt": 1790336331056,
+  "note": "That's probably way too quick for a lesson. It looks like somebody is just running somewhere. I think actually this one is not too practical."
+ },
+ "A.speed-round.stretch-1.3-main-bed": {
+  "score": 4,
+  "updatedAt": 1790336438696,
+  "note": "This one is not bad, but of course it sounds just tiny bit metallic, but it's still practical. Of course, with instruction it sounds much more natural, but this approach for stretching is still useful and is still practical, especially when we are using the model which does not support instruction, and I would say that in general what I hear is that making this speech programmatically slower is much worse than making it faster. So when we increase the speed, it's still pronounced very appropriately and still good enough. But if we make it slower, then I can hear that it's programmatically made slower."
+ },
+ "A.speed-round.measure": {
+  "note": "I think that the most practical approach is just fast. The problem with extremely fast is that for some words such as for la berenjena, it was pronounced incorrectly with different syllables. And surprisingly, very fast and rhythmic column sometimes was pronounced actually slower. So fast is the safe choice, but other columns may produce in some cases also interesting pronunciations. Vowel as I explained it very fast and rhythmic sometimes is actually slower and extremely fast mode sometimes produces something else although it's usually really very fast.",
+  "updatedAt": 1790378685934,
+  "score": 3
+ },
+ "A.chant.snapped-eighths--el-atasco": {
+  "score": 1,
+  "updatedAt": 1790336707271,
+  "note": "This sounds very strange and definitely not usable because it's just stumbling upon every syllable and it's not useful in this form because it's even hard to understand what is being said."
+ },
+ "A.chant.snapped-quarters--el-atasco": {
+  "score": 4,
+  "updatedAt": 1790337281841,
+  "note": "Surprisingly, this actually works and especially in this format where we chant the word and then repeat it normally, and we are not making it faster, so it doesn't sound as stuttering. I would say in practice this can be useful, but for potentially users that want to learn this language, and they are their level is not as advanced, so they want to take it slower. Although I still hear some compression in this file, maybe this is because of stretching or because of cutting, but it's not too bad."
+ },
+ "A.chant.separate--el-atasco": {
+  "score": 2,
+  "updatedAt": 1790337199504,
+  "note": "Surprisingly this doesn't work as well as the previous approach because they are just way too separate and they don't mix with each other very well which is a good news for us because we don't have to make an extra call to the voice model to pronounce it like that."
+ },
+ "A.chant.markup--el-atasco": {
+  "score": 3,
+  "updatedAt": 1790337421569,
+  "note": "Surprisingly this works a bit worse than just the cutting approach that we used before and I labeled as for when we are cutting using programmatic approach. Here it sounds a little bit like stuttering as well and this approach is still applicable and useful but I would prefer the programmatic approach which is also good news because we don't have to call the voice model to pronounce it like that separately. And a note on the format earlier I said that it's useful mostly for novice users. I think that it's actually quite useful even for maybe those advanced users who just want to get it straight into their head and remember this word automatically."
+ },
+ "A.chant.snapped-eighths--la-berenjena": {
+  "score": 2,
+  "updatedAt": 1790337652609,
+  "note": "Same problem with stuttering"
+ },
+ "A.chant.snapped-quarters--la-berenjena": {
+  "score": 1,
+  "updatedAt": 1790337678569,
+  "note": "This wasn't produced correctly and it was cut too abruptly"
+ },
+ "A.chant.separate--la-berenjena": {
+  "score": 1,
+  "updatedAt": 1790337696441,
+  "note": "This doesn't sound nice and correct"
+ },
+ "A.chant.markup--la-berenjena": {
+  "score": 3,
+  "updatedAt": 1790337790385,
+  "note": "I think this approach is useful but I think it will be useful only for very basic users, very beginners because it is pronounced just way too slow and way too explicit. I still prefer the approach that I labeled as 4 when we programmatically split it. It's a good compromise between showing it and pronouncing it slow that will serve both novice users and advanced users who just want to get it straight into their brain."
+ },
+ "B.method.markup": {
+  "score": 3,
+  "updatedAt": 1790338071426
+ },
+ "B.method.cut": {
+  "score": 4,
+  "updatedAt": 1790338065238
+ },
+ "B.method.ssml": {
+  "score": 3,
+  "updatedAt": 1790338070294
+ },
+ "B.method.directed": {
+  "score": 3,
+  "updatedAt": 1790338074654
+ },
+ "B.detector.es#elalforfón": {
+  "score": 3,
+  "updatedAt": 1790338300416,
+  "note": "Comparing to all other examples, this is probably the most useful of all of them, but even this one is not good enough because it's quite clear how to pronounce it when you hear it. Maybe just a slight comment on that is can be tentatively useful, but I guess we can do better. So maybe in this case, just as a reminder, that's fine but not as the most useful fact."
+ },
+ "B.detector.es#elfrailecillo": {
+  "score": 1,
+  "updatedAt": 1790338133980,
+  "note": "These two banal and double L is not so difficult to pronounce I don't think we need to mention it for every single word."
+ },
+ "B.detector.es#elhierro": {
+  "score": 1,
+  "updatedAt": 1790338162551,
+  "note": "Again, I think we shouldn't mention something very obvious about pronunciation because it's better just to hear them unless it's very very specific."
+ },
+ "B.detector.es#elrecordatorio": {
+  "score": 1,
+  "updatedAt": 1790338168801
+ },
+ "B.detector.es#laberenjena": {
+  "score": 1,
+  "updatedAt": 1790338173802
+ },
+ "B.detector.es#pésimo": {
+  "score": 1,
+  "updatedAt": 1790338215308,
+  "note": "And this is probably the worst of each one because it mentions some linguistic terms which are too specific and are useful mostly just for linguists. So it's this one is the worst offender here in definitely deserve no space in the app because it's oriented towards the majority of users, not necessarily to linguists."
+ },
+ "B.detector.es#súbitamente": {
+  "score": 1,
+  "updatedAt": 1790338225333,
+  "note": "Same comment as before."
+ },
+ "B.detector.es": {
+  "score": 2,
+  "updatedAt": 1790338304927
+ },
+ "B.detector.en#chivalrous": {
+  "score": 3,
+  "updatedAt": 1790338348116,
+  "note": "This is somewhat useful and pronunciation in English can be difficult but I would simplify this because it provides too much context and in the format of these radio lessons we need them to be short and concrete, especially with commentary."
+ },
+ "B.detector.en#hypocrite": {
+  "score": 5,
+  "updatedAt": 1790338512785,
+  "note": "I think in general for English maybe the pronunciation is more nuanced and I think maybe it can be specific quite per language but again it needs to be very simple and very specific and short and concise so here I would pronounce it in a different way and I would make a mistake so a note about that is useful but it must be phrased in a more short and concise form so I would say in general pronunciation tips when it's not obvious and when some people might have reduced this incorrectly this is useful to make a note I would actually rank this as a very useful comment but we should be also very careful not to pronounce it incorrectly as a whole word so I like here that we split it into some parts which are incorrect because if we pronounce it incorrectly then learners will remember it in the incorrect form as well so I think for this case I would even maybe pronounce it several times in the correct form so this actually gives me an idea that maybe some words may deserve more bars just because they are more complicated and they require this and they require to be pronounced several times so that users remember them."
+ },
+ "B.detector.en#lethargy": {
+  "score": 3,
+  "updatedAt": 1790338519200
+ },
+ "B.detector.en#mischievously": {
+  "score": 3,
+  "updatedAt": 1790338549339,
+  "note": "This is quite useful in pronunciation nuances are good to explain, but it should be quite concise."
+ },
+ "B.detector.en#tantalizingly": {
+  "score": 1,
+  "updatedAt": 1790338688450,
+  "note": "In this case there is no wrong pronunciation as an example and this word is just maybe difficult to pronounce due to lots of syllables but the problem is not that you would pronounce it incorrectly you would just struggle to pronounce it as a whole world just because it's a long word so we should differentiate if this is a word which is usually pronounced incorrectly when it deserves a comment otherwise if it's just a difficult word to pronounce but it usually pronounced correctly no comment is required I think the difficulty is also a proxy to understand this in this case the difficulty is one meaning that it's not the difficult word by itself I mean it's a difficult one to pronounce but it doesn't have any potential problems for pronunciation in a sense that some users may just pronounce some parts of it incorrectly."
+ },
+ "B.detector.en#unreciprocated": {
+  "score": 1,
+  "updatedAt": 1790338706316,
+  "note": "Same comment as before."
+ },
+ "B.detector.en#unscrupulous": {
+  "score": 2,
+  "updatedAt": 1790338762538,
+  "note": "This is moderately useful, but I wonder how it would sound when it is pronounced by the text-to-voice text-to-speech models."
+ },
+ "B.detector.en": {
+  "score": 4,
+  "updatedAt": 1790338852639,
+  "note": "So I guess the general rule is that if a language is difficult for pronunciation and some words are pronounced not quite as they are written, such as in English, then these tips are useful for them and in general I think if a word can be pronounced in the wrong way then this tip is useful so I think we can use this rule in the prompt saying that only use it as a tip when the word can be pronounced incorrectly otherwise don't just make a blunt comment that it is a difficult word or it is a little bit specific because it pronounces these rare characters well that's not the most important fact only when users may pronounce it incorrectly."
+ },
+ "B.word.elayuntamiento@directed": {
+  "score": 5,
+  "updatedAt": 1790339077539,
+  "note": "Actually I think that this way of pronouncing words can be useful if the pronunciation is also difficult not only for cases when users may struggle with some I mean exactly for cases when users may struggle with the pronunciation or make mistakes not only because they are beginners."
+ },
+ "B.word.elayuntamiento@markup": {
+  "score": 5,
+  "updatedAt": 1790339103972
+ },
+ "B.word.elayuntamiento@ssml": {
+  "score": 3,
+  "updatedAt": 1790339122222
+ },
+ "B.word.elayuntamiento@cut": {
+  "score": 1,
+  "updatedAt": 1790339279488,
+  "note": "This actually wasn't cut correctly and it doesn't sound nice, which is interesting because previously I labeled manual cuts as better than those which are produced by the model. In this particular case, it's very obvious that the directed end markup cases are much much better and SSML approach is also quite poor. So right now I think that these directed and markup approaches are much better and I didn't hear a lot of difference between markup and directed but I think that for words which are difficult this is quite useful to pronounce them like that and detect such cases and then generate such cases and I think that in this particular case for example I would omit the letter N so this way of pronunciation is even useful for me because I know this word I use it but I was making mistakes in it so I think this directed way of pronunciation is actually quite useful for the application and to disambiguate cases when we may users may make some mistakes in them specifically not because just the word is difficult or the pronunciation is a little bit special I would reserve it especially for those cases when people may make mistakes and pronounce it incorrectly such as for example in this word we would omit the letter n."
+ },
+ "B.word.lapredisposición@directed": {
+  "score": 5,
+  "updatedAt": 1790375719661
+ },
+ "B.word.lapredisposición@markup": {
+  "score": 5,
+  "updatedAt": 1790375732143
+ },
+ "B.word.lapredisposición@ssml": {
+  "score": 4,
+  "updatedAt": 1790375740223
+ },
+ "B.word.lapredisposición@cut": {
+  "score": 1,
+  "updatedAt": 1790375791732,
+  "note": "The cut version is obviously very abruptly cut and is quite poor, but other versions are okay, and in this case, actually, SSML is even slightly better. Although I would say that this particular word is nothing complicated, so it shouldn't be explained like that. It's just a very easy word and nothing special about that, about the pronunciation of this word, at least for me."
+ },
+ "B.word.imprescindible@directed": {
+  "score": 2,
+  "updatedAt": 1790375942663
+ },
+ "B.word.imprescindible@markup": {
+  "score": 2,
+  "updatedAt": 1790375943380
+ },
+ "B.word.imprescindible@ssml": {
+  "score": 1,
+  "updatedAt": 1790375834086
+ },
+ "B.word.imprescindible@cut": {
+  "score": 1,
+  "updatedAt": 1790376026562,
+  "note": "So again the cut version is not useful here and surprisingly SSML version is pronouncing something wrong even but in this particular case directed at Markup are better but I believe that in real speech this ending letters are not pronounced exactly like that so we are kind of cutting them into different so we are cutting them into syllables right but I think this is a problem because instead we shouldn't be cutting the original word we should be cutting the how it is pronounced because in this case we have cut the we have cut actually the second and the third syllable and we are pronouncing them separately but this is wrong because it is actually pronounced as below so that's why I actually have labeled right now directed and markup as much worse for this case so I think this is showing one systematic error that we may we will be getting if we implement it this way we should be cutting not when we are trying to produce it slowly we shouldn't be using and we should be cutting the original word if we are focusing on the pronunciation instead we should pronounce slowly syllable by syllable but the correct pronunciation such as below for this word: /impɾesθin'diβle/"
+ },
+ "B.word.escalofriante@directed": {
+  "score": 5,
+  "updatedAt": 1790376067908
+ },
+ "B.word.escalofriante@markup": {
+  "score": 3,
+  "updatedAt": 1790376093007
+ },
+ "B.word.escalofriante@ssml": {
+  "score": 2,
+  "updatedAt": 1790376109374
+ },
+ "B.word.escalofriante@cut": {
+  "score": 1,
+  "updatedAt": 1790376186706,
+  "note": "So again in this case actually you noticed that the syllables do not join back to the word. This is something which happened to mark up that's why I labeled it lower as free the directed way actually pronounced it correctly with N and as usual other methods were much worse and again this word is nothing complicated at all it's very basic very clear how to pronounce it it's just a lot of syllables and it's just long somewhat but this is not an example of the word that is difficult to pronounce and should be explained in any way; it's very basic indeed."
+ },
+ "B.word.desaprovechar@directed": {
+  "score": 5,
+  "updatedAt": 1790376195872
+ },
+ "B.word.desaprovechar@markup": {
+  "score": 5,
+  "updatedAt": 1790376206185
+ },
+ "B.word.desaprovechar@ssml": {
+  "score": 4,
+  "updatedAt": 1790376215374
+ },
+ "B.word.desaprovechar@cut": {
+  "score": 1,
+  "updatedAt": 1790376245144,
+  "note": "Again, the word is not difficult at all, but directed and markup worked the best as I somehow was okay and the cut version is unusable as always."
+ },
+ "B.word.tranquilizarse@directed": {
+  "score": 4,
+  "updatedAt": 1790376261649
+ },
+ "B.word.tranquilizarse@markup": {
+  "score": 4,
+  "updatedAt": 1790376271267
+ },
+ "B.word.tranquilizarse@ssml": {
+  "score": 3,
+  "updatedAt": 1790376276664
+ },
+ "B.word.tranquilizarse@cut": {
+  "score": 1,
+  "updatedAt": 1790376301617,
+  "note": "The directed and markup methods work good, but they are way too slow for this particular example for some reason. And again, the word is not difficult at all."
+ },
+ "B.word.elfrailecillo@directed": {
+  "score": 5,
+  "updatedAt": 1790376319180
+ },
+ "B.word.elfrailecillo@markup": {
+  "score": 3,
+  "updatedAt": 1790376379437,
+  "note": "The last syllable was not pronounced correctly"
+ },
+ "B.word.elfrailecillo@ssml": {
+  "score": 1,
+  "updatedAt": 1790376353579
+ },
+ "B.word.elfrailecillo@cut": {
+  "score": 1,
+  "updatedAt": 1790376357032
+ },
+ "B.word.elpresupuesto@directed": {
+  "score": 5,
+  "updatedAt": 1790376398043
+ },
+ "B.word.elpresupuesto@markup": {
+  "score": 1,
+  "updatedAt": 1790376449233,
+  "note": "Only directed voice got this word right; the others invented some other syllable instead"
+ },
+ "B.word.elpresupuesto@ssml": {
+  "score": 1,
+  "updatedAt": 1790376417141
+ },
+ "B.word.elpresupuesto@cut": {
+  "score": 1,
+  "updatedAt": 1790376421341
+ },
+ "B.word.otorrinolaringólogo@directed": {
+  "score": 5,
+  "updatedAt": 1790376464906
+ },
+ "B.word.otorrinolaringólogo@markup": {
+  "score": 5,
+  "updatedAt": 1790376482257
+ },
+ "B.word.otorrinolaringólogo@ssml": {
+  "score": 3,
+  "updatedAt": 1790376490108
+ },
+ "B.word.otorrinolaringólogo@cut": {
+  "score": 1,
+  "updatedAt": 1790376496243
+ },
+ "B.word.ferrocarril@directed": {
+  "score": 5,
+  "updatedAt": 1790376507892
+ },
+ "B.word.ferrocarril@markup": {
+  "score": 5,
+  "updatedAt": 1790376519753
+ },
+ "B.word.ferrocarril@ssml": {
+  "score": 4,
+  "updatedAt": 1790376525387
+ },
+ "B.word.ferrocarril@cut": {
+  "score": 1,
+  "updatedAt": 1790376527753
+ },
+ "B.word.mischievously@directed": {
+  "score": 5,
+  "updatedAt": 1790376565385
+ },
+ "B.word.mischievously@markup": {
+  "score": 3,
+  "updatedAt": 1790376607109,
+  "note": "Strangely, Markaba did not pronounce it by syllables, it just pronounced the same word twice in the same speed."
+ },
+ "B.word.mischievously@ssml": {
+  "score": 1,
+  "updatedAt": 1790376576833
+ },
+ "B.word.mischievously@cut": {
+  "score": 1,
+  "updatedAt": 1790376580271
+ },
+ "B.word.vituperative@directed": {
+  "score": 5,
+  "updatedAt": 1790376628663
+ },
+ "B.word.vituperative@markup": {
+  "score": 1,
+  "updatedAt": 1790376674720,
+  "note": "The pronunciation is wrong. It is not pronounced like that"
+ },
+ "B.word.vituperative@ssml": {
+  "score": 1,
+  "updatedAt": 1790376681561
+ },
+ "B.word.vituperative@cut": {
+  "score": 1,
+  "updatedAt": 1790376686544
+ },
+ "B.word.unreciprocated@directed": {
+  "score": 5,
+  "updatedAt": 1790376698365
+ },
+ "B.word.unreciprocated@markup": {
+  "score": 1,
+  "updatedAt": 1790376720464,
+  "note": "Another example when markup actually doesn't pronounce the syllables correctly"
+ },
+ "B.word.unreciprocated@ssml": {
+  "score": 1,
+  "updatedAt": 1790376725897
+ },
+ "B.word.unreciprocated@cut": {
+  "score": 1,
+  "updatedAt": 1790376729811
+ },
+ "B.word.perseverance@directed": {
+  "score": 4,
+  "updatedAt": 1790376787916,
+  "note": "The third syllable is not pronounced correctly. Maybe because we are passing them like that, but as I mentioned above, we need to pass the pronunciation not the word itself."
+ },
+ "B.word.perseverance@markup": {
+  "score": 1,
+  "updatedAt": 1790376818873,
+  "note": "It doesn't pronounce it by syllables. One more example of this problem"
+ },
+ "B.word.perseverance@ssml": {
+  "score": 1,
+  "updatedAt": 1790376802457
+ },
+ "B.word.perseverance@cut": {
+  "score": 1,
+  "updatedAt": 1790376821192
+ },
+ "B.word.congeniality@directed": {
+  "score": 1,
+  "updatedAt": 1790376892189,
+  "note": "Strangely it pronounced different syllables so I just broke the word into different syllables."
+ },
+ "B.word.congeniality@markup": {
+  "score": 1,
+  "updatedAt": 1790376922629,
+  "note": "This example pronounced the word only once and fast so in this case it both failed to pronounce it twice and the only pronunciation that it had was the first one."
+ },
+ "B.word.congeniality@ssml": {
+  "score": 1,
+  "updatedAt": 1790376938471,
+  "note": "This pronounces it completely wrong."
+ },
+ "B.word.congeniality@cut": {
+  "score": 1,
+  "updatedAt": 1790376941232
+ },
+ "B.word.insurmountable@directed": {
+  "score": 4,
+  "updatedAt": 1790376994462,
+  "note": "Some syllables were not quite exactly correct. It was still okay, but I see that English is actually much harder for pronunciation with these techniques. I think what we need to do is to use the pronunciation, not the word, as I was explaining before."
+ },
+ "B.word.insurmountable@markup": {
+  "score": 5,
+  "updatedAt": 1790377049613,
+  "note": "Rare case when markup was actually slightly more correct, but the fourth syllable was slightly strangely produced."
+ },
+ "B.word.insurmountable@ssml": {
+  "score": 1,
+  "updatedAt": 1790377055610
+ },
+ "B.word.insurmountable@cut": {
+  "score": 1,
+  "updatedAt": 1790377057592
+ },
+ "B.word.doppelganger@directed": {
+  "score": 5,
+  "updatedAt": 1790377069079
+ },
+ "B.word.doppelganger@markup": {
+  "score": 1,
+  "updatedAt": 1790377085630,
+  "note": "It pronounces different syllables"
+ },
+ "B.word.doppelganger@ssml": {
+  "score": 1,
+  "updatedAt": 1790377090643
+ },
+ "B.word.doppelganger@cut": {
+  "score": 1,
+  "updatedAt": 1790377092327
+ },
+ "B.word.opportunistic@directed": {
+  "score": 5,
+  "updatedAt": 1790377103941
+ },
+ "B.word.opportunistic@markup": {
+  "score": 1,
+  "updatedAt": 1790377118194,
+  "note": "It didn't pronounce it slowly at all, it just pronounced it once and fast."
+ },
+ "B.word.opportunistic@ssml": {
+  "score": 2,
+  "updatedAt": 1790378793007
+ },
+ "B.word.opportunistic@cut": {
+  "score": 1,
+  "updatedAt": 1790378795823
+ },
+ "B.word.worcestershire@directed": {
+  "score": 2,
+  "updatedAt": 1790378853756,
+  "note": "The last syllable was not pronounced correctly"
+ },
+ "B.word.worcestershire@markup": {
+  "score": 3,
+  "updatedAt": 1790378838198,
+  "note": "I would say that in this case markup was better, but and a bit more correct, but it didn't separate this first and the second syllable, so it's still not quite good"
+ },
+ "B.word.worcestershire@ssml": {
+  "score": 1,
+  "updatedAt": 1790378857421
+ },
+ "B.word.worcestershire@cut": {
+  "score": 1,
+  "updatedAt": 1790378864088
+ },
+ "B.word.thoroughly@directed": {
+  "score": 4,
+  "updatedAt": 1790378991833
+ },
+ "B.word.thoroughly@markup": {
+  "score": 1,
+  "updatedAt": 1790379021958,
+  "note": "It doesn't pronounce it syllable by syllable, so it just pronounced it once. So once again, I see that markup model consistently has this type of failure."
+ },
+ "B.word.thoroughly@ssml": {
+  "score": 1,
+  "updatedAt": 1790379031812
+ },
+ "B.word.thoroughly@cut": {
+  "score": 1,
+  "updatedAt": 1790379034748
+ },
+ "B.word.достопримечательность@directed": {
+  "score": 4,
+  "updatedAt": 1790379071481,
+  "note": "It's more or less okay, but it has pronounced something in addition to the last syllable."
+ },
+ "B.word.достопримечательность@markup": {
+  "score": 3,
+  "updatedAt": 1790379085695
+ },
+ "B.word.достопримечательность@ssml": {
+  "score": 3,
+  "updatedAt": 1790379094104
+ },
+ "B.word.достопримечательность@cut": {
+  "score": 1,
+  "updatedAt": 1790379097709
+ },
+ "B.word.здравствуйте@directed": {
+  "score": 5,
+  "updatedAt": 1790379113917
+ },
+ "B.word.здравствуйте@markup": {
+  "score": 1,
+  "updatedAt": 1790379247445,
+  "note": "I just pronounced it twice fast"
+ },
+ "B.word.здравствуйте@ssml": {
+  "score": 3,
+  "updatedAt": 1790379253870
+ },
+ "B.word.здравствуйте@cut": {
+  "score": 1,
+  "updatedAt": 1790379255626
+ },
+ "B.word.несовершеннолетний@directed": {
+  "score": 3,
+  "updatedAt": 1790379396464,
+  "note": "Strangely, in this case, a model has pronounced it three times instead of two times. So, the second time it was pronounced not syllable by syllable but slowly, and the third one was fast not fast, but the normal speed, and I can say as a native speaker that just in general, Russian voices don't just pronounce things correctly. For some reason, they are not very well tuned to pronounce it correctly as we are pronouncing as native speakers, just in general. This is not even related to syllables, this is related to just the pronunciation. Maybe they are not optimized for this case. I would imagine this is probably the case, that they are just not optimized for these particular languages and they are just not tested on that domain of languages, and just nobody cares because when they are showing the metrics, they just don't test it and don't report it in their let's say A-B tests and our testing methodology. So it's just I think on this language they are doing just their best without extra effort. I would imagine it like that, or maybe there are some specialized models. I think yeah, definitely there are specialized models which will do much better for this language. What I hear in this particular case is that some syllables are not pronounced correctly as we usually pronounce it in natural speech."
+ },
+ "B.word.несовершеннолетний@markup": {
+  "note": "It didn't pronounce syllable by syllable, it pronounced just the first syllable and then the last syllables it just pronounced quite fast",
+  "updatedAt": 1790379424478,
+  "score": 2
+ },
+ "B.word.несовершеннолетний@ssml": {
+  "score": 3,
+  "updatedAt": 1790379425124
+ },
+ "B.word.несовершеннолетний@cut": {
+  "score": 1,
+  "updatedAt": 1790379427740
+ },
+ "B.word.снисходительность@directed": {
+  "score": 5,
+  "updatedAt": 1790379441599
+ },
+ "B.word.снисходительность@markup": {
+  "score": 4,
+  "updatedAt": 1790379499178
+ },
+ "B.word.снисходительность@ssml": {
+  "score": 3,
+  "updatedAt": 1790379515007
+ },
+ "B.word.снисходительность@cut": {
+  "score": 1,
+  "updatedAt": 1790379519873
+ },
+ "B.word.платёжеспособный@directed": {
+  "score": 5,
+  "updatedAt": 1790379525738
+ },
+ "B.word.платёжеспособный@markup": {
+  "score": 4,
+  "updatedAt": 1790379587942,
+  "note": "It didn't pronounce it syllable by syllable, but it still was okay, surprisingly."
+ },
+ "B.word.оппортунистический@directed": {
+  "score": 5,
+  "updatedAt": 1790379655104,
+  "note": "It was good actually method itself worked nice and pronounced it correctly, but I guess the LLM model didn't correctly break it down into correct syllables."
+ },
+ "B.word.безнаказанность@directed": {
+  "score": 5,
+  "updatedAt": 1790379666559
+ },
+ "B.word.precipitevolissimevolmente@directed": {
+  "score": 5,
+  "updatedAt": 1790379697568
+ },
+ "B.word.платёжеспособный@ssml": {
+  "score": 5,
+  "updatedAt": 1790379744045
+ },
+ "B.word.платёжеспособный@cut": {
+  "score": 1,
+  "updatedAt": 1790379744748
+ },
+ "B.word.оппортунистический@markup": {
+  "score": 5,
+  "updatedAt": 1790379806477,
+  "note": "Surprisingly, when pronouncing this model has corrected and used the correct breakdown of this word into syllables as opposed to what it was specified which was incorrect for breaking down into syllables."
+ },
+ "B.word.оппортунистический@ssml": {
+  "score": 4,
+  "updatedAt": 1790379812414
+ },
+ "B.word.оппортунистический@cut": {
+  "score": 1,
+  "updatedAt": 1790379815374
+ },
+ "B.word.безнаказанность@markup": {
+  "score": 1,
+  "updatedAt": 1790379861500,
+  "note": "In this case, the model failed very badly because it was pronouncing \"short pause\" exactly as we were specifying in the original sentence"
+ },
+ "B.word.безнаказанность@ssml": {
+  "score": 5,
+  "updatedAt": 1790379873136
+ },
+ "B.word.безнаказанность@cut": {
+  "score": 1,
+  "updatedAt": 1790379875117
+ },
+ "B.word.предостерегать@directed": {
+  "score": 5,
+  "updatedAt": 1790379890205
+ },
+ "B.word.предостерегать@markup": {
+  "score": 5,
+  "updatedAt": 1790379900707
+ },
+ "B.word.предостерегать@ssml": {
+  "score": 1,
+  "updatedAt": 1790379919719,
+  "note": "It pronounced it with English accent"
+ },
+ "B.word.предостерегать@cut": {
+  "score": 1,
+  "updatedAt": 1790379922928
+ },
+ "B.word.precipitevolissimevolmente@markup": {
+  "score": 5,
+  "updatedAt": 1790379970568
+ },
+ "B.word.precipitevolissimevolmente@ssml": {
+  "score": 3,
+  "updatedAt": 1790379998575,
+  "note": "It pronounced this word with English accent, otherwise it was good"
+ },
+ "B.word.precipitevolissimevolmente@cut": {
+  "score": 1,
+  "updatedAt": 1790379986635
+ },
+ "B.word.sbadigliare@directed": {
+  "score": 5,
+  "updatedAt": 1790380011150
+ },
+ "B.word.sbadigliare@markup": {
+  "score": 2,
+  "updatedAt": 1790380041152,
+  "note": "For this case the model pronounced this word three times first then syllable by syllable and then fast again so it didn't follow the instruction."
+ },
+ "B.word.sbadigliare@ssml": {
+  "score": 1,
+  "updatedAt": 1790380047911
+ },
+ "B.word.sbadigliare@cut": {
+  "score": 1,
+  "updatedAt": 1790380049446
+ },
+ "B.word.écureuil@directed": {
+  "score": 5,
+  "updatedAt": 1790380060216
+ },
+ "B.word.écureuil@markup": {
+  "score": 1,
+  "updatedAt": 1790380097525,
+  "note": "I didn't pronounce the second syllable correctly. It broke it down into two letters and pronounced two letters instead"
+ },
+ "B.word.écureuil@ssml": {
+  "score": 1,
+  "updatedAt": 1790380098391
+ },
+ "B.word.écureuil@cut": {
+  "score": 3,
+  "updatedAt": 1790380095210
+ },
+ "B.word.serrurerie@directed": {
+  "score": 5,
+  "updatedAt": 1790380109130
+ },
+ "B.word.serrurerie@markup": {
+  "score": 3,
+  "updatedAt": 1790380151440
+ },
+ "B.word.serrurerie@ssml": {
+  "score": 4,
+  "updatedAt": 1790380150857
+ },
+ "B.word.serrurerie@cut": {
+  "score": 2,
+  "updatedAt": 1790380158782
+ },
+ "B.word.elhierro@directed": {
+  "score": 5,
+  "updatedAt": 1790380167674
+ },
+ "B.word.elhierro@markup": {
+  "score": 5,
+  "updatedAt": 1790380180841
+ },
+ "B.word.elhierro@ssml": {
+  "score": 4,
+  "updatedAt": 1790380184956
+ },
+ "B.word.elhierro@cut": {
+  "score": 1,
+  "updatedAt": 1790380188931
+ },
+ "B.word.lethargy@directed": {
+  "score": 1,
+  "updatedAt": 1790380218134,
+  "note": "It didn't pronounce the last syllable correctly, it broke it down into two separate letters instead."
+ },
+ "B.word.lethargy@markup": {
+  "score": 1,
+  "updatedAt": 1790380248752,
+  "note": "And this model failed the same way."
+ },
+ "B.word.lethargy@ssml": {
+  "score": 1,
+  "updatedAt": 1790380246488,
+  "note": "Surprisingly this model failed the same way."
+ },
+ "B.word.lethargy@cut": {
+  "score": 1,
+  "updatedAt": 1790380256135
+ },
+ "B.word.elalforfón@directed": {
+  "score": 5,
+  "updatedAt": 1790380264553
+ },
+ "B.word.elalforfón@markup": {
+  "score": 3,
+  "updatedAt": 1790380292678,
+  "note": "It didn't pronounce it syllable by syllable"
+ },
+ "B.word.elalforfón@ssml": {
+  "score": 4,
+  "updatedAt": 1790380289453
+ },
+ "B.word.elalforfón@cut": {
+  "score": 1,
+  "updatedAt": 1790380295918
+ },
+ "B.word.elrecordatorio@directed": {
+  "score": 4,
+  "updatedAt": 1790380332997,
+  "note": "He pronounced it a little bit faster and didn't accentuate syllables. Although actually for the application that will be still okay."
+ },
+ "B.word.elrecordatorio@markup": {
+  "score": 5,
+  "updatedAt": 1790380317017
+ },
+ "B.word.elrecordatorio@ssml": {
+  "score": 3,
+  "updatedAt": 1790380339417
+ },
+ "B.word.elrecordatorio@cut": {
+  "score": 1,
+  "updatedAt": 1790380342415
+ },
+ "B.word.laberenjena@directed": {
+  "score": 5,
+  "updatedAt": 1790380351817
+ },
+ "B.word.laberenjena@markup": {
+  "score": 4,
+  "updatedAt": 1790380370957,
+  "note": "It pronounced the last two syllables together"
+ },
+ "B.word.laberenjena@ssml": {
+  "score": 1,
+  "updatedAt": 1790380386549,
+  "note": "It pronounced the syllables incorrectly"
+ },
+ "B.word.laberenjena@cut": {
+  "score": 1,
+  "updatedAt": 1790380379579
+ },
+ "B.word.pésimo@directed": {
+  "score": 5,
+  "updatedAt": 1790380393882
+ },
+ "B.word.pésimo@markup": {
+  "score": 5,
+  "updatedAt": 1790380400898
+ },
+ "B.word.pésimo@ssml": {
+  "score": 3,
+  "updatedAt": 1790380406479
+ },
+ "B.word.pésimo@cut": {
+  "score": 1,
+  "updatedAt": 1790380410145
+ },
+ "B.syllabifier": {
+  "score": 4,
+  "updatedAt": 1790380482532,
+  "note": "So as I mentioned actually the Celibifier itself usually was working correctly but the problem is that we should be simplifying not the original word but we should actually take the pronunciation and simplify that because in this case it may risk pronouncing something which in real speech we just don't pronounce because we just pronounce the word in a different way and it's especially important for English because it's very very often that the words are pronounced not as written."
+ },
+ "C.line.0@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790380529073
+ },
+ "C.line.0@g31-directed-charon": {
+  "score": 4,
+  "updatedAt": 1790380542183,
+  "note": "Just a very slight accent, but it's perfectly fine"
+ },
+ "C.line.0@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790380547290
+ },
+ "C.line.0@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790380551638
+ },
+ "C.line.0@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790380555671
+ },
+ "C.line.0@api-38": {
+  "score": 5,
+  "updatedAt": 1790380560573
+ },
+ "C.line.0@wavenet-plain": {
+  "score": 3,
+  "updatedAt": 1790380580401,
+  "note": "this has very obvious English accent but it's still somewhat useful and somewhat usable"
+ },
+ "C.line.0@wavenet-lang": {
+  "score": 3,
+  "updatedAt": 1790380592570,
+  "note": "And the same for this case as the previous one"
+ },
+ "C.line.0@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790380621005,
+  "note": "This is okay, but it sounds obviously that we have inserted something."
+ },
+ "C.line.0@aura": {
+  "score": 1,
+  "updatedAt": 1790380603971
+ },
+ "C.line.1@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790380676472,
+  "note": "This voice for Russian doesn't sound naturally at all. It sounds with very weird accent as nobody speaks at all."
+ },
+ "C.line.1@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790380659728,
+  "note": "His voice actually speaks Russian very nice and the Spanish word is pronounced correctly"
+ },
+ "C.line.1@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790380683532
+ },
+ "C.line.1@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790380691082
+ },
+ "C.line.1@g25-plain": {
+  "score": 4,
+  "updatedAt": 1790380719676,
+  "note": "This is pronounced with slight stuttering so it reads as if this is not her native language, but it's still usable"
+ },
+ "C.line.1@api-38": {
+  "score": 5,
+  "updatedAt": 1790380725049
+ },
+ "C.line.1@wavenet-plain": {
+  "score": 1,
+  "updatedAt": 1790380749379,
+  "note": "This is obviously pronounced with a strong accent and because of that it is actually pronounced even incorrectly"
+ },
+ "C.line.1@wavenet-lang": {
+  "score": 1,
+  "updatedAt": 1790380755919,
+  "note": "Same problem as for the previous one"
+ },
+ "C.line.1@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790380761179
+ },
+ "C.line.2@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790380771772
+ },
+ "C.line.2@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790380780412
+ },
+ "C.line.2@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790380785060
+ },
+ "C.line.2@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790380790311
+ },
+ "C.line.2@g25-plain": {
+  "score": 4,
+  "updatedAt": 1790380799375
+ },
+ "C.line.2@api-38": {
+  "score": 5,
+  "updatedAt": 1790380800497
+ },
+ "C.line.2@wavenet-plain": {
+  "score": 1,
+  "updatedAt": 1790380833792,
+  "note": "The English word was not pronounced correctly."
+ },
+ "C.line.2@wavenet-lang": {
+  "score": 1,
+  "updatedAt": 1790380839534,
+  "note": "Same problem"
+ },
+ "C.line.2@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790380845890
+ },
+ "C.line.3@g31-directed": {
+  "score": 4,
+  "updatedAt": 1790380878000,
+  "note": "All good, but the last letter T is not pronounced in this word in French."
+ },
+ "C.line.3@g31-directed-charon": {
+  "score": 4,
+  "updatedAt": 1790380890022,
+  "note": "Same problem"
+ },
+ "C.line.3@g31-plain": {
+  "score": 4,
+  "updatedAt": 1790380900636,
+  "note": "Same problem"
+ },
+ "C.line.3@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790380915323,
+  "note": "In this case the French word was pronounced correctly without the last T."
+ },
+ "C.line.3@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790380920488
+ },
+ "C.line.3@api-38": {
+  "score": 4,
+  "updatedAt": 1790380924754
+ },
+ "C.line.3@wavenet-plain": {
+  "score": 5,
+  "updatedAt": 1790380956884,
+  "note": "Surprisingly in this case it worked quite nicely and pronounced correctly"
+ },
+ "C.line.3@wavenet-lang": {
+  "score": 3,
+  "updatedAt": 1790380937691
+ },
+ "C.line.3@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790380942170
+ },
+ "C.line.4@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790381037967
+ },
+ "C.line.4@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790381043114
+ },
+ "C.line.4@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790381049781
+ },
+ "C.line.4@g31-other-locale": {
+  "score": 4,
+  "updatedAt": 1790381085012,
+  "note": "Before the German word it also pronounced is in German so the word to be in the form is was pronounced in German actually as IST."
+ },
+ "C.line.4@g25-plain": {
+  "score": 1,
+  "updatedAt": 1790381016961,
+  "note": "In this case it pronounced the whole phrase in German, not just a part of it"
+ },
+ "C.line.4@api-38": {
+  "score": 5,
+  "updatedAt": 1790381097095
+ },
+ "C.line.4@wavenet-plain": {
+  "score": 3,
+  "updatedAt": 1790381137420,
+  "note": "Produced with accent and incorrectly"
+ },
+ "C.line.4@wavenet-lang": {
+  "score": 4,
+  "updatedAt": 1790381107080
+ },
+ "C.line.4@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790381111211
+ },
+ "C.line.4@aura": {
+  "score": 1,
+  "updatedAt": 1790381143518
+ },
+ "C.line.3@aura": {
+  "score": 1,
+  "updatedAt": 1790381146080
+ },
+ "C.line.5@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790381158560
+ },
+ "C.line.5@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790381164358
+ },
+ "C.line.5@g31-plain": {
+  "score": 4,
+  "updatedAt": 1790381182607,
+  "note": "Produced with quite obvious Russian accent, but that's somewhat useful still"
+ },
+ "C.line.5@g31-other-locale": {
+  "score": 3,
+  "updatedAt": 1790381198305,
+  "note": "Pronounced with very obvious accent"
+ },
+ "C.line.5@g25-plain": {
+  "score": 4,
+  "updatedAt": 1790381218273,
+  "note": "There is a very tiny accent, but it's still fine"
+ },
+ "C.line.5@api-38": {
+  "score": 5,
+  "updatedAt": 1790381210322
+ },
+ "C.line.5@wavenet-plain": {
+  "score": 3,
+  "updatedAt": 1790381223724
+ },
+ "C.line.5@wavenet-lang": {
+  "score": 3,
+  "updatedAt": 1790381227723
+ },
+ "C.line.5@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790381231377
+ },
+ "C.line.6@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790381239689
+ },
+ "C.line.6@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790381246323
+ },
+ "C.line.6@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790381252789
+ },
+ "C.line.6@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790381259422
+ },
+ "C.line.6@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790381266054
+ },
+ "C.line.6@api-38": {
+  "score": 5,
+  "updatedAt": 1790381271770
+ },
+ "C.line.6@wavenet-plain": {
+  "score": 3,
+  "updatedAt": 1790381276854
+ },
+ "C.line.6@wavenet-lang": {
+  "score": 3,
+  "updatedAt": 1790381280436
+ },
+ "C.line.6@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790381284354
+ },
+ "C.line.7@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790381309552
+ },
+ "C.line.7@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790381299518
+ },
+ "C.line.7@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790381315255
+ },
+ "C.line.7@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790381347374
+ },
+ "C.line.7@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790381353149
+ },
+ "C.line.7@api-38": {
+  "score": 5,
+  "updatedAt": 1790381358335
+ },
+ "C.line.7@wavenet-plain": {
+  "score": 2,
+  "updatedAt": 1790381374565
+ },
+ "C.line.7@wavenet-lang": {
+  "score": 2,
+  "updatedAt": 1790381376601
+ },
+ "C.line.7@wavenet-voice": {
+  "score": 3,
+  "updatedAt": 1790381390166,
+  "note": "It pronounced dot at the end of the sentence for some reason"
+ },
+ "C.line.7@aura": {
+  "score": 1,
+  "updatedAt": 1790381393365
+ },
+ "C.line.8@g31-directed": {
+  "score": 4,
+  "updatedAt": 1790381430995,
+  "note": "There is some obvious accent, but it's still usable"
+ },
+ "C.line.8@g31-directed-charon": {
+  "score": 4,
+  "updatedAt": 1790381490990
+ },
+ "C.line.8@g31-plain": {
+  "score": 4,
+  "updatedAt": 1790381490442
+ },
+ "C.line.8@g31-other-locale": {
+  "score": 4,
+  "updatedAt": 1790381490040
+ },
+ "C.line.8@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790381525532,
+  "note": "This model actually nailed the correct Russian pronunciation because this word is not pronounced as soft but actually as a hard with the heart letter others pronounced it just slightly incorrectly but it was still usable"
+ },
+ "C.line.8@api-38": {
+  "score": 5,
+  "updatedAt": 1790381533941
+ },
+ "C.line.8@wavenet-plain": {
+  "score": 1,
+  "updatedAt": 1790381540404
+ },
+ "C.line.8@wavenet-lang": {
+  "score": 1,
+  "updatedAt": 1790381542789
+ },
+ "C.line.8@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790381548890
+ },
+ "C.line.8@aura": {
+  "score": 1,
+  "updatedAt": 1790381550856
+ },
+ "C.line.9@g31-directed": {
+  "score": 5,
+  "updatedAt": 1790381558806
+ },
+ "C.line.9@g31-directed-charon": {
+  "score": 5,
+  "updatedAt": 1790381563939
+ },
+ "C.line.9@g31-plain": {
+  "score": 5,
+  "updatedAt": 1790381568873
+ },
+ "C.line.9@g31-other-locale": {
+  "score": 5,
+  "updatedAt": 1790381573221
+ },
+ "C.line.9@g25-plain": {
+  "score": 5,
+  "updatedAt": 1790381578804
+ },
+ "C.line.9@api-38": {
+  "score": 5,
+  "updatedAt": 1790381584504
+ },
+ "C.line.9@wavenet-plain": {
+  "score": 1,
+  "updatedAt": 1790381609826,
+  "note": "it wasn't pronounced correctly at all"
+ },
+ "C.line.9@wavenet-lang": {
+  "score": 1,
+  "updatedAt": 1790381592535
+ },
+ "C.line.9@wavenet-voice": {
+  "score": 4,
+  "updatedAt": 1790381596587
+ },
+ "D.example.v1.es.girar en torno a#0": {
+  "score": 5,
+  "updatedAt": 1790381720514
+ },
+ "D.example.v1.es.girar en torno a#1": {
+  "score": 5,
+  "updatedAt": 1790381727034
+ },
+ "D.example.v1.es.girar en torno a#2": {
+  "score": 3,
+  "updatedAt": 1790381736348
+ },
+ "D.example.v1.es.súbitamente#0": {
+  "score": 4,
+  "updatedAt": 1790381746080
+ },
+ "D.example.v1.es.súbitamente#1": {
+  "score": 5,
+  "updatedAt": 1790381751681
+ },
+ "D.example.v1.es.súbitamente#2": {
+  "score": 4,
+  "updatedAt": 1790381756079
+ },
+ "D.example.v1.es.la cebolla#0": {
+  "score": 5,
+  "updatedAt": 1790381768110
+ },
+ "D.example.v1.es.la cebolla#1": {
+  "score": 4,
+  "updatedAt": 1790381777082
+ },
+ "D.example.v1.es.la cebolla#2": {
+  "score": 5,
+  "updatedAt": 1790381809937,
+  "note": "This example is very funny so definitely this is probably the best example in the whole test."
+ },
+ "D.example.v1.es.suspender#0": {
+  "score": 5,
+  "updatedAt": 1790381822162
+ },
+ "D.example.v1.es.suspender#1": {
+  "score": 4,
+  "updatedAt": 1790382518079
+ },
+ "D.example.v1.es.suspender#2": {
+  "score": 5,
+  "updatedAt": 1790382521974
+ },
+ "D.example.v1.es.quemar#0": {
+  "score": 5,
+  "updatedAt": 1790382532205
+ },
+ "D.example.v1.es.quemar#1": {
+  "score": 5,
+  "updatedAt": 1790382534862
+ },
+ "D.example.v1.es.quemar#2": {
+  "score": 5,
+  "updatedAt": 1790382540129
+ },
+ "D.example.v1.es.inusual#0": {
+  "score": 5,
+  "updatedAt": 1790382548006
+ },
+ "D.example.v1.es.inusual#1": {
+  "score": 4,
+  "updatedAt": 1790382552722
+ },
+ "D.example.v1.es.inusual#2": {
+  "score": 5,
+  "updatedAt": 1790382556978
+ },
+ "D.example.v1.es.la basura al tacho#0": {
+  "score": 5,
+  "updatedAt": 1790382564226
+ },
+ "D.example.v1.es.la basura al tacho#1": {
+  "score": 4,
+  "updatedAt": 1790382574179
+ },
+ "D.example.v1.es.la basura al tacho#2": {
+  "score": 5,
+  "updatedAt": 1790382595789,
+  "note": "This sentence is funny, but it's a little bit too long"
+ },
+ "D.example.v1.es.la fuerza#0": {
+  "score": 5,
+  "updatedAt": 1790382604770
+ },
+ "D.example.v1.es.la fuerza#1": {
+  "score": 5,
+  "updatedAt": 1790382612560
+ },
+ "D.example.v1.es.la fuerza#2": {
+  "score": 5,
+  "updatedAt": 1790382621404
+ },
+ "D.example.v1.es.el banco#0": {
+  "score": 5,
+  "updatedAt": 1790382629919
+ },
+ "D.example.v1.es.el banco#1": {
+  "score": 5,
+  "updatedAt": 1790382638034
+ },
+ "D.example.v1.es.el banco#2": {
+  "score": 5,
+  "updatedAt": 1790382649040
+ },
+ "D.example.v1.es.el ayuntamiento#0": {
+  "score": 4,
+  "updatedAt": 1790382661802
+ },
+ "D.example.v1.es.el ayuntamiento#1": {
+  "score": 5,
+  "updatedAt": 1790382694421,
+  "note": "It's kind of sloppy texts are quite interesting and good examples. Something which is memorable"
+ },
+ "D.example.v1.es.el ayuntamiento#2": {
+  "score": 3,
+  "updatedAt": 1790382677401
+ },
+ "D.example.v1.es.prompt": {
+  "score": 1,
+  "updatedAt": 1790382704995,
+  "note": "It says that the model is not available"
+ },
+ "D.example.v1.en.consummate#0": {
+  "score": 5,
+  "updatedAt": 1790382717309
+ },
+ "D.example.v1.en.consummate#1": {
+  "score": 5,
+  "updatedAt": 1790382720236
+ },
+ "D.example.v1.en.consummate#2": {
+  "score": 5,
+  "updatedAt": 1790382723653
+ },
+ "D.example.v1.en.discontent#0": {
+  "score": 5,
+  "updatedAt": 1790382731719
+ },
+ "D.example.v1.en.discontent#1": {
+  "score": 4,
+  "updatedAt": 1790382737783
+ },
+ "D.example.v1.en.discontent#2": {
+  "score": 5,
+  "updatedAt": 1790382758274,
+  "note": "The translation into Russian is a little bit not correct"
+ },
+ "D.example.v1.en.bellow#0": {
+  "score": 5,
+  "updatedAt": 1790382766713
+ },
+ "D.example.v1.en.bellow#1": {
+  "score": 5,
+  "updatedAt": 1790382771485
+ },
+ "D.example.v1.en.bellow#2": {
+  "score": 4,
+  "updatedAt": 1790382782250
+ },
+ "D.example.v1.en.nibble#0": {
+  "score": 4,
+  "updatedAt": 1790382804582
+ },
+ "D.example.v1.en.nibble#1": {
+  "score": 5,
+  "updatedAt": 1790382797015
+ },
+ "D.example.v1.en.nibble#2": {
+  "score": 5,
+  "updatedAt": 1790382801972
+ },
+ "D.example.v1.en.hogwash#0": {
+  "score": 4,
+  "updatedAt": 1790382815647
+ },
+ "D.example.v1.en.hogwash#1": {
+  "score": 5,
+  "updatedAt": 1790382814399
+ },
+ "D.example.v1.en.hogwash#2": {
+  "score": 5,
+  "updatedAt": 1790382821108
+ },
+ "D.example.v1.en.coyly#0": {
+  "score": 4,
+  "updatedAt": 1790382851713
+ },
+ "D.example.v1.en.coyly#1": {
+  "score": 4,
+  "updatedAt": 1790382852224
+ },
+ "D.example.v1.en.coyly#2": {
+  "score": 4,
+  "updatedAt": 1790382852991
+ },
+ "D.example.v1.en.riddle#0": {
+  "score": 5,
+  "updatedAt": 1790382856993
+ },
+ "D.example.v1.en.riddle#1": {
+  "score": 5,
+  "updatedAt": 1790382861089
+ },
+ "D.example.v1.en.riddle#2": {
+  "score": 5,
+  "updatedAt": 1790382864475
+ },
+ "D.example.v1.en.congeniality#0": {
+  "score": 4,
+  "updatedAt": 1790382929794
+ },
+ "D.example.v1.en.congeniality#1": {
+  "score": 5,
+  "updatedAt": 1790382928737
+ },
+ "D.example.v1.en.congeniality#2": {
+  "score": 5,
+  "updatedAt": 1790382941985
+ },
+ "D.example.v1.en.sloth#0": {
+  "score": 5,
+  "updatedAt": 1790382946513
+ },
+ "D.example.v1.en.sloth#1": {
+  "score": 5,
+  "updatedAt": 1790382952043
+ },
+ "D.example.v1.en.sloth#2": {
+  "score": 3,
+  "updatedAt": 1790382959902
+ },
+ "D.example.v1.en.pretense#0": {
+  "score": 3,
+  "updatedAt": 1790382971538
+ },
+ "D.example.v1.en.pretense#1": {
+  "score": 3,
+  "updatedAt": 1790382983983
+ },
+ "D.example.v1.en.pretense#2": {
+  "score": 5,
+  "updatedAt": 1790382983290
+ },
+ "D.example.v1.en.prompt": {
+  "score": 1,
+  "updatedAt": 1790382993587,
+  "note": "Model was exhausted and didn't respond"
+ },
+ "D.example.v2.es.girar en torno a#0": {
+  "score": 4,
+  "updatedAt": 1790383010504
+ },
+ "D.example.v2.es.girar en torno a#1": {
+  "score": 5,
+  "updatedAt": 1790383326406
+ },
+ "D.example.v2.es.girar en torno a#2": {
+  "score": 1,
+  "updatedAt": 1790383352979,
+  "note": "This is quite a strange and confusing category. Probably it's better to remove it"
+ },
+ "D.example.v2.es.súbitamente#0": {
+  "score": 4,
+  "updatedAt": 1790383359482
+ },
+ "D.example.v2.es.súbitamente#1": {
+  "score": 4,
+  "updatedAt": 1790383365820
+ },
+ "D.example.v2.es.súbitamente#2": {
+  "score": 3,
+  "updatedAt": 1790383369773
+ },
+ "D.example.v2.es.la cebolla#0": {
+  "score": 4,
+  "updatedAt": 1790383381773
+ },
+ "D.example.v2.es.la cebolla#1": {
+  "score": 5,
+  "updatedAt": 1790383387947
+ },
+ "D.example.v2.es.la cebolla#2": {
+  "score": 5,
+  "updatedAt": 1790383399838
+ },
+ "D.example.v2.es.suspender#0": {
+  "score": 5,
+  "updatedAt": 1790383412480
+ },
+ "D.example.v2.es.suspender#1": {
+  "score": 5,
+  "updatedAt": 1790383414583
+ },
+ "D.example.v2.es.suspender#2": {
+  "score": 2,
+  "updatedAt": 1790383421522
+ },
+ "D.example.v2.es.quemar#0": {
+  "score": 4,
+  "updatedAt": 1790383433571
+ },
+ "D.example.v2.es.quemar#1": {
+  "score": 5,
+  "updatedAt": 1790383439489
+ },
+ "D.example.v2.es.quemar#2": {
+  "score": 5,
+  "updatedAt": 1790383444150
+ },
+ "D.example.v2.es.inusual#0": {
+  "score": 5,
+  "updatedAt": 1790383466743
+ },
+ "D.example.v2.es.inusual#1": {
+  "score": 5,
+  "updatedAt": 1790383518491,
+  "note": "This sounds okay but I noticed that in many cases this is shown as an error and then some English word or expression so of course in this case we shouldn't use that I assume that it's probably because this is coming from somewhere else or at least we can cut the arrow."
+ },
+ "D.example.v2.es.inusual#2": {
+  "score": 4,
+  "updatedAt": 1790383526875
+ },
+ "D.example.v2.es.la basura al tacho#0": {
+  "score": 5,
+  "updatedAt": 1790383540357
+ },
+ "D.example.v2.es.la basura al tacho#1": {
+  "score": 5,
+  "updatedAt": 1790383544577
+ },
+ "D.example.v2.es.la basura al tacho#2": {
+  "score": 4,
+  "updatedAt": 1790383549322
+ },
+ "D.example.v2.es.la fuerza#0": {
+  "score": 5,
+  "updatedAt": 1790383557293
+ },
+ "D.example.v2.es.la fuerza#1": {
+  "score": 5,
+  "updatedAt": 1790383561749
+ },
+ "D.example.v2.es.la fuerza#2": {
+  "score": 1,
+  "updatedAt": 1790383580106,
+  "note": "Let's remove this tile, it doesn't work very nicely."
+ },
+ "D.example.v2.es.el banco#0": {
+  "score": 4,
+  "updatedAt": 1790383782667
+ },
+ "D.example.v2.es.el banco#1": {
+  "score": 4,
+  "updatedAt": 1790383790332
+ },
+ "D.example.v2.es.el banco#2": {
+  "score": 1,
+  "updatedAt": 1790383814479,
+  "note": "The sentence itself is okay, but the style is bad."
+ },
+ "D.example.v2.es.el ayuntamiento#0": {
+  "score": 5,
+  "updatedAt": 1790383819993
+ },
+ "D.example.v2.es.el ayuntamiento#1": {
+  "score": 4,
+  "updatedAt": 1790383823828
+ },
+ "D.example.v2.es.el ayuntamiento#2": {
+  "score": 1,
+  "updatedAt": 1790383839062,
+  "note": "I'm definitely very bad style and just a stupid example as well"
+ },
+ "D.example.v2.es.prompt": {
+  "score": 1,
+  "updatedAt": 1790383842146
+ },
+ "D.example.v2.en.consummate#0": {
+  "score": 4,
+  "updatedAt": 1790383853830
+ },
+ "D.example.v2.en.consummate#1": {
+  "score": 4,
+  "updatedAt": 1790383871616
+ },
+ "D.example.v2.en.consummate#2": {
+  "score": 5,
+  "updatedAt": 1790383877532
+ },
+ "D.example.v2.en.discontent#0": {
+  "score": 4,
+  "updatedAt": 1790383890143
+ },
+ "D.example.v2.en.discontent#1": {
+  "score": 5,
+  "updatedAt": 1790383893996
+ },
+ "D.example.v2.en.discontent#2": {
+  "score": 3,
+  "updatedAt": 1790383900533
+ },
+ "D.example.v2.en.bellow#0": {
+  "score": 4,
+  "updatedAt": 1790383913707
+ },
+ "D.example.v2.en.bellow#1": {
+  "score": 5,
+  "updatedAt": 1790383909205
+ },
+ "D.example.v2.en.bellow#2": {
+  "score": 4,
+  "updatedAt": 1790383930364
+ },
+ "D.example.v2.en.nibble#0": {
+  "score": 5,
+  "updatedAt": 1790383936844
+ },
+ "D.example.v2.en.nibble#1": {
+  "score": 5,
+  "updatedAt": 1790383944364
+ },
+ "D.example.v2.en.nibble#2": {
+  "score": 4,
+  "updatedAt": 1790383949689
+ },
+ "D.example.v2.en.hogwash#0": {
+  "score": 5,
+  "updatedAt": 1790383954741
+ },
+ "D.example.v2.en.hogwash#1": {
+  "score": 4,
+  "updatedAt": 1790383966327
+ },
+ "D.example.v2.en.hogwash#2": {
+  "score": 5,
+  "updatedAt": 1790383970346
+ },
+ "D.example.v2.en.coyly#0": {
+  "score": 5,
+  "updatedAt": 1790383975124
+ },
+ "D.example.v2.en.coyly#1": {
+  "score": 4,
+  "updatedAt": 1790383978322
+ },
+ "D.example.v2.en.coyly#2": {
+  "score": 4,
+  "updatedAt": 1790383988441
+ },
+ "D.example.v2.en.riddle#0": {
+  "score": 4,
+  "updatedAt": 1790383992155
+ },
+ "D.example.v2.en.riddle#1": {
+  "score": 1,
+  "updatedAt": 1790384008385
+ },
+ "D.example.v2.en.riddle#2": {
+  "score": 2,
+  "updatedAt": 1790384010260
+ },
+ "D.example.v2.en.congeniality#0": {
+  "score": 5,
+  "updatedAt": 1790384021034
+ },
+ "D.example.v2.en.congeniality#1": {
+  "score": 1,
+  "updatedAt": 1790384023909
+ },
+ "D.example.v2.en.congeniality#2": {
+  "score": 2,
+  "updatedAt": 1790384048202
+ },
+ "D.example.v2.en.sloth#0": {
+  "score": 5,
+  "updatedAt": 1790384054518
+ },
+ "D.example.v2.en.sloth#1": {
+  "score": 3,
+  "updatedAt": 1790384062663
+ },
+ "D.example.v2.en.sloth#2": {
+  "score": 5,
+  "updatedAt": 1790384064733
+ },
+ "D.example.v2.en.pretense#0": {
+  "score": 4,
+  "updatedAt": 1790384075006
+ },
+ "D.example.v2.en.pretense#1": {
+  "score": 5,
+  "updatedAt": 1790384079383
+ },
+ "D.example.v2.en.pretense#2": {
+  "score": 4,
+  "updatedAt": 1790384082301
+ },
+ "D.example.v2.en.prompt": {
+  "score": 1,
+  "updatedAt": 1790384083948
+ },
+ "D.joint.lesson-es-1#la frontera+la balsa": {
+  "score": 4,
+  "updatedAt": 1790384172101
+ },
+ "D.joint.lesson-es-1#soñar con+la canela": {
+  "score": 3,
+  "updatedAt": 1790384181267
+ },
+ "D.joint.lesson-es-1#el suelo+el cepillo de dientes": {
+  "score": 5,
+  "updatedAt": 1790384189245
+ },
+ "D.joint.lesson-es-2#escalofriante+la multa": {
+  "score": 5,
+  "updatedAt": 1790384219779
+ },
+ "D.joint.lesson-es-2#el bigote+asustar": {
+  "score": 4,
+  "updatedAt": 1790384240992
+ },
+ "D.joint.lesson-en-1#sloth+furious": {
+  "score": 5,
+  "updatedAt": 1790413543388
+ },
+ "D.joint.lesson-en-1#juvenile+infatuation": {
+  "score": 5,
+  "updatedAt": 1790413553644
+ },
+ "D.joint.lesson-en-1#garbled+concussion": {
+  "score": 5,
+  "updatedAt": 1790413559535
+ },
+ "D.story.lesson-es-1.narrator": {
+  "score": 5,
+  "updatedAt": 1790413632061
+ },
+ "D.story.lesson-es-1.dialogue": {
+  "score": 5,
+  "updatedAt": 1790413778069
+ },
+ "D.story.lesson-es-2.narrator": {
+  "score": 5,
+  "updatedAt": 1790413958221,
+  "note": "I actually like this format and I didn't expect that I would like this kind of format I would think that it's also useful to maybe repeat the words after this full examples in some quicker format as a reminder so structure these things in a way that we also add repetition afterwards."
+ },
+ "D.story.lesson-es-2.dialogue": {
+  "score": 5,
+  "updatedAt": 1790413993673
+ },
+ "D.story.lesson-en-1.narrator": {
+  "score": 5,
+  "updatedAt": 1790414084794
+ },
+ "D.story.lesson-en-1.dialogue": {
+  "score": 5,
+  "updatedAt": 1790414506211
+ },
+ "D.callback.lesson-es-1#0": {
+  "score": 4,
+  "updatedAt": 1790414602141,
+  "note": "This example is a little bit strange"
+ },
+ "D.callback.lesson-es-1#1": {
+  "score": 4,
+  "updatedAt": 1790414634575,
+  "note": "Also a rather strange example. It shouldn't just combine the words, it should try to produce some reasonable examples."
+ },
+ "D.callback.lesson-es-1#2": {
+  "score": 5,
+  "updatedAt": 1790414727222
+ },
+ "D.callback.lesson-es-1#3": {
+  "score": 5,
+  "updatedAt": 1790414766743,
+  "note": "That's actually a good idea. If something is related to what was before, it's a good idea to remind about that."
+ },
+ "D.callback.lesson-es-1#4": {
+  "score": 2,
+  "updatedAt": 1790414800250,
+  "note": "That's a very strange mix so I don't see it it the reason for this maybe it just will confuse people"
+ },
+ "D.callback.lesson-es-2#0": {
+  "score": 3,
+  "updatedAt": 1790414821031
+ },
+ "D.callback.lesson-es-2#1": {
+  "score": 5,
+  "updatedAt": 1790414852018,
+  "note": "We can combine them with a natural sentence, that's actually a good idea. And a very very good idea if it combines naturally."
+ },
+ "D.callback.lesson-es-2#2": {
+  "score": 3,
+  "updatedAt": 1790414872165
+ },
+ "D.callback.lesson-es-2#3": {
+  "score": 5,
+  "updatedAt": 1790414893213
+ },
+ "D.callback.lesson-es-2#4": {
+  "score": 5,
+  "updatedAt": 1790414994143,
+  "note": "That was actually quite good because it links the previous word very naturally and that's the whole idea. If it links naturally, we should use this opportunity. If it's just something random, then I wouldn't do that."
+ },
+ "D.callback.lesson-es-2#5": {
+  "score": 5,
+  "updatedAt": 1790415002085
+ },
+ "D.callback.lesson-es-2#6": {
+  "score": 5,
+  "updatedAt": 1790415015707
+ },
+ "D.callback.lesson-es-2#7": {
+  "score": 5,
+  "updatedAt": 1790415024821
+ },
+ "D.callback.lesson-en-1#0": {
+  "score": 2,
+  "updatedAt": 1790415043939
+ },
+ "E.word.es.meter mano#0": {
+  "score": 5,
+  "updatedAt": 1790415076420
+ },
+ "E.word.es.sin embargo#0": {
+  "score": 3,
+  "updatedAt": 1790415124244,
+  "note": "This one explains how to write it, but we shouldn't explain how to write it because it's about actually listening and pronouncing."
+ },
+ "E.word.es.tener razón#0": {
+  "score": 3,
+  "updatedAt": 1790415970884,
+  "note": "False friends are a good idea, but these one was not phrased very clearly."
+ },
+ "E.word.es.girar en torno a#0": {
+  "score": 4,
+  "updatedAt": 1790415983320
+ },
+ "E.word.es.meterse en una conversación#0": {
+  "score": 4,
+  "updatedAt": 1790416007755
+ },
+ "E.word.es.imprescindible#0": {
+  "score": 5,
+  "updatedAt": 1790416023391
+ },
+ "E.word.es.abundar#0": {
+  "score": 4,
+  "updatedAt": 1790416038722
+ },
+ "E.word.es.empapado#1": {
+  "score": 3,
+  "updatedAt": 1790416072045
+ },
+ "E.word.es.empapado#0": {
+  "score": 4,
+  "updatedAt": 1790416071283
+ },
+ "E.word.es.inusual#0": {
+  "score": 3,
+  "updatedAt": 1790416083121
+ },
+ "E.word.es.acabar de#0": {
+  "score": 3,
+  "updatedAt": 1790416096503
+ },
+ "E.word.es.predecir#0": {
+  "score": 3,
+  "updatedAt": 1790416112234
+ },
+ "E.word.es.el cepillo de dientes#0": {
+  "score": 5,
+  "updatedAt": 1790416172273
+ },
+ "E.word.es.desaprovechar#0": {
+  "score": 5,
+  "updatedAt": 1790416210351,
+  "note": "In this particular case, maybe we shouldn't add examples of other words."
+ },
+ "E.word.es.aleatorio#0": {
+  "score": 5,
+  "updatedAt": 1790416221825
+ },
+ "E.word.es.la multa#0": {
+  "score": 5,
+  "updatedAt": 1790416279725,
+  "note": "After giving this mnemonic, I think it's good to repeat the word as well with maybe a bar or two."
+ },
+ "E.word.es.engañar#0": {
+  "score": 5,
+  "updatedAt": 1790416252575
+ },
+ "E.word.es.zarandear#0": {
+  "score": 5,
+  "updatedAt": 1790416303392
+ },
+ "E.word.es.broncearse#0": {
+  "score": 5,
+  "updatedAt": 1790416315103
+ },
+ "E.word.es.el discurso#0": {
+  "score": 5,
+  "updatedAt": 1790416327453
+ },
+ "E.word.es.el perejil#0": {
+  "score": 5,
+  "updatedAt": 1790416339622
+ },
+ "E.word.es.el bigote#0": {
+  "score": 5,
+  "updatedAt": 1790416397154
+ },
+ "E.word.es.ridículo#0": {
+  "score": 5,
+  "updatedAt": 1790416423714
+ },
+ "E.word.es.conmovedor#0": {
+  "score": 5,
+  "updatedAt": 1790416460945
+ },
+ "E.word.es.la pelota#0": {
+  "score": 4,
+  "updatedAt": 1790416476169
+ },
+ "E.word.es.el presupuesto#0": {
+  "score": 5,
+  "updatedAt": 1790416510377
+ },
+ "E.word.en.riddle#0": {
+  "score": 5,
+  "updatedAt": 1790416526538
+ },
+ "E.word.en.congeniality#0": {
+  "score": 3,
+  "updatedAt": 1790416543311
+ },
+ "E.word.en.bellow#0": {
+  "score": 5,
+  "updatedAt": 1790416561212
+ },
+ "E.word.en.blush#0": {
+  "score": 5,
+  "updatedAt": 1790416625943
+ },
+ "E.word.en.judgement call#0": {
+  "score": 5,
+  "updatedAt": 1790416635724
+ },
+ "E.word.en.hollow#0": {
+  "score": 5,
+  "updatedAt": 1790416647070
+ },
+ "E.word.en.goner#0": {
+  "score": 5,
+  "updatedAt": 1790416653251
+ },
+ "E.word.en.sloth#0": {
+  "score": 5,
+  "updatedAt": 1790416685617
+ },
+ "E.word.en.concussion#0": {
+  "score": 4,
+  "updatedAt": 1790416691136
+ },
+ "E.word.en.throng#0": {
+  "score": 5,
+  "updatedAt": 1790416700400
+ },
+ "E.word.en.infatuation#0": {
+  "score": 5,
+  "updatedAt": 1790416709083
+ },
+ "E.word.en.frantically#0": {
+  "score": 5,
+  "updatedAt": 1790416721734
+ },
+ "E.word.en.vicious#0": {
+  "score": 5,
+  "updatedAt": 1790416728867
+ },
+ "E.word.en.relinquish#0": {
+  "score": 5,
+  "updatedAt": 1790416770083
+ },
+ "E.word.en.hypocrite#0": {
+  "score": 5,
+  "updatedAt": 1790416829719,
+  "note": "This is actually a great mnemonic. I do like it but also I think after this we should repeat this word that will be good."
+ },
+ "E.word.en.nibble#0": {
+  "score": 5,
+  "updatedAt": 1790416846142
+ },
+ "E.word.en.virtue#0": {
+  "score": 5,
+  "updatedAt": 1790416853274
+ },
+ "E.word.en.insurmountable#0": {
+  "score": 5,
+  "updatedAt": 1790416859125
+ },
+ "E.word.en.dread#0": {
+  "score": 5,
+  "updatedAt": 1790416907206
+ },
+ "E.word.en.condone#0": {
+  "score": 5,
+  "updatedAt": 1790416913739
+ },
+ "E.word.en.faction#0": {
+  "score": 5,
+  "updatedAt": 1790416936424
+ },
+ "E.word.en.refute#0": {
+  "score": 5,
+  "updatedAt": 1790416960034
+ },
+ "E.word.en.dignity#0": {
+  "score": 5,
+  "updatedAt": 1790416973922
+ },
+ "F.plan.lesson-es-1#title": {
+  "score": 3,
+  "updatedAt": 1790417156549,
+  "note": "I think just the title is strange here, otherwise I do like this format."
+ },
+ "F.plan.lesson-es-1#intro": {
+  "score": 5,
+  "updatedAt": 1790417070613
+ },
+ "F.plan.lesson-es-1#header.0": {
+  "score": 5,
+  "updatedAt": 1790417073147
+ },
+ "F.plan.lesson-es-1#header.2": {
+  "score": 5,
+  "updatedAt": 1790417117344
+ },
+ "F.plan.lesson-es-1#header.1": {
+  "score": 5,
+  "updatedAt": 1790417119427
+ },
+ "F.plan.lesson-es-1#header.3": {
+  "score": 5,
+  "updatedAt": 1790417120760
+ },
+ "F.plan.lesson-es-1#outro": {
+  "score": 5,
+  "updatedAt": 1790417122643
+ },
+ "F.plan.lesson-es-1#order": {
+  "score": 5,
+  "updatedAt": 1790417139193
+ },
+ "F.plan.lesson-es-2#title": {
+  "score": 5,
+  "updatedAt": 1790417217950,
+  "note": "In this case the title was good"
+ },
+ "F.plan.lesson-es-2#intro": {
+  "score": 5,
+  "updatedAt": 1790417222137
+ },
+ "F.plan.lesson-es-2#header.0": {
+  "score": 4,
+  "updatedAt": 1790417236163,
+  "note": "The word moustache didn't quite fit here though, but still okay."
+ },
+ "F.plan.lesson-es-2#header.1": {
+  "score": 5,
+  "updatedAt": 1790417238337
+ },
+ "F.plan.lesson-es-2#header.2": {
+  "score": 5,
+  "updatedAt": 1790417238934
+ },
+ "F.plan.lesson-es-2#header.3": {
+  "score": 5,
+  "updatedAt": 1790417240167
+ },
+ "F.plan.lesson-es-2#outro": {
+  "score": 5,
+  "updatedAt": 1790417241667
+ },
+ "F.plan.lesson-es-2#order": {
+  "score": 4,
+  "updatedAt": 1790417249595
+ },
+ "F.plan.lesson-en-1#title": {
+  "score": 5,
+  "updatedAt": 1790417289207
+ },
+ "F.plan.lesson-en-1#intro": {
+  "score": 5,
+  "updatedAt": 1790417316067,
+  "note": "I think we should also try to make it so that LLM produces this intro so that it's different every time. But so far it was okay actually."
+ },
+ "F.plan.lesson-en-1#header.0": {
+  "score": 5,
+  "updatedAt": 1790417317814
+ },
+ "F.plan.lesson-en-1#header.1": {
+  "score": 5,
+  "updatedAt": 1790417318417
+ },
+ "F.plan.lesson-en-1#header.2": {
+  "score": 5,
+  "updatedAt": 1790417319530
+ },
+ "F.plan.lesson-en-1#header.3": {
+  "score": 5,
+  "updatedAt": 1790417321416
+ },
+ "F.plan.lesson-en-1#outro": {
+  "score": 5,
+  "updatedAt": 1790417323230
+ },
+ "F.plan.lesson-en-1#order": {
+  "score": 5,
+  "updatedAt": 1790417324563
+ }
+}

@@ -19,7 +19,8 @@ uv run --extra hosted-tts --env-file .env python experiments/programme_blocks/ru
 uv run python experiments/programme_blocks/run.py serve        # then open the printed address
 ```
 
-One stage at a time: `drills`, `syllables`, `mixed`, `context`, `commentary` or `framing`. `page`
+One stage at a time: `drills`, `syllables`, `mixed`, `context`, `commentary`, `framing` or
+`pronounce`. `page`
 rebuilds `out/index.html` from the reports without calling anything.
 
 - **Speech** goes to Cloud Text-to-Speech with Application Default Credentials. This is the path
@@ -32,7 +33,9 @@ rebuilds `out/index.html` from the reports without calling anything.
 - **Dry run.** `--dry-run` buys no speech and prints how many calls would be bought. A full run is
   about 330 speech calls, well under a dollar.
 
-Scores are saved to `out/labels.json`, with a draft kept in the browser. `out/` is not tracked.
+Scores are saved to `out/labels.json`, with a draft kept in the browser. `out/labels.json` and each
+stage's `out/<stage>/report.json` are tracked, since they are the result; the audio, the cache and
+`out/index.html`, which `page` rebuilds from the reports, are not.
 
 ## The example vocabulary
 
@@ -101,6 +104,28 @@ Every card shows the exact request.
   an intro and an outro;
 - concrete examples of further framing blocks, and three the model proposes itself.
 
+**G. Pronunciation hints**, the follow-up to B. B cut words into syllables by their **spelling**
+and got several wrong, and a pronunciation clip that is wrong teaches the wrong word. Here the
+words B got wrong, plus one it got right as a control, are given the dictionary's pronunciation
+instead. `pronunciation_words.json` holds each word's IPA from Wiktionary (two written by hand,
+where Wiktionary has none, and flagged), its syllables split from that IPA, and a human recording
+from Wikimedia Commons where one exists.
+- **A probe first.** Each mechanism is given a decoy word with another word's pronunciation, so
+  it can be heard whether the pronunciation is honoured at all or the voice just said the word.
+- **Three conditions per word:** the plain word asked for slowly; the IPA, whole, slowly; the
+  IPA syllables, then the word.
+- **Four voices:**
+  - Gemini 3.1 on Cloud TTS, production's voice, which documents no pronunciation input: IPA in
+    slashes in the text, or named in the prompt;
+  - Gemini 3.8 Flash TTS through the Gemini API's Interactions endpoint, whose guide says IPA in
+    slashes is followed; pace goes in a `speech_metadata` style;
+  - Chirp 3 HD, the same speakers, with `customPronunciations`, `speakingRate` and SSML
+    `<phoneme>`;
+  - WaveNet with SSML `<phoneme>`.
+- **Beside them,** the human recording (rated, to check against) and B's directed clip (not
+  rated, from the cache).
+- **Scoring is stricter than elsewhere:** 1 if any sound is wrong, 2–5 only for a correct clip.
+
 ## What the documentation says about mixed-language speech
 
 - **Must the text be in the voice's language?**
@@ -131,6 +156,21 @@ Sources: [Cloud TTS: Gemini-TTS](https://docs.cloud.google.com/text-to-speech/do
 [Cloudflare: Aura-1](https://developers.cloudflare.com/workers-ai/models/aura-1/).
 
 ## Measured so far
+
+**Which voices honour a written pronunciation** (G's probe, first checked by transcribing the
+decoy clips with a Gemini model; the listening confirms or corrects it):
+- Chirp 3 HD `customPronunciations`, Chirp 3 HD `<phoneme>` and WaveNet `<phoneme>` said the
+  target, not the decoy, in English, Spanish and French.
+- **Russian has no working route on Google's voices.** `<phoneme>` is silently ignored by both
+  Chirp and WaveNet, whatever the IPA is written with, and a Russian custom pronunciation is refused
+  as IPA. As X-SAMPA it is accepted only without soft consonants, which Russian cannot do without.
+  So G renders no Chirp or WaveNet IPA clip for Russian.
+- Chirp refuses some IPA symbols as invalid rather than approximating them: the /ʝ/ of Wiktionary's
+  first transcription of *ayuntamiento*, so the control uses its /j/ variant.
+- On *lethargy*, Gemini 3.8 read the IPA syllables as "le · ther · gy" and Gemini 3.1 garbled them.
+- **Gemini 3.8's free key allows three calls a minute and ten a day.** Its 45 clips take five days
+  of runs on that key; each run fills in from the cache onward.
+
 
 **Asking for speed** (section A's table: twelve lines, trimmed length relative to "naturally",
 no stretching):

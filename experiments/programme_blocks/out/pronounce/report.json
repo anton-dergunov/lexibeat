@@ -1,0 +1,1802 @@
+{
+ "section": "G",
+ "title": "Pronunciation hints",
+ "intro": "The words section B said wrong, spoken with the dictionary's pronunciation instead of their spelling. Score 1 if any sound is wrong, since a wrong clip teaches the wrong word; 2–5 only when it is right, for how useful it is as a pronunciation clip: pace, clarity, not tiresome. The human recording is there to check against, and is rated too.",
+ "groups": [
+  {
+   "id": "probe",
+   "title": "Is the pronunciation honoured at all?",
+   "cards": [
+    {
+     "id": "G.probe.en",
+     "title": "English: “banana” written, “lethargy” asked for",
+     "why": "The text says “banana”; the pronunciation given is lethargy's. Score 5 if you hear lethargy, 1 if you hear banana, which means the pronunciation was ignored.",
+     "audio": [
+      {
+       "id": "chirp-custom",
+       "src": "pronounce/probe-en--chirp-custom.mp3",
+       "label": "Chirp 3 HD · customPronunciations",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ssml",
+       "src": "pronounce/probe-en--chirp-ssml.mp3",
+       "label": "Chirp 3 HD · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ssml",
+       "src": "pronounce/probe-en--wavenet-ssml.mp3",
+       "label": "WaveNet · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-prompt",
+       "src": "pronounce/probe-en--g31-prompt.mp3",
+       "label": "Gemini 3.1 · the pronunciation named in the prompt",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"chirp-custom\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"banana\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"banana\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˈlɛθɚd͡ʒi\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"chirp-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈlɛθɚd͡ʒi\\\">banana</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈlɛθɚd͡ʒi\\\">banana</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"banana\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, pronouncing it exactly as /ˈlɛθɚd͡ʒi/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.probe.es",
+     "title": "Spanish: “manzana” written, “imprescindible” asked for",
+     "why": "The text says “manzana”; the pronunciation given is imprescindible's. Score 5 if you hear imprescindible, 1 if you hear manzana, which means the pronunciation was ignored.",
+     "audio": [
+      {
+       "id": "chirp-custom",
+       "src": "pronounce/probe-es--chirp-custom.mp3",
+       "label": "Chirp 3 HD · customPronunciations",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ssml",
+       "src": "pronounce/probe-es--chirp-ssml.mp3",
+       "label": "Chirp 3 HD · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ssml",
+       "src": "pronounce/probe-es--wavenet-ssml.mp3",
+       "label": "WaveNet · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-prompt",
+       "src": "pronounce/probe-es--g31-prompt.mp3",
+       "label": "Gemini 3.1 · the pronunciation named in the prompt",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"chirp-custom\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"manzana\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"manzana\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"impɾesθinˈdible\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"chirp-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"impɾesθinˈdible\\\">manzana</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"impɾesθinˈdible\\\">manzana</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"manzana\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, pronouncing it exactly as /impɾesθinˈdible/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.probe.ru",
+     "title": "Russian: “яблоко” written, “достопримечательность” asked for",
+     "why": "The text says “яблоко”; the pronunciation given is достопримечательность's. Score 5 if you hear достопримечательность, 1 if you hear яблоко, which means the pronunciation was ignored.",
+     "audio": [
+      {
+       "id": "chirp-custom",
+       "src": null,
+       "label": "Chirp 3 HD · customPronunciations",
+       "note": "texttospeech.googleapis.com refused (400): {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"The following custom pronunciation phrases are invalid: яблоко. Please ensure the phrases are well-structured and that the phonemes are valid.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+       "rate": false
+      },
+      {
+       "id": "chirp-ssml",
+       "src": "pronounce/probe-ru--chirp-ssml.mp3",
+       "label": "Chirp 3 HD · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ssml",
+       "src": "pronounce/probe-ru--wavenet-ssml.mp3",
+       "label": "WaveNet · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-prompt",
+       "src": "pronounce/probe-ru--g31-prompt.mp3",
+       "label": "Gemini 3.1 · the pronunciation named in the prompt",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"chirp-custom\": \"texttospeech.googleapis.com refused (400): {\\n  \\\"error\\\": {\\n    \\\"code\\\": 400,\\n    \\\"message\\\": \\\"The following custom pronunciation phrases are invalid: яблоко. Please ensure the phrases are well-structured and that the phonemes are valid.\\\",\\n    \\\"status\\\": \\\"INVALID_ARGUMENT\\\"\\n  }\\n}\\n\"\n },\n {\n  \"chirp-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ\\\">яблоко</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ\\\">яблоко</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"яблоко\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, pronouncing it exactly as /dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.probe.fr",
+     "title": "French: “pomme” written, “écureuil” asked for",
+     "why": "The text says “pomme”; the pronunciation given is écureuil's. Score 5 if you hear écureuil, 1 if you hear pomme, which means the pronunciation was ignored.",
+     "audio": [
+      {
+       "id": "chirp-custom",
+       "src": "pronounce/probe-fr--chirp-custom.mp3",
+       "label": "Chirp 3 HD · customPronunciations",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ssml",
+       "src": "pronounce/probe-fr--chirp-ssml.mp3",
+       "label": "Chirp 3 HD · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ssml",
+       "src": "pronounce/probe-fr--wavenet-ssml.mp3",
+       "label": "WaveNet · SSML <phoneme>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-prompt",
+       "src": "pronounce/probe-fr--g31-prompt.mp3",
+       "label": "Gemini 3.1 · the pronunciation named in the prompt",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"chirp-custom\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"pomme\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"pomme\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ekyʁœj\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"chirp-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ekyʁœj\\\">pomme</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-ssml\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ekyʁœj\\\">pomme</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"pomme\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak clearly, pronouncing it exactly as /ekyʁœj/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    }
+   ]
+  },
+  {
+   "id": "words",
+   "title": "15 words",
+   "cards": [
+    {
+     "id": "G.word.congeniality",
+     "title": "congeniality · English",
+     "why": "Every method in B scored 1: the voice broke it into syllables that are not in the word.",
+     "facts": "/kənˌd͡ʒiːniˈælɪti/ — syllables kən · ˌd͡ʒiː · ni · ˈæ · lɪ · ti — syllables split by hand",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/congeniality--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "Southern England · Vealhurl (Lingua Libre) · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-congeniality.wav",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/congeniality--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/congeniality--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/congeniality--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/congeniality--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": "pronounce/congeniality--g38-plain-slow.mp3",
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa",
+       "src": "pronounce/congeniality--g38-ipa.mp3",
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/congeniality--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/congeniality--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/congeniality--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/congeniality--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/congeniality--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/congeniality--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-congeniality.wav\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"congeniality\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/kənˌd͡ʒiːniˈælɪti/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"congeniality\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /kənˌd͡ʒiːniˈælɪti/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/kən/ /ˌd͡ʒiː/ /ni/ /ˈæ/ /lɪ/ /ti/... /kənˌd͡ʒiːniˈælɪti/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"congeniality\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/kənˌd͡ʒiːniˈælɪti/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/kən/ /ˌd͡ʒiː/ /ni/ /ˈæ/ /lɪ/ /ti/... /kənˌd͡ʒiːniˈælɪti/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"congeniality\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"congeniality\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"congeniality\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"kənˌd͡ʒiːniˈælɪti\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"kən\\\">kən</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌd͡ʒiː\\\">d͡ʒiː</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ni\\\">ni</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈæ\\\">æ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"lɪ\\\">lɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ti\\\">ti</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"kənˌd͡ʒiːniˈælɪti\\\">congeniality</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"kənˌd͡ʒiːniˈælɪti\\\">congeniality</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"con-ge-ni-a-li-ty... congeniality\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 1.11 s\ng31-plain-slow: 1.54 s\ng31-ipa-text: 1.64 s\ng31-ipa-prompt: 1.71 s\ng31-ipa-syll: 11.51 s\ng38-plain-slow: 2.4 s\ng38-ipa: 2.28 s\ng38-ipa-syll: 8.99 s\nchirp-plain-slow: 1.55 s\nchirp-ipa: 1.74 s\nchirp-ipa-syll: 10.19 s\nwavenet-ipa: 1.32 s\nb-directed: 14.09 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.lethargy",
+     "title": "lethargy · English",
+     "why": "Every method in B scored 1: each spelled out two letters instead of the last syllable.",
+     "facts": "/ˈlɛθɚd͡ʒi/ — syllables ˈlɛθ · ɚ · d͡ʒi — Wiktionary's US /ˈlɛθ ər dʒi/, written without its spaces.",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/lethargy--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "Southern England · Vealhurl (Lingua Libre) · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-lethargy.wav",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/lethargy--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/lethargy--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/lethargy--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/lethargy--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": "pronounce/lethargy--g38-plain-slow.mp3",
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa",
+       "src": "pronounce/lethargy--g38-ipa.mp3",
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/lethargy--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/lethargy--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/lethargy--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/lethargy--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/lethargy--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/lethargy--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-lethargy.wav\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"lethargy\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈlɛθɚd͡ʒi/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"lethargy\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˈlɛθɚd͡ʒi/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈlɛθ/ /ɚ/ /d͡ʒi/... /ˈlɛθɚd͡ʒi/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"lethargy\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˈlɛθɚd͡ʒi/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˈlɛθ/ /ɚ/ /d͡ʒi/... /ˈlɛθɚd͡ʒi/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"lethargy\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"lethargy\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"lethargy\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˈlɛθɚd͡ʒi\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈlɛθ\\\">lɛθ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ɚ\\\">ɚ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"d͡ʒi\\\">d͡ʒi</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈlɛθɚd͡ʒi\\\">lethargy</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈlɛθɚd͡ʒi\\\">lethargy</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"le-thar-gy... lethargy\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.6 s\ng31-plain-slow: 1.23 s\ng31-ipa-text: 1.13 s\ng31-ipa-prompt: 1.16 s\ng31-ipa-syll: 10.09 s\ng38-plain-slow: 0.97 s\ng38-ipa: 1.18 s\ng38-ipa-syll: 5.78 s\nchirp-plain-slow: 0.98 s\nchirp-ipa: 0.63 s\nchirp-ipa-syll: 7.22 s\nwavenet-ipa: 0.95 s\nb-directed: 7.51 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.perseverance",
+     "title": "perseverance · English",
+     "why": "Directed 4 and markup 1 in B: the third syllable was wrong.",
+     "facts": "/ˌpɝsəˈvɪɹəns/ — syllables ˌpɝ · sə · ˈvɪ · ɹəns — syllables split by hand — General American.",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/perseverance--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "Southern England · Vealhurl (Lingua Libre) · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-perseverance.wav",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/perseverance--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/perseverance--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/perseverance--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/perseverance--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": "pronounce/perseverance--g38-plain-slow.mp3",
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/perseverance--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/perseverance--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/perseverance--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/perseverance--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/perseverance--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/perseverance--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:LL-Q1860_(eng)-Vealhurl-perseverance.wav\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"perseverance\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌpɝsəˈvɪɹəns/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"perseverance\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˌpɝsəˈvɪɹəns/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌpɝ/ /sə/ /ˈvɪ/ /ɹəns/... /ˌpɝsəˈvɪɹəns/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"perseverance\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˌpɝ/ /sə/ /ˈvɪ/ /ɹəns/... /ˌpɝsəˈvɪɹəns/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"perseverance\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"perseverance\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"perseverance\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˌpɝsəˈvɪɹəns\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌpɝ\\\">pɝ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"sə\\\">sə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈvɪ\\\">vɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ɹəns\\\">ɹəns</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌpɝsəˈvɪɹəns\\\">perseverance</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌpɝsəˈvɪɹəns\\\">perseverance</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"per-se-ve-rance... perseverance\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 1.09 s\ng31-plain-slow: 1.55 s\ng31-ipa-text: 1.76 s\ng31-ipa-prompt: 1.66 s\ng31-ipa-syll: 8.28 s\ng38-plain-slow: 1.59 s\ng38-ipa-syll: 7.74 s\nchirp-plain-slow: 1.19 s\nchirp-ipa: 1.1 s\nchirp-ipa-syll: 8.81 s\nwavenet-ipa: 1.13 s\nb-directed: 7.15 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.worcestershire",
+     "title": "Worcestershire · English",
+     "why": "Sent to B as a respelling of its sound and still scored 2 and 3: the last syllable was wrong.",
+     "facts": "/ˈwʊstɚʃɚ/ — syllables ˈwʊs · tɚ · ʃɚ — syllables split by hand — The first of Wiktionary's US transcriptions.",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/worcestershire--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "US · Andrevan (assumed by Commons) · CC BY 2.5 · https://commons.wikimedia.org/wiki/File:En-us-Worcestershire.oga",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/worcestershire--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/worcestershire--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/worcestershire--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/worcestershire--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": "pronounce/worcestershire--g38-ipa.mp3",
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/worcestershire--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/worcestershire--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/worcestershire--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/worcestershire--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/worcestershire--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:En-us-Worcestershire.oga\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Worcestershire\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈwʊstɚʃɚ/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Worcestershire\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˈwʊstɚʃɚ/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈwʊs/ /tɚ/ /ʃɚ/... /ˈwʊstɚʃɚ/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˈwʊstɚʃɚ/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 26s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Worcestershire\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Worcestershire\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"Worcestershire\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˈwʊstɚʃɚ\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈwʊs\\\">wʊs</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"tɚ\\\">tɚ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ʃɚ\\\">ʃɚ</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈwʊstɚʃɚ\\\">Worcestershire</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈwʊstɚʃɚ\\\">Worcestershire</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"wus-ter-sher... Worcestershire\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.82 s\ng31-plain-slow: 1.13 s\ng31-ipa-text: 1.53 s\ng31-ipa-prompt: 1.22 s\ng31-ipa-syll: 7.05 s\ng38-ipa: 1.21 s\nchirp-plain-slow: 0.97 s\nchirp-ipa: 0.81 s\nchirp-ipa-syll: 5.4 s\nwavenet-ipa: 1.0 s\nb-directed: 6.34 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.insurmountable",
+     "title": "insurmountable · English",
+     "why": "Directed 4 in B: some syllables were not quite right.",
+     "facts": "/ˌɪnsɚˈmaʊntəbəl/ — syllables ˌɪn · sɚ · ˈmaʊn · tə · bəl — ⚠ IPA written by hand: Wiktionary has none — syllables split by hand — Wiktionary has a recording but no transcription, so this General American one is written by hand. Check it.",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/insurmountable--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "US · Steve Shives · CC0 · https://commons.wikimedia.org/wiki/File:En-us-insurmountable.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/insurmountable--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/insurmountable--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/insurmountable--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/insurmountable--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": "pronounce/insurmountable--g38-ipa.mp3",
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/insurmountable--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/insurmountable--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/insurmountable--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/insurmountable--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/insurmountable--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:En-us-insurmountable.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"insurmountable\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌɪnsɚˈmaʊntəbəl/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"insurmountable\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˌɪnsɚˈmaʊntəbəl/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌɪn/ /sɚ/ /ˈmaʊn/ /tə/ /bəl/... /ˌɪnsɚˈmaʊntəbəl/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˌɪnsɚˈmaʊntəbəl/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"insurmountable\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"insurmountable\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"insurmountable\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˌɪnsɚˈmaʊntəbəl\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌɪn\\\">ɪn</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"sɚ\\\">sɚ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈmaʊn\\\">maʊn</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"tə\\\">tə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"bəl\\\">bəl</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌɪnsɚˈmaʊntəbəl\\\">insurmountable</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌɪnsɚˈmaʊntəbəl\\\">insurmountable</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"in-sur-moun-ta-ble... insurmountable\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.86 s\ng31-plain-slow: 1.66 s\ng31-ipa-text: 2.36 s\ng31-ipa-prompt: 1.93 s\ng31-ipa-syll: 11.67 s\ng38-ipa: 2.2 s\nchirp-plain-slow: 1.49 s\nchirp-ipa: 1.73 s\nchirp-ipa-syll: 13.12 s\nwavenet-ipa: 1.28 s\nb-directed: 8.73 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.thoroughly",
+     "title": "thoroughly · English",
+     "why": "Directed 4 in B, and markup did not split it at all.",
+     "facts": "/ˈθʌɹəli/ — syllables ˈθʌɹ · ə · li",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/thoroughly--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "US, California, with the hurry–furry merger · Dvortygirl · CC BY-SA 3.0 · https://commons.wikimedia.org/wiki/File:En-us-thoroughly.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/thoroughly--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/thoroughly--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/thoroughly--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/thoroughly--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": "pronounce/thoroughly--g38-plain-slow.mp3",
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/thoroughly--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/thoroughly--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/thoroughly--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/thoroughly--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/thoroughly--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:En-us-thoroughly.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"thoroughly\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈθʌɹəli/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"thoroughly\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˈθʌɹəli/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈθʌɹ/ /ə/ /li/... /ˈθʌɹəli/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"thoroughly\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 25s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"thoroughly\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"thoroughly\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"thoroughly\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˈθʌɹəli\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈθʌɹ\\\">θʌɹ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ə\\\">ə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"li\\\">li</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈθʌɹəli\\\">thoroughly</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈθʌɹəli\\\">thoroughly</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"thor-ough-ly... thoroughly\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.49 s\ng31-plain-slow: 0.93 s\ng31-ipa-text: 2.6 s\ng31-ipa-prompt: 1.07 s\ng31-ipa-syll: 9.58 s\ng38-plain-slow: 0.9 s\nchirp-plain-slow: 0.63 s\nchirp-ipa: 0.75 s\nchirp-ipa-syll: 6.6 s\nwavenet-ipa: 0.69 s\nb-directed: 3.62 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.vituperative",
+     "title": "vituperative · English",
+     "why": "Markup and SSML said it wrong in B; only directed was right.",
+     "facts": "/vəˈtuːpɚətɪv/ — syllables və · ˈtuː · pɚ · ə · tɪv — syllables split by hand — The first of Wiktionary's US transcriptions.",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/vituperative--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "US · EncycloPetey · CC BY-SA 3.0 · https://commons.wikimedia.org/wiki/File:En-us-vituperative.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/vituperative--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/vituperative--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/vituperative--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/vituperative--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/vituperative--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/vituperative--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/vituperative--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/vituperative--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/vituperative--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/vituperative--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:En-us-vituperative.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"vituperative\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/vəˈtuːpɚətɪv/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"vituperative\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /vəˈtuːpɚətɪv/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/və/ /ˈtuː/ /pɚ/ /ə/ /tɪv/... /vəˈtuːpɚətɪv/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/və/ /ˈtuː/ /pɚ/ /ə/ /tɪv/... /vəˈtuːpɚətɪv/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"vituperative\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"vituperative\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"vituperative\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"vəˈtuːpɚətɪv\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"və\\\">və</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈtuː\\\">tuː</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"pɚ\\\">pɚ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ə\\\">ə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"tɪv\\\">tɪv</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"vəˈtuːpɚətɪv\\\">vituperative</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"vəˈtuːpɚətɪv\\\">vituperative</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"vi-tu-per-a-tive... vituperative\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.91 s\ng31-plain-slow: 1.45 s\ng31-ipa-text: 1.38 s\ng31-ipa-prompt: 1.78 s\ng31-ipa-syll: 9.02 s\ng38-ipa-syll: 6.95 s\nchirp-plain-slow: 1.01 s\nchirp-ipa: 1.15 s\nchirp-ipa-syll: 11.18 s\nwavenet-ipa: 1.23 s\nb-directed: 7.43 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.unreciprocated",
+     "title": "unreciprocated · English",
+     "why": "Markup and SSML said the syllables wrong in B.",
+     "facts": "/ˌʌnɹɪˈsɪpɹəkeɪtɪd/ — syllables ˌʌn · ɹɪ · ˈsɪ · pɹə · keɪ · tɪd — ⚠ IPA written by hand: Wiktionary has none — syllables split by hand — Wiktionary has neither a transcription nor a recording, so this General American one is written by hand. Check it.",
+     "audio": [
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/unreciprocated--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/unreciprocated--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/unreciprocated--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/unreciprocated--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/unreciprocated--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/unreciprocated--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/unreciprocated--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/unreciprocated--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/unreciprocated--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/unreciprocated--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"unreciprocated\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌʌnɹɪˈsɪpɹəkeɪtɪd/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"unreciprocated\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˌʌnɹɪˈsɪpɹəkeɪtɪd/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˌʌn/ /ɹɪ/ /ˈsɪ/ /pɹə/ /keɪ/ /tɪd/... /ˌʌnɹɪˈsɪpɹəkeɪtɪd/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ˌʌn/ /ɹɪ/ /ˈsɪ/ /pɹə/ /keɪ/ /tɪd/... /ˌʌnɹɪˈsɪpɹəkeɪtɪd/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Charon\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"unreciprocated\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"unreciprocated\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"unreciprocated\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˌʌnɹɪˈsɪpɹəkeɪtɪd\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌʌn\\\">ʌn</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ɹɪ\\\">ɹɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈsɪ\\\">sɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"pɹə\\\">pɹə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"keɪ\\\">keɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"tɪd\\\">tɪd</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌʌnɹɪˈsɪpɹəkeɪtɪd\\\">unreciprocated</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˌʌnɹɪˈsɪpɹəkeɪtɪd\\\">unreciprocated</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"un-re-ci-pro-ca-ted... unreciprocated\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "g31-plain-slow: 2.23 s\ng31-ipa-text: 3.77 s\ng31-ipa-prompt: 2.52 s\ng31-ipa-syll: 10.89 s\ng38-ipa-syll: 7.97 s\nchirp-plain-slow: 1.67 s\nchirp-ipa: 1.02 s\nchirp-ipa-syll: 12.28 s\nwavenet-ipa: 1.56 s\nb-directed: 8.98 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.hypocrite",
+     "title": "hypocrite · English",
+     "why": "The detector's one good pick (scored 5): a learner would say it wrong. Never spoken in B.",
+     "facts": "/ˈhɪpəkɹɪt/ — syllables ˈhɪ · pə · kɹɪt",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/hypocrite--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "US · Meepofdoom · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Hypocrite-us-pron.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/hypocrite--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/hypocrite--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/hypocrite--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/hypocrite--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/hypocrite--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/hypocrite--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/hypocrite--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/hypocrite--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:Hypocrite-us-pron.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"hypocrite\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈhɪpəkɹɪt/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"hypocrite\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ˈhɪpəkɹɪt/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ˈhɪ/ /pə/ /kɹɪt/... /ˈhɪpəkɹɪt/\",\n     \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 23s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"hypocrite\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"hypocrite\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"hypocrite\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ˈhɪpəkɹɪt\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈhɪ\\\">hɪ</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"pə\\\">pə</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"kɹɪt\\\">kɹɪt</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈhɪpəkɹɪt\\\">hypocrite</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Chirp3-HD-Charon\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈhɪpəkɹɪt\\\">hypocrite</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.85 s\ng31-plain-slow: 1.01 s\ng31-ipa-text: 1.32 s\ng31-ipa-prompt: 0.7 s\ng31-ipa-syll: 6.35 s\nchirp-plain-slow: 0.74 s\nchirp-ipa: 1.44 s\nchirp-ipa-syll: 6.21 s\nwavenet-ipa: 0.86 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.imprescindible",
+     "title": "imprescindible · Spanish",
+     "why": "Directed and markup 2 in B: cutting the spelling separated what is said as one.",
+     "facts": "/impɾesθinˈdible/ — syllables im · pɾes · θin · ˈdi · ble — Castilian, to match the es-ES voices.",
+     "audio": [
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/imprescindible--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/imprescindible--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/imprescindible--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/imprescindible--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 56s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/imprescindible--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/imprescindible--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/imprescindible--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/imprescindible--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/imprescindible--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"imprescindible\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/impɾesθinˈdible/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"imprescindible\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /impɾesθinˈdible/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/im/ /pɾes/ /θin/ /ˈdi/ /ble/... /impɾesθinˈdible/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 22s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 56s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"imprescindible\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"imprescindible\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"imprescindible\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"impɾesθinˈdible\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"im\\\">im</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"pɾes\\\">pɾes</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"θin\\\">θin</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈdi\\\">di</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ble\\\">ble</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"impɾesθinˈdible\\\">imprescindible</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"impɾesθinˈdible\\\">imprescindible</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"im-pres-cin-di-ble... imprescindible\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "g31-plain-slow: 2.06 s\ng31-ipa-text: 1.95 s\ng31-ipa-prompt: 3.19 s\ng31-ipa-syll: 13.22 s\nchirp-plain-slow: 1.38 s\nchirp-ipa: 1.27 s\nchirp-ipa-syll: 10.63 s\nwavenet-ipa: 1.38 s\nb-directed: 7.54 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.elpresupuesto",
+     "title": "el presupuesto · Spanish",
+     "why": "Only directed was right in B; the others invented a syllable.",
+     "facts": "/el pɾesuˈpwesto/ — syllables el · pɾe · su · ˈpwes · to",
+     "audio": [
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/elpresupuesto--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/elpresupuesto--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/elpresupuesto--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/elpresupuesto--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 21s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 21s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/elpresupuesto--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/elpresupuesto--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/elpresupuesto--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/elpresupuesto--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/elpresupuesto--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el presupuesto\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/el pɾesuˈpwesto/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el presupuesto\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /el pɾesuˈpwesto/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/el/ /pɾe/ /su/ /ˈpwes/ /to/... /el pɾesuˈpwesto/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 21s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 21s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el presupuesto\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el presupuesto\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"el presupuesto\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"el pɾesuˈpwesto\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"el\\\">el</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"pɾe\\\">pɾe</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"su\\\">su</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈpwes\\\">pwes</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"to\\\">to</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"el\\\">el</phoneme> <phoneme alphabet=\\\"ipa\\\" ph=\\\"pɾesuˈpwesto\\\">presupuesto</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"el\\\">el</phoneme> <phoneme alphabet=\\\"ipa\\\" ph=\\\"pɾesuˈpwesto\\\">presupuesto</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el-pre-su-pue-sto... el presupuesto\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "g31-plain-slow: 2.37 s\ng31-ipa-text: 2.51 s\ng31-ipa-prompt: 2.53 s\ng31-ipa-syll: 8.45 s\nchirp-plain-slow: 1.27 s\nchirp-ipa: 1.43 s\nchirp-ipa-syll: 9.41 s\nwavenet-ipa: 1.27 s\nb-directed: 7.89 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.несовершеннолетний",
+     "title": "несовершеннолетний · Russian",
+     "why": "Directed 3 and markup 2 in B: some syllables were not as they are said.",
+     "facts": "/nʲɪsəvʲɪrˌʂɛnːɐˈlʲetʲnʲɪj/ — syllables nʲɪ · sə · vʲɪr · ˌʂɛn · nɐ · ˈlʲetʲ · nʲɪj — syllables split by hand",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/d3e67f5b--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "Russian · unnamed in Commons' metadata · CC BY 2.0 fr · https://commons.wikimedia.org/wiki/File:Ru-несовершеннолетний.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/d3e67f5b--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/d3e67f5b--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/d3e67f5b--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/d3e67f5b--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/d3e67f5b--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/d3e67f5b--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": null,
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": null,
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": null,
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/d3e67f5b--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:Ru-несовершеннолетний.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"несовершеннолетний\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/nʲɪsəvʲɪrˌʂɛnːɐˈlʲetʲnʲɪj/\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"несовершеннолетний\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /nʲɪsəvʲɪrˌʂɛnːɐˈlʲetʲnʲɪj/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/nʲɪ/ /sə/ /vʲɪr/ /ˌʂɛn/ /nɐ/ /ˈlʲetʲ/ /nʲɪj/... /nʲɪsəvʲɪrˌʂɛnːɐˈlʲetʲnʲɪj/\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/nʲɪ/ /sə/ /vʲɪr/ /ˌʂɛn/ /nɐ/ /ˈlʲetʲ/ /nʲɪj/... /nʲɪsəvʲɪrˌʂɛnːɐˈlʲetʲnʲɪj/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Kore\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"несовершеннолетний\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"chirp-ipa-syll\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"wavenet-ipa\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"не-со-вер-шен-но-лет-ний... несовершеннолетний\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 1.5 s\ng31-plain-slow: 4.41 s\ng31-ipa-text: 3.49 s\ng31-ipa-prompt: 2.73 s\ng31-ipa-syll: 13.54 s\ng38-ipa-syll: 11.91 s\nchirp-plain-slow: 2.01 s\nb-directed: 19.95 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.достопримечательность",
+     "title": "достопримечательность · Russian",
+     "why": "Directed 4 in B: it added something to the last syllable.",
+     "facts": "/dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ/ — syllables də · stə · prʲɪ · mʲɪ · ˈt͡ɕæ · tʲɪlʲ · nəsʲtʲ — syllables split by hand",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/46c9f092--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "Russian · unnamed in Commons' metadata · CC BY 2.0 fr · https://commons.wikimedia.org/wiki/File:Ru-достопримечательность.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/46c9f092--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/46c9f092--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/46c9f092--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/46c9f092--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/46c9f092--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": null,
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": null,
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": null,
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).",
+       "rate": false
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/46c9f092--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:Ru-достопримечательность.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"достопримечательность\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ/\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"достопримечательность\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/də/ /stə/ /prʲɪ/ /mʲɪ/ /ˈt͡ɕæ/ /tʲɪlʲ/ /nəsʲtʲ/... /dəstəprʲɪmʲɪˈt͡ɕætʲɪlʲnəsʲtʲ/\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 20s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"достопримечательность\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"chirp-ipa-syll\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"wavenet-ipa\": \"Not rendered: Google's voices ignore a written pronunciation in Russian, so this would be the plain word (see the probe).\"\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"дос-то-при-ме-ча-тель-ность... достопримечательность\",\n     \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 1.27 s\ng31-plain-slow: 2.88 s\ng31-ipa-text: 2.58 s\ng31-ipa-prompt: 3.33 s\ng31-ipa-syll: 19.27 s\nchirp-plain-slow: 1.71 s\nb-directed: 14.77 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.écureuil",
+     "title": "écureuil · French",
+     "why": "Markup and SSML said the second syllable as two letters in B.",
+     "facts": "/ekyʁœj/ — syllables e · ky · ʁœj",
+     "audio": [
+      {
+       "id": "human",
+       "src": "pronounce/cureuil--human.mp3",
+       "label": "A person: the Wikimedia Commons recording",
+       "note": "French · Vion Nicolas · CC BY 2.0 fr · https://commons.wikimedia.org/wiki/File:Fr-écureuil.ogg",
+       "rate": true
+      },
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/cureuil--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/cureuil--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/cureuil--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/cureuil--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": "pronounce/cureuil--g38-plain-slow.mp3",
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa",
+       "src": "pronounce/cureuil--g38-ipa.mp3",
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": "pronounce/cureuil--g38-ipa-syll.mp3",
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/cureuil--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/cureuil--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/cureuil--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/cureuil--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/cureuil--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"human\": {\n   \"GET\": \"https://commons.wikimedia.org/wiki/File:Fr-écureuil.ogg\"\n  }\n },\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"écureuil\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/ekyʁœj/\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"écureuil\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /ekyʁœj/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/e/ /ky/ /ʁœj/... /ekyʁœj/\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"écureuil\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Kore\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/ekyʁœj/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly and clearly, the whole word, without splitting it\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Kore\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"g38-ipa-syll\": {\n   \"POST\": \"https://generativelanguage.googleapis.com/v1beta/interactions\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"input\": [\n     {\n      \"type\": \"user_input\",\n      \"content\": [\n       {\n        \"type\": \"text\",\n        \"text\": \"/e/ /ky/ /ʁœj/... /ekyʁœj/\",\n        \"annotations\": [\n         {\n          \"type\": \"speech_metadata\",\n          \"style\": \"speaking slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally\"\n         }\n        ]\n       }\n      ]\n     }\n    ],\n    \"response_format\": {\n     \"type\": \"audio\"\n    },\n    \"generation_config\": {\n     \"speech_config\": [\n      {\n       \"voice\": \"Kore\"\n      }\n     ]\n    }\n   }\n  }\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"écureuil\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"écureuil\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"écureuil\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"ekyʁœj\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"e\\\">e</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ky\\\">ky</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ʁœj\\\">ʁœj</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ekyʁœj\\\">écureuil</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"ekyʁœj\\\">écureuil</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"fr-FR-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"é-cu-reuil... écureuil\",\n     \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "human: 0.99 s\ng31-plain-slow: 1.34 s\ng31-ipa-text: 1.14 s\ng31-ipa-prompt: 1.47 s\ng31-ipa-syll: 8.18 s\ng38-plain-slow: 1.25 s\ng38-ipa: 1.38 s\ng38-ipa-syll: 5.99 s\nchirp-plain-slow: 0.85 s\nchirp-ipa: 0.95 s\nchirp-ipa-syll: 3.35 s\nwavenet-ipa: 0.83 s\nb-directed: 6.04 s"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "G.word.elayuntamiento",
+     "title": "el ayuntamiento · Spanish · control",
+     "why": "The control: directed scored 5 in B. It catches the written pronunciation breaking a word that already worked.",
+     "facts": "/el ajuntaˈmjento/ — syllables e · la · jun · ta · ˈmjen · to — syllables split by hand — Wiktionary's /ajuntaˈmjento/ variant: Chirp refuses the /ʝ/ of its first transcription as an invalid phoneme.",
+     "audio": [
+      {
+       "id": "g31-plain-slow",
+       "src": "pronounce/elayuntamiento--g31-plain-slow.mp3",
+       "label": "Gemini 3.1 · plain word, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-text",
+       "src": "pronounce/elayuntamiento--g31-ipa-text.mp3",
+       "label": "Gemini 3.1 · IPA in the text, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-prompt",
+       "src": "pronounce/elayuntamiento--g31-ipa-prompt.mp3",
+       "label": "Gemini 3.1 · IPA in the prompt, slowly",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-ipa-syll",
+       "src": "pronounce/elayuntamiento--g31-ipa-syll.mp3",
+       "label": "Gemini 3.1 · IPA syllables, then the word",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g38-plain-slow",
+       "src": null,
+       "label": "Gemini 3.8 · plain word, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa",
+       "src": null,
+       "label": "Gemini 3.8 · IPA in the text, slowly",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 18s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "g38-ipa-syll",
+       "src": null,
+       "label": "Gemini 3.8 · IPA syllables, then the word",
+       "note": "Not rendered yet: Gemini API refused (429): {\"error\":{\"message\":\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 18s or upgrade your tier at https://ai.dev/rate-limit.\",\"code\":\"too_many_requests\"}}",
+       "rate": false
+      },
+      {
+       "id": "chirp-plain-slow",
+       "src": "pronounce/elayuntamiento--chirp-plain-slow.mp3",
+       "label": "Chirp 3 HD · plain word at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa",
+       "src": "pronounce/elayuntamiento--chirp-ipa.mp3",
+       "label": "Chirp 3 HD · custom pronunciation at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "chirp-ipa-syll",
+       "src": "pronounce/elayuntamiento--chirp-ipa-syll.mp3",
+       "label": "Chirp 3 HD · SSML phoneme syllables, then the word, at 0.7×",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-ipa",
+       "src": "pronounce/elayuntamiento--wavenet-ipa.mp3",
+       "label": "WaveNet · SSML phoneme, slow",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "b-directed",
+       "src": "pronounce/elayuntamiento--b-directed.mp3",
+       "label": "For comparison, not rated: B's directed clip, split by spelling",
+       "note": "",
+       "rate": false
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el ayuntamiento\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-text\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/el ajuntaˈmjento/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-prompt\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el ayuntamiento\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly and clearly, the whole word, without splitting it, pronouncing it exactly as /el ajuntaˈmjento/. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"/e/ /la/ /jun/ /ta/ /ˈmjen/ /to/... /el ajuntaˈmjento/\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g38-plain-slow\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 19s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 18s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"g38-ipa-syll\": \"Not rendered yet: Gemini API refused (429): {\\\"error\\\":{\\\"message\\\":\\\"Rate limit exceeded for model gemini-3.8-flash-tts (limit: 10 requests per day on Free Tier). Please retry in 18s or upgrade your tier at https://ai.dev/rate-limit.\\\",\\\"code\\\":\\\"too_many_requests\\\"}}\"\n },\n {\n  \"chirp-plain-slow\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el ayuntamiento\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el ayuntamiento\",\n     \"customPronunciations\": {\n      \"pronunciations\": [\n       {\n        \"phrase\": \"el ayuntamiento\",\n        \"phoneticEncoding\": \"PHONETIC_ENCODING_IPA\",\n        \"pronunciation\": \"el ajuntaˈmjento\"\n       }\n      ]\n     }\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"chirp-ipa-syll\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><phoneme alphabet=\\\"ipa\\\" ph=\\\"e\\\">e</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"la\\\">la</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"jun\\\">jun</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ta\\\">ta</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"ˈmjen\\\">mjen</phoneme><break time=\\\"300ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"to\\\">to</phoneme><break time=\\\"700ms\\\"/><phoneme alphabet=\\\"ipa\\\" ph=\\\"el\\\">el</phoneme> <phoneme alphabet=\\\"ipa\\\" ph=\\\"ajuntaˈmjento\\\">ayuntamiento</phoneme></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Chirp3-HD-Kore\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\",\n     \"speakingRate\": 0.7\n    }\n   }\n  }\n },\n {\n  \"wavenet-ipa\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><prosody rate=\\\"slow\\\"><phoneme alphabet=\\\"ipa\\\" ph=\\\"el\\\">el</phoneme> <phoneme alphabet=\\\"ipa\\\" ph=\\\"ajuntaˈmjento\\\">ayuntamiento</phoneme></prosody></speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"b-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"el-a-yun-ta-mien-to... el ayuntamiento\",\n     \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      },
+      {
+       "summary": "Trimmed lengths",
+       "body": "g31-plain-slow: 2.4 s\ng31-ipa-text: 2.6 s\ng31-ipa-prompt: 3.09 s\ng31-ipa-syll: 9.09 s\nchirp-plain-slow: 1.27 s\nchirp-ipa: 1.51 s\nchirp-ipa-syll: 11.84 s\nwavenet-ipa: 1.33 s\nb-directed: 10.84 s"
+      }
+     ],
+     "rate": false
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,679 @@
+{
+ "section": "F",
+ "title": "Framing",
+ "intro": "The guide's lines around the words, and the order they come in. Text only.",
+ "groups": [
+  {
+   "id": "plans",
+   "title": "Three episodes planned",
+   "cards": [
+    {
+     "id": "F.plan.lesson-es-1",
+     "title": "“Bridges and Bonfires” · lesson-es-1",
+     "why": "Answered by gemini-3.5-flash-lite in 3.3 s. The episode as it would run, with each word's topic and the reason for its place.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Twelve new words await you today, from morning routines to warming fires. Listen closely and make them yours.",
+       "direction": "Warm, welcoming, and measured, delivered with a gentle sense of anticipation.",
+       "label": "intro"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Everyday objects around the home.",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "el cepillo de dientes — toothbrush",
+       "aside": "Health · Starts the episode with a grounded, highly practical daily object."
+      },
+      {
+       "kind": "drill",
+       "text": "la canela — cinnamon",
+       "aside": "Food · Stays in the domestic sphere, moving from morning routine to kitchen spice."
+      },
+      {
+       "kind": "drill",
+       "text": "el suelo — floor",
+       "aside": "Nature · Brings us down from the kitchen counter to the floor beneath it."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Outdoors, travel, and places.",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "el banco — bank",
+       "aside": "Places · Follows the grounded theme of surfaces, moving from indoor floor to outdoor bench."
+      },
+      {
+       "kind": "drill",
+       "text": "la balsa — raft",
+       "aside": "Travel, Nature · Brings us outdoors and near water, pairing naturally with travel and movement."
+      },
+      {
+       "kind": "drill",
+       "text": "la frontera — border",
+       "aside": "Travel · Follows the travel theme, moving from the journey on a raft to crossing a border."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Qualities and things we hold.",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "inusual — unusual",
+       "aside": "Misc · Acts as a descriptive pivot, keeping distance from similar nouns while describing our journey."
+      },
+      {
+       "kind": "drill",
+       "text": "la pelota — ball",
+       "aside": "Shifts back to a concrete object, well-spaced from other nouns to avoid blurring."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Inner feelings and striking sights.",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "soñar con — to dream of",
+       "aside": "Emotions · Transitions the listener smoothly from physical objects into the internal world of feelings."
+      },
+      {
+       "kind": "drill",
+       "text": "anhelar — long",
+       "aside": "Emotions · Keeps the emotion theme going, deepening the sense of yearning right after dreaming."
+      },
+      {
+       "kind": "drill",
+       "text": "el chamuyo — smooth talk",
+       "aside": "Slang · Introduces vivid slang, keeping it distinct from standard emotional verbs."
+      },
+      {
+       "kind": "drill",
+       "text": "la hoguera — bonfire",
+       "aside": "Nature · Ends the programme on a warm, powerful, and memorable visual image."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "From toothbrushes to the warmth of la hoguera, you have your twelve words. Until next time.",
+       "direction": "Encouraging and calm, bringing the episode to a satisfying close.",
+       "label": "outro"
+      }
+     ],
+     "items": [
+      {
+       "id": "title",
+       "text": "title",
+       "sub": "Bridges and Bonfires"
+      },
+      {
+       "id": "intro",
+       "text": "intro",
+       "sub": "Twelve new words await you today, from morning routines to warming fires. Listen closely and make them yours."
+      },
+      {
+       "id": "header.0",
+       "text": "section header",
+       "sub": "Everyday objects around the home."
+      },
+      {
+       "id": "header.1",
+       "text": "section header",
+       "sub": "Outdoors, travel, and places."
+      },
+      {
+       "id": "header.2",
+       "text": "section header",
+       "sub": "Qualities and things we hold."
+      },
+      {
+       "id": "header.3",
+       "text": "section header",
+       "sub": "Inner feelings and striking sights."
+      },
+      {
+       "id": "outro",
+       "text": "outro",
+       "sub": "From toothbrushes to the warmth of la hoguera, you have your twelve words. Until next time."
+      },
+      {
+       "id": "order",
+       "text": "the order",
+       "sub": "Did it keep look-alikes apart and group what belongs together?"
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You plan one episode of an audio vocabulary programme: twelve Spanish words, drilled one at\na time over music, for a learner who speaks English. Two presenters: a **native** one\nwho speaks Spanish, and a **guide** who speaks English. Framing is what the guide\nsays around the words. It must be short, warm and never chatty, because the words are the\nprogramme.\n\nPlan:\n\n1. **Order.** Put the twelve words in teaching order:\n   - keep look-alikes and near-synonyms apart, since similar words side by side blur together in\n     memory;\n   - put next to each other the words that combine naturally or share a topic;\n   - end on a strong, memorable word.\n\n   For each word, give a few English words saying why it is where it is.\n2. **Sections.** Split the order into two to four sections of three to five words. Give each a\n   spoken **header** of at most eight words in English, e.g. \"Now, three words for the\n   kitchen.\" A header may name a theme the words share even if their topic labels differ; it must\n   be true of every word in the section.\n3. **Title.** A short episode title in English, as a radio show would announce it.\n4. **Intro.** At most 25 words, spoken by the guide: what today is about and how many words, with\n   a hook.\n5. **Outro.** At most 20 words: a one-line recap and goodbye, which may call back one word.\n\nFor the intro and the outro, add `direction`, a short English note for the voice actor.\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [{\"headword\": \"...\", \"why\": \"...\"}], \"sections\": [{\"header\": \"...\", \"headwords\": [\"...\"]}], \"intro\": {\"text\": \"...\", \"direction\": \"...\"}, \"outro\": {\"text\": \"...\", \"direction\": \"...\"}}\n\nThe words:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.plan.lesson-es-2",
+     "title": "“Town and Travel” · lesson-es-2",
+     "why": "Answered by gemini-3.5-flash-lite in 2.8 s. The episode as it would run, with each word's topic and the reason for its place.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Twelve Spanish expressions, from daily life to deep water. Let us begin.",
+       "direction": "Warm, engaging, and concise.",
+       "label": "intro"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Around town and on the move",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "la villa — town",
+       "aside": "Places · Starts the journey in a location, keeping place-based words separate from actions."
+      },
+      {
+       "kind": "drill",
+       "text": "ir andando — walk",
+       "aside": "Actions · Follows naturally from being in a town, describing movement on foot."
+      },
+      {
+       "kind": "drill",
+       "text": "el bigote — mustache",
+       "aside": "Appearance · Introduces a facial feature, completely unrelated to travel to avoid confusion."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "State of mind and action",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "predispuesto — willing",
+       "aside": "Misc · A mental state word placed here to separate physical appearance from feelings."
+      },
+      {
+       "kind": "drill",
+       "text": "tener enamorado/a — smitten",
+       "aside": "Emotions · An emotion-based phrase placed near willingness to maintain a psychological theme."
+      },
+      {
+       "kind": "drill",
+       "text": "esconder — hide",
+       "aside": "Actions · An action verb kept distinct from movement phrases."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Rules, jokes and frights",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "la multa — fine",
+       "aside": "Misc · A distinct noun regarding penalties, contrasting nicely with hiding."
+      },
+      {
+       "kind": "drill",
+       "text": "gastar una broma — prank",
+       "aside": "Actions · A playful action idiom, well separated from the fine."
+      },
+      {
+       "kind": "drill",
+       "text": "asustar — scare",
+       "aside": "Emotions · A verb of fear, bridging playful actions to stronger emotions."
+      },
+      {
+       "kind": "drill",
+       "text": "escalofriante — chilling",
+       "aside": "Emotions · An adjective meaning chilling, sharing the fear theme directly with asustar."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Changes and deep pressure",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "estar quedando — turning",
+       "aside": "Misc · A process verb about turning out, preparing for a heavier idiom."
+      },
+      {
+       "kind": "drill",
+       "text": "estar con el agua al cuello — drowning",
+       "aside": "Misc · A dramatic, highly memorable idiom to finish the episode on a strong note."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "From town strolls to being up to your neck. Until next time.",
+       "direction": "Warm, reassuring, and memorable.",
+       "label": "outro"
+      }
+     ],
+     "items": [
+      {
+       "id": "title",
+       "text": "title",
+       "sub": "Town and Travel"
+      },
+      {
+       "id": "intro",
+       "text": "intro",
+       "sub": "Twelve Spanish expressions, from daily life to deep water. Let us begin."
+      },
+      {
+       "id": "header.0",
+       "text": "section header",
+       "sub": "Around town and on the move"
+      },
+      {
+       "id": "header.1",
+       "text": "section header",
+       "sub": "State of mind and action"
+      },
+      {
+       "id": "header.2",
+       "text": "section header",
+       "sub": "Rules, jokes and frights"
+      },
+      {
+       "id": "header.3",
+       "text": "section header",
+       "sub": "Changes and deep pressure"
+      },
+      {
+       "id": "outro",
+       "text": "outro",
+       "sub": "From town strolls to being up to your neck. Until next time."
+      },
+      {
+       "id": "order",
+       "text": "the order",
+       "sub": "Did it keep look-alikes apart and group what belongs together?"
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You plan one episode of an audio vocabulary programme: twelve Spanish words, drilled one at\na time over music, for a learner who speaks English. Two presenters: a **native** one\nwho speaks Spanish, and a **guide** who speaks English. Framing is what the guide\nsays around the words. It must be short, warm and never chatty, because the words are the\nprogramme.\n\nPlan:\n\n1. **Order.** Put the twelve words in teaching order:\n   - keep look-alikes and near-synonyms apart, since similar words side by side blur together in\n     memory;\n   - put next to each other the words that combine naturally or share a topic;\n   - end on a strong, memorable word.\n\n   For each word, give a few English words saying why it is where it is.\n2. **Sections.** Split the order into two to four sections of three to five words. Give each a\n   spoken **header** of at most eight words in English, e.g. \"Now, three words for the\n   kitchen.\" A header may name a theme the words share even if their topic labels differ; it must\n   be true of every word in the section.\n3. **Title.** A short episode title in English, as a radio show would announce it.\n4. **Intro.** At most 25 words, spoken by the guide: what today is about and how many words, with\n   a hook.\n5. **Outro.** At most 20 words: a one-line recap and goodbye, which may call back one word.\n\nFor the intro and the outro, add `direction`, a short English note for the voice actor.\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [{\"headword\": \"...\", \"why\": \"...\"}], \"sections\": [{\"header\": \"...\", \"headwords\": [\"...\"]}], \"intro\": {\"text\": \"...\", \"direction\": \"...\"}, \"outro\": {\"text\": \"...\", \"direction\": \"...\"}}\n\nThe words:\n\n[\n {\n  \"headword\": \"predispuesto\",\n  \"primaryGloss\": \"willing\",\n  \"shortGloss\": \"willing; predisposed; inclined\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"escalofriante\",\n  \"primaryGloss\": \"chilling\",\n  \"shortGloss\": \"chilling; hair-raising; spine-tingling\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"a cold, unsettling whisper of unease and dread\"\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"ir andando\",\n  \"primaryGloss\": \"walk\",\n  \"shortGloss\": \"to walk; to go on foot\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"estar con el agua al cuello\",\n  \"primaryGloss\": \"drowning\",\n  \"shortGloss\": \"to be up to one's neck; to be in deep water\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frantic and overwhelmed, conveying a sense of suffocating stress\"\n },\n {\n  \"headword\": \"tener enamorado/a\",\n  \"primaryGloss\": \"smitten\",\n  \"shortGloss\": \"to have someone smitten; to captivate someone\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"dreamy and affectionate, reflecting the glow of being in love\"\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ]\n },\n {\n  \"headword\": \"la villa\",\n  \"primaryGloss\": \"town\",\n  \"shortGloss\": \"town; villa; shantytown\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"esconder\",\n  \"primaryGloss\": \"hide\",\n  \"shortGloss\": \"to hide; to conceal\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"asustar\",\n  \"primaryGloss\": \"scare\",\n  \"shortGloss\": \"to scare; to frighten\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"estar quedando\",\n  \"primaryGloss\": \"turning\",\n  \"shortGloss\": \"to turn out; to come along\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"gastar una broma\",\n  \"primaryGloss\": \"prank\",\n  \"shortGloss\": \"to play a joke; to play a prank\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.plan.lesson-en-1",
+     "title": "“Сила слова” · lesson-en-1",
+     "why": "Answered by gemini-3.5-flash-lite in 2.5 s. The episode as it would run, with each word's topic and the reason for its place.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Сегодня двенадцать ярких английских слов помогут вам точнее выражать мысли и чувствовать язык. Давайте начнем.",
+       "direction": "Warm, welcoming, and concise, setting a focused tone without rushing.",
+       "label": "intro"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Три слова о внутреннем мире",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "dignity — достоинство",
+       "aside": "Social · Starts the show with a strong, elevated noun that sets a calm tone."
+      },
+      {
+       "kind": "drill",
+       "text": "infatuation — слепое увлечение",
+       "aside": "Emotions · Brings in an emotion topic, kept away from blush to avoid synonym blur."
+      },
+      {
+       "kind": "drill",
+       "text": "concussion — сотрясение мозга",
+       "aside": "Health · A distinct health noun, separating emotional terms effectively."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Три слова о характере и поведении",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "sloth — ленивец",
+       "aside": "Nature, Culture · Shifts to a nature and culture topic, contrasting nicely with health."
+      },
+      {
+       "kind": "drill",
+       "text": "furious — разъярённый",
+       "aside": "Emotions · Intense emotion adjective placed well after infatuation."
+      },
+      {
+       "kind": "drill",
+       "text": "juvenile — несовершеннолетний",
+       "aside": "Social · Social adjective that contrasts in tone with the previous angry word."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Три слова о связи и выражении",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "garbled — искажённый",
+       "aside": "Misc · Misc adjective about communication, avoiding similar adjectives nearby."
+      },
+      {
+       "kind": "drill",
+       "text": "blush — краснеть",
+       "aside": "Emotions · Vulnerable emotion verb, safely separated from infatuation."
+      },
+      {
+       "kind": "drill",
+       "text": "opportunistic — оппортунистический",
+       "aside": "Social, Health · Social adjective touching health, preparing for heavier themes."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Три слова о вызовах и планах",
+       "label": "header"
+      },
+      {
+       "kind": "drill",
+       "text": "dismaying — тревожащий",
+       "aside": "Emotions · Emotion adjective that leads smoothly into serious situations."
+      },
+      {
+       "kind": "drill",
+       "text": "contingency — непредвиденное обстоятельство",
+       "aside": "Misc · Prudent misc noun about planning for unexpected events."
+      },
+      {
+       "kind": "drill",
+       "text": "crusade — кампания",
+       "aside": "Social · Ends on a strong, memorable social noun with a powerful ring."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Двенадцать слов у вас в памяти. Пусть crusade звучит уверенно. До встречи!",
+       "direction": "Encouraging and calm, giving a brief final nod to the last word.",
+       "label": "outro"
+      }
+     ],
+     "items": [
+      {
+       "id": "title",
+       "text": "title",
+       "sub": "Сила слова"
+      },
+      {
+       "id": "intro",
+       "text": "intro",
+       "sub": "Сегодня двенадцать ярких английских слов помогут вам точнее выражать мысли и чувствовать язык. Давайте начнем."
+      },
+      {
+       "id": "header.0",
+       "text": "section header",
+       "sub": "Три слова о внутреннем мире"
+      },
+      {
+       "id": "header.1",
+       "text": "section header",
+       "sub": "Три слова о характере и поведении"
+      },
+      {
+       "id": "header.2",
+       "text": "section header",
+       "sub": "Три слова о связи и выражении"
+      },
+      {
+       "id": "header.3",
+       "text": "section header",
+       "sub": "Три слова о вызовах и планах"
+      },
+      {
+       "id": "outro",
+       "text": "outro",
+       "sub": "Двенадцать слов у вас в памяти. Пусть crusade звучит уверенно. До встречи!"
+      },
+      {
+       "id": "order",
+       "text": "the order",
+       "sub": "Did it keep look-alikes apart and group what belongs together?"
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You plan one episode of an audio vocabulary programme: twelve English words, drilled one at\na time over music, for a learner who speaks Russian. Two presenters: a **native** one\nwho speaks English, and a **guide** who speaks Russian. Framing is what the guide\nsays around the words. It must be short, warm and never chatty, because the words are the\nprogramme.\n\nPlan:\n\n1. **Order.** Put the twelve words in teaching order:\n   - keep look-alikes and near-synonyms apart, since similar words side by side blur together in\n     memory;\n   - put next to each other the words that combine naturally or share a topic;\n   - end on a strong, memorable word.\n\n   For each word, give a few English words saying why it is where it is.\n2. **Sections.** Split the order into two to four sections of three to five words. Give each a\n   spoken **header** of at most eight words in Russian, e.g. \"Now, three words for the\n   kitchen.\" A header may name a theme the words share even if their topic labels differ; it must\n   be true of every word in the section.\n3. **Title.** A short episode title in Russian, as a radio show would announce it.\n4. **Intro.** At most 25 words, spoken by the guide: what today is about and how many words, with\n   a hook.\n5. **Outro.** At most 20 words: a one-line recap and goodbye, which may call back one word.\n\nFor the intro and the outro, add `direction`, a short English note for the voice actor.\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [{\"headword\": \"...\", \"why\": \"...\"}], \"sections\": [{\"header\": \"...\", \"headwords\": [\"...\"]}], \"intro\": {\"text\": \"...\", \"direction\": \"...\"}, \"outro\": {\"text\": \"...\", \"direction\": \"...\"}}\n\nThe words:\n\n[\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\"\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\"\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"crusade\",\n  \"primaryGloss\": \"кампания\",\n  \"shortGloss\": \"кампания; борьба; крестовый поход\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"juvenile\",\n  \"primaryGloss\": \"несовершеннолетний\",\n  \"shortGloss\": \"несовершеннолетний; ребяческий, инфантильный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"opportunistic\",\n  \"primaryGloss\": \"оппортунистический\",\n  \"shortGloss\": \"оппортунистический; приспособленческий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Health\"\n  ],\n  \"emotion\": \"cynical and sharp, judging self-serving behavior\"\n },\n {\n  \"headword\": \"dismaying\",\n  \"primaryGloss\": \"тревожащий\",\n  \"shortGloss\": \"тревожащий; удручающий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\"\n },\n {\n  \"headword\": \"furious\",\n  \"primaryGloss\": \"разъярённый\",\n  \"shortGloss\": \"разъярённый; бешеный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"burning with intense and overwhelming anger\"\n },\n {\n  \"headword\": \"contingency\",\n  \"primaryGloss\": \"непредвиденное обстоятельство\",\n  \"shortGloss\": \"непредвиденное обстоятельство; резерв\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"prudent, cautious, and thoroughly prepared for unexpected events\"\n },\n {\n  \"headword\": \"garbled\",\n  \"primaryGloss\": \"искажённый\",\n  \"shortGloss\": \"искажённый; неразборчивый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frustrated and confused by poor communication\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  },
+  {
+   "id": "ideas",
+   "title": "More framing blocks, for lesson-es-1",
+   "cards": [
+    {
+     "id": "F.idea.episode_title",
+     "title": "episode title",
+     "why": "Announces the episode cleanly at the very start. Sets expectations without preamble.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Borders, bonfires, and smooth talk. Twelve words.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.cold_open",
+     "title": "cold open",
+     "why": "Teases a striking word briefly before the intro music. Hooks attention with a colorful term.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "El chamuyo.",
+       "translation": "Smooth talk."
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.midpoint_quiz_leadin",
+     "title": "midpoint quiz leadin",
+     "why": "Instructs the listener to translate the upcoming words. Activates passive memory instantly.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "You hear the Spanish, you say the English. Go.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.encouragement_bank",
+     "title": "encouragement bank",
+     "why": "Provides wry, specific short lines to keep motivation high. Maintains pace without generic cheer.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Stumble and keep moving.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Your mouth will catch up.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Better than a dictionary.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Mistakes mean you're trying.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Lock it in.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Say it louder.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "That one stuck.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Almost native speed.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Keep that rhythm.",
+       "translation": ""
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Pure reflex now.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.outro_recap",
+     "title": "outro recap",
+     "why": "Recaps two key words as the episode closes. Anchors the ending in vivid imagery.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "From the ground we built on, el suelo, to the fire we lit, la hoguera.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.word_of_the_day",
+     "title": "word of the day",
+     "why": "Leaves the listener with one final memorable word. Leaves a lasting emotional resonance.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Anhelar.",
+       "translation": "To yearn for."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Carry that one out the door.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.register_flag",
+     "title": "register flag",
+     "why": "Quickly marks a word as slang or formal so the learner uses it correctly. Prevents awkward social mistakes.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "That's street talk, not textbooks.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.visual_anchor",
+     "title": "visual anchor",
+     "why": "Connects a hard abstract word to a concrete mental picture. Uses imagery to bypass translation delay.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Picture standing right at the edge.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.idea.speed_bump",
+     "title": "speed bump",
+     "why": "Forces a deliberate pause on easily confused lookalike words. Prevents common interference errors.",
+     "script": [
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Don't mix up the floor and the soil.",
+       "translation": ""
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "F.ideas.prompt",
+     "title": "The ideas prompt",
+     "why": "Answered by gemini-3.5-flash-lite in 3.6 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You are helping design an audio vocabulary programme: twelve Spanish words drilled over\nmusic, for a learner who speaks English, with a native presenter who speaks\nSpanish and a guide who speaks English. The words are the programme; everything\nelse is framing, and framing must be brief.\n\nUsing this episode's twelve words, write a **concrete example** of each of the framing blocks below,\nexactly as it would be spoken, and then propose **three more framing blocks of your own** that a\ntext model could write and that would make the words stick better without adding chatter.\n\nBlocks:\n- `episode_title`: the title, as announced;\n- `cold_open`: two or three seconds before the intro that tease the most striking word without\n  giving its meaning;\n- `midpoint_quiz_leadin`: the one line before a quiz in which the guide gives meanings and the\n  listener answers;\n- `encouragement_bank`: ten different short lines of encouragement (at most five words each),\n  written once and reused across episodes. They must not be generic cheerleading: make them wry\n  or specific;\n- `outro_recap`: the closing recap, calling back two words;\n- `word_of_the_day`: the one word chosen to end on, and the line that sends the listener off with\n  it.\n\nFor each block, give `name`, `what` (one English sentence on what it is for), `lines` (the spoken\nlines, each with `speaker` (`native` or `guide`), `text` and, when it is not in\nEnglish, `translation`) and `why` (why it helps, in a few English words).\n\nAnswer with a JSON object and nothing else:\n\n{\"blocks\": [{\"name\": \"...\", \"what\": \"...\", \"lines\": [{\"speaker\": \"guide\", \"text\": \"...\", \"translation\": \"\"}], \"why\": \"...\"}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": false
+    }
+   ]
+  }
+ ]
+}

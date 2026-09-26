@@ -1,0 +1,884 @@
+{
+ "section": "C",
+ "title": "Mixed-language voices",
+ "intro_html": "\n<p><b>Must the text be in the voice's language?</b> For a Gemini voice, no. The voices are\nmultilingual: the same voice speaks any supported language, and a line may switch language\nmidway. Cloud TTS still <i>requires</i> a <code>languageCode</code>, which sets the output language\nand accent. It is the language the presenter is \"from\", which the <i>other-locale</i> configuration\ntests. The Gemini API's own TTS takes no language code at all and \"detects the input language\nautomatically\". For a WaveNet voice, yes: each voice belongs to one locale (its name says which),\nand other languages are read with that language's phonetics unless SSML says otherwise.</p>\n<p><b>Coverage.</b> On Cloud TTS, Gemini-TTS lists about 25 GA languages, including Spanish,\nRussian, French, German, Italian and US English, and 75 or more in preview, including Mandarin\nand British English. The Gemini API's 3.8 Flash TTS claims more than 130 languages, and its Lite\nmodel more than 100. Quality falls off for rarer languages, which the docs do not quantify;\n\"best effort\" is the most any page promises.</p>\n<p><b>Marking which part is in which language.</b> The only standard is SSML\n<code>&lt;lang xml:lang=\"es-ES\"&gt;</code>. Cloud TTS supports it \"on a best effort basis. Not all\nlanguage combinations produce the same quality\", all in one voice unless\n<code>&lt;voice&gt;</code> switches the speaker. Semitic languages are read as silence, and\nJapanese Kanji as Chinese. Gemini voices take plain text and a prompt, with no SSML and no\nper-span language field. The only tool is to say it in the prompt, and nothing in the API is\nunified across providers. Aura-1 is English only and ignores language entirely.</p>\n<p><b>Sources:</b>\n<a href=\"https://docs.cloud.google.com/text-to-speech/docs/gemini-tts\">Cloud TTS: Gemini-TTS</a> ·\n<a href=\"https://docs.cloud.google.com/text-to-speech/docs/ssml\">Cloud TTS: SSML (&lt;lang&gt;, &lt;voice&gt;)</a> ·\n<a href=\"https://ai.google.dev/gemini-api/docs/speech-generation\">Gemini API: speech generation</a> ·\n<a href=\"https://developers.cloudflare.com/workers-ai/models/aura-1/\">Cloudflare: Aura-1</a></p>\n",
+ "groups": [
+  {
+   "id": "configs",
+   "title": "The configurations",
+   "cards": [
+    {
+     "id": "C.config.g31-directed",
+     "title": "Gemini 3.1, the prompt names each part's language",
+     "why": "Production's directed voice (Kore), with `languageCode` set to the presenter's language and a prompt saying which words are in which language. The only way to label a span for a Gemini voice is to say it in words.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.g31-directed-charon",
+     "title": "The same, a second Gemini voice",
+     "why": "As above, in Charon (the guide voice here), to hear whether it is the model or the voice.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.g31-plain",
+     "title": "Gemini 3.1, no prompt",
+     "why": "The same voice with no prompt at all: only `languageCode` says what the line is. What the model does with a foreign phrase on its own.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.g31-other-locale",
+     "title": "Gemini 3.1, the quoted language's languageCode",
+     "why": "No prompt, and `languageCode` set to the *quoted* language instead of the presenter's. If the code sets the accent, the presenter's own words should now sound foreign.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.g25-plain",
+     "title": "Gemini 2.5 Flash TTS, no prompt",
+     "why": "Production's second directed model, no prompt: the older model's handling of the switch.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.api-38",
+     "title": "Gemini API 3.8 Flash TTS, language detected",
+     "why": "The Gemini API's newest voice on the free key: no language code exists in the request, so the model decides everything. Not a production path today.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.wavenet-plain",
+     "title": "WaveNet, the presenter's voice",
+     "why": "Production's clear voice for the presenter's language, plain text. A WaveNet voice speaks one language, so the quoted words are read with its phonetics.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.wavenet-lang",
+     "title": "WaveNet with SSML <lang>",
+     "why": "The same voice, each quoted span wrapped in `<lang xml:lang=…>`, SSML's standard way of labelling a span's language. Cloud TTS supports it “on a best effort basis”.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.wavenet-voice",
+     "title": "WaveNet with SSML <voice>: a second speaker",
+     "why": "Each quoted span handed to that language's own WaveNet voice with `<voice name=…>`, in one request: two people, each in their own language.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    },
+    {
+     "id": "C.config.aura",
+     "title": "Cloudflare Aura-1 (English lines only)",
+     "why": "Deepgram's Aura-1 on Cloudflare: English only, no language field, no direction. Only the English-led lines are sent.",
+     "notes": "Rate the configuration overall, after listening to the lines."
+    }
+   ]
+  },
+  {
+   "id": "lines",
+   "title": "Ten lines",
+   "cards": [
+    {
+     "id": "C.line.0",
+     "title": "Today's word is el atasco, a traffic jam.",
+     "why": "English + Spanish. The presenter speaks English.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/00--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/00--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/00--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/00--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/00--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/00--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/00--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/00--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/00--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "aura",
+       "src": null,
+       "label": "Cloudflare Aura-1 (English lines only)",
+       "note": "api.cloudflare.com refused (429): {\"errors\":[{\"message\":\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (d84459a5-9475-4567-a2fc-4cefea745450)\",\"code\":4006}],\"success\":false,\"result\":{},\"messages\":[]}",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “el atasco” in Spanish, with a native Spanish pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “el atasco” in Spanish, with a native Spanish pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"Today's word is el atasco, a traffic jam.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Today's word is el atasco, a traffic jam.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Today&#x27;s word is <lang xml:lang=\\\"es-ES\\\">el atasco</lang>, a traffic jam.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Today&#x27;s word is <voice name=\\\"es-ES-Wavenet-F\\\">el atasco</voice>, a traffic jam.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"aura\": \"api.cloudflare.com refused (429): {\\\"errors\\\":[{\\\"message\\\":\\\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (d84459a5-9475-4567-a2fc-4cefea745450)\\\",\\\"code\\\":4006}],\\\"success\\\":false,\\\"result\\\":{},\\\"messages\\\":[]}\"\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.1",
+     "title": "Сегодня учим слово el desierto — пустыня.",
+     "why": "Russian + Spanish. The presenter speaks Russian.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/01--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/01--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/01--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/01--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/01--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/01--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/01--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/01--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/01--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Russian. Say “el desierto” in Spanish, with a native Spanish pronunciation, and everything else in Russian. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Russian. Say “el desierto” in Spanish, with a native Spanish pronunciation, and everything else in Russian. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"Сегодня учим слово el desierto — пустыня.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Сегодня учим слово el desierto — пустыня.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Сегодня учим слово <lang xml:lang=\\\"es-ES\\\">el desierto</lang> — пустыня.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Сегодня учим слово <voice name=\\\"es-ES-Wavenet-F\\\">el desierto</voice> — пустыня.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.2",
+     "title": "¿Cómo se dice traffic jam? ¡El atasco!",
+     "why": "Spanish + English. The presenter speaks Spanish.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/02--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/02--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/02--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/02--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/02--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/02--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/02--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/02--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/02--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “traffic jam” in English, with a native English pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “traffic jam” in English, with a native English pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"¿Cómo se dice traffic jam? ¡El atasco!\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"¿Cómo se dice traffic jam? ¡El atasco!\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>¿Cómo se dice <lang xml:lang=\\\"en-US\\\">traffic jam</lang>? ¡El atasco!</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>¿Cómo se dice <voice name=\\\"en-US-Wavenet-C\\\">traffic jam</voice>? ¡El atasco!</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.3",
+     "title": "The French say bon appétit, and so do we.",
+     "why": "English + French. The presenter speaks English.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/03--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/03--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/03--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/03--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/03--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/03--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/03--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/03--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/03--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "aura",
+       "src": null,
+       "label": "Cloudflare Aura-1 (English lines only)",
+       "note": "api.cloudflare.com refused (429): {\"errors\":[{\"message\":\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (8a49932f-82db-4433-8367-bf2fe128d28a)\",\"code\":4006}],\"success\":false,\"result\":{},\"messages\":[]}",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “bon appétit” in French, with a native French pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “bon appétit” in French, with a native French pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"The French say bon appétit, and so do we.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"The French say bon appétit, and so do we.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>The French say <lang xml:lang=\\\"fr-FR\\\">bon appétit</lang>, and so do we.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>The French say <voice name=\\\"fr-FR-Wavenet-A\\\">bon appétit</voice>, and so do we.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"aura\": \"api.cloudflare.com refused (429): {\\\"errors\\\":[{\\\"message\\\":\\\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (8a49932f-82db-4433-8367-bf2fe128d28a)\\\",\\\"code\\\":4006}],\\\"success\\\":false,\\\"result\\\":{},\\\"messages\\\":[]}\"\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.4",
+     "title": "In German, a traffic jam is der Stau: short and grumpy.",
+     "why": "English + German. The presenter speaks English.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/04--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/04--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/04--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/04--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/04--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/04--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/04--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/04--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/04--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "aura",
+       "src": null,
+       "label": "Cloudflare Aura-1 (English lines only)",
+       "note": "api.cloudflare.com refused (429): {\"errors\":[{\"message\":\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (eeab64b6-0de5-4b69-9608-6005863854bc)\",\"code\":4006}],\"success\":false,\"result\":{},\"messages\":[]}",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “der Stau” in German, with a native German pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “der Stau” in German, with a native German pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"de-DE\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"In German, a traffic jam is der Stau: short and grumpy.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In German, a traffic jam is der Stau: short and grumpy.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>In German, a traffic jam is <lang xml:lang=\\\"de-DE\\\">der Stau</lang>: short and grumpy.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>In German, a traffic jam is <voice name=\\\"de-DE-Wavenet-A\\\">der Stau</voice>: short and grumpy.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"aura\": \"api.cloudflare.com refused (429): {\\\"errors\\\":[{\\\"message\\\":\\\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (eeab64b6-0de5-4b69-9608-6005863854bc)\\\",\\\"code\\\":4006}],\\\"success\\\":false,\\\"result\\\":{},\\\"messages\\\":[]}\"\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.5",
+     "title": "Английское слово doppelganger — это двойник.",
+     "why": "Russian + English. The presenter speaks Russian.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/05--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/05--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/05--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/05--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/05--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/05--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/05--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/05--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/05--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Russian. Say “doppelganger” in English, with a native English pronunciation, and everything else in Russian. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Russian. Say “doppelganger” in English, with a native English pronunciation, and everything else in Russian. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"Английское слово doppelganger — это двойник.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Английское слово doppelganger — это двойник.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Английское слово <lang xml:lang=\\\"en-US\\\">doppelganger</lang> — это двойник.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Английское слово <voice name=\\\"en-US-Wavenet-C\\\">doppelganger</voice> — это двойник.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"ru-RU\",\n     \"name\": \"ru-RU-Wavenet-A\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.6",
+     "title": "En italiano se dice buongiorno; en español, buenos días.",
+     "why": "Spanish + Italian. The presenter speaks Spanish.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/06--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/06--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/06--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/06--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/06--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/06--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/06--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/06--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/06--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “buongiorno” in Italian, with a native Italian pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “buongiorno” in Italian, with a native Italian pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"it-IT\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"En italiano se dice buongiorno; en español, buenos días.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"En italiano se dice buongiorno; en español, buenos días.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>En italiano se dice <lang xml:lang=\\\"it-IT\\\">buongiorno</lang>; en español, buenos días.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>En italiano se dice <voice name=\\\"it-IT-Wavenet-A\\\">buongiorno</voice>; en español, buenos días.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.7",
+     "title": "In Mandarin, thank you is 谢谢.",
+     "why": "English + Mandarin Chinese. The presenter speaks English.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/07--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/07--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/07--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/07--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/07--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/07--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/07--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/07--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/07--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "aura",
+       "src": null,
+       "label": "Cloudflare Aura-1 (English lines only)",
+       "note": "api.cloudflare.com refused (429): {\"errors\":[{\"message\":\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (c48bd8ea-df05-42d0-9653-b7a25d20cb5e)\",\"code\":4006}],\"success\":false,\"result\":{},\"messages\":[]}",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “谢谢” in Mandarin Chinese, with a native Mandarin Chinese pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “谢谢” in Mandarin Chinese, with a native Mandarin Chinese pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"cmn-CN\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"In Mandarin, thank you is 谢谢.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"In Mandarin, thank you is 谢谢.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>In Mandarin, thank you is <lang xml:lang=\\\"cmn-CN\\\">谢谢</lang>.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>In Mandarin, thank you is <voice name=\\\"cmn-CN-Wavenet-A\\\">谢谢</voice>.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"aura\": \"api.cloudflare.com refused (429): {\\\"errors\\\":[{\\\"message\\\":\\\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (c48bd8ea-df05-42d0-9653-b7a25d20cb5e)\\\",\\\"code\\\":4006}],\\\"success\\\":false,\\\"result\\\":{},\\\"messages\\\":[]}\"\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.8",
+     "title": "La cebolla: onion. In Russian, лук. Three languages, one tear.",
+     "why": "Spanish + English + Russian. The presenter speaks English.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/08--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/08--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/08--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/08--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/08--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/08--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/08--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/08--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/08--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "aura",
+       "src": null,
+       "label": "Cloudflare Aura-1 (English lines only)",
+       "note": "api.cloudflare.com refused (429): {\"errors\":[{\"message\":\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (cb3c8bac-e8ad-4eb5-8735-21aad145dfa4)\",\"code\":4006}],\"success\":false,\"result\":{},\"messages\":[]}",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “La cebolla” in Spanish, with a native Spanish pronunciation; say “лук” in Russian, with a native Russian pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is English. Say “La cebolla” in Spanish, with a native Spanish pronunciation; say “лук” in Russian, with a native Russian pronunciation, and everything else in English. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"La cebolla: onion. In Russian, лук. Three languages, one tear.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><lang xml:lang=\\\"es-ES\\\">La cebolla</lang>: onion. In Russian, <lang xml:lang=\\\"ru-RU\\\">лук</lang>. Three languages, one tear.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak><voice name=\\\"es-ES-Wavenet-F\\\">La cebolla</voice>: onion. In Russian, <voice name=\\\"ru-RU-Wavenet-A\\\">лук</voice>. Three languages, one tear.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"en-US\",\n     \"name\": \"en-US-Wavenet-C\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"aura\": \"api.cloudflare.com refused (429): {\\\"errors\\\":[{\\\"message\\\":\\\"AiError: AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage. (cb3c8bac-e8ad-4eb5-8735-21aad145dfa4)\\\",\\\"code\\\":4006}],\\\"success\\\":false,\\\"result\\\":{},\\\"messages\\\":[]}\"\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "C.line.9",
+     "title": "Mi amiga siempre dice c'est la vie cuando pierde el autobús.",
+     "why": "Spanish + French. The presenter speaks Spanish.",
+     "audio": [
+      {
+       "id": "g31-directed",
+       "src": "mixed/09--g31-directed.mp3",
+       "label": "Gemini 3.1, the prompt names each part's language",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-directed-charon",
+       "src": "mixed/09--g31-directed-charon.mp3",
+       "label": "The same, a second Gemini voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-plain",
+       "src": "mixed/09--g31-plain.mp3",
+       "label": "Gemini 3.1, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g31-other-locale",
+       "src": "mixed/09--g31-other-locale.mp3",
+       "label": "Gemini 3.1, the quoted language's languageCode",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "g25-plain",
+       "src": "mixed/09--g25-plain.mp3",
+       "label": "Gemini 2.5 Flash TTS, no prompt",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "api-38",
+       "src": "mixed/09--api-38.mp3",
+       "label": "Gemini API 3.8 Flash TTS, language detected",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-plain",
+       "src": "mixed/09--wavenet-plain.mp3",
+       "label": "WaveNet, the presenter's voice",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-lang",
+       "src": "mixed/09--wavenet-lang.mp3",
+       "label": "WaveNet with SSML <lang>",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "wavenet-voice",
+       "src": "mixed/09--wavenet-voice.mp3",
+       "label": "WaveNet with SSML <voice>: a second speaker",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"g31-directed\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “c'est la vie” in French, with a native French pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-directed-charon\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\",\n     \"prompt\": \"Read this line aloud as a bilingual radio presenter whose own language is Spanish. Say “c'est la vie” in French, with a native French pronunciation, and everything else in Spanish. Do not add, drop, translate or explain any words.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Charon\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g31-other-locale\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"fr-FR\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-3.1-flash-tts-preview\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"g25-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"Kore\",\n     \"modelName\": \"gemini-2.5-flash-tts\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"api-38\": {\n   \"POST\": \"generativelanguage.googleapis.com … models/gemini-3.8-flash-tts:generateContent\",\n   \"json\": {\n    \"model\": \"gemini-3.8-flash-tts\",\n    \"contents\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\",\n    \"config\": {\n     \"response_modalities\": [\n      \"AUDIO\"\n     ],\n     \"speech_config\": {\n      \"voice_config\": {\n       \"prebuilt_voice_config\": {\n        \"voice_name\": \"Kore\"\n       }\n      }\n     }\n    }\n   }\n  }\n },\n {\n  \"wavenet-plain\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"text\": \"Mi amiga siempre dice c'est la vie cuando pierde el autobús.\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-lang\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Mi amiga siempre dice <lang xml:lang=\\\"fr-FR\\\">c&#x27;est la vie</lang> cuando pierde el autobús.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n },\n {\n  \"wavenet-voice\": {\n   \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n   \"headers\": {\n    \"x-goog-user-project\": \"<quota project>\"\n   },\n   \"json\": {\n    \"input\": {\n     \"ssml\": \"<speak>Mi amiga siempre dice <voice name=\\\"fr-FR-Wavenet-A\\\">c&#x27;est la vie</voice> cuando pierde el autobús.</speak>\"\n    },\n    \"voice\": {\n     \"languageCode\": \"es-ES\",\n     \"name\": \"es-ES-Wavenet-F\"\n    },\n    \"audioConfig\": {\n     \"audioEncoding\": \"LINEAR16\"\n    }\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    }
+   ]
+  }
+ ]
+}

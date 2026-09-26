@@ -44,6 +44,11 @@ WAVENET = {"es": "es-ES-Wavenet-F", "en": "en-US-Wavenet-C", "ru": "ru-RU-Wavene
            "fr": "fr-FR-Wavenet-A", "de": "de-DE-Wavenet-A", "it": "it-IT-Wavenet-A",
            "zh": "cmn-CN-Wavenet-A"}
 
+
+def chirp(language: str, speaker: str = "Kore") -> str:
+    """A Chirp 3 HD voice: production's Gemini speaker names, but a voice that takes phonemes."""
+    return f"{LOCALES[language]}-Chirp3-HD-{speaker}"
+
 # When set, nothing is bought: an uncached request is counted and answered with silence.
 DRY = False
 counted: dict[str, float] = {"calls": 0, "characters": 0}
@@ -148,8 +153,14 @@ def _silence(key: str, request: dict, characters: int) -> Take:
 
 
 def google(text: str | None = None, *, ssml: str | None = None, locale: str, voice: str,
-           model: str | None = None, prompt: str | None = None, take: int = 0) -> Take:
-    """One Cloud TTS call: a Gemini voice when `model` is given, a WaveNet one when it is not."""
+           model: str | None = None, prompt: str | None = None, take: int = 0,
+           pronunciations: dict[str, str] | None = None,
+           speaking_rate: float | None = None) -> Take:
+    """One Cloud TTS call: a Gemini voice when `model` is given, a WaveNet or Chirp one when not.
+
+    `pronunciations` maps a phrase in the text to its IPA, sent as `customPronunciations`, which
+    Chirp 3 HD voices honour. `speaking_rate` is the API's own pace, 0.25–2.0.
+    """
     body: dict = {"input": {"ssml": ssml} if ssml else {"text": text},
                   "voice": {"languageCode": locale, "name": voice},
                   "audioConfig": {"audioEncoding": "LINEAR16"}}
@@ -157,6 +168,12 @@ def google(text: str | None = None, *, ssml: str | None = None, locale: str, voi
         body["voice"]["modelName"] = model
     if prompt:
         body["input"]["prompt"] = prompt
+    if pronunciations:
+        body["input"]["customPronunciations"] = {"pronunciations": [
+            {"phrase": phrase, "phoneticEncoding": "PHONETIC_ENCODING_IPA", "pronunciation": ipa}
+            for phrase, ipa in pronunciations.items()]}
+    if speaking_rate:
+        body["audioConfig"]["speakingRate"] = speaking_rate
     key = _key("google-tts", body, take)
     request = {"POST": SYNTHESIZE, "headers": {"x-goog-user-project": "<quota project>"},
                "json": body}
@@ -243,6 +260,80 @@ def gemini_api(text: str, *, model: str = "gemini-3.8-flash-tts", voice: str = "
         audio, sr = _decode(part.data)
     else:  # headerless 16-bit PCM, 24 kHz
         audio, sr = np.frombuffer(part.data, dtype="<i2").astype(np.float32) / 32768, 24_000
+    result = Take(audio, sr, request, False,
+                  {"provider": "gemini-api", "model": model, "voice": voice, "take": take,
+                   "generation_seconds": round(time.perf_counter() - started, 2)})
+    _store(key, result)
+    return result
+
+
+INTERACTIONS = "https://generativelanguage.googleapis.com/v1beta/interactions"
+
+
+class Quota(RuntimeError):
+    """The provider's daily allowance is spent. A later run fills in from where this one stopped."""
+
+
+def _audio_part(node) -> tuple[str, str] | None:
+    """The first (mime type, base64 data) pair anywhere in an answer whose shape is still moving."""
+    if isinstance(node, dict):
+        data = node.get("data")
+        mime = node.get("mime_type") or node.get("mimeType") or ""
+        if isinstance(data, str) and (mime.startswith("audio") or node.get("type") == "audio"):
+            return mime, data
+        node = list(node.values())
+    if isinstance(node, list):
+        for child in node:
+            if found := _audio_part(child):
+                return found
+    return None
+
+
+def gemini_styled(text: str, *, style: str, model: str = "gemini-3.8-flash-tts",
+                  voice: str = "Kore", take: int = 0) -> Take:
+    """Gemini 3.8 Flash TTS with a delivery `style`, through the Interactions API.
+
+    The model reads `text` as a verbatim transcript; pace and manner go in a `speech_metadata`
+    annotation, which `generateContent` has no field for. The free key allows three calls a minute
+    and ten a day: a per-minute refusal is waited out, a daily one raised as `Quota` at once.
+    """
+    body = {"model": model,
+            "input": [{"type": "user_input", "content": [{
+                "type": "text", "text": text,
+                "annotations": [{"type": "speech_metadata", "style": style}]}]}],
+            "response_format": {"type": "audio"},
+            "generation_config": {"speech_config": [{"voice": voice}]}}
+    key = _key("gemini-interactions", body, take)
+    request = {"POST": INTERACTIONS, "json": body}
+    if hit := _cached(key):
+        return hit
+    if DRY:
+        return _silence(key, request, len(text) + len(style))
+    started = time.perf_counter()
+    headers = {"x-goog-api-key": os.environ["GEMINI_API_KEY"], "Content-Type": "application/json"}
+    for attempt in range(6):
+        with _lock:  # one call at a time, so the per-minute allowance is not spent in a burst
+            answer = httpx.post(INTERACTIONS, headers=headers, json=body, timeout=120)
+        if answer.status_code == 200:
+            break
+        if answer.status_code == 429:
+            if "per minute" in answer.text and attempt < 5:
+                time.sleep(25)
+                continue
+            raise Quota(f"Gemini API refused (429): {answer.text[:300]}")
+        if answer.status_code in (500, 502, 503, 504) and attempt < 3:
+            time.sleep(15 * (attempt + 1))
+            continue
+        raise RuntimeError(f"Gemini API refused ({answer.status_code}): {answer.text[:400]}")
+    found = _audio_part(answer.json())
+    if not found:
+        raise RuntimeError(f"no audio in the answer: {answer.text[:400]}")
+    mime, data = found
+    raw = base64.b64decode(data)
+    if "wav" in mime or raw[:4] == b"RIFF":
+        audio, sr = _decode(raw)
+    else:  # headerless 16-bit PCM, 24 kHz, as generateContent answers
+        audio, sr = np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768, 24_000
     result = Take(audio, sr, request, False,
                   {"provider": "gemini-api", "model": model, "voice": voice, "take": take,
                    "generation_seconds": round(time.perf_counter() - started, 2)})

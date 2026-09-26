@@ -9,3 +9,12 @@ out/
 !.env.example
 *.private.mp3
 dist/
+
+# An experiment's raw results are committed when they hold nothing private and are a few MB of
+# text; its audio and caches can be regenerated and stay ignored (experiments/README.md).
+!/experiments/programme_blocks/out/
+/experiments/programme_blocks/out/*
+!/experiments/programme_blocks/out/labels.json
+!/experiments/programme_blocks/out/*/
+/experiments/programme_blocks/out/*/*
+!/experiments/programme_blocks/out/*/report.json

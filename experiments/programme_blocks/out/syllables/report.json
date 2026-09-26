@@ -1,0 +1,1802 @@
+{
+ "section": "B",
+ "title": "Syllables",
+ "intro": "Hard words split into syllables, then said whole. The stressed syllable is in capitals. Rate the four methods overall at the top, and each recording under its word.",
+ "groups": [
+  {
+   "id": "methods",
+   "title": "The four methods",
+   "cards": [
+    {
+     "id": "B.method.directed",
+     "title": "Directed: asked to split, then say it whole",
+     "why": "The hyphenated word and a bare director note in one Gemini request. The voice decides the rhythm, and may add a word or lose the split.",
+     "notes": "Rate the method overall, after listening to a few words."
+    },
+    {
+     "id": "B.method.markup",
+     "title": "Markup: [short pause] between syllables",
+     "why": "The syllables joined with Gemini's pause tags, then [medium pause] and the word. The pause length is the voice's idea of short.",
+     "notes": "Rate the method overall, after listening to a few words."
+    },
+    {
+     "id": "B.method.ssml",
+     "title": "SSML breaks on the clear voice",
+     "why": "WaveNet, production's clear voice, reading SSML with an exact 300 ms `<break>` between syllables and 700 ms before the word. The most predictable of the four, and the flattest.",
+     "notes": "Rate the method overall, after listening to a few words."
+    },
+    {
+     "id": "B.method.cut",
+     "title": "One natural take, cut and spaced",
+     "why": "The word said once, naturally, then cut at its loudness dips into syllables that are played with 250 ms between them, followed by the same take whole. The sounds are the real word's, and the cut can land in the wrong place.",
+     "notes": "Rate the method overall, after listening to a few words."
+    }
+   ]
+  },
+  {
+   "id": "detector",
+   "title": "Choosing the words",
+   "cards": [
+    {
+     "id": "B.detector.es",
+     "title": "What the detector picked from the Spanish words",
+     "why": "7 of 116 words. Rate each pick: was it worth splitting?",
+     "items": [
+      {
+       "id": "elalforfón",
+       "text": "el alforfón  ·  difficulty 2  ·  stress",
+       "sub": "Stress falls on the final syllable -fón, unlike typical Spanish words."
+      },
+      {
+       "id": "elfrailecillo",
+       "text": "el frailecillo  ·  difficulty 2  ·  sound",
+       "sub": "Contains the challenging double-L palatal sound."
+      },
+      {
+       "id": "elhierro",
+       "text": "el hierro  ·  difficulty 3  ·  sound, spelling",
+       "sub": "Silent h combined with a rolled double r."
+      },
+      {
+       "id": "elrecordatorio",
+       "text": "el recordatorio  ·  difficulty 2  ·  long",
+       "sub": "Four syllables with a long middle section that learners tend to blur."
+      },
+      {
+       "id": "laberenjena",
+       "text": "la berenjena  ·  difficulty 2  ·  sound",
+       "sub": "Features the unvoiced jota sound in -jen-."
+      },
+      {
+       "id": "pésimo",
+       "text": "pésimo  ·  difficulty 2  ·  stress",
+       "sub": "Proparoxytone stress falls on the antepenultimate syllable."
+      },
+      {
+       "id": "súbitamente",
+       "text": "súbitamente  ·  difficulty 2  ·  stress",
+       "sub": "Maintains the stress on the antepenultimate syllable of the root."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You help build audio lessons for a language learner. In the lesson, some words are split into\nsyllables before being said whole — \"a-tas-co … atasco\" — so that the learner hears every sound.\nSplitting costs time and gets tiresome, so it is only worth doing for a word that is genuinely\nhard to say. Your job is to pick those words from a list.\n\nThe learner speaks English and is learning Spanish.\n\nA word is worth splitting when at least one of these is true:\n- **long**: four or more syllables, where a learner tends to drop or blur one in the middle;\n- **stress**: the stress falls somewhere a English speaker would not expect;\n- **cluster**: a run of consonants a English speaker struggles with;\n- **sound**: a sound English lacks, such as a rolled r, a jota, a vowel with no\n  equivalent, or a palatalised consonant;\n- **spelling**: the spelling suggests a pronunciation that is wrong (silent letters, surprising vowels).\n\nA word is not worth splitting just because it is rare, or because its meaning is hard. Short, plain\nwords never qualify. Most words in a list do not qualify, and picking too many is a worse mistake\nthan picking too few.\n\nFor each word you pick, give:\n- `headword`, copied exactly from the list;\n- `kinds`, one or more of `long`, `stress`, `cluster`, `sound`, `spelling`;\n- `why`, one short sentence in English naming the exact difficulty, e.g. \"Stress on -ve-, not\n  per-\", not \"Hard to pronounce\";\n- `difficulty`: 1 (worth it), 2 (clearly helps), 3 (a learner will almost certainly get it wrong).\n\nAnswer with a JSON object and nothing else:\n\n{\"picks\": [{\"headword\": \"...\", \"kinds\": [\"...\"], \"why\": \"...\", \"difficulty\": 2}]}\n\nThe words:\n\n- a través de (phrase: through)\n- abundar (verb: to abound)\n- acabar de (phrase: to have just done)\n- agotarse (verb: to run out)\n- al tanto (phrase: up)\n- aleatorio (adj: random)\n- anhelar (verb: long)\n- asustar (verb: scare)\n- añorar (verb: yearn)\n- broncearse (verb: to get a tan)\n- coincidir (verb: to coincide)\n- con menos prisa (phrase: leisurely)\n- con poca antelación (phrase: on short notice)\n- conmovedor (adj: moving)\n- costar (verb: to cost)\n- dar bola (idiom: to pay attention)\n- denunciar (verb: to report)\n- desaprovechar (verb: waste)\n- despedido (adj: fired)\n- el acierto (noun: decision)\n- el alforfón (noun: buckwheat)\n- el aseo (noun: cleanliness)\n- el atasco (noun: traffic jam)\n- el ayuntamiento (noun: town hall)\n- el banco (noun: bank)\n- el bigote (noun: mustache)\n- el buzo (noun: sweatshirt)\n- el cepillo de dientes (noun: toothbrush)\n- el chamuyo (noun: smooth talk)\n- el chongo (noun: fling)\n- el desierto (noun: desert)\n- el discurso (noun: speech)\n- el esquí (noun: skiing)\n- el frailecillo (noun: puffin)\n- el gráfico de torta (noun: pie chart)\n- el hierro (noun: iron)\n- el hongo (noun: fungus)\n- el inquilino (noun: tenant)\n- el moretón (noun: bruise)\n- el pasillo (noun: hallway)\n- el perejil (noun: parsley)\n- el presupuesto (noun: budget)\n- el recordatorio (noun: reminder)\n- el ruido (noun: noise)\n- el sudor (noun: sweat)\n- el suelo (noun: floor)\n- el villero (noun: shantytown dweller)\n- empapado (adj: soaked)\n- engañar (verb: deceive)\n- escalofriante (adj: chilling)\n- esconder (verb: hide)\n- esfumarse (verb: vanish)\n- estar con el agua al cuello (idiom: drowning)\n- estar de visita (phrase: visiting)\n- estar quedando (verb: turning)\n- fiel (adj: faithful)\n- gastar una broma (idiom: prank)\n- girar en torno a (phrase: revolve around)\n- imprescindible (adj: essential)\n- inusual (adj: unusual)\n- ir andando (phrase: walk)\n- la abeja (noun: bee)\n- la arcilla de moldear (noun: modeling clay)\n- la avellana (noun: hazelnut)\n- la balsa (noun: raft)\n- la basura al tacho (phrase: trash)\n- la berenjena (noun: eggplant)\n- la bocha (noun: a ton)\n- la boludez (noun: nonsense)\n- la canela (noun: cinnamon)\n- la carrera de ratas (idiom: rat)\n- la cebolla (noun: onion)\n- la corte (noun: court)\n- la cuenta corriente (noun: checking account)\n- la frontera (noun: border)\n- la fuerza (noun: strength)\n- la función (noun: performance)\n- la hoguera (noun: bonfire)\n- la jerga (noun: slang)\n- la mina (noun: girl)\n- la mostaza (noun: mustard)\n- la mueca (noun: grimace)\n- la multa (noun: fine)\n- la pelea (noun: fight)\n- la pelota (noun: ball)\n- la predisposición (noun: willingness)\n- la villa (noun: town)\n- las cerillas (noun: match)\n- los años mozos (phrase: youth)\n- marcharse (verb: to leave)\n- merendar (verb: to have an afternoon snack)\n- meter mano (idiom: to step in)\n- meterse en una conversación (phrase: to jump into a conversation)\n- ni en pedo (idiom: no way)\n- para nada (phrase: not at all)\n- pifiar (verb: mess)\n- predecir (verb: predict)\n- predispuesto (adj: willing)\n- pésimo (adj: terrible)\n- quemar (verb: burn)\n- realizarse (verb: take)\n- requerir (verb: require)\n- ridículo (adj: ridiculous)\n- rizado (adj: curly)\n- se suele (phrase: it is customary to)\n- seco (adj: dry)\n- señores apreciados (phrase: dear sirs)\n- sin embargo (phrase: however)\n- soñar con (verb: to dream of)\n- suspender (verb: to fail)\n- súbitamente (adv: suddenly)\n- tener enamorado/a (phrase: smitten)\n- tener razón (idiom: right)\n- tranquilizarse (verb: to calm down)\n- trasero (adj: back)\n- zarandear (verb: to shake vigorously)\n"
+      },
+      {
+       "summary": "Answered by gemini-3.5-flash-lite in 1.6 s",
+       "body": "[\n {\n  \"model\": \"gemini-3.8-flash\",\n  \"why\": \"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"\n },\n {\n  \"model\": \"gemini-3.7-flash\",\n  \"why\": \"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"\n },\n {\n  \"model\": \"gemini-3.5-flash\",\n  \"why\": \"503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}\"\n }\n]"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "B.detector.en",
+     "title": "What the detector picked from the English words",
+     "why": "7 of 110 words. Rate each pick: was it worth splitting?",
+     "items": [
+      {
+       "id": "chivalrous",
+       "text": "chivalrous  ·  difficulty 2  ·  spelling, sound",
+       "sub": "Initial 'ch' is pronounced /ʃ/ rather than /tʃ/, followed by an awkward /vəlr/ transition."
+      },
+      {
+       "id": "hypocrite",
+       "text": "hypocrite  ·  difficulty 2  ·  spelling, stress",
+       "sub": "Spelling misleads learners to say /haɪp-/ and /-aɪt/ instead of /ˈhɪp.ə.krɪt/."
+      },
+      {
+       "id": "lethargy",
+       "text": "lethargy  ·  difficulty 3  ·  stress, sound",
+       "sub": "Stress is on the first syllable unlike Russian летарги́я, and it contains the English /θ/."
+      },
+      {
+       "id": "mischievously",
+       "text": "mischievously  ·  difficulty 3  ·  stress, spelling",
+       "sub": "Stress is on the first syllable, and learners almost always mistakenly add an extra syllable ('mis-CHEE-vi-ous-ly')."
+      },
+      {
+       "id": "tantalizingly",
+       "text": "tantalizingly  ·  difficulty 1  ·  long",
+       "sub": "Five syllables with a difficult transition through /zɪŋ.li/ at the end."
+      },
+      {
+       "id": "unreciprocated",
+       "text": "unreciprocated  ·  difficulty 2  ·  long",
+       "sub": "Six syllables with alternating stops where the middle unstressed syllables easily get lost."
+      },
+      {
+       "id": "unscrupulous",
+       "text": "unscrupulous  ·  difficulty 2  ·  cluster, long",
+       "sub": "Contains an awkward /skr/ cluster followed by a medial /pjə/ glide that Russian speakers tend to drop."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You help build audio lessons for a language learner. In the lesson, some words are split into\nsyllables before being said whole — \"a-tas-co … atasco\" — so that the learner hears every sound.\nSplitting costs time and gets tiresome, so it is only worth doing for a word that is genuinely\nhard to say. Your job is to pick those words from a list.\n\nThe learner speaks Russian and is learning English.\n\nA word is worth splitting when at least one of these is true:\n- **long**: four or more syllables, where a learner tends to drop or blur one in the middle;\n- **stress**: the stress falls somewhere a Russian speaker would not expect;\n- **cluster**: a run of consonants a Russian speaker struggles with;\n- **sound**: a sound Russian lacks, such as a rolled r, a jota, a vowel with no\n  equivalent, or a palatalised consonant;\n- **spelling**: the spelling suggests a pronunciation that is wrong (silent letters, surprising vowels).\n\nA word is not worth splitting just because it is rare, or because its meaning is hard. Short, plain\nwords never qualify. Most words in a list do not qualify, and picking too many is a worse mistake\nthan picking too few.\n\nFor each word you pick, give:\n- `headword`, copied exactly from the list;\n- `kinds`, one or more of `long`, `stress`, `cluster`, `sound`, `spelling`;\n- `why`, one short sentence in English naming the exact difficulty, e.g. \"Stress on -ve-, not\n  per-\", not \"Hard to pronounce\";\n- `difficulty`: 1 (worth it), 2 (clearly helps), 3 (a learner will almost certainly get it wrong).\n\nAnswer with a JSON object and nothing else:\n\n{\"picks\": [{\"headword\": \"...\", \"kinds\": [\"...\"], \"why\": \"...\", \"difficulty\": 2}]}\n\nThe words:\n\n- a shiver runs down someone's spine (idiom: мурашки)\n- aggravation (noun: раздражение)\n- belligerent (adj: воинственный)\n- bellow (verb: реветь)\n- blush (verb: краснеть)\n- brat (noun: сорванец)\n- chivalrous (adj: галантный)\n- chuckle (verb: посмеиваться)\n- chump (noun: простак)\n- cling (verb: цепляться)\n- coax (verb: уговаривать)\n- concussion (noun: сотрясение мозга)\n- condemn (verb: осуждать)\n- condone (verb: потворствовать)\n- confabulate (verb: беседовать)\n- congeniality (noun: дружелюбие)\n- consonant (noun: согласный)\n- consummate (adj: непревзойдённый)\n- contemplate (verb: обдумывать)\n- contemplate (verb: обдумывать)\n- contingency (noun: непредвиденное обстоятельство)\n- coup (noun: государственный переворот)\n- courtship (noun: ухаживание)\n- coyly (adv: кокетливо)\n- crusade (noun: кампания)\n- dainty (adj: изящный)\n- darned tootin' (expression: чертовски прав)\n- decipher (verb: расшифровывать)\n- deplorable (adj: прискорбный)\n- despise (verb: презирать)\n- dignity (noun: достоинство)\n- discontent (noun: недовольство)\n- dismay (noun: смятение)\n- dismaying (adj: тревожащий)\n- dismaying (adj: тревожащий)\n- divulge (verb: разглашать)\n- dodge the question (idiom: уклоняться)\n- doppelganger (noun: двойник)\n- dread (noun: страх)\n- drizzle (verb: моросить)\n- encumber (verb: обременять)\n- eschew (verb: избегать)\n- faction (noun: фракция)\n- fiendish (adj: дьявольский)\n- filthy (adj: грязный)\n- flattery (noun: лесть)\n- foul (adj: отвратительный)\n- frantically (adv: лихорадочно)\n- full blast (idiom: на полную мощность)\n- fumble (verb: шарить)\n- furious (adj: разъярённый)\n- fury (noun: ярость)\n- garbled (adj: искажённый)\n- goner (noun: обречённый)\n- grievance (noun: обида)\n- helluva (adj: офигенный)\n- hindsight (noun: взгляд)\n- hogwash (noun: чепуха)\n- hollow (adj: полый)\n- hollow (adj: полый)\n- homeless people (noun: бездомные)\n- humiliate (verb: унижать)\n- humiliation (noun: унижение)\n- hurdle (noun: препятствие)\n- hypocrite (noun: лицемер)\n- indulgent (adj: снисходительный)\n- infatuation (noun: слепое увлечение)\n- infuriate (verb: приводить в ярость)\n- inquisitive (adj: любознательный)\n- insurmountable (adj: непреодолимый)\n- jab (noun: прямой удар)\n- judgement call (noun: субъективное решение)\n- juvenile (adj: несовершеннолетний)\n- leniency (noun: снисходительность)\n- lethargy (noun: вялость)\n- meager (adj: скудный)\n- meek (adj: кроткий)\n- mischievously (adv: озорно)\n- nibble (verb: грызть)\n- opportunistic (adj: оппортунистический)\n- overt (adj: открытый)\n- perseverance (noun: настойчивость)\n- pockmarked (adj: рябой)\n- pretense (noun: притворство)\n- progeny (noun: потомство)\n- quaint (adj: причудливый)\n- rebellion (noun: восстание)\n- refute (verb: опровергать)\n- relinquish (verb: отказываться)\n- riddle (noun: загадка)\n- screechy (adj: визгливый)\n- shallow (adj: мелкий)\n- skank (noun: шалава)\n- slender (adj: стройный)\n- sloth (noun: ленивец)\n- solvent (adj: платёжеспособный)\n- sternly (adv: строго)\n- stout (adj: полный)\n- suffrage (noun: избирательное право)\n- tantalizingly (adv: дразняще)\n- tentatively (adv: неуверенно)\n- throng (noun: толпа)\n- travail (noun: тяжелый труд)\n- unreciprocated (adj: безответный)\n- unscrupulous (adj: бессовестный)\n- vicariously (adv: опосредованно)\n- vicious (adj: злобный)\n- virtue (noun: добродетель)\n- viscerally (adv: нутром)\n- vituperative (adj: бранный)\n"
+      },
+      {
+       "summary": "Answered by gemini-3.8-flash in 19.1 s",
+       "body": "{\n  \"picks\": [\n    {\n      \"headword\": \"chivalrous\",\n      \"kinds\": [\"spelling\", \"sound\"],\n      \"why\": \"Initial 'ch' is pronounced /ʃ/ rather than /tʃ/, followed by an awkward /vəlr/ transition.\",\n      \"difficulty\": 2\n    },\n    {\n      \"headword\": \"hypocrite\",\n      \"kinds\": [\"spelling\", \"stress\"],\n      \"why\": \"Spelling misleads learners to say /haɪp-/ and /-aɪt/ instead of /ˈhɪp.ə.krɪt/.\",\n      \"difficulty\": 2\n    },\n    {\n      \"headword\": \"lethargy\",\n      \"kinds\": [\"stress\", \"sound\"],\n      \"why\": \"Stress is on the first syllable unlike Russian летарги́я, and it contains the English /θ/.\",\n      \"difficulty\": 3\n    },\n    {\n      \"headword\": \"mischievously\",\n      \"kinds\": [\"stress\", \"spelling\"],\n      \"why\": \"Stress is on the first syllable, and learners almost always mistakenly add an extra syllable ('mis-CHEE-vi-ous-ly').\",\n      \"difficulty\": 3\n    },\n    {\n      \"headword\": \"tantalizingly\",\n      \"kinds\": [\"long\"],\n      \"why\": \"Five syllables with a difficult transition through /zɪŋ.li/ at the end.\",\n      \"difficulty\": 1\n    },\n    {\n      \"headword\": \"unreciprocated\",\n      \"kinds\": [\"long\"],\n      \"why\": \"Six syllables with alternating stops where the middle unstressed syllables easily get lost.\",\n      \"difficulty\": 2\n    },\n    {\n      \"headword\": \"unscrupulous\",\n      \"kinds\": [\"cluster\", \"long\"],\n      \"why\": \"Contains an awkward /skr/ cluster followed by a medial /pjə/ glide that Russian speakers tend to drop.\",\n      \"difficulty\": 2\n    }\n  ]\n}"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  },
+  {
+   "id": "words",
+   "title": "38 words, four ways each",
+   "intro": "The syllabifier's prompt is at the foot of this group.",
+   "cards": [
+    {
+     "id": "B.word.elayuntamiento",
+     "title": "el ayuntamiento · Spanish",
+     "why": "Chosen by hand: Five syllables with a diphthong in the middle that is easy to split wrongly: a-yun-ta-MIEN-to.",
+     "facts": "el·a·yun·ta·MIEN·to — the y sounds like a y-consonant",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/00-elayuntamiento--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/00-elayuntamiento--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/00-elayuntamiento--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/00-elayuntamiento--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-a-yun-ta-mien-to... el ayuntamiento\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] a [short pause] yun [short pause] ta [short pause] mien [short pause] to [medium pause] el ayuntamiento\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>a<break time=\\\"300ms\\\"/>yun<break time=\\\"300ms\\\"/>ta<break time=\\\"300ms\\\"/>mien<break time=\\\"300ms\\\"/>to<break time=\\\"700ms\\\"/>el ayuntamiento</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el ayuntamiento\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.lapredisposición",
+     "title": "la predisposición · Spanish",
+     "why": "Chosen by hand: Six syllables, and the stress lands on the very last one.",
+     "facts": "la·pre·dis·po·si·CIÓN — the n is nasal",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/01-lapredisposici-n--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/01-lapredisposici-n--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/01-lapredisposici-n--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/01-lapredisposici-n--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la-pre-dis-po-si-ción... la predisposición\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la [short pause] pre [short pause] dis [short pause] po [short pause] si [short pause] ción [medium pause] la predisposición\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>la<break time=\\\"300ms\\\"/>pre<break time=\\\"300ms\\\"/>dis<break time=\\\"300ms\\\"/>po<break time=\\\"300ms\\\"/>si<break time=\\\"300ms\\\"/>ción<break time=\\\"700ms\\\"/>la predisposición</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la predisposición\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.imprescindible",
+     "title": "imprescindible · Spanish",
+     "why": "Chosen by hand: Two clusters, mpr and sc, one after the other.",
+     "facts": "im·pres·cin·DI·ble — the b is soft",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/02-imprescindible--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/02-imprescindible--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/02-imprescindible--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/02-imprescindible--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"im-pres-cin-di-ble... imprescindible\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"im [short pause] pres [short pause] cin [short pause] di [short pause] ble [medium pause] imprescindible\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>im<break time=\\\"300ms\\\"/>pres<break time=\\\"300ms\\\"/>cin<break time=\\\"300ms\\\"/>di<break time=\\\"300ms\\\"/>ble<break time=\\\"700ms\\\"/>imprescindible</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"imprescindible\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.escalofriante",
+     "title": "escalofriante · Spanish",
+     "why": "Chosen by hand: fr, then an i-a that belongs to one syllable, not two.",
+     "facts": "es·ca·lo·fria·TE — the i is unstressed in the dipthong ⚠ The syllables do not join back to the word.",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/03-escalofriante--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/03-escalofriante--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/03-escalofriante--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/03-escalofriante--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"es-ca-lo-fria-te... escalofriante\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"es [short pause] ca [short pause] lo [short pause] fria [short pause] te [medium pause] escalofriante\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>es<break time=\\\"300ms\\\"/>ca<break time=\\\"300ms\\\"/>lo<break time=\\\"300ms\\\"/>fria<break time=\\\"300ms\\\"/>te<break time=\\\"700ms\\\"/>escalofriante</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"escalofriante\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.desaprovechar",
+     "title": "desaprovechar · Spanish",
+     "why": "Chosen by hand: The des- and a- run together; five syllables that blur at speed.",
+     "facts": "de·sa·pro·ve·CHAR — the r is tapped",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/04-desaprovechar--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/04-desaprovechar--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/04-desaprovechar--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/04-desaprovechar--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"de-sa-pro-ve-char... desaprovechar\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"de [short pause] sa [short pause] pro [short pause] ve [short pause] char [medium pause] desaprovechar\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>de<break time=\\\"300ms\\\"/>sa<break time=\\\"300ms\\\"/>pro<break time=\\\"300ms\\\"/>ve<break time=\\\"300ms\\\"/>char<break time=\\\"700ms\\\"/>desaprovechar</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"desaprovechar\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.tranquilizarse",
+     "title": "tranquilizarse · Spanish",
+     "why": "Chosen by hand: Five syllables with the stress near the end, before the reflexive -se.",
+     "facts": "tran·qui·li·ZAR·se — the qu sounds like a k",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/05-tranquilizarse--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/05-tranquilizarse--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/05-tranquilizarse--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/05-tranquilizarse--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"tran-qui-li-zar-se... tranquilizarse\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"tran [short pause] qui [short pause] li [short pause] zar [short pause] se [medium pause] tranquilizarse\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>tran<break time=\\\"300ms\\\"/>qui<break time=\\\"300ms\\\"/>li<break time=\\\"300ms\\\"/>zar<break time=\\\"300ms\\\"/>se<break time=\\\"700ms\\\"/>tranquilizarse</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"tranquilizarse\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.elfrailecillo",
+     "title": "el frailecillo · Spanish",
+     "why": "Chosen by hand: An ai diphthong and a ll, both easy to flatten.",
+     "facts": "el·frai·le·CI·llo — the ll sounds like y",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/06-elfrailecillo--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/06-elfrailecillo--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/06-elfrailecillo--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/06-elfrailecillo--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-frai-le-ci-llo... el frailecillo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] frai [short pause] le [short pause] ci [short pause] llo [medium pause] el frailecillo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>frai<break time=\\\"300ms\\\"/>le<break time=\\\"300ms\\\"/>ci<break time=\\\"300ms\\\"/>llo<break time=\\\"700ms\\\"/>el frailecillo</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el frailecillo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.elpresupuesto",
+     "title": "el presupuesto · Spanish",
+     "why": "Chosen by hand: pu-es is one syllable, not two: pre-su-PUES-to.",
+     "facts": "el·pre·su·PUE·sto — the p and s are crisp",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/07-elpresupuesto--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/07-elpresupuesto--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/07-elpresupuesto--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/07-elpresupuesto--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-pre-su-pue-sto... el presupuesto\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] pre [short pause] su [short pause] pue [short pause] sto [medium pause] el presupuesto\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>pre<break time=\\\"300ms\\\"/>su<break time=\\\"300ms\\\"/>pue<break time=\\\"300ms\\\"/>sto<break time=\\\"700ms\\\"/>el presupuesto</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el presupuesto\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.otorrinolaringólogo",
+     "title": "otorrinolaringólogo · Spanish",
+     "why": "Chosen by hand: Not in the vocabulary: the classic nine-syllable word, with a rolled rr.",
+     "facts": "o·to·rri·no·la·rin·go·LO·go — the rr is trilled ⚠ The syllables do not join back to the word.",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/08-otorrinolaring-logo--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/08-otorrinolaring-logo--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/08-otorrinolaring-logo--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/08-otorrinolaring-logo--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"o-to-rri-no-la-rin-go-lo-go... otorrinolaringólogo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"o [short pause] to [short pause] rri [short pause] no [short pause] la [short pause] rin [short pause] go [short pause] lo [short pause] go [medium pause] otorrinolaringólogo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>o<break time=\\\"300ms\\\"/>to<break time=\\\"300ms\\\"/>rri<break time=\\\"300ms\\\"/>no<break time=\\\"300ms\\\"/>la<break time=\\\"300ms\\\"/>rin<break time=\\\"300ms\\\"/>go<break time=\\\"300ms\\\"/>lo<break time=\\\"300ms\\\"/>go<break time=\\\"700ms\\\"/>otorrinolaringólogo</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"otorrinolaringólogo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.ferrocarril",
+     "title": "ferrocarril · Spanish",
+     "why": "Chosen by hand: Not in the vocabulary: two rolled rr's and final stress.",
+     "facts": "fe·rro·ca·RRIL — the rr is trilled",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/09-ferrocarril--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/09-ferrocarril--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/09-ferrocarril--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/09-ferrocarril--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"fe-rro-ca-rril... ferrocarril\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"fe [short pause] rro [short pause] ca [short pause] rril [medium pause] ferrocarril\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>fe<break time=\\\"300ms\\\"/>rro<break time=\\\"300ms\\\"/>ca<break time=\\\"300ms\\\"/>rril<break time=\\\"700ms\\\"/>ferrocarril</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"ferrocarril\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.mischievously",
+     "title": "mischievously · English",
+     "why": "Chosen by hand: Famously said with an extra syllable: MIS-chiv-ous-ly, not mis-CHEE-vee-ous-ly.",
+     "facts": "MIS·chie·vous·ly — the i is short",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/10-mischievously--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/10-mischievously--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/10-mischievously--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/10-mischievously--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"mis-chie-vous-ly... mischievously\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"mis [short pause] chie [short pause] vous [short pause] ly [medium pause] mischievously\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>mis<break time=\\\"300ms\\\"/>chie<break time=\\\"300ms\\\"/>vous<break time=\\\"300ms\\\"/>ly<break time=\\\"700ms\\\"/>mischievously</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"mischievously\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.vituperative",
+     "title": "vituperative · English",
+     "why": "Chosen by hand: Stress on the second syllable: vi-TU-per-a-tive.",
+     "facts": "vi·TU·per·a·tive — the v is labiodental",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/11-vituperative--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/11-vituperative--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/11-vituperative--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/11-vituperative--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"vi-tu-per-a-tive... vituperative\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"vi [short pause] tu [short pause] per [short pause] a [short pause] tive [medium pause] vituperative\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>vi<break time=\\\"300ms\\\"/>tu<break time=\\\"300ms\\\"/>per<break time=\\\"300ms\\\"/>a<break time=\\\"300ms\\\"/>tive<break time=\\\"700ms\\\"/>vituperative</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"vituperative\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.unreciprocated",
+     "title": "unreciprocated · English",
+     "why": "Chosen by hand: Six syllables, and the stress sits in the middle.",
+     "facts": "un·re·ci·pro·CA·ted — the c sounds like an s",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/12-unreciprocated--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/12-unreciprocated--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/12-unreciprocated--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/12-unreciprocated--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"un-re-ci-pro-ca-ted... unreciprocated\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"un [short pause] re [short pause] ci [short pause] pro [short pause] ca [short pause] ted [medium pause] unreciprocated\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>un<break time=\\\"300ms\\\"/>re<break time=\\\"300ms\\\"/>ci<break time=\\\"300ms\\\"/>pro<break time=\\\"300ms\\\"/>ca<break time=\\\"300ms\\\"/>ted<break time=\\\"700ms\\\"/>unreciprocated</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"unreciprocated\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.perseverance",
+     "title": "perseverance · English",
+     "why": "Chosen by hand: Stress on -ve-, where a learner puts it on per- or -se-.",
+     "facts": "per·se·VE·rance — the ce is sibilant",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/13-perseverance--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/13-perseverance--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/13-perseverance--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/13-perseverance--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"per-se-ve-rance... perseverance\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"per [short pause] se [short pause] ve [short pause] rance [medium pause] perseverance\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>per<break time=\\\"300ms\\\"/>se<break time=\\\"300ms\\\"/>ve<break time=\\\"300ms\\\"/>rance<break time=\\\"700ms\\\"/>perseverance</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"perseverance\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.congeniality",
+     "title": "congeniality · English",
+     "why": "Chosen by hand: Six syllables, with the stress on -al-.",
+     "facts": "con·ge·ni·A·li·ty — the g is soft",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/14-congeniality--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/14-congeniality--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/14-congeniality--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/14-congeniality--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"con-ge-ni-a-li-ty... congeniality\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"con [short pause] ge [short pause] ni [short pause] a [short pause] li [short pause] ty [medium pause] congeniality\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>con<break time=\\\"300ms\\\"/>ge<break time=\\\"300ms\\\"/>ni<break time=\\\"300ms\\\"/>a<break time=\\\"300ms\\\"/>li<break time=\\\"300ms\\\"/>ty<break time=\\\"700ms\\\"/>congeniality</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"congeniality\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.insurmountable",
+     "title": "insurmountable · English",
+     "why": "Chosen by hand: Five syllables; the -mount- carries the stress, not in-.",
+     "facts": "in·sur·MOUN·ta·ble — the ou is a diphthong",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/15-insurmountable--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/15-insurmountable--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/15-insurmountable--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/15-insurmountable--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"in-sur-moun-ta-ble... insurmountable\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"in [short pause] sur [short pause] moun [short pause] ta [short pause] ble [medium pause] insurmountable\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>in<break time=\\\"300ms\\\"/>sur<break time=\\\"300ms\\\"/>moun<break time=\\\"300ms\\\"/>ta<break time=\\\"300ms\\\"/>ble<break time=\\\"700ms\\\"/>insurmountable</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"insurmountable\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.doppelganger",
+     "title": "doppelganger · English",
+     "why": "Chosen by hand: A German loan: the spelling hides its rhythm.",
+     "facts": "DOP·pel·gan·ger — the g is hard",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/16-doppelganger--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/16-doppelganger--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/16-doppelganger--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/16-doppelganger--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"dop-pel-gan-ger... doppelganger\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"dop [short pause] pel [short pause] gan [short pause] ger [medium pause] doppelganger\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>dop<break time=\\\"300ms\\\"/>pel<break time=\\\"300ms\\\"/>gan<break time=\\\"300ms\\\"/>ger<break time=\\\"700ms\\\"/>doppelganger</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"doppelganger\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.opportunistic",
+     "title": "opportunistic · English",
+     "why": "Chosen by hand: Five syllables with the stress on -nis-.",
+     "facts": "op·por·tu·NIS·tic — the c is hard",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/17-opportunistic--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/17-opportunistic--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/17-opportunistic--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/17-opportunistic--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"op-por-tu-nis-tic... opportunistic\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"op [short pause] por [short pause] tu [short pause] nis [short pause] tic [medium pause] opportunistic\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>op<break time=\\\"300ms\\\"/>por<break time=\\\"300ms\\\"/>tu<break time=\\\"300ms\\\"/>nis<break time=\\\"300ms\\\"/>tic<break time=\\\"700ms\\\"/>opportunistic</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"opportunistic\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.worcestershire",
+     "title": "Worcestershire · English",
+     "why": "Chosen by hand: Not in the vocabulary: the spelling is a trap (WUS-ter-sher).",
+     "facts": "WUS·ter·sher — most consonants are silent ⚠ The syllables do not join back to the word.",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/18-worcestershire--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/18-worcestershire--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/18-worcestershire--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/18-worcestershire--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"wus-ter-sher... Worcestershire\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"wus [short pause] ter [short pause] sher [medium pause] Worcestershire\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>wus<break time=\\\"300ms\\\"/>ter<break time=\\\"300ms\\\"/>sher<break time=\\\"700ms\\\"/>Worcestershire</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"Worcestershire\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.thoroughly",
+     "title": "thoroughly · English",
+     "why": "Chosen by hand: Not in the vocabulary: the ough is the trap.",
+     "facts": "THOR·ough·ly — the ough is a short o",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/19-thoroughly--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/19-thoroughly--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/19-thoroughly--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/19-thoroughly--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"thor-ough-ly... thoroughly\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"thor [short pause] ough [short pause] ly [medium pause] thoroughly\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>thor<break time=\\\"300ms\\\"/>ough<break time=\\\"300ms\\\"/>ly<break time=\\\"700ms\\\"/>thoroughly</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"thoroughly\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.достопримечательность",
+     "title": "достопримечательность · Russian",
+     "why": "Chosen by hand: Not in the vocabulary: the classic long Russian word, eight syllables.",
+     "facts": "дос·то·при·ме·ча·тель·НОСТЬ — the ь softens the final st",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/20----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/20----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/20----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/20----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"дос-то-при-ме-ча-тель-ность... достопримечательность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"дос [short pause] то [short pause] при [short pause] ме [short pause] ча [short pause] тель [short pause] ность [medium pause] достопримечательность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>дос<break time=\\\"300ms\\\"/>то<break time=\\\"300ms\\\"/>при<break time=\\\"300ms\\\"/>ме<break time=\\\"300ms\\\"/>ча<break time=\\\"300ms\\\"/>тель<break time=\\\"300ms\\\"/>ность<break time=\\\"700ms\\\"/>достопримечательность</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"достопримечательность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.здравствуйте",
+     "title": "здравствуйте · Russian",
+     "why": "Chosen by hand: Not in the vocabulary: the first в is silent, and the cluster -вств- is hard.",
+     "facts": "ЗДРАВ·ствуй·те — the v is silent in speech",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/21----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/21----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/21----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/21----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"здрав-ствуй-те... здравствуйте\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"здрав [short pause] ствуй [short pause] те [medium pause] здравствуйте\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>здрав<break time=\\\"300ms\\\"/>ствуй<break time=\\\"300ms\\\"/>те<break time=\\\"700ms\\\"/>здравствуйте</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"здравствуйте\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.несовершеннолетний",
+     "title": "несовершеннолетний · Russian",
+     "why": "Chosen by hand: The gloss of 'juvenile': seven syllables.",
+     "facts": "не·со·вер·шен·но·ЛЕТ·ний — the ё is stressed",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/22----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/22----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/22----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/22----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"не-со-вер-шен-но-лет-ний... несовершеннолетний\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"не [short pause] со [short pause] вер [short pause] шен [short pause] но [short pause] лет [short pause] ний [medium pause] несовершеннолетний\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>не<break time=\\\"300ms\\\"/>со<break time=\\\"300ms\\\"/>вер<break time=\\\"300ms\\\"/>шен<break time=\\\"300ms\\\"/>но<break time=\\\"300ms\\\"/>лет<break time=\\\"300ms\\\"/>ний<break time=\\\"700ms\\\"/>несовершеннолетний</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"несовершеннолетний\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.снисходительность",
+     "title": "снисходительность · Russian",
+     "why": "Chosen by hand: The gloss of 'leniency': the снисх- opening is a cluster of four.",
+     "facts": "снис·хо·ди·тель·НОСТЬ — the т is hard",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/23----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/23----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/23----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/23----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"снис-хо-ди-тель-ность... снисходительность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"снис [short pause] хо [short pause] ди [short pause] тель [short pause] ность [medium pause] снисходительность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>снис<break time=\\\"300ms\\\"/>хо<break time=\\\"300ms\\\"/>ди<break time=\\\"300ms\\\"/>тель<break time=\\\"300ms\\\"/>ность<break time=\\\"700ms\\\"/>снисходительность</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"снисходительность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.платёжеспособный",
+     "title": "платёжеспособный · Russian",
+     "why": "Chosen by hand: The gloss of 'solvent': a compound with the stress on ё and a second one hidden.",
+     "facts": "пла·тё·же·спо·СОБ·ный — the ё is stressed",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/24----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/24----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/24----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/24----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"пла-тё-же-спо-соб-ный... платёжеспособный\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"пла [short pause] тё [short pause] же [short pause] спо [short pause] соб [short pause] ный [medium pause] платёжеспособный\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>пла<break time=\\\"300ms\\\"/>тё<break time=\\\"300ms\\\"/>же<break time=\\\"300ms\\\"/>спо<break time=\\\"300ms\\\"/>соб<break time=\\\"300ms\\\"/>ный<break time=\\\"700ms\\\"/>платёжеспособный</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"платёжеспособный\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.оппортунистический",
+     "title": "оппортунистический · Russian",
+     "why": "Chosen by hand: The gloss of 'opportunistic': eight syllables.",
+     "facts": "оп·пор·ту·ни·сти·ЧЕ·ский — the и is unstressed",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/25----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/25----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/25----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/25----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"оп-пор-ту-ни-сти-че-ский... оппортунистический\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"оп [short pause] пор [short pause] ту [short pause] ни [short pause] сти [short pause] че [short pause] ский [medium pause] оппортунистический\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>оп<break time=\\\"300ms\\\"/>пор<break time=\\\"300ms\\\"/>ту<break time=\\\"300ms\\\"/>ни<break time=\\\"300ms\\\"/>сти<break time=\\\"300ms\\\"/>че<break time=\\\"300ms\\\"/>ский<break time=\\\"700ms\\\"/>оппортунистический</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"оппортунистический\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.безнаказанность",
+     "title": "безнаказанность · Russian",
+     "why": "Chosen by hand: The gloss of 'impunity': the stress is on -ка-, not where a learner expects.",
+     "facts": "без·на·КА·зан·ность — the z is voiced",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/26----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/26----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/26----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/26----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"без-на-ка-зан-ность... безнаказанность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"без [short pause] на [short pause] ка [short pause] зан [short pause] ность [medium pause] безнаказанность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>без<break time=\\\"300ms\\\"/>на<break time=\\\"300ms\\\"/>ка<break time=\\\"300ms\\\"/>зан<break time=\\\"300ms\\\"/>ность<break time=\\\"700ms\\\"/>безнаказанность</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"безнаказанность\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.предостерегать",
+     "title": "предостерегать · Russian",
+     "why": "Chosen by hand: The gloss of 'admonish': five syllables, final stress.",
+     "facts": "пре·до·сте·ре·ГАТЬ — the final ь is very soft",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/27----directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/27----markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/27----ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/27----cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"пре-до-сте-ре-гать... предостерегать\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"пре [short pause] до [short pause] сте [short pause] ре [short pause] гать [medium pause] предостерегать\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>пре<break time=\\\"300ms\\\"/>до<break time=\\\"300ms\\\"/>сте<break time=\\\"300ms\\\"/>ре<break time=\\\"300ms\\\"/>гать<break time=\\\"700ms\\\"/>предостерегать</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"ru-RU-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"предостерегать\",\n    \"prompt\": \"Read this Russian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"ru-RU\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.precipitevolissimevolmente",
+     "title": "precipitevolissimevolmente · Italian",
+     "why": "Chosen by hand: Not in the vocabulary: Italian's famous longest adverb.",
+     "facts": "pre·ci·pi·te·vo·lis·si·ME·vol·men·te — the double consonants are held",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/28-precipitevolissimevolmente--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/28-precipitevolissimevolmente--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/28-precipitevolissimevolmente--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/28-precipitevolissimevolmente--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"pre-ci-pi-te-vo-lis-si-me-vol-men-te... precipitevolissimevolmente\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"pre [short pause] ci [short pause] pi [short pause] te [short pause] vo [short pause] lis [short pause] si [short pause] me [short pause] vol [short pause] men [short pause] te [medium pause] precipitevolissimevolmente\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>pre<break time=\\\"300ms\\\"/>ci<break time=\\\"300ms\\\"/>pi<break time=\\\"300ms\\\"/>te<break time=\\\"300ms\\\"/>vo<break time=\\\"300ms\\\"/>lis<break time=\\\"300ms\\\"/>si<break time=\\\"300ms\\\"/>me<break time=\\\"300ms\\\"/>vol<break time=\\\"300ms\\\"/>men<break time=\\\"300ms\\\"/>te<break time=\\\"700ms\\\"/>precipitevolissimevolmente</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"it-IT-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"precipitevolissimevolmente\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.sbadigliare",
+     "title": "sbadigliare · Italian",
+     "why": "Chosen by hand: Not in the vocabulary: sb- and gli, two sounds English lacks.",
+     "facts": "sba·di·GLIA·re — the gl sounds like onion",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/29-sbadigliare--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/29-sbadigliare--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/29-sbadigliare--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/29-sbadigliare--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"sba-di-glia-re... sbadigliare\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"sba [short pause] di [short pause] glia [short pause] re [medium pause] sbadigliare\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>sba<break time=\\\"300ms\\\"/>di<break time=\\\"300ms\\\"/>glia<break time=\\\"300ms\\\"/>re<break time=\\\"700ms\\\"/>sbadigliare</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"it-IT-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"sbadigliare\",\n    \"prompt\": \"Read this Italian line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"it-IT\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.écureuil",
+     "title": "écureuil · French",
+     "why": "Chosen by hand: Not in the vocabulary: the -euil ending is notoriously hard.",
+     "facts": "é·cu·REUIL — the r is uvular",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/30--cureuil--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/30--cureuil--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/30--cureuil--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/30--cureuil--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"é-cu-reuil... écureuil\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"é [short pause] cu [short pause] reuil [medium pause] écureuil\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>é<break time=\\\"300ms\\\"/>cu<break time=\\\"300ms\\\"/>reuil<break time=\\\"700ms\\\"/>écureuil</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"fr-FR-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"écureuil\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.serrurerie",
+     "title": "serrurerie · French",
+     "why": "Chosen by hand: Not in the vocabulary: three French r's in a row.",
+     "facts": "se·ru·re·RIE — the final e is silent ⚠ The syllables do not join back to the word.",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/31-serrurerie--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/31-serrurerie--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/31-serrurerie--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/31-serrurerie--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"se-ru-re-rie... serrurerie\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"se [short pause] ru [short pause] re [short pause] rie [medium pause] serrurerie\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>se<break time=\\\"300ms\\\"/>ru<break time=\\\"300ms\\\"/>re<break time=\\\"300ms\\\"/>rie<break time=\\\"700ms\\\"/>serrurerie</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"fr-FR-Wavenet-A\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"serrurerie\",\n    \"prompt\": \"Read this French line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"fr-FR\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.elhierro",
+     "title": "el hierro · Spanish",
+     "why": "Picked by the detector: Silent h combined with a rolled double r.",
+     "facts": "el·HIE·rro — the h is silent, rr is trilled",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/32-elhierro--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/32-elhierro--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/32-elhierro--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/32-elhierro--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-hie-rro... el hierro\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] hie [short pause] rro [medium pause] el hierro\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>hie<break time=\\\"300ms\\\"/>rro<break time=\\\"700ms\\\"/>el hierro</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el hierro\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.lethargy",
+     "title": "lethargy · English",
+     "why": "Picked by the detector: Stress is on the first syllable unlike Russian летарги́я, and it contains the English /θ/.",
+     "facts": "LE·thar·gy — the th is unvoiced",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/33-lethargy--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/33-lethargy--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/33-lethargy--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/33-lethargy--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"le-thar-gy... lethargy\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"le [short pause] thar [short pause] gy [medium pause] lethargy\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>le<break time=\\\"300ms\\\"/>thar<break time=\\\"300ms\\\"/>gy<break time=\\\"700ms\\\"/>lethargy</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"en-US-Wavenet-C\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"lethargy\",\n    \"prompt\": \"Read this English line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"en-US\",\n    \"name\": \"Charon\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.elalforfón",
+     "title": "el alforfón · Spanish",
+     "why": "Picked by the detector: Stress falls on the final syllable -fón, unlike typical Spanish words.",
+     "facts": "el·al·for·FÓN — the n is slightly nasal",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/34-elalforf-n--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/34-elalforf-n--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/34-elalforf-n--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/34-elalforf-n--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-al-for-fón... el alforfón\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] al [short pause] for [short pause] fón [medium pause] el alforfón\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>al<break time=\\\"300ms\\\"/>for<break time=\\\"300ms\\\"/>fón<break time=\\\"700ms\\\"/>el alforfón</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el alforfón\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.elrecordatorio",
+     "title": "el recordatorio · Spanish",
+     "why": "Picked by the detector: Four syllables with a long middle section that learners tend to blur.",
+     "facts": "el·re·cor·da·TO·rio — the r is tapped",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/35-elrecordatorio--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/35-elrecordatorio--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/35-elrecordatorio--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/35-elrecordatorio--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el-re-cor-da-to-rio... el recordatorio\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el [short pause] re [short pause] cor [short pause] da [short pause] to [short pause] rio [medium pause] el recordatorio\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>el<break time=\\\"300ms\\\"/>re<break time=\\\"300ms\\\"/>cor<break time=\\\"300ms\\\"/>da<break time=\\\"300ms\\\"/>to<break time=\\\"300ms\\\"/>rio<break time=\\\"700ms\\\"/>el recordatorio</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"el recordatorio\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.laberenjena",
+     "title": "la berenjena · Spanish",
+     "why": "Picked by the detector: Features the unvoiced jota sound in -jen-.",
+     "facts": "la·be·ren·JE·na — the j is aspirated",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/36-laberenjena--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/36-laberenjena--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/36-laberenjena--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/36-laberenjena--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la-be-ren-je-na... la berenjena\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la [short pause] be [short pause] ren [short pause] je [short pause] na [medium pause] la berenjena\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>la<break time=\\\"300ms\\\"/>be<break time=\\\"300ms\\\"/>ren<break time=\\\"300ms\\\"/>je<break time=\\\"300ms\\\"/>na<break time=\\\"700ms\\\"/>la berenjena</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"la berenjena\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.word.pésimo",
+     "title": "pésimo · Spanish",
+     "why": "Picked by the detector: Proparoxytone stress falls on the antepenultimate syllable.",
+     "facts": "PÉ·si·mo — the accent indicates the stress",
+     "audio": [
+      {
+       "id": "directed",
+       "src": "syllables/37-p-simo--directed.mp3",
+       "label": "directed",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "markup",
+       "src": "syllables/37-p-simo--markup.mp3",
+       "label": "markup",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "ssml",
+       "src": "syllables/37-p-simo--ssml.mp3",
+       "label": "ssml",
+       "note": "",
+       "rate": true
+      },
+      {
+       "id": "cut",
+       "src": "syllables/37-p-simo--cut.mp3",
+       "label": "cut",
+       "note": "",
+       "rate": true
+      }
+     ],
+     "details": [
+      {
+       "summary": "Requests sent",
+       "body": "[\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"pé-si-mo... pésimo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak slowly, syllable by syllable, with an even beat between the syllables, then say the whole word once, naturally. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"pé [short pause] si [short pause] mo [medium pause] pésimo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak clearly, like a teacher. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"ssml\": \"<speak>pé<break time=\\\"300ms\\\"/>si<break time=\\\"300ms\\\"/>mo<break time=\\\"700ms\\\"/>pésimo</speak>\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"es-ES-Wavenet-F\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n },\n {\n  \"POST\": \"https://texttospeech.googleapis.com/v1/text:synthesize\",\n  \"headers\": {\n   \"x-goog-user-project\": \"<quota project>\"\n  },\n  \"json\": {\n   \"input\": {\n    \"text\": \"pésimo\",\n    \"prompt\": \"Read this Spanish line aloud as a native speaker would say it. Speak warmly, as if teaching someone, but clearly, at a natural pace, with a natural pitch range. Do not add, drop, translate or explain any words.\"\n   },\n   \"voice\": {\n    \"languageCode\": \"es-ES\",\n    \"name\": \"Kore\",\n    \"modelName\": \"gemini-3.1-flash-tts-preview\"\n   },\n   \"audioConfig\": {\n    \"audioEncoding\": \"LINEAR16\"\n   }\n  }\n }\n]"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "B.syllabifier",
+     "title": "The syllabifier",
+     "why": "Answered by gemini-3.1-flash-lite in 5.6 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "Split each item into its spoken syllables, the way a careful native speaker would say them slowly\nto a learner, not the way a dictionary hyphenates for line breaks.\n\nRules:\n- Syllables follow speech: Spanish \"ayuntamiento\" is `a-yun-ta-mien-to`, English \"thoroughly\" is\n  `thor-ough-ly`, Russian \"здравствуйте\" is `здрав-ствуй-те`.\n- Keep the original spelling, accents and letters. Joined together, the syllables must give back\n  every letter of the item in order, with nothing added, dropped or changed. Leave out spaces and\n  punctuation, but keep a short word such as an article as its own syllable (\"el\", \"la\").\n- Write the syllable that carries the main stress in CAPITALS and every other syllable in\n  lower case, e.g. `a`, `yun`, `ta`, `MIEN`, `to`. Exactly one syllable is in capitals.\n- `note` is optional: one short phrase in English on what to listen for, e.g. \"the rr is rolled\",\n  or \"the w is silent\". Leave it empty when there is nothing worth saying.\n\nAnswer with a JSON object and nothing else:\n\n{\"items\": [{\"id\": \"...\", \"syllables\": [\"...\"], \"note\": \"\"}]}\n\nThe items:\n\n[\n {\n  \"id\": \"0\",\n  \"text\": \"el ayuntamiento\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"1\",\n  \"text\": \"la predisposición\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"2\",\n  \"text\": \"imprescindible\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"3\",\n  \"text\": \"escalofriante\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"4\",\n  \"text\": \"desaprovechar\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"5\",\n  \"text\": \"tranquilizarse\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"6\",\n  \"text\": \"el frailecillo\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"7\",\n  \"text\": \"el presupuesto\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"8\",\n  \"text\": \"otorrinolaringólogo\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"9\",\n  \"text\": \"ferrocarril\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"10\",\n  \"text\": \"mischievously\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"11\",\n  \"text\": \"vituperative\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"12\",\n  \"text\": \"unreciprocated\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"13\",\n  \"text\": \"perseverance\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"14\",\n  \"text\": \"congeniality\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"15\",\n  \"text\": \"insurmountable\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"16\",\n  \"text\": \"doppelganger\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"17\",\n  \"text\": \"opportunistic\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"18\",\n  \"text\": \"Worcestershire\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"19\",\n  \"text\": \"thoroughly\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"20\",\n  \"text\": \"достопримечательность\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"21\",\n  \"text\": \"здравствуйте\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"22\",\n  \"text\": \"несовершеннолетний\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"23\",\n  \"text\": \"снисходительность\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"24\",\n  \"text\": \"платёжеспособный\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"25\",\n  \"text\": \"оппортунистический\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"26\",\n  \"text\": \"безнаказанность\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"27\",\n  \"text\": \"предостерегать\",\n  \"language\": \"Russian\"\n },\n {\n  \"id\": \"28\",\n  \"text\": \"precipitevolissimevolmente\",\n  \"language\": \"Italian\"\n },\n {\n  \"id\": \"29\",\n  \"text\": \"sbadigliare\",\n  \"language\": \"Italian\"\n },\n {\n  \"id\": \"30\",\n  \"text\": \"écureuil\",\n  \"language\": \"French\"\n },\n {\n  \"id\": \"31\",\n  \"text\": \"serrurerie\",\n  \"language\": \"French\"\n },\n {\n  \"id\": \"32\",\n  \"text\": \"el hierro\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"33\",\n  \"text\": \"lethargy\",\n  \"language\": \"English\"\n },\n {\n  \"id\": \"34\",\n  \"text\": \"el alforfón\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"35\",\n  \"text\": \"el recordatorio\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"36\",\n  \"text\": \"la berenjena\",\n  \"language\": \"Spanish\"\n },\n {\n  \"id\": \"37\",\n  \"text\": \"pésimo\",\n  \"language\": \"Spanish\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  }
+ ]
+}

@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import tts  # noqa: E402
 
-STAGES = ["drills", "syllables", "mixed", "context", "commentary", "framing"]
+STAGES = ["drills", "syllables", "mixed", "context", "commentary", "framing", "pronounce"]
 # Cloud TTS bills Gemini voices per token. At a list price of a few tens of dollars per million
 # audio tokens and 25 tokens a second of speech, a three-second line costs well under a tenth of a
 # cent; WaveNet is billed per character and costs less still.

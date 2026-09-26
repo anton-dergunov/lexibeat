@@ -1,0 +1,2009 @@
+{
+ "section": "D",
+ "title": "Context",
+ "groups": [
+  {
+   "id": "examples-v1",
+   "title": "Punchy examples, prompt v1",
+   "intro": "One-liners: a moment, not a definition, at most eight words. Three candidates per word; rate each.",
+   "cards": [
+    {
+     "id": "D.example.v1.es.girar en torno a",
+     "title": "girar en torno a — revolve around",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Mis días parecen girar en torno a mi gato.",
+       "sub": "My days seem to revolve around my cat. · 🎙 weary, affectionate · relatable cat servitude"
+      },
+      {
+       "id": "1",
+       "text": "Nuestras vidas giran en torno al café.",
+       "sub": "Our lives revolve around coffee. · 🎙 dramatic, whispered · caffeine dependency truth"
+      },
+      {
+       "id": "2",
+       "text": "Todo va a girar en torno a tu error.",
+       "sub": "Everything is going to center on your mistake. · 🎙 cold, corporate · sharp office dread"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.súbitamente",
+     "title": "súbitamente — suddenly",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Súbitamente olvidé cómo caminar en público.",
+       "sub": "Suddenly I forgot how to walk in public. · 🎙 panicked, quiet · universal social paranoia"
+      },
+      {
+       "id": "1",
+       "text": "El perro decidió odiarme súbitamente.",
+       "sub": "The dog decided to hate me all of a sudden. · 🎙 betrayed, muttered · canine fickleness"
+      },
+      {
+       "id": "2",
+       "text": "Súbitamente quiero comprar otro sofá.",
+       "sub": "Suddenly I want to buy another sofa. · 🎙 impulsive, bright · random consumer urge"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.la cebolla",
+     "title": "la cebolla — onion",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Lloro por culpa de la cebolla.",
+       "sub": "I'm crying because of the onion. · 🎙 over-dramatic weeping · cooking melodrama"
+      },
+      {
+       "id": "1",
+       "text": "Odio cuando la cebolla me mira así.",
+       "sub": "I hate it when the onion looks at me like that. · 🎙 suspicious, narrow-eyed · absurd paranoia about vegetables"
+      },
+      {
+       "id": "2",
+       "text": "Comí demasiada cebolla para una primera cita.",
+       "sub": "I ate too much onion for a first date. · 🎙 regretful, grimacing · social disaster"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.suspender",
+     "title": "suspender — to fail",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Logré suspender el examen de conducir otra vez.",
+       "sub": "I managed to fail my driving test again. · 🎙 deadpan, tragic · painful milestone"
+      },
+      {
+       "id": "1",
+       "text": "Van a suspender el mundo por mantenimiento.",
+       "sub": "They are going to cancel the world for maintenance. · 🎙 conspiratorial whisper · surreal exhaustion"
+      },
+      {
+       "id": "2",
+       "text": "Voy a suspender la dieta ahora mismo.",
+       "sub": "I am going to suspend the diet right now. · 🎙 defiant, hopeful · immediate surrender to snacks"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.quemar",
+     "title": "quemar — burn",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Voy a quemar esta sopa también.",
+       "sub": "I'm going to burn this soup too. · 🎙 defeated chef · culinary incompetence"
+      },
+      {
+       "id": "1",
+       "text": "El sol vino a quemar mi nariz.",
+       "sub": "The sun came to scorch my nose. · 🎙 wincing, annoyed · beach regret"
+      },
+      {
+       "id": "2",
+       "text": "Prefiero quemar mis propias facturas.",
+       "sub": "I prefer to burn my own bills. · 🎙 rebellious, small smile · financial denial"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.inusual",
+     "title": "inusual — unusual",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Es inusual que mis plantas sigan vivas.",
+       "sub": "It is unusual for my plants to still be alive. · 🎙 suspicious, squinting · botanical shock"
+      },
+      {
+       "id": "1",
+       "text": "Tu silencio es un poco inusual.",
+       "sub": "Your silence is a bit unusual. · 🎙 concerned, poking the air · waiting for the other shoe to drop"
+      },
+      {
+       "id": "2",
+       "text": "Hoy tengo un nivel de energía inusual.",
+       "sub": "Today I have an unusual energy level. · 🎙 wired, jittery · caffeine overload"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.la basura al tacho",
+     "title": "la basura al tacho — trash",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Tiró mi dignidad junto con la basura al tacho.",
+       "sub": "He threw my dignity right into the bin with the trash. · 🎙 dramatic soap opera · petty heartbreak"
+      },
+      {
+       "id": "1",
+       "text": "Llévate la basura al tacho, por favor.",
+       "sub": "Take the trash to the bin, please. · 🎙 flat domestic instruction · household chore reality"
+      },
+      {
+       "id": "2",
+       "text": "Mi plan de ahorro fue a parar con la basura al tacho.",
+       "sub": "My savings plan ended up in the trash bin. · 🎙 sighing, cynical · failed budgeting"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.la fuerza",
+     "title": "la fuerza — strength",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "No me queda fuerza para responder llamadas.",
+       "sub": "I have no strength left to answer phone calls. · 🎙 collapsed on the sofa · introvert burnout"
+      },
+      {
+       "id": "1",
+       "text": "Abrí el frasco de mermelada con fuerza.",
+       "sub": "I opened the jam jar with force. · 🎙 proud, flexing biceps · small domestic victory"
+      },
+      {
+       "id": "2",
+       "text": "La fuerza de gravedad me odia hoy.",
+       "sub": "The force of gravity hates me today. · 🎙 groaning · clumsy morning"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.el banco",
+     "title": "el banco — bank",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "El banco robó mi paciencia este mes.",
+       "sub": "The bank stole my patience this month. · 🎙 bitter, exhausted · banking frustration"
+      },
+      {
+       "id": "1",
+       "text": "Duermo mejor en el banco del parque.",
+       "sub": "I sleep better on the park bench. · 🎙 dreamy, eccentric · anti-social comfort"
+      },
+      {
+       "id": "2",
+       "text": "Olvidé mi cartera en el banco.",
+       "sub": "I forgot my wallet at the bank. · 🎙 panicked whisper · instant panic attack"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.el ayuntamiento",
+     "title": "el ayuntamiento — town hall",
+     "why": "Spanish, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "El ayuntamiento destruyó mi calle favorita.",
+       "sub": "The town hall destroyed my favorite street. · 🎙 grumpy local resident · petty municipal rage"
+      },
+      {
+       "id": "1",
+       "text": "Me casé rápido en el ayuntamiento.",
+       "sub": "I got married quickly at the town hall. · 🎙 shifty, fast-talking · eloping vibes"
+      },
+      {
+       "id": "2",
+       "text": "El ayuntamiento me debe una explicación.",
+       "sub": "The town hall owes me an explanation. · 🎙 pointing at a pothole · angry citizen energy"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.es.prompt",
+     "title": "Prompt v1, Spanish words",
+     "why": "Answered by gemini-3.5-flash-lite in 6.5 s. Passed over first: gemini-3.8-flash: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently exp; gemini-3.7-flash: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently exp; gemini-3.5-flash: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently exp",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write lines for a short audio vocabulary programme. Music plays, a native presenter says a\nword and its translation, and now and then the presenter drops one short example sentence. You\nwrite those sentences.\n\nThe learner speaks English and is learning Spanish.\n\nThe words are the point of the programme. An example exists only to make its word stick, so it\nmust be over before the listener notices it started. For each word below, write three\ncandidate sentences. A good one is **punchy**:\n\n- **Short**: at most eight words in Spanish, sayable in one bar of music, about three seconds.\n- **A moment, not a definition**: something a person would really say out loud today, in the first\n  person or to someone in the room. \"I forgot to shave today.\" \"This traffic jam ate my morning.\"\n- **It sticks**: surprising, funny, a little absurd or self-deprecating. A small absurdity is\n  remembered; a neutral fact is not.\n- **The right sense**: the word as the entry means it, in its register, in a natural form.\n  Conjugate the verb and agree the adjective; do not force the dictionary form.\n- **Nothing else to learn**: plain, everyday words around it, so the word is the only new thing.\n- No real people, brands or places that date; nothing cruel.\n\nAvoid:\n- dictionary sentences (\"The desert is a dry place\");\n- questions put to the learner (\"Do you like…?\");\n- anything that explains the word;\n- two candidates built on the same joke.\n\nFor each candidate give:\n- `text`: the sentence in Spanish;\n- `translation`: natural English, not word for word;\n- `direction`: how the presenter says it, as a short English phrase for a voice actor (\"deadpan,\n  mock tragic\", \"whispered, conspiratorial\");\n- `why`: a few English words on what makes it stick.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"why\": \"...\"}]}]}\n\nThe words, with what each one means:\n\n[\n {\n  \"headword\": \"girar en torno a\",\n  \"primaryGloss\": \"revolve around\",\n  \"shortGloss\": \"to revolve around; to center on\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"súbitamente\",\n  \"primaryGloss\": \"suddenly\",\n  \"shortGloss\": \"suddenly; all of a sudden\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"abrupt and startling, describing a sudden unexpected change\"\n },\n {\n  \"headword\": \"la cebolla\",\n  \"primaryGloss\": \"onion\",\n  \"shortGloss\": \"onion\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"suspender\",\n  \"primaryGloss\": \"to fail\",\n  \"shortGloss\": \"to fail (an exam); to cancel; to suspend\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"quemar\",\n  \"primaryGloss\": \"burn\",\n  \"shortGloss\": \"to burn; to scorch; to burn oneself\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"la basura al tacho\",\n  \"primaryGloss\": \"trash\",\n  \"shortGloss\": \"trash in the bin\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"la fuerza\",\n  \"primaryGloss\": \"strength\",\n  \"shortGloss\": \"strength; force; power\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"el ayuntamiento\",\n  \"primaryGloss\": \"town hall\",\n  \"shortGloss\": \"town hall; city council\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"girar en torno a\",\n      \"candidates\": [\n        {\n          \"text\": \"Mis días parecen girar en torno a mi gato.\",\n          \"translation\": \"My days seem to revolve around my cat.\",\n          \"direction\": \"weary, affectionate\",\n          \"why\": \"relatable cat servitude\"\n        },\n        {\n          \"text\": \"Nuestras vidas giran en torno al café.\",\n          \"translation\": \"Our lives revolve around coffee.\",\n          \"direction\": \"dramatic, whispered\",\n          \"why\": \"caffeine dependency truth\"\n        },\n        {\n          \"text\": \"Todo va a girar en torno a tu error.\",\n          \"translation\": \"Everything is going to center on your mistake.\",\n          \"direction\": \"cold, corporate\",\n          \"why\": \"sharp office dread\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"súbitamente\",\n      \"candidates\": [\n        {\n          \"text\": \"Súbitamente olvidé cómo caminar en público.\",\n          \"translation\": \"Suddenly I forgot how to walk in public.\",\n          \"direction\": \"panicked, quiet\",\n          \"why\": \"universal social paranoia\"\n        },\n        {\n          \"text\": \"El perro decidió odiarme súbitamente.\",\n          \"translation\": \"The dog decided to hate me all of a sudden.\",\n          \"direction\": \"betrayed, muttered\",\n          \"why\": \"canine fickleness\"\n        },\n        {\n          \"text\": \"Súbitamente quiero comprar otro sofá.\",\n          \"translation\": \"Suddenly I want to buy another sofa.\",\n          \"direction\": \"impulsive, bright\",\n          \"why\": \"random consumer urge\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la cebolla\",\n      \"candidates\": [\n        {\n          \"text\": \"Lloro por culpa de la cebolla.\",\n          \"translation\": \"I'm crying because of the onion.\",\n          \"direction\": \"over-dramatic weeping\",\n          \"why\": \"cooking melodrama\"\n        },\n        {\n          \"text\": \"Odio cuando la cebolla me mira así.\",\n          \"translation\": \"I hate it when the onion looks at me like that.\",\n          \"direction\": \"suspicious, narrow-eyed\",\n          \"why\": \"absurd paranoia about vegetables\"\n        },\n        {\n          \"text\": \"Comí demasiada cebolla para una primera cita.\",\n          \"translation\": \"I ate too much onion for a first date.\",\n          \"direction\": \"regretful, grimacing\",\n          \"why\": \"social disaster\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"suspender\",\n      \"candidates\": [\n        {\n          \"text\": \"Logré suspender el examen de conducir otra vez.\",\n          \"translation\": \"I managed to fail my driving test again.\",\n          \"direction\": \"deadpan, tragic\",\n          \"why\": \"painful milestone\"\n        },\n        {\n          \"text\": \"Van a suspender el mundo por mantenimiento.\",\n          \"translation\": \"They are going to cancel the world for maintenance.\",\n          \"direction\": \"conspiratorial whisper\",\n          \"why\": \"surreal exhaustion\"\n        },\n        {\n          \"text\": \"Voy a suspender la dieta ahora mismo.\",\n          \"translation\": \"I am going to suspend the diet right now.\",\n          \"direction\": \"defiant, hopeful\",\n          \"why\": \"immediate surrender to snacks\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"quemar\",\n      \"candidates\": [\n        {\n          \"text\": \"Voy a quemar esta sopa también.\",\n          \"translation\": \"I'm going to burn this soup too.\",\n          \"direction\": \"defeated chef\",\n          \"why\": \"culinary incompetence\"\n        },\n        {\n          \"text\": \"El sol vino a quemar mi nariz.\",\n          \"translation\": \"The sun came to scorch my nose.\",\n          \"direction\": \"wincing, annoyed\",\n          \"why\": \"beach regret\"\n        },\n        {\n          \"text\": \"Prefiero quemar mis propias facturas.\",\n          \"translation\": \"I prefer to burn my own bills.\",\n          \"direction\": \"rebellious, small smile\",\n          \"why\": \"financial denial\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"inusual\",\n      \"candidates\": [\n        {\n          \"text\": \"Es inusual que mis plantas sigan vivas.\",\n          \"translation\": \"It is unusual for my plants to still be alive.\",\n          \"direction\": \"suspicious, squinting\",\n          \"why\": \"botanical shock\"\n        },\n        {\n          \"text\": \"Tu silencio es un poco inusual.\",\n          \"translation\": \"Your silence is a bit unusual.\",\n          \"direction\": \"concerned, poking the air\",\n          \"why\": \"waiting for the other shoe to drop\"\n        },\n        {\n          \"text\": \"Hoy tengo un nivel de energía inusual.\",\n          \"translation\": \"Today I have an unusual energy level.\",\n          \"direction\": \"wired, jittery\",\n          \"why\": \"caffeine overload\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la basura al tacho\",\n      \"candidates\": [\n        {\n          \"text\": \"Tiró mi dignidad junto con la basura al tacho.\",\n          \"translation\": \"He threw my dignity right into the bin with the trash.\",\n          \"direction\": \"dramatic soap opera\",\n          \"why\": \"petty heartbreak\"\n        },\n        {\n          \"text\": \"Llévate la basura al tacho, por favor.\",\n          \"translation\": \"Take the trash to the bin, please.\",\n          \"direction\": \"flat domestic instruction\",\n          \"why\": \"household chore reality\"\n        },\n        {\n          \"text\": \"Mi plan de ahorro fue a parar con la basura al tacho.\",\n          \"translation\": \"My savings plan ended up in the trash bin.\",\n          \"direction\": \"sighing, cynical\",\n          \"why\": \"failed budgeting\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la fuerza\",\n      \"candidates\": [\n        {\n          \"text\": \"No me queda fuerza para responder llamadas.\",\n          \"translation\": \"I have no strength left to answer phone calls.\",\n          \"direction\": \"collapsed on the sofa\",\n          \"why\": \"introvert burnout\"\n        },\n        {\n          \"text\": \"Abrí el frasco de mermelada con fuerza.\",\n          \"translation\": \"I opened the jam jar with force.\",\n          \"direction\": \"proud, flexing biceps\",\n          \"why\": \"small domestic victory\"\n        },\n        {\n          \"text\": \"La fuerza de gravedad me odia hoy.\",\n          \"translation\": \"The force of gravity hates me today.\",\n          \"direction\": \"groaning\",\n          \"why\": \"clumsy morning\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"el banco\",\n      \"candidates\": [\n        {\n          \"text\": \"El banco robó mi paciencia este mes.\",\n          \"translation\": \"The bank stole my patience this month.\",\n          \"direction\": \"bitter, exhausted\",\n          \"why\": \"banking frustration\"\n        },\n        {\n          \"text\": \"Duermo mejor en el banco del parque.\",\n          \"translation\": \"I sleep better on the park bench.\",\n          \"direction\": \"dreamy, eccentric\",\n          \"why\": \"anti-social comfort\"\n        },\n        {\n          \"text\": \"Olvidé mi cartera en el banco.\",\n          \"translation\": \"I forgot my wallet at the bank.\",\n          \"direction\": \"panicked whisper\",\n          \"why\": \"instant panic attack\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"el ayuntamiento\",\n      \"candidates\": [\n        {\n          \"text\": \"El ayuntamiento destruyó mi calle favorita.\",\n          \"translation\": \"The town hall destroyed my favorite street.\",\n          \"direction\": \"grumpy local resident\",\n          \"why\": \"petty municipal rage\"\n        },\n        {\n          \"text\": \"Me casé rápido en el ayuntamiento.\",\n          \"translation\": \"I got married quickly at the town hall.\",\n          \"direction\": \"shifty, fast-talking\",\n          \"why\": \"eloping vibes\"\n        },\n        {\n          \"text\": \"El ayuntamiento me debe una explicación.\",\n          \"translation\": \"The town hall owes me an explanation.\",\n          \"direction\": \"pointing at a pothole\",\n          \"why\": \"angry citizen energy\"\n        }\n      ]\n    }\n  ]\n}"
+      }
+     ],
+     "rate": true,
+     "prompt_card": true
+    },
+    {
+     "id": "D.example.v1.en.consummate",
+     "title": "consummate — непревзойдённый",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "She is a consummate liar.",
+       "sub": "Она лжет просто виртуозно. · 🎙 admiring yet terrified · praising a toxic skill"
+      },
+      {
+       "id": "1",
+       "text": "His insult was a consummate work of art.",
+       "sub": "Его оскорбление было шедевром. · 🎙 slow, impressed clap · appreciating master-level rudeness"
+      },
+      {
+       "id": "2",
+       "text": "That was a consummate parking failure.",
+       "sub": "Это был эталонный провал парковки. · 🎙 deadpan, shaking head · elevating a minor disaster"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.discontent",
+     "title": "discontent — недовольство",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "My cat's discontent is deafening.",
+       "sub": "Недовольство моего кота оглушает. · 🎙 whispered, conspiratorial · blaming a tiny pet"
+      },
+      {
+       "id": "1",
+       "text": "A low murmur of discontent filled the kitchen.",
+       "sub": "Тихий ропот недовольства заполнил кухню. · 🎙 dramatic, noir narrator · making breakfast sound like a revolution"
+      },
+      {
+       "id": "2",
+       "text": "Feed my growing discontent with pizza.",
+       "sub": "Заешь мое растущее недовольство пиццей. · 🎙 weary, flat · carb-loading the existential dread"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.bellow",
+     "title": "bellow — реветь",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Stop yelling, don't bellow at me.",
+       "sub": "Хватит орать на меня басом. · 🎙 indignant, hands on hips · calling out a loud voice"
+      },
+      {
+       "id": "1",
+       "text": "My toaster bellowed and started smoking.",
+       "sub": "Мой тостер взревел и задымился. · 🎙 wide-eyed alarm · kitchen appliance horror"
+      },
+      {
+       "id": "2",
+       "text": "He tried to bellow over the jazz band.",
+       "sub": "Он пытался перереветь джаз-бенд. · 🎙 amused, shaking head · futile loud shouting"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.nibble",
+     "title": "nibble — грызть",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Just nibble the edges of your panic.",
+       "sub": "Просто погрызи краешки своей паники. · 🎙 calm, deeply weird advice · snacking on abstract emotion"
+      },
+      {
+       "id": "1",
+       "text": "The fish refuse to nibble today.",
+       "sub": "Рыба сегодня совсем не клюет. · 🎙 bored fisherman sigh · classic quiet disappointment"
+      },
+      {
+       "id": "2",
+       "text": "Stop trying to nibble my sandwich.",
+       "sub": "Перестань откусывать от моего бутерброда. · 🎙 protective, guarding food · petty boundary defense"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.hogwash",
+     "title": "hogwash — чепуха",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "His excuse was absolute hogwash.",
+       "sub": "Его оправдание — полная чушь. · 🎙 scornful, dismissive hand wave · brutal reality check"
+      },
+      {
+       "id": "1",
+       "text": "Don't feed me that romantic hogwash.",
+       "sub": "Не вешай мне лапшу про эту романтику. · 🎙 cynical, eyes rolling · anti-romance snark"
+      },
+      {
+       "id": "2",
+       "text": "Horoscope predictions are pure hogwash.",
+       "sub": "Гороскопы — чистой воды бред. · 🎙 matter-of-fact scoff · busting cosmic myths"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.coyly",
+     "title": "coyly — кокетливо",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "She smiled coyly at the last donut.",
+       "sub": "Она кокетливо улыбнулась последнему пончику. · 🎙 playful, conspiratorial grin · flirting with pastries"
+      },
+      {
+       "id": "1",
+       "text": "He hid his empty wallet coyly.",
+       "sub": "Он уклончиво спрятал пустой кошелек. · 🎙 sheepish, awkward shrug · hiding poverty with style"
+      },
+      {
+       "id": "2",
+       "text": "The cat looked away coyly after breaking the vase.",
+       "sub": "Кот уклончиво отвел взгляд после разбитой вазы. · 🎙 smug, unapologetic · feline gaslighting"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.riddle",
+     "title": "riddle — загадка",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "My tax return is a complete riddle.",
+       "sub": "Моя налоговая декларация — сплошная загадка. · 🎙 weary sigh · bureaucratic mystery"
+      },
+      {
+       "id": "1",
+       "text": "Why I bought this hat remains a riddle.",
+       "sub": "Зачем я купил эту шляпу — загадка. · 🎙 regretful staring into space · instant buyer's remorse"
+      },
+      {
+       "id": "2",
+       "text": "Life is a riddle, and I lost the manual.",
+       "sub": "Жизнь — загадка, а инструкцию я потерял. · 🎙 dramatic and exhausted · existential slapstick"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.congeniality",
+     "title": "congeniality — дружелюбие",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Her forced congeniality was exhausting.",
+       "sub": "Её наигранное дружелюбие утомляло. · 🎙 drained, rolling eyes · fake nice fatigue"
+      },
+      {
+       "id": "1",
+       "text": "We fake congeniality at family dinners.",
+       "sub": "Мы изображаем радушие на семейных обедах. · 🎙 cynical nod · relatable holiday survival"
+      },
+      {
+       "id": "2",
+       "text": "Office congeniality peaked and died by noon.",
+       "sub": "Корпоративное дружелюбие сдохло к полудню. · 🎙 deadpan corporate humor · workplace burnout"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.sloth",
+     "title": "sloth — ленивец",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "My morning sloth requires strong coffee.",
+       "sub": "Моя утренняя лень требует крепкого кофе. · 🎙 groggy, heavy voice · pre-coffee paralysis"
+      },
+      {
+       "id": "1",
+       "text": "Embrace your inner sloth on Sundays.",
+       "sub": "Дай волю своему внутреннему ленивцу по воскресеньям. · 🎙 cozy, wrapped in a blanket · guilt-free laziness"
+      },
+      {
+       "id": "2",
+       "text": "Sloth is my favorite deadly sin.",
+       "sub": "Лень — мой любимый смертный грех. · 🎙 proudly lazy confession · owning the vice"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.pretense",
+     "title": "pretense — притворство",
+     "why": "English, prompt v1",
+     "items": [
+      {
+       "id": "0",
+       "text": "Drop the pretense, we are eating in sweatpants.",
+       "sub": "Хватит притворяться, едим в трениках. · 🎙 relieved, dropping shoulders · canceling all standards"
+      },
+      {
+       "id": "1",
+       "text": "I keep up the pretense of being an adult.",
+       "sub": "Я делаю вид, что я взрослый. · 🎙 tragic whisper · fake adulthood"
+      },
+      {
+       "id": "2",
+       "text": "He read the menu under the pretense of knowing French.",
+       "sub": "Он читал меню под видом знатока французского. · 🎙 teasing grin · culinary bluffing"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v1.en.prompt",
+     "title": "Prompt v1, English words",
+     "why": "Answered by gemini-3.5-flash-lite in 6.8 s. Passed over first: gemini-3.8-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu; gemini-3.7-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu; gemini-3.5-flash: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently exp",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write lines for a short audio vocabulary programme. Music plays, a native presenter says a\nword and its translation, and now and then the presenter drops one short example sentence. You\nwrite those sentences.\n\nThe learner speaks Russian and is learning English.\n\nThe words are the point of the programme. An example exists only to make its word stick, so it\nmust be over before the listener notices it started. For each word below, write three\ncandidate sentences. A good one is **punchy**:\n\n- **Short**: at most eight words in English, sayable in one bar of music, about three seconds.\n- **A moment, not a definition**: something a person would really say out loud today, in the first\n  person or to someone in the room. \"I forgot to shave today.\" \"This traffic jam ate my morning.\"\n- **It sticks**: surprising, funny, a little absurd or self-deprecating. A small absurdity is\n  remembered; a neutral fact is not.\n- **The right sense**: the word as the entry means it, in its register, in a natural form.\n  Conjugate the verb and agree the adjective; do not force the dictionary form.\n- **Nothing else to learn**: plain, everyday words around it, so the word is the only new thing.\n- No real people, brands or places that date; nothing cruel.\n\nAvoid:\n- dictionary sentences (\"The desert is a dry place\");\n- questions put to the learner (\"Do you like…?\");\n- anything that explains the word;\n- two candidates built on the same joke.\n\nFor each candidate give:\n- `text`: the sentence in English;\n- `translation`: natural Russian, not word for word;\n- `direction`: how the presenter says it, as a short English phrase for a voice actor (\"deadpan,\n  mock tragic\", \"whispered, conspiratorial\");\n- `why`: a few English words on what makes it stick.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"why\": \"...\"}]}]}\n\nThe words, with what each one means:\n\n[\n {\n  \"headword\": \"consummate\",\n  \"primaryGloss\": \"непревзойдённый\",\n  \"shortGloss\": \"непревзойдённый; совершенный\",\n  \"pos\": \"adj\",\n  \"register\": \"formal\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"admiring and deeply appreciative of absolute mastery\"\n },\n {\n  \"headword\": \"discontent\",\n  \"primaryGloss\": \"недовольство\",\n  \"shortGloss\": \"недовольство; неудовлетворённость\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"grunty and dissatisfied, showing inner tension\"\n },\n {\n  \"headword\": \"bellow\",\n  \"primaryGloss\": \"реветь\",\n  \"shortGloss\": \"реветь; орать; рявкать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"emotion\": \"deep and resonant, demanding absolute attention\"\n },\n {\n  \"headword\": \"nibble\",\n  \"primaryGloss\": \"грызть\",\n  \"shortGloss\": \"грызть; покусывать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\",\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"hogwash\",\n  \"primaryGloss\": \"чепуха\",\n  \"shortGloss\": \"чепуха; чушь\",\n  \"pos\": \"noun\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Slang\"\n  ],\n  \"emotion\": \"dismissive and contemptuous, rejecting something as complete nonsense\"\n },\n {\n  \"headword\": \"coyly\",\n  \"primaryGloss\": \"кокетливо\",\n  \"shortGloss\": \"кокетливо; уклончиво\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"playful and teasing, hinting at a flirty and coy demeanor\"\n },\n {\n  \"headword\": \"riddle\",\n  \"primaryGloss\": \"загадка\",\n  \"shortGloss\": \"загадка; тайна\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"congeniality\",\n  \"primaryGloss\": \"дружелюбие\",\n  \"shortGloss\": \"дружелюбие; приятность; сходство характеров\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"pretense\",\n  \"primaryGloss\": \"притворство\",\n  \"shortGloss\": \"притворство; видимость\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"deceptive and slightly cold, like an actor hiding their true intent\"\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"consummate\",\n      \"candidates\": [\n        {\n          \"text\": \"She is a consummate liar.\",\n          \"translation\": \"Она лжет просто виртуозно.\",\n          \"direction\": \"admiring yet terrified\",\n          \"why\": \"praising a toxic skill\"\n        },\n        {\n          \"text\": \"His insult was a consummate work of art.\",\n          \"translation\": \"Его оскорбление было шедевром.\",\n          \"direction\": \"slow, impressed clap\",\n          \"why\": \"appreciating master-level rudeness\"\n        },\n        {\n          \"text\": \"That was a consummate parking failure.\",\n          \"translation\": \"Это был эталонный провал парковки.\",\n          \"direction\": \"deadpan, shaking head\",\n          \"why\": \"elevating a minor disaster\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"discontent\",\n      \"candidates\": [\n        {\n          \"text\": \"My cat's discontent is deafening.\",\n          \"translation\": \"Недовольство моего кота оглушает.\",\n          \"direction\": \"whispered, conspiratorial\",\n          \"why\": \"blaming a tiny pet\"\n        },\n        {\n          \"text\": \"A low murmur of discontent filled the kitchen.\",\n          \"translation\": \"Тихий ропот недовольства заполнил кухню.\",\n          \"direction\": \"dramatic, noir narrator\",\n          \"why\": \"making breakfast sound like a revolution\"\n        },\n        {\n          \"text\": \"Feed my growing discontent with pizza.\",\n          \"translation\": \"Заешь мое растущее недовольство пиццей.\",\n          \"direction\": \"weary, flat\",\n          \"why\": \"carb-loading the existential dread\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"bellow\",\n      \"candidates\": [\n        {\n          \"text\": \"Stop yelling, don't bellow at me.\",\n          \"translation\": \"Хватит орать на меня басом.\",\n          \"direction\": \"indignant, hands on hips\",\n          \"why\": \"calling out a loud voice\"\n        },\n        {\n          \"text\": \"My toaster bellowed and started smoking.\",\n          \"translation\": \"Мой тостер взревел и задымился.\",\n          \"direction\": \"wide-eyed alarm\",\n          \"why\": \"kitchen appliance horror\"\n        },\n        {\n          \"text\": \"He tried to bellow over the jazz band.\",\n          \"translation\": \"Он пытался перереветь джаз-бенд.\",\n          \"direction\": \"amused, shaking head\",\n          \"why\": \"futile loud shouting\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"nibble\",\n      \"candidates\": [\n        {\n          \"text\": \"Just nibble the edges of your panic.\",\n          \"translation\": \"Просто погрызи краешки своей паники.\",\n          \"direction\": \"calm, deeply weird advice\",\n          \"why\": \"snacking on abstract emotion\"\n        },\n        {\n          \"text\": \"The fish refuse to nibble today.\",\n          \"translation\": \"Рыба сегодня совсем не клюет.\",\n          \"direction\": \"bored fisherman sigh\",\n          \"why\": \"classic quiet disappointment\"\n        },\n        {\n          \"text\": \"Stop trying to nibble my sandwich.\",\n          \"translation\": \"Перестань откусывать от моего бутерброда.\",\n          \"direction\": \"protective, guarding food\",\n          \"why\": \"petty boundary defense\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"hogwash\",\n      \"candidates\": [\n        {\n          \"text\": \"His excuse was absolute hogwash.\",\n          \"translation\": \"Его оправдание — полная чушь.\",\n          \"direction\": \"scornful, dismissive hand wave\",\n          \"why\": \"brutal reality check\"\n        },\n        {\n          \"text\": \"Don't feed me that romantic hogwash.\",\n          \"translation\": \"Не вешай мне лапшу про эту романтику.\",\n          \"direction\": \"cynical, eyes rolling\",\n          \"why\": \"anti-romance snark\"\n        },\n        {\n          \"text\": \"Horoscope predictions are pure hogwash.\",\n          \"translation\": \"Гороскопы — чистой воды бред.\",\n          \"direction\": \"matter-of-fact scoff\",\n          \"why\": \"busting cosmic myths\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"coyly\",\n      \"candidates\": [\n        {\n          \"text\": \"She smiled coyly at the last donut.\",\n          \"translation\": \"Она кокетливо улыбнулась последнему пончику.\",\n          \"direction\": \"playful, conspiratorial grin\",\n          \"why\": \"flirting with pastries\"\n        },\n        {\n          \"text\": \"He hid his empty wallet coyly.\",\n          \"translation\": \"Он уклончиво спрятал пустой кошелек.\",\n          \"direction\": \"sheepish, awkward shrug\",\n          \"why\": \"hiding poverty with style\"\n        },\n        {\n          \"text\": \"The cat looked away coyly after breaking the vase.\",\n          \"translation\": \"Кот уклончиво отвел взгляд после разбитой вазы.\",\n          \"direction\": \"smug, unapologetic\",\n          \"why\": \"feline gaslighting\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"riddle\",\n      \"candidates\": [\n        {\n          \"text\": \"My tax return is a complete riddle.\",\n          \"translation\": \"Моя налоговая декларация — сплошная загадка.\",\n          \"direction\": \"weary sigh\",\n          \"why\": \"bureaucratic mystery\"\n        },\n        {\n          \"text\": \"Why I bought this hat remains a riddle.\",\n          \"translation\": \"Зачем я купил эту шляпу — загадка.\",\n          \"direction\": \"regretful staring into space\",\n          \"why\": \"instant buyer's remorse\"\n        },\n        {\n          \"text\": \"Life is a riddle, and I lost the manual.\",\n          \"translation\": \"Жизнь — загадка, а инструкцию я потерял.\",\n          \"direction\": \"dramatic and exhausted\",\n          \"why\": \"existential slapstick\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"congeniality\",\n      \"candidates\": [\n        {\n          \"text\": \"Her forced congeniality was exhausting.\",\n          \"translation\": \"Её наигранное дружелюбие утомляло.\",\n          \"direction\": \"drained, rolling eyes\",\n          \"why\": \"fake nice fatigue\"\n        },\n        {\n          \"text\": \"We fake congeniality at family dinners.\",\n          \"translation\": \"Мы изображаем радушие на семейных обедах.\",\n          \"direction\": \"cynical nod\",\n          \"why\": \"relatable holiday survival\"\n        },\n        {\n          \"text\": \"Office congeniality peaked and died by noon.\",\n          \"translation\": \"Корпоративное дружелюбие сдохло к полудню.\",\n          \"direction\": \"deadpan corporate humor\",\n          \"why\": \"workplace burnout\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"sloth\",\n      \"candidates\": [\n        {\n          \"text\": \"My morning sloth requires strong coffee.\",\n          \"translation\": \"Моя утренняя лень требует крепкого кофе.\",\n          \"direction\": \"groggy, heavy voice\",\n          \"why\": \"pre-coffee paralysis\"\n        },\n        {\n          \"text\": \"Embrace your inner sloth on Sundays.\",\n          \"translation\": \"Дай волю своему внутреннему ленивцу по воскресеньям.\",\n          \"direction\": \"cozy, wrapped in a blanket\",\n          \"why\": \"guilt-free laziness\"\n        },\n        {\n          \"text\": \"Sloth is my favorite deadly sin.\",\n          \"translation\": \"Лень — мой любимый смертный грех.\",\n          \"direction\": \"proudly lazy confession\",\n          \"why\": \"owning the vice\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"pretense\",\n      \"candidates\": [\n        {\n          \"text\": \"Drop the pretense, we are eating in sweatpants.\",\n          \"translation\": \"Хватит притворяться, едим в трениках.\",\n          \"direction\": \"relieved, dropping shoulders\",\n          \"why\": \"canceling all standards\"\n        },\n        {\n          \"text\": \"I keep up the pretense of being an adult.\",\n          \"translation\": \"Я делаю вид, что я взрослый.\",\n          \"direction\": \"tragic whisper\",\n          \"why\": \"fake adulthood\"\n        },\n        {\n          \"text\": \"He read the menu under the pretense of knowing French.\",\n          \"translation\": \"Он читал меню под видом знатока французского.\",\n          \"direction\": \"teasing grin\",\n          \"why\": \"culinary bluffing\"\n        }\n      ]\n    }\n  ]\n}"
+      }
+     ],
+     "rate": true,
+     "prompt_card": true
+    }
+   ]
+  },
+  {
+   "id": "examples-v2",
+   "title": "Punchy examples, prompt v2",
+   "intro": "The same words, a second prompt: two presenters, five kinds of moment (confession, complaint, boast, slip, reaction), and sometimes a two-word reaction from the guide.",
+   "cards": [
+    {
+     "id": "D.example.v2.es.girar en torno a",
+     "title": "girar en torno a — revolve around",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Mi nuevo show gira en torno a mi talento.  ⟶  If you say so.",
+       "sub": "My new show revolves around my talent. · boast · 🎙 bragging, proud"
+      },
+      {
+       "id": "1",
+       "text": "Tus dramas siempre giran en torno a nada.  ⟶  Tell me about it.",
+       "sub": "Your dramas always revolve around nothing. · complaint · 🎙 annoyed, exasperated"
+      },
+      {
+       "id": "2",
+       "text": "Gira en torno al... gira en torno al arte.",
+       "sub": "It revolves around... it revolves around art. · slip · 🎙 tripping on words, then correcting self"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.súbitamente",
+     "title": "súbitamente — suddenly",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "¡Súbitamente todo se apagó aquí!  ⟶  Oh no!",
+       "sub": "Suddenly everything went dark here! · reaction · 🎙 startled, surprised"
+      },
+      {
+       "id": "1",
+       "text": "Súbitamente me duele mucho la cabeza.",
+       "sub": "Suddenly my head hurts a lot. · complaint · 🎙 pained, whimpering"
+      },
+      {
+       "id": "2",
+       "text": "Súbitamente decidí cancelar mi viaje.  ⟶  Why?",
+       "sub": "Suddenly I decided to cancel my trip. · confession · 🎙 sheepish, impulsive"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.la cebolla",
+     "title": "la cebolla — onion",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Me comí la cebolla cruda entera.  ⟶  Smelly breath!",
+       "sub": "I ate the whole raw onion. · confession · 🎙 guilty whisper"
+      },
+      {
+       "id": "1",
+       "text": "Esta cebolla me está haciendo llorar mucho.",
+       "sub": "This onion is making me cry a lot. · complaint · 🎙 tearful, sniffing"
+      },
+      {
+       "id": "2",
+       "text": "Corto la cebolla sin llorar nada.",
+       "sub": "I chop onions without crying at all. · boast · 🎙 proud, smug"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.suspender",
+     "title": "suspender — to fail",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Creo que acabo de suspender el examen.  ⟶  Oh, dear.",
+       "sub": "I think I just failed the exam. · confession · 🎙 dejected, admitting defeat"
+      },
+      {
+       "id": "1",
+       "text": "Van a suspender el concierto de hoy.",
+       "sub": "They are going to cancel today's concert. · complaint · 🎙 highly disappointed"
+      },
+      {
+       "id": "2",
+       "text": "Van a susp... suspender mi vuelo.  ⟶  That's terrible.",
+       "sub": "They are going to sus... cancel my flight. · slip · 🎙 hesitant, correcting a stumble"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.quemar",
+     "title": "quemar — burn",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "¡Ay, me acabo de quemar la lengua!  ⟶  Careful!",
+       "sub": "Ouch, I just burned my tongue! · reaction · 🎙 yelping in pain"
+      },
+      {
+       "id": "1",
+       "text": "Quemé la cena otra vez hoy.",
+       "sub": "I burned dinner again today. · confession · 🎙 apologetic, sheepish"
+      },
+      {
+       "id": "2",
+       "text": "Puedo quemar calorías durmiendo siesta.",
+       "sub": "I can burn calories by napping. · boast · 🎙 joking, smugly pleased with oneself"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.inusual",
+     "title": "inusual — unusual",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Hace un calor muy inusual hoy.",
+       "sub": "It's unusually hot today. · complaint · 🎙 sweating, complaining"
+      },
+      {
+       "id": "1",
+       "text": "Tengo un talento inusual para esto.  ⟶  Sure you do.",
+       "sub": "I have an unusual talent for this. · boast · 🎙 smug, bragging"
+      },
+      {
+       "id": "2",
+       "text": "Ese pájaro tiene un color muy inusual.  ⟶  Wow.",
+       "sub": "That bird has a very unusual color. · reaction · 🎙 pointing something out, intrigued"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.la basura al tacho",
+     "title": "la basura al tacho — trash",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "¡Oye, tira la basura al tacho!",
+       "sub": "Hey, throw the trash in the bin! · reaction · 🎙 annoyed, shouting to someone off-camera"
+      },
+      {
+       "id": "1",
+       "text": "Nadie tira la basura al tacho nunca.",
+       "sub": "Nobody ever throws the trash in the bin. · complaint · 🎙 grumpy, sighing"
+      },
+      {
+       "id": "2",
+       "text": "No tiré la basura al tacho hoy.  ⟶  You should.",
+       "sub": "I didn't throw the trash in the bin today. · confession · 🎙 whispering, guilty"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.la fuerza",
+     "title": "la fuerza — strength",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Tengo la fuerza de diez hombres.  ⟶  Show me!",
+       "sub": "I have the strength of ten men. · boast · 🎙 macho, puffing out chest"
+      },
+      {
+       "id": "1",
+       "text": "Ya no tengo la fuerza para esto.",
+       "sub": "I don't have the strength for this anymore. · complaint · 🎙 completely exhausted"
+      },
+      {
+       "id": "2",
+       "text": "Usa la fu... la fuerza bruta.",
+       "sub": "Use bru... brute force. · slip · 🎙 stumbling on the first syllable, then correcting"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.el banco",
+     "title": "el banco — bank",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Sentémonos en ese banco de madera.  ⟶  Good idea.",
+       "sub": "Let's sit on that wooden bench. · reaction · 🎙 weary, suggesting a rest"
+      },
+      {
+       "id": "1",
+       "text": "Me gasté todo mi dinero del banco.  ⟶  Oh dear.",
+       "sub": "I spent all my money from the bank. · confession · 🎙 sheepish confession"
+      },
+      {
+       "id": "2",
+       "text": "Fui al ban... al banco equivocado.",
+       "sub": "I went to the wr... wrong bank. · slip · 🎙 confused, correcting oneself"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.el ayuntamiento",
+     "title": "el ayuntamiento — town hall",
+     "why": "Spanish, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "El ayuntamiento siempre pierde mis papeles.",
+       "sub": "The town hall always loses my papers. · complaint · 🎙 exasperated, annoyed"
+      },
+      {
+       "id": "1",
+       "text": "¡Qué bonito es el ayuntamiento iluminado!  ⟶  Very pretty.",
+       "sub": "How beautiful the illuminated town hall is! · reaction · 🎙 looking out the window, in awe"
+      },
+      {
+       "id": "2",
+       "text": "Trabajo en el ayun... en el ayuntamiento.",
+       "sub": "I work at the to... town hall. · slip · 🎙 stumbling over the long word, correcting"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.es.prompt",
+     "title": "Prompt v2, Spanish words",
+     "why": "Answered by gemini-3.5-flash in 30.8 s. Passed over first: gemini-3.8-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu; gemini-3.7-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the example lines for a vocabulary programme that sounds like a radio show with two\npresenters. The **native presenter** speaks Spanish. The **guide** speaks\nEnglish, the learner's language, and is a little slower on the uptake. Between the\ndrills, the native presenter lets slip a line that uses the word, as if something had just\nhappened to them, and sometimes the guide reacts in two or three words.\n\nThe words are the show; these lines are seasoning. Each one is over in a few seconds.\n\nFor each word below, write three candidates, and make them **different kinds** of moment:\n- **confession**: owning up to something small (\"I ate the whole cake. Again.\");\n- **complaint**: a mock-tragic grievance about daily life;\n- **boast**: absurd pride in something tiny;\n- **slip**: the presenter gets something slightly wrong and corrects it, which makes the word heard\n  twice;\n- **reaction**: the line is a reply to something the listener cannot see.\n\nRules:\n- The native line is at most eight words in Spanish and uses the word in the sense and\n  register of the entry, in a natural form (conjugated, agreed).\n- The guide's reaction is optional, at most four words in English, and never explains\n  the word. Most candidates have none.\n- Everyday words around it; no real people or brands; nothing cruel.\n- Never a dictionary sentence, never a question to the learner.\n\nFor each candidate give:\n- `kind`: one of the five above;\n- `text`: the native line in Spanish;\n- `translation`: natural English;\n- `direction`: a short English note for the voice actor;\n- `reaction`: the guide's line in English, or \"\".\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"reaction\": \"\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"girar en torno a\",\n  \"primaryGloss\": \"revolve around\",\n  \"shortGloss\": \"to revolve around; to center on\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"súbitamente\",\n  \"primaryGloss\": \"suddenly\",\n  \"shortGloss\": \"suddenly; all of a sudden\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"abrupt and startling, describing a sudden unexpected change\"\n },\n {\n  \"headword\": \"la cebolla\",\n  \"primaryGloss\": \"onion\",\n  \"shortGloss\": \"onion\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"suspender\",\n  \"primaryGloss\": \"to fail\",\n  \"shortGloss\": \"to fail (an exam); to cancel; to suspend\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"quemar\",\n  \"primaryGloss\": \"burn\",\n  \"shortGloss\": \"to burn; to scorch; to burn oneself\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"la basura al tacho\",\n  \"primaryGloss\": \"trash\",\n  \"shortGloss\": \"trash in the bin\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"la fuerza\",\n  \"primaryGloss\": \"strength\",\n  \"shortGloss\": \"strength; force; power\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"el ayuntamiento\",\n  \"primaryGloss\": \"town hall\",\n  \"shortGloss\": \"town hall; city council\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"girar en torno a\",\n      \"candidates\": [\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Mi nuevo show gira en torno a mi talento.\",\n          \"translation\": \"My new show revolves around my talent.\",\n          \"direction\": \"bragging, proud\",\n          \"reaction\": \"If you say so.\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Tus dramas siempre giran en torno a nada.\",\n          \"translation\": \"Your dramas always revolve around nothing.\",\n          \"direction\": \"annoyed, exasperated\",\n          \"reaction\": \"Tell me about it.\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"Gira en torno al... gira en torno al arte.\",\n          \"translation\": \"It revolves around... it revolves around art.\",\n          \"direction\": \"tripping on words, then correcting self\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"súbitamente\",\n      \"candidates\": [\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"¡Súbitamente todo se apagó aquí!\",\n          \"translation\": \"Suddenly everything went dark here!\",\n          \"direction\": \"startled, surprised\",\n          \"reaction\": \"Oh no!\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Súbitamente me duele mucho la cabeza.\",\n          \"translation\": \"Suddenly my head hurts a lot.\",\n          \"direction\": \"pained, whimpering\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Súbitamente decidí cancelar mi viaje.\",\n          \"translation\": \"Suddenly I decided to cancel my trip.\",\n          \"direction\": \"sheepish, impulsive\",\n          \"reaction\": \"Why?\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la cebolla\",\n      \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Me comí la cebolla cruda entera.\",\n          \"translation\": \"I ate the whole raw onion.\",\n          \"direction\": \"guilty whisper\",\n          \"reaction\": \"Smelly breath!\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Esta cebolla me está haciendo llorar mucho.\",\n          \"translation\": \"This onion is making me cry a lot.\",\n          \"direction\": \"tearful, sniffing\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Corto la cebolla sin llorar nada.\",\n          \"translation\": \"I chop onions without crying at all.\",\n          \"direction\": \"proud, smug\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"suspender\",\n      \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Creo que acabo de suspender el examen.\",\n          \"translation\": \"I think I just failed the exam.\",\n          \"direction\": \"dejected, admitting defeat\",\n          \"reaction\": \"Oh, dear.\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Van a suspender el concierto de hoy.\",\n          \"translation\": \"They are going to cancel today's concert.\",\n          \"direction\": \"highly disappointed\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"Van a susp... suspender mi vuelo.\",\n          \"translation\": \"They are going to sus... cancel my flight.\",\n          \"direction\": \"hesitant, correcting a stumble\",\n          \"reaction\": \"That's terrible.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"quemar\",\n      \"candidates\": [\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"¡Ay, me acabo de quemar la lengua!\",\n          \"translation\": \"Ouch, I just burned my tongue!\",\n          \"direction\": \"yelping in pain\",\n          \"reaction\": \"Careful!\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Quemé la cena otra vez hoy.\",\n          \"translation\": \"I burned dinner again today.\",\n          \"direction\": \"apologetic, sheepish\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Puedo quemar calorías durmiendo siesta.\",\n          \"translation\": \"I can burn calories by napping.\",\n          \"direction\": \"joking, smugly pleased with oneself\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"inusual\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Hace un calor muy inusual hoy.\",\n          \"translation\": \"It's unusually hot today.\",\n          \"direction\": \"sweating, complaining\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Tengo un talento inusual para esto.\",\n          \"translation\": \"I have an unusual talent for this.\",\n          \"direction\": \"smug, bragging\",\n          \"reaction\": \"Sure you do.\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Ese pájaro tiene un color muy inusual.\",\n          \"translation\": \"That bird has a very unusual color.\",\n          \"direction\": \"pointing something out, intrigued\",\n          \"reaction\": \"Wow.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la basura al tacho\",\n      \"candidates\": [\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"¡Oye, tira la basura al tacho!\",\n          \"translation\": \"Hey, throw the trash in the bin!\",\n          \"direction\": \"annoyed, shouting to someone off-camera\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Nadie tira la basura al tacho nunca.\",\n          \"translation\": \"Nobody ever throws the trash in the bin.\",\n          \"direction\": \"grumpy, sighing\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"No tiré la basura al tacho hoy.\",\n          \"translation\": \"I didn't throw the trash in the bin today.\",\n          \"direction\": \"whispering, guilty\",\n          \"reaction\": \"You should.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"la fuerza\",\n      \"candidates\": [\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Tengo la fuerza de diez hombres.\",\n          \"translation\": \"I have the strength of ten men.\",\n          \"direction\": \"macho, puffing out chest\",\n          \"reaction\": \"Show me!\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Ya no tengo la fuerza para esto.\",\n          \"translation\": \"I don't have the strength for this anymore.\",\n          \"direction\": \"completely exhausted\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"Usa la fu... la fuerza bruta.\",\n          \"translation\": \"Use bru... brute force.\",\n          \"direction\": \"stumbling on the first syllable, then correcting\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"el banco\",\n      \"candidates\": [\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Sentémonos en ese banco de madera.\",\n          \"translation\": \"Let's sit on that wooden bench.\",\n          \"direction\": \"weary, suggesting a rest\",\n          \"reaction\": \"Good idea.\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Me gasté todo mi dinero del banco.\",\n          \"translation\": \"I spent all my money from the bank.\",\n          \"direction\": \"sheepish confession\",\n          \"reaction\": \"Oh dear.\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"Fui al ban... al banco equivocado.\",\n          \"translation\": \"I went to the wr... wrong bank.\",\n          \"direction\": \"confused, correcting oneself\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"el ayuntamiento\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"El ayuntamiento siempre pierde mis papeles.\",\n          \"translation\": \"The town hall always loses my papers.\",\n          \"direction\": \"exasperated, annoyed\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"¡Qué bonito es el ayuntamiento iluminado!\",\n          \"translation\": \"How beautiful the illuminated town hall is!\",\n          \"direction\": \"looking out the window, in awe\",\n          \"reaction\": \"Very pretty.\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"Trabajo en el ayun... en el ayuntamiento.\",\n          \"translation\": \"I work at the to... town hall.\",\n          \"direction\": \"stumbling over the long word, correcting\",\n          \"reaction\": \"\"\n        }\n      ]\n    }\n  ]\n}"
+      }
+     ],
+     "rate": true,
+     "prompt_card": true
+    },
+    {
+     "id": "D.example.v2.en.consummate",
+     "title": "consummate — непревзойдённый",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "I am a consummate toaster of bread.  ⟶  И это всё?",
+       "sub": "Я непревзойдённый мастер тостов. · boast · 🎙 Puffed up with absurd pride."
+      },
+      {
+       "id": "1",
+       "text": "It was a consummate waste of time.",
+       "sub": "Это была абсолютная пустая трата времени. · confession · 🎙 Quietly regretful."
+      },
+      {
+       "id": "2",
+       "text": "Such consummate rudeness from the postman.  ⟶  Почтальоны такие.",
+       "sub": "Какое непревзойдённое хамство от почтальона. · complaint · 🎙 Deeply aggrieved."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.discontent",
+     "title": "discontent — недовольство",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "There is general discontent with the tea.  ⟶  Опять чай?",
+       "sub": "Всеобщим недовольством чаем. · complaint · 🎙 Muttering under the breath."
+      },
+      {
+       "id": "1",
+       "text": "My secret discontent drives me to biscuits.",
+       "sub": "Моё тайное недовольство толкает меня к печенью. · confession · 🎙 Guilty whisper."
+      },
+      {
+       "id": "2",
+       "text": "That murmur was pure discontent.  ⟶  Кто бы сомневался.",
+       "sub": "Этот шёпот был чистым недовольством. · reaction · 🎙 Nodding knowingly."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.bellow",
+     "title": "bellow — реветь",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "I didn't yell, I had to bellow.",
+       "sub": "Я не кричал, мне пришлось реветь. · slip · 🎙 Correcting self mid-sentence."
+      },
+      {
+       "id": "1",
+       "text": "The neighbors bellow at dawn.  ⟶  Каждый день?",
+       "sub": "Соседи ревут на рассвете. · complaint · 🎙 Weary and exhausted."
+      },
+      {
+       "id": "2",
+       "text": "Hear me bellow across the room.  ⟶  Слышно отлично.",
+       "sub": "Слышишь, как я реву через всю комнату. · boast · 🎙 Loud and chest-thumping."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.nibble",
+     "title": "nibble — грызть",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "I only nibbled the cheese corner.  ⟶  Весь угол?",
+       "sub": "Я лишь погрыз уголок сыра. · confession · 🎙 Looking away nervously."
+      },
+      {
+       "id": "1",
+       "text": "These biscuits only invite a nibble.",
+       "sub": "Эти печенья годятся лишь на один укус. · complaint · 🎙 Disappointed stare at plate."
+      },
+      {
+       "id": "2",
+       "text": "Just a nibble for now.  ⟶  Ну ладно.",
+       "sub": "Пока лишь чуть-чуть покусить. · reaction · 🎙 Casual dismissal."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.hogwash",
+     "title": "hogwash — чепуха",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Modern art is absolute hogwash.  ⟶  Совсем не понял.",
+       "sub": "Современное искусство — полная чепуха. · complaint · 🎙 Scornful wave of the hand."
+      },
+      {
+       "id": "1",
+       "text": "Such complete hogwash.  ⟶  Согласен.",
+       "sub": "Какая полная чушь. · reaction · 🎙 Laughing dryly."
+      },
+      {
+       "id": "2",
+       "text": "It is nonsense, utter hogwash.",
+       "sub": "Это нонсенс, сущая чепуха. · slip · 🎙 Catching self and upgrading insult."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.coyly",
+     "title": "coyly — кокетливо",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "I smiled coyly at the cake.  ⟶  Торту?",
+       "sub": "Я кокетливо улыбнулся торту. · confession · 🎙 Looking down bashfully."
+      },
+      {
+       "id": "1",
+       "text": "She looked away coyly.  ⟶  Бывает.",
+       "sub": "Она отвернулась кокетливо. · reaction · 🎙 Mysteriously amused."
+      },
+      {
+       "id": "2",
+       "text": "I handled the question so coyly.  ⟶  Хитрец.",
+       "sub": "Я так уклончиво справился с вопросом. · boast · 🎙 Smug wink."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.riddle",
+     "title": "riddle — загадка",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Life is a riddle without tea.  ⟶  Выпей чаю.",
+       "sub": "Жизнь — загадка без чая. · complaint · 🎙 Dramatic sigh."
+      },
+      {
+       "id": "1",
+       "text": "I made a riddle of the socks.  ⟶  Где носки?",
+       "sub": "Я устроил загадку из носков. · confession · 🎙 Rubbing the back of the neck."
+      },
+      {
+       "id": "2",
+       "text": "Solve that riddle yourself.  ⟶  Сложно.",
+       "sub": "Разгадай эту загадку сам. · reaction · 🎙 Challenging grin."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.congeniality",
+     "title": "congeniality — дружелюбие",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Too much congeniality gives me a headache.  ⟶  Меньше улыбайся.",
+       "sub": "Слишком много дружелюбия вызывает у меня головную боль. · complaint · 🎙 Rubbing temples."
+      },
+      {
+       "id": "1",
+       "text": "My congenital... congeniality wins awards.",
+       "sub": "Моё врождённое... дружелюбие получает награды. · boast · 🎙 Catching slip and fixing word."
+      },
+      {
+       "id": "2",
+       "text": "Such rare congeniality.  ⟶  Точно.",
+       "sub": "Такое редкое дружелюбие. · reaction · 🎙 Sarcastic tone."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.sloth",
+     "title": "sloth — ленивец",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "Sloth won today, I stayed in bed.  ⟶  Герой.",
+       "sub": "Ленивость победила сегодня, я остался в постели. · confession · 🎙 Proudly lazy."
+      },
+      {
+       "id": "1",
+       "text": "Accused of sloth just for resting.  ⟶  Несправедливо.",
+       "sub": "Обвинен в праздности просто за отдых. · complaint · 🎙 Deeply offended."
+      },
+      {
+       "id": "2",
+       "text": "Pure afternoon sloth.  ⟶  Спать пора.",
+       "sub": "Чистая полуденная лень. · reaction · 🎙 Stretching lazily."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.pretense",
+     "title": "pretense — притворство",
+     "why": "English, prompt v2",
+     "items": [
+      {
+       "id": "0",
+       "text": "I dropped all pretense of working.  ⟶  Давно пора.",
+       "sub": "Я отбросил всякое притворство насчет работы. · confession · 🎙 Relieved exhale."
+      },
+      {
+       "id": "1",
+       "text": "Living under false pretense is exhausting.",
+       "sub": "Жить под фальшивой видимостью утомительно. · complaint · 🎙 Melodramatic slump."
+      },
+      {
+       "id": "2",
+       "text": "Drop the pretense now.  ⟶  Ладно-ладно.",
+       "sub": "Брось это притворство. · reaction · 🎙 Firm and direct."
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "D.example.v2.en.prompt",
+     "title": "Prompt v2, English words",
+     "why": "Answered by gemini-3.5-flash-lite in 6.7 s. Passed over first: gemini-3.8-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu; gemini-3.7-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu; gemini-3.5-flash: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your cu",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the example lines for a vocabulary programme that sounds like a radio show with two\npresenters. The **native presenter** speaks English. The **guide** speaks\nRussian, the learner's language, and is a little slower on the uptake. Between the\ndrills, the native presenter lets slip a line that uses the word, as if something had just\nhappened to them, and sometimes the guide reacts in two or three words.\n\nThe words are the show; these lines are seasoning. Each one is over in a few seconds.\n\nFor each word below, write three candidates, and make them **different kinds** of moment:\n- **confession**: owning up to something small (\"I ate the whole cake. Again.\");\n- **complaint**: a mock-tragic grievance about daily life;\n- **boast**: absurd pride in something tiny;\n- **slip**: the presenter gets something slightly wrong and corrects it, which makes the word heard\n  twice;\n- **reaction**: the line is a reply to something the listener cannot see.\n\nRules:\n- The native line is at most eight words in English and uses the word in the sense and\n  register of the entry, in a natural form (conjugated, agreed).\n- The guide's reaction is optional, at most four words in Russian, and never explains\n  the word. Most candidates have none.\n- Everyday words around it; no real people or brands; nothing cruel.\n- Never a dictionary sentence, never a question to the learner.\n\nFor each candidate give:\n- `kind`: one of the five above;\n- `text`: the native line in English;\n- `translation`: natural Russian;\n- `direction`: a short English note for the voice actor;\n- `reaction`: the guide's line in Russian, or \"\".\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"reaction\": \"\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"consummate\",\n  \"primaryGloss\": \"непревзойдённый\",\n  \"shortGloss\": \"непревзойдённый; совершенный\",\n  \"pos\": \"adj\",\n  \"register\": \"formal\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"admiring and deeply appreciative of absolute mastery\"\n },\n {\n  \"headword\": \"discontent\",\n  \"primaryGloss\": \"недовольство\",\n  \"shortGloss\": \"недовольство; неудовлетворённость\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"grunty and dissatisfied, showing inner tension\"\n },\n {\n  \"headword\": \"bellow\",\n  \"primaryGloss\": \"реветь\",\n  \"shortGloss\": \"реветь; орать; рявкать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"emotion\": \"deep and resonant, demanding absolute attention\"\n },\n {\n  \"headword\": \"nibble\",\n  \"primaryGloss\": \"грызть\",\n  \"shortGloss\": \"грызть; покусывать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\",\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"hogwash\",\n  \"primaryGloss\": \"чепуха\",\n  \"shortGloss\": \"чепуха; чушь\",\n  \"pos\": \"noun\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Slang\"\n  ],\n  \"emotion\": \"dismissive and contemptuous, rejecting something as complete nonsense\"\n },\n {\n  \"headword\": \"coyly\",\n  \"primaryGloss\": \"кокетливо\",\n  \"shortGloss\": \"кокетливо; уклончиво\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"playful and teasing, hinting at a flirty and coy demeanor\"\n },\n {\n  \"headword\": \"riddle\",\n  \"primaryGloss\": \"загадка\",\n  \"shortGloss\": \"загадка; тайна\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"congeniality\",\n  \"primaryGloss\": \"дружелюбие\",\n  \"shortGloss\": \"дружелюбие; приятность; сходство характеров\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"pretense\",\n  \"primaryGloss\": \"притворство\",\n  \"shortGloss\": \"притворство; видимость\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"deceptive and slightly cold, like an actor hiding their true intent\"\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"consummate\",\n      \"candidates\": [\n        {\n          \"kind\": \"boast\",\n          \"text\": \"I am a consummate toaster of bread.\",\n          \"translation\": \"Я непревзойдённый мастер тостов.\",\n          \"direction\": \"Puffed up with absurd pride.\",\n          \"reaction\": \"И это всё?\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"It was a consummate waste of time.\",\n          \"translation\": \"Это была абсолютная пустая трата времени.\",\n          \"direction\": \"Quietly regretful.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Such consummate rudeness from the postman.\",\n          \"translation\": \"Какое непревзойдённое хамство от почтальона.\",\n          \"direction\": \"Deeply aggrieved.\",\n          \"reaction\": \"Почтальоны такие.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"discontent\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"There is general discontent with the tea.\",\n          \"translation\": \"Всеобщим недовольством чаем.\",\n          \"direction\": \"Muttering under the breath.\",\n          \"reaction\": \"Опять чай?\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"My secret discontent drives me to biscuits.\",\n          \"translation\": \"Моё тайное недовольство толкает меня к печенью.\",\n          \"direction\": \"Guilty whisper.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"That murmur was pure discontent.\",\n          \"translation\": \"Этот шёпот был чистым недовольством.\",\n          \"direction\": \"Nodding knowingly.\",\n          \"reaction\": \"Кто бы сомневался.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"bellow\",\n      \"candidates\": [\n        {\n          \"kind\": \"slip\",\n          \"text\": \"I didn't yell, I had to bellow.\",\n          \"translation\": \"Я не кричал, мне пришлось реветь.\",\n          \"direction\": \"Correcting self mid-sentence.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"The neighbors bellow at dawn.\",\n          \"translation\": \"Соседи ревут на рассвете.\",\n          \"direction\": \"Weary and exhausted.\",\n          \"reaction\": \"Каждый день?\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"Hear me bellow across the room.\",\n          \"translation\": \"Слышишь, как я реву через всю комнату.\",\n          \"direction\": \"Loud and chest-thumping.\",\n          \"reaction\": \"Слышно отлично.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"nibble\",\n      \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"I only nibbled the cheese corner.\",\n          \"translation\": \"Я лишь погрыз уголок сыра.\",\n          \"direction\": \"Looking away nervously.\",\n          \"reaction\": \"Весь угол?\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"These biscuits only invite a nibble.\",\n          \"translation\": \"Эти печенья годятся лишь на один укус.\",\n          \"direction\": \"Disappointed stare at plate.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Just a nibble for now.\",\n          \"translation\": \"Пока лишь чуть-чуть покусить.\",\n          \"direction\": \"Casual dismissal.\",\n          \"reaction\": \"Ну ладно.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"hogwash\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Modern art is absolute hogwash.\",\n          \"translation\": \"Современное искусство — полная чепуха.\",\n          \"direction\": \"Scornful wave of the hand.\",\n          \"reaction\": \"Совсем не понял.\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Such complete hogwash.\",\n          \"translation\": \"Какая полная чушь.\",\n          \"direction\": \"Laughing dryly.\",\n          \"reaction\": \"Согласен.\"\n        },\n        {\n          \"kind\": \"slip\",\n          \"text\": \"It is nonsense, utter hogwash.\",\n          \"translation\": \"Это нонсенс, сущая чепуха.\",\n          \"direction\": \"Catching self and upgrading insult.\",\n          \"reaction\": \"\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"coyly\",\n      \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"I smiled coyly at the cake.\",\n          \"translation\": \"Я кокетливо улыбнулся торту.\",\n          \"direction\": \"Looking down bashfully.\",\n          \"reaction\": \"Торту?\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"She looked away coyly.\",\n          \"translation\": \"Она отвернулась кокетливо.\",\n          \"direction\": \"Mysteriously amused.\",\n          \"reaction\": \"Бывает.\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"I handled the question so coyly.\",\n          \"translation\": \"Я так уклончиво справился с вопросом.\",\n          \"direction\": \"Smug wink.\",\n          \"reaction\": \"Хитрец.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"riddle\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Life is a riddle without tea.\",\n          \"translation\": \"Жизнь — загадка без чая.\",\n          \"direction\": \"Dramatic sigh.\",\n          \"reaction\": \"Выпей чаю.\"\n        },\n        {\n          \"kind\": \"confession\",\n          \"text\": \"I made a riddle of the socks.\",\n          \"translation\": \"Я устроил загадку из носков.\",\n          \"direction\": \"Rubbing the back of the neck.\",\n          \"reaction\": \"Где носки?\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Solve that riddle yourself.\",\n          \"translation\": \"Разгадай эту загадку сам.\",\n          \"direction\": \"Challenging grin.\",\n          \"reaction\": \"Сложно.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"congeniality\",\n      \"candidates\": [\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Too much congeniality gives me a headache.\",\n          \"translation\": \"Слишком много дружелюбия вызывает у меня головную боль.\",\n          \"direction\": \"Rubbing temples.\",\n          \"reaction\": \"Меньше улыбайся.\"\n        },\n        {\n          \"kind\": \"boast\",\n          \"text\": \"My congenital... congeniality wins awards.\",\n          \"translation\": \"Моё врождённое... дружелюбие получает награды.\",\n          \"direction\": \"Catching slip and fixing word.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Such rare congeniality.\",\n          \"translation\": \"Такое редкое дружелюбие.\",\n          \"direction\": \"Sarcastic tone.\",\n          \"reaction\": \"Точно.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"sloth\",\n      \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"Sloth won today, I stayed in bed.\",\n          \"translation\": \"Ленивость победила сегодня, я остался в постели.\",\n          \"direction\": \"Proudly lazy.\",\n          \"reaction\": \"Герой.\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Accused of sloth just for resting.\",\n          \"translation\": \"Обвинен в праздности просто за отдых.\",\n          \"direction\": \"Deeply offended.\",\n          \"reaction\": \"Несправедливо.\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Pure afternoon sloth.\",\n          \"translation\": \"Чистая полуденная лень.\",\n          \"direction\": \"Stretching lazily.\",\n          \"reaction\": \"Спать пора.\"\n        }\n      ]\n    },\n    {\n      \"headword\": \"pretense\",\n        \"candidates\": [\n        {\n          \"kind\": \"confession\",\n          \"text\": \"I dropped all pretense of working.\",\n          \"translation\": \"Я отбросил всякое притворство насчет работы.\",\n          \"direction\": \"Relieved exhale.\",\n          \"reaction\": \"Давно пора.\"\n        },\n        {\n          \"kind\": \"complaint\",\n          \"text\": \"Living under false pretense is exhausting.\",\n          \"translation\": \"Жить под фальшивой видимостью утомительно.\",\n          \"direction\": \"Melodramatic slump.\",\n          \"reaction\": \"\"\n        },\n        {\n          \"kind\": \"reaction\",\n          \"text\": \"Drop the pretense now.\",\n          \"translation\": \"Брось это притворство.\",\n          \"direction\": \"Firm and direct.\",\n          \"reaction\": \"Ладно-ладно.\"\n        }\n      ]\n    }\n  ]\n}"
+      }
+     ],
+     "rate": true,
+     "prompt_card": true
+    }
+   ]
+  },
+  {
+   "id": "joint",
+   "title": "Joint examples",
+   "intro": "One sentence tying two or three of a lesson's words together. The model chooses which words combine. Rate each sentence, and the card for whether it chose well.",
+   "cards": [
+    {
+     "id": "D.joint.lesson-es-1",
+     "title": "lesson-es-1: la frontera, soñar con, el banco, la canela, el suelo, inusual, anhelar, la pelota, la balsa, el cepillo de dientes, la hoguera, el chamuyo",
+     "why": "Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "la frontera+la balsa",
+       "text": "[la frontera + la balsa]  Cruzamos la frontera en una balsa.",
+       "sub": "We crossed the border on a raft. · 🎙 Spoken with a sense of clandestine urgency. · Crossing a border on a makeshift raft."
+      },
+      {
+       "id": "soñar con+la canela",
+       "text": "[soñar con + la canela]  Sueño con la canela todas las noches.",
+       "sub": "I dream of cinnamon every night. · 🎙 Dreamy, warm, and affectionate voice. · An obsession with cinnamon manifesting in dreams."
+      },
+      {
+       "id": "el suelo+el cepillo de dientes",
+       "text": "[el suelo + el cepillo de dientes]  Mi cepillo de dientes cayó al suelo.",
+       "sub": "My toothbrush fell to the floor. · 🎙 Expressed with sudden dismay. · The universal bathroom disaster."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for a short audio vocabulary programme in Spanish for a learner who speaks\nEnglish. Today's lesson teaches the twelve words below, one after another.\n\nNow and then, one sentence ties two or three of the words together, \"buried in the desert up to my\nneck\", so that each word is heard again in company and the pair is remembered as a picture.\n\nFind the combinations that really work. Choose between two and four groups, each of two or three\nwords from the list, that meet in one natural, vivid sentence. Prefer a combination that makes a\nfunny or striking image to one that is merely grammatical. Leave out the words that combine with\nnothing, and do not force a group to reach four.\n\nEach sentence:\n- is at most twelve words in Spanish;\n- uses every word of its group in the sense given, in a natural form;\n- is something a person might say, a moment rather than a definition;\n- contains nothing else a learner would have to look up.\n\nFor each group give:\n- `words`: the headwords, copied exactly;\n- `text`: the sentence;\n- `translation`: natural English;\n- `direction`: a short English note for the voice actor;\n- `why`: why these words belong together, in a few English words.\n\nAnswer with a JSON object and nothing else:\n\n{\"groups\": [{\"words\": [\"...\"], \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"why\": \"...\"}]}\n\nThe lesson's words:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.joint.lesson-es-2",
+     "title": "lesson-es-2: predispuesto, escalofriante, la multa, ir andando, estar con el agua al cuello, tener enamorado/a, el bigote, la villa, esconder, asustar, estar quedando, gastar una broma",
+     "why": "Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "escalofriante+la multa",
+       "text": "[escalofriante + la multa]  ¡Qué multa tan escalofriante!",
+       "sub": "What a chilling fine! · 🎙 Deliver with shocked disbelief at a huge penalty. · A frighteningly high financial penalty."
+      },
+      {
+       "id": "el bigote+asustar",
+       "text": "[el bigote + asustar]  Su bigote me va a asustar.",
+       "sub": "His mustache is going to scare me. · 🎙 Say it with mock terror about facial hair. · A mustache scary enough to frighten someone."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for a short audio vocabulary programme in Spanish for a learner who speaks\nEnglish. Today's lesson teaches the twelve words below, one after another.\n\nNow and then, one sentence ties two or three of the words together, \"buried in the desert up to my\nneck\", so that each word is heard again in company and the pair is remembered as a picture.\n\nFind the combinations that really work. Choose between two and four groups, each of two or three\nwords from the list, that meet in one natural, vivid sentence. Prefer a combination that makes a\nfunny or striking image to one that is merely grammatical. Leave out the words that combine with\nnothing, and do not force a group to reach four.\n\nEach sentence:\n- is at most twelve words in Spanish;\n- uses every word of its group in the sense given, in a natural form;\n- is something a person might say, a moment rather than a definition;\n- contains nothing else a learner would have to look up.\n\nFor each group give:\n- `words`: the headwords, copied exactly;\n- `text`: the sentence;\n- `translation`: natural English;\n- `direction`: a short English note for the voice actor;\n- `why`: why these words belong together, in a few English words.\n\nAnswer with a JSON object and nothing else:\n\n{\"groups\": [{\"words\": [\"...\"], \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"why\": \"...\"}]}\n\nThe lesson's words:\n\n[\n {\n  \"headword\": \"predispuesto\",\n  \"primaryGloss\": \"willing\",\n  \"shortGloss\": \"willing; predisposed; inclined\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"escalofriante\",\n  \"primaryGloss\": \"chilling\",\n  \"shortGloss\": \"chilling; hair-raising; spine-tingling\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"a cold, unsettling whisper of unease and dread\"\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"ir andando\",\n  \"primaryGloss\": \"walk\",\n  \"shortGloss\": \"to walk; to go on foot\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"estar con el agua al cuello\",\n  \"primaryGloss\": \"drowning\",\n  \"shortGloss\": \"to be up to one's neck; to be in deep water\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frantic and overwhelmed, conveying a sense of suffocating stress\"\n },\n {\n  \"headword\": \"tener enamorado/a\",\n  \"primaryGloss\": \"smitten\",\n  \"shortGloss\": \"to have someone smitten; to captivate someone\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"dreamy and affectionate, reflecting the glow of being in love\"\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ]\n },\n {\n  \"headword\": \"la villa\",\n  \"primaryGloss\": \"town\",\n  \"shortGloss\": \"town; villa; shantytown\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"esconder\",\n  \"primaryGloss\": \"hide\",\n  \"shortGloss\": \"to hide; to conceal\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"asustar\",\n  \"primaryGloss\": \"scare\",\n  \"shortGloss\": \"to scare; to frighten\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"estar quedando\",\n  \"primaryGloss\": \"turning\",\n  \"shortGloss\": \"to turn out; to come along\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"gastar una broma\",\n  \"primaryGloss\": \"prank\",\n  \"shortGloss\": \"to play a joke; to play a prank\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.joint.lesson-en-1",
+     "title": "lesson-en-1: blush, dignity, sloth, crusade, concussion, juvenile, opportunistic, dismaying, infatuation, furious, contingency, garbled",
+     "why": "Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "sloth+furious",
+       "text": "[sloth + furious]  The furious sloth moved at last, startling us all.",
+       "sub": "Разъярённый ленивец наконец сдвинулся с места, поразив нас всех. · 🎙 With slow, heavy irony, then a touch of shock. · An oxymoron pairing an exceptionally slow animal with sudden extreme anger."
+      },
+      {
+       "id": "juvenile+infatuation",
+       "text": "[juvenile + infatuation]  Such juvenile infatuation rarely survives the first real winter.",
+       "sub": "Такое ребяческое увлечение редко переживает первую настоящую зиму. · 🎙 Slightly world-weary and knowing. · Describes foolish, youthful romance."
+      },
+      {
+       "id": "garbled+concussion",
+       "text": "[garbled + concussion]  His garbled message suggested a mild concussion.",
+       "sub": "Его неразборчивое сообщение намекало на лёгкое сотрясение мозга. · 🎙 Concerned and diagnostic. · A head injury naturally explains confused speech."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for a short audio vocabulary programme in English for a learner who speaks\nRussian. Today's lesson teaches the twelve words below, one after another.\n\nNow and then, one sentence ties two or three of the words together, \"buried in the desert up to my\nneck\", so that each word is heard again in company and the pair is remembered as a picture.\n\nFind the combinations that really work. Choose between two and four groups, each of two or three\nwords from the list, that meet in one natural, vivid sentence. Prefer a combination that makes a\nfunny or striking image to one that is merely grammatical. Leave out the words that combine with\nnothing, and do not force a group to reach four.\n\nEach sentence:\n- is at most twelve words in English;\n- uses every word of its group in the sense given, in a natural form;\n- is something a person might say, a moment rather than a definition;\n- contains nothing else a learner would have to look up.\n\nFor each group give:\n- `words`: the headwords, copied exactly;\n- `text`: the sentence;\n- `translation`: natural Russian;\n- `direction`: a short English note for the voice actor;\n- `why`: why these words belong together, in a few English words.\n\nAnswer with a JSON object and nothing else:\n\n{\"groups\": [{\"words\": [\"...\"], \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\", \"why\": \"...\"}]}\n\nThe lesson's words:\n\n[\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\"\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\"\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"crusade\",\n  \"primaryGloss\": \"кампания\",\n  \"shortGloss\": \"кампания; борьба; крестовый поход\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"juvenile\",\n  \"primaryGloss\": \"несовершеннолетний\",\n  \"shortGloss\": \"несовершеннолетний; ребяческий, инфантильный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"opportunistic\",\n  \"primaryGloss\": \"оппортунистический\",\n  \"shortGloss\": \"оппортунистический; приспособленческий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Health\"\n  ],\n  \"emotion\": \"cynical and sharp, judging self-serving behavior\"\n },\n {\n  \"headword\": \"dismaying\",\n  \"primaryGloss\": \"тревожащий\",\n  \"shortGloss\": \"тревожащий; удручающий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\"\n },\n {\n  \"headword\": \"furious\",\n  \"primaryGloss\": \"разъярённый\",\n  \"shortGloss\": \"разъярённый; бешеный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"burning with intense and overwhelming anger\"\n },\n {\n  \"headword\": \"contingency\",\n  \"primaryGloss\": \"непредвиденное обстоятельство\",\n  \"shortGloss\": \"непредвиденное обстоятельство; резерв\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"prudent, cautious, and thoroughly prepared for unexpected events\"\n },\n {\n  \"headword\": \"garbled\",\n  \"primaryGloss\": \"искажённый\",\n  \"shortGloss\": \"искажённый; неразборчивый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frustrated and confused by poor communication\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  },
+  {
+   "id": "stories",
+   "title": "Mini-stories",
+   "intro": "A thread through the whole lesson, told in pieces between the drills. Each lesson in two styles.",
+   "cards": [
+    {
+     "id": "D.story.lesson-es-1.narrator",
+     "title": "“La huida nocturna” · lesson-es-1, A narrator's serial",
+     "why": "6 beats, 45 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "la frontera — border"
+      },
+      {
+       "kind": "drill",
+       "text": "la balsa — raft"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Cruzó la frontera.",
+       "translation": "He crossed the border.",
+       "direction": "Spoken with quiet tension."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Esperaba una balsa.",
+       "translation": "He was waiting for a raft.",
+       "direction": "Lowering voice slightly."
+      },
+      {
+       "kind": "drill",
+       "text": "el suelo — floor"
+      },
+      {
+       "kind": "drill",
+       "text": "el cepillo de dientes — toothbrush"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Cayó al suelo.",
+       "translation": "It fell to the ground.",
+       "direction": "Quick and sharp."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Era su cepillo de dientes.",
+       "translation": "It was his toothbrush.",
+       "direction": "Dry, slightly comic tone."
+      },
+      {
+       "kind": "drill",
+       "text": "la canela — cinnamon"
+      },
+      {
+       "kind": "drill",
+       "text": "la hoguera — bonfire"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Olía a canela.",
+       "translation": "It smelled like cinnamon.",
+       "direction": "Warm, evocative."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Encendió una hoguera.",
+       "translation": "He lit a bonfire.",
+       "direction": "Pacing picks up."
+      },
+      {
+       "kind": "drill",
+       "text": "el banco — bank"
+      },
+      {
+       "kind": "drill",
+       "text": "inusual — unusual"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Durmió en un banco.",
+       "translation": "He slept on a bench.",
+       "direction": "Softly."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Fue un silencio inusual.",
+       "translation": "It was an unusual silence.",
+       "direction": "Mysterious pause."
+      },
+      {
+       "kind": "drill",
+       "text": "soñar con — to dream of"
+      },
+      {
+       "kind": "drill",
+       "text": "anhelar — long"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Empezó a soñar con libertad.",
+       "translation": "He began to dream of freedom.",
+       "direction": "Dreamy, distant."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Empezó a anhelar el fuego.",
+       "translation": "He began to long for the fire.",
+       "direction": "Intense."
+      },
+      {
+       "kind": "drill",
+       "text": "la pelota — ball"
+      },
+      {
+       "kind": "drill",
+       "text": "el chamuyo — smooth talk"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Encontró una pelota.",
+       "translation": "He found a ball.",
+       "direction": "Surprised."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Todo era puro chamuyo.",
+       "translation": "It was all pure nonsense.",
+       "direction": "Dry punchline."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in Spanish, for a learner who speaks\nEnglish. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a serial told by the native presenter**. Every line is spoken by `native`, in Spanish, as a storyteller: short sentences in the past tense, one small event per beat, a little suspense between beats.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of Spanish, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nEnglish), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.story.lesson-es-1.dialogue",
+     "title": "“La fuga extraña” · lesson-es-1, A two-presenter scene",
+     "why": "4 beats, 49 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "la canela — cinnamon"
+      },
+      {
+       "kind": "drill",
+       "text": "el suelo — floor"
+      },
+      {
+       "kind": "drill",
+       "text": "inusual — unusual"
+      },
+      {
+       "kind": "drill",
+       "text": "el banco — bank"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Tiro la canela al suelo. ¡Es algo inusual en este banco!",
+       "translation": "I throw the cinnamon on the floor. It's something unusual on this bench!",
+       "direction": "dramatic and surprised"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¿Un banco de plaza?",
+       "translation": "A park bench?",
+       "direction": "confused"
+      },
+      {
+       "kind": "drill",
+       "text": "la balsa — raft"
+      },
+      {
+       "kind": "drill",
+       "text": "la pelota — ball"
+      },
+      {
+       "kind": "drill",
+       "text": "el cepillo de dientes — toothbrush"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "No, cruzo con una balsa, una pelota y mi cepillo de dientes.",
+       "translation": "No, I cross with a raft, a ball, and my toothbrush.",
+       "direction": "matter-of-fact"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¡Qué viaje!",
+       "translation": "What a trip!",
+       "direction": "impressed"
+      },
+      {
+       "kind": "drill",
+       "text": "la frontera — border"
+      },
+      {
+       "kind": "drill",
+       "text": "el chamuyo — smooth talk"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Llego a la frontera con mucho chamuyo.",
+       "translation": "I arrive at the border with a lot of smooth talk.",
+       "direction": "boastful"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¿Funciona?",
+       "translation": "Does it work?",
+       "direction": "skeptical"
+      },
+      {
+       "kind": "drill",
+       "text": "soñar con — to dream of"
+      },
+      {
+       "kind": "drill",
+       "text": "anhelar — long"
+      },
+      {
+       "kind": "drill",
+       "text": "la hoguera — bonfire"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "No. Ahora solo puedo soñar con anhelar otra hoguera.",
+       "translation": "No. Now I can only dream of yearning for another bonfire.",
+       "direction": "defeated"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¡Ay, qué triste!",
+       "translation": "Oh, how sad!",
+       "direction": "mock sympathy"
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in Spanish, for a learner who speaks\nEnglish. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a scene between the two presenters**, acted out in Spanish. The `native` presenter drives it; the `guide` is a slightly clueless companion who also speaks Spanish, in even shorter lines. It is a tiny sitcom scene, told live, as if it were happening to them.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of Spanish, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nEnglish), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.story.lesson-es-2.narrator",
+     "title": "“El bigote secreto” · lesson-es-2, A narrator's serial",
+     "why": "4 beats, 56 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "la villa — town"
+      },
+      {
+       "kind": "drill",
+       "text": "ir andando — walk"
+      },
+      {
+       "kind": "drill",
+       "text": "predispuesto — willing"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Llegué a la villa.",
+       "translation": "I arrived at the town.",
+       "direction": "Setting the scene with quiet mystery."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Decidí ir andando.",
+       "translation": "I decided to walk.",
+       "direction": "Casual, continuing the movement."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Estaba predispuesto a todo.",
+       "translation": "I was willing to do anything.",
+       "direction": "Showing readiness and intrigue."
+      },
+      {
+       "kind": "drill",
+       "text": "el bigote — mustache"
+      },
+      {
+       "kind": "drill",
+       "text": "tener enamorado/a — smitten"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Vi a un hombre con un gran bigote.",
+       "translation": "I saw a man with a big mustache.",
+       "direction": "Noticing a peculiar detail."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Supe que tenía enamorado al pueblo.",
+       "translation": "I knew he had the town captivated.",
+       "direction": "Revealing his local charm."
+      },
+      {
+       "kind": "drill",
+       "text": "esconder — hide"
+      },
+      {
+       "kind": "drill",
+       "text": "asustar — scare"
+      },
+      {
+       "kind": "drill",
+       "text": "escalofriante — chilling"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Intenté esconder mi cara.",
+       "translation": "I tried to hide my face.",
+       "direction": "Acting furtive."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Quería asustarle.",
+       "translation": "I wanted to scare him.",
+       "direction": "A mischievous intent."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Sonó un ruido escalofriante.",
+       "translation": "A chilling sound echoed.",
+       "direction": "Spooky tone, raising suspense."
+      },
+      {
+       "kind": "drill",
+       "text": "estar quedando — turning"
+      },
+      {
+       "kind": "drill",
+       "text": "gastar una broma — prank"
+      },
+      {
+       "kind": "drill",
+       "text": "la multa — fine"
+      },
+      {
+       "kind": "drill",
+       "text": "estar con el agua al cuello — drowning"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Todo estaba quedando muy raro.",
+       "translation": "Everything was turning out very weird.",
+       "direction": "Plot twist building up."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Me gastaron una broma pesada.",
+       "translation": "They played a heavy prank on me.",
+       "direction": "Surprised and annoyed."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Llegó la multa y me encontré con el agua al cuello.",
+       "translation": "The fine arrived and I was up to my neck in trouble.",
+       "direction": "Comic panic at the end."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in Spanish, for a learner who speaks\nEnglish. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a serial told by the native presenter**. Every line is spoken by `native`, in Spanish, as a storyteller: short sentences in the past tense, one small event per beat, a little suspense between beats.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of Spanish, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nEnglish), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"predispuesto\",\n  \"primaryGloss\": \"willing\",\n  \"shortGloss\": \"willing; predisposed; inclined\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"escalofriante\",\n  \"primaryGloss\": \"chilling\",\n  \"shortGloss\": \"chilling; hair-raising; spine-tingling\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"a cold, unsettling whisper of unease and dread\"\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"ir andando\",\n  \"primaryGloss\": \"walk\",\n  \"shortGloss\": \"to walk; to go on foot\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"estar con el agua al cuello\",\n  \"primaryGloss\": \"drowning\",\n  \"shortGloss\": \"to be up to one's neck; to be in deep water\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frantic and overwhelmed, conveying a sense of suffocating stress\"\n },\n {\n  \"headword\": \"tener enamorado/a\",\n  \"primaryGloss\": \"smitten\",\n  \"shortGloss\": \"to have someone smitten; to captivate someone\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"dreamy and affectionate, reflecting the glow of being in love\"\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ]\n },\n {\n  \"headword\": \"la villa\",\n  \"primaryGloss\": \"town\",\n  \"shortGloss\": \"town; villa; shantytown\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"esconder\",\n  \"primaryGloss\": \"hide\",\n  \"shortGloss\": \"to hide; to conceal\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"asustar\",\n  \"primaryGloss\": \"scare\",\n  \"shortGloss\": \"to scare; to frighten\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"estar quedando\",\n  \"primaryGloss\": \"turning\",\n  \"shortGloss\": \"to turn out; to come along\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"gastar una broma\",\n  \"primaryGloss\": \"prank\",\n  \"shortGloss\": \"to play a joke; to play a prank\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.story.lesson-es-2.dialogue",
+     "title": "“La broma de la villa” · lesson-es-2, A two-presenter scene",
+     "why": "5 beats, 57 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "la villa — town"
+      },
+      {
+       "kind": "drill",
+       "text": "ir andando — walk"
+      },
+      {
+       "kind": "drill",
+       "text": "el bigote — mustache"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Voy andando hacia la villa con un bigote falso.",
+       "translation": "I am walking toward the town with a fake mustache.",
+       "direction": "Teasing and theatrical"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¿Por qué?",
+       "translation": "Why?",
+       "direction": "Curious and slightly confused"
+      },
+      {
+       "kind": "drill",
+       "text": "tener enamorado/a — smitten"
+      },
+      {
+       "kind": "drill",
+       "text": "predispuesto — willing"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Para tener enamorado al vecino, que está muy predispuesto.",
+       "translation": "To captivate the neighbor, who is very willing.",
+       "direction": "Mischievous"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¡Qué plan!",
+       "translation": "What a plan!",
+       "direction": "Surprised"
+      },
+      {
+       "kind": "drill",
+       "text": "asustar — scare"
+      },
+      {
+       "kind": "drill",
+       "text": "esconder — hide"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Pues voy a asustarle y a esconder mi cara.",
+       "translation": "Well, I'm going to scare him and hide my face.",
+       "direction": "Sneaky"
+      },
+      {
+       "kind": "drill",
+       "text": "escalofriante — chilling"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Con un grito escalofriante... ¡tengo la multa asegurada!",
+       "translation": "With a chilling scream... I've got the fine guaranteed!",
+       "direction": "Dramatic"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¿La policía?",
+       "translation": "The police?",
+       "direction": "Alarmed"
+      },
+      {
+       "kind": "drill",
+       "text": "la multa — fine"
+      },
+      {
+       "kind": "drill",
+       "text": "estar con el agua al cuello — drowning"
+      },
+      {
+       "kind": "drill",
+       "text": "estar quedando — turning"
+      },
+      {
+       "kind": "drill",
+       "text": "gastar una broma — prank"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "¡Sí, estoy con el agua al cuello! Todo está quedando mal.",
+       "translation": "Yes, I'm in deep water! Everything is turning out badly.",
+       "direction": "Panicked"
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "¡Deja de gastar una broma!",
+       "translation": "Stop playing a prank!",
+       "direction": "Scolding"
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in Spanish, for a learner who speaks\nEnglish. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a scene between the two presenters**, acted out in Spanish. The `native` presenter drives it; the `guide` is a slightly clueless companion who also speaks Spanish, in even shorter lines. It is a tiny sitcom scene, told live, as if it were happening to them.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of Spanish, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nEnglish), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"predispuesto\",\n  \"primaryGloss\": \"willing\",\n  \"shortGloss\": \"willing; predisposed; inclined\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"escalofriante\",\n  \"primaryGloss\": \"chilling\",\n  \"shortGloss\": \"chilling; hair-raising; spine-tingling\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"a cold, unsettling whisper of unease and dread\"\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"ir andando\",\n  \"primaryGloss\": \"walk\",\n  \"shortGloss\": \"to walk; to go on foot\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"estar con el agua al cuello\",\n  \"primaryGloss\": \"drowning\",\n  \"shortGloss\": \"to be up to one's neck; to be in deep water\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frantic and overwhelmed, conveying a sense of suffocating stress\"\n },\n {\n  \"headword\": \"tener enamorado/a\",\n  \"primaryGloss\": \"smitten\",\n  \"shortGloss\": \"to have someone smitten; to captivate someone\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"dreamy and affectionate, reflecting the glow of being in love\"\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ]\n },\n {\n  \"headword\": \"la villa\",\n  \"primaryGloss\": \"town\",\n  \"shortGloss\": \"town; villa; shantytown\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"esconder\",\n  \"primaryGloss\": \"hide\",\n  \"shortGloss\": \"to hide; to conceal\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"asustar\",\n  \"primaryGloss\": \"scare\",\n  \"shortGloss\": \"to scare; to frighten\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"estar quedando\",\n  \"primaryGloss\": \"turning\",\n  \"shortGloss\": \"to turn out; to come along\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"gastar una broma\",\n  \"primaryGloss\": \"prank\",\n  \"shortGloss\": \"to play a joke; to play a prank\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.story.lesson-en-1.narrator",
+     "title": "“The Secret Message” · lesson-en-1, A narrator's serial",
+     "why": "5 beats, 61 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "sloth — ленивец"
+      },
+      {
+       "kind": "drill",
+       "text": "infatuation — слепое увлечение"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Arthur moved with absolute sloth.",
+       "translation": "Артур двигался с абсолютной ленью.",
+       "direction": "Slow and heavy tone."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "His sudden infatuation changed everything.",
+       "translation": "Его внезапное слепое увлечение изменило всё.",
+       "direction": "With a hint of wonder."
+      },
+      {
+       "kind": "drill",
+       "text": "crusade — кампания"
+      },
+      {
+       "kind": "drill",
+       "text": "furious — разъярённый"
+      },
+      {
+       "kind": "drill",
+       "text": "concussion — сотрясение мозга"
+      },
+      {
+       "kind": "drill",
+       "text": "garbled — искажённый"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "He started a strange crusade.",
+       "translation": "Он начал странную кампанию.",
+       "direction": "Determined and firm."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "The boss grew furious.",
+       "translation": "Босс рассвирепел.",
+       "direction": "Sharp and angry."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "A falling shelf caused a mild concussion, leaving his final message garbled.",
+       "translation": "Падающая полка вызвала легкое сотрясение мозга, оставив его последнее сообщение неразборчивым.",
+       "direction": "Confused and muffled."
+      },
+      {
+       "kind": "drill",
+       "text": "contingency — непредвиденное обстоятельство"
+      },
+      {
+       "kind": "drill",
+       "text": "dismaying — тревожащий"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "They planned for every contingency.",
+       "translation": "Они спланировали каждое непредвиденное обстоятельство.",
+       "direction": "Prudent and cautious."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "The result was dismaying.",
+       "translation": "Результат был удручающим.",
+       "direction": "Flat and disappointed."
+      },
+      {
+       "kind": "drill",
+       "text": "opportunistic — оппортунистический"
+      },
+      {
+       "kind": "drill",
+       "text": "juvenile — несовершеннолетний"
+      },
+      {
+       "kind": "drill",
+       "text": "blush — краснеть"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "An opportunistic rival took the credit.",
+       "translation": "Приспособленческий соперник присвоил себе заслуги.",
+       "direction": "Cynical and sharp."
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Arthur made a juvenile mistake and began to blush.",
+       "translation": "Артур совершил ребяческую ошибку и начал краснеть.",
+       "direction": "Embarrassed and shy."
+      },
+      {
+       "kind": "drill",
+       "text": "dignity — достоинство"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "He walked away with quiet dignity.",
+       "translation": "Он ушел с тихим достоинством.",
+       "direction": "Calm and elevated."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in English, for a learner who speaks\nRussian. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a serial told by the native presenter**. Every line is spoken by `native`, in English, as a storyteller: short sentences in the past tense, one small event per beat, a little suspense between beats.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of English, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nRussian), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\"\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\"\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"crusade\",\n  \"primaryGloss\": \"кампания\",\n  \"shortGloss\": \"кампания; борьба; крестовый поход\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"juvenile\",\n  \"primaryGloss\": \"несовершеннолетний\",\n  \"shortGloss\": \"несовершеннолетний; ребяческий, инфантильный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"opportunistic\",\n  \"primaryGloss\": \"оппортунистический\",\n  \"shortGloss\": \"оппортунистический; приспособленческий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Health\"\n  ],\n  \"emotion\": \"cynical and sharp, judging self-serving behavior\"\n },\n {\n  \"headword\": \"dismaying\",\n  \"primaryGloss\": \"тревожащий\",\n  \"shortGloss\": \"тревожащий; удручающий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\"\n },\n {\n  \"headword\": \"furious\",\n  \"primaryGloss\": \"разъярённый\",\n  \"shortGloss\": \"разъярённый; бешеный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"burning with intense and overwhelming anger\"\n },\n {\n  \"headword\": \"contingency\",\n  \"primaryGloss\": \"непредвиденное обстоятельство\",\n  \"shortGloss\": \"непредвиденное обстоятельство; резерв\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"prudent, cautious, and thoroughly prepared for unexpected events\"\n },\n {\n  \"headword\": \"garbled\",\n  \"primaryGloss\": \"искажённый\",\n  \"shortGloss\": \"искажённый; неразборчивый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frustrated and confused by poor communication\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.story.lesson-en-1.dialogue",
+     "title": "“The Office Incident” · lesson-en-1, A two-presenter scene",
+     "why": "5 beats, 67 words of story, answered by gemini-3.5-flash-lite. Shown as it would play: each drill, then the beat that follows it.",
+     "script": [
+      {
+       "kind": "drill",
+       "text": "sloth — ленивец"
+      },
+      {
+       "kind": "drill",
+       "text": "infatuation — слепое увлечение"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Mark moved with absolute sloth during his brief infatuation with the new manager.",
+       "translation": "Марк двигался с абсолютной леностью во время своего кратковременного слепого увлечения новым менеджером.",
+       "direction": "Tell it like a gossip secret."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Very slow love?",
+       "translation": "Очень медленная любовь?",
+       "direction": "Ask innocently."
+      },
+      {
+       "kind": "drill",
+       "text": "juvenile — несовершеннолетний"
+      },
+      {
+       "kind": "drill",
+       "text": "dismaying — тревожащий"
+      },
+      {
+       "kind": "drill",
+       "text": "crusade — кампания"
+      },
+      {
+       "kind": "drill",
+       "text": "opportunistic — оппортунистический"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "His juvenile crusade felt dismal, highly dismaying, and rather opportunistic.",
+       "translation": "Его ребяческий крестовый поход казался мрачным, очень тревожащим и довольно оппортунистическим.",
+       "direction": "Sigh with mild judgment."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Classic Mark.",
+       "translation": "Классический Марк.",
+       "direction": "Nod knowingly."
+      },
+      {
+       "kind": "drill",
+       "text": "concussion — сотрясение мозга"
+      },
+      {
+       "kind": "drill",
+       "text": "furious — разъярённый"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "Then Mark got a concussion and grew furious at the office plant.",
+       "translation": "Затем Марк получил сотрясение мозга и разъярился на офисное растение.",
+       "direction": "Build up the absurd drama."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "The plant started it?",
+       "translation": "Растение первое начало?",
+       "direction": "Sound completely baffled."
+      },
+      {
+       "kind": "drill",
+       "text": "garbled — искажённый"
+      },
+      {
+       "kind": "drill",
+       "text": "blush — краснеть"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "He shouted garbled apologies, making everyone blush.",
+       "translation": "Он выкрикивал искаженные извинения, заставляя всех краснеть.",
+       "direction": "Imitate the shouting."
+      },
+      {
+       "kind": "drill",
+       "text": "dignity — достоинство"
+      },
+      {
+       "kind": "drill",
+       "text": "contingency — непредвиденное обстоятельство"
+      },
+      {
+       "kind": "line",
+       "speaker": "native",
+       "text": "He lost all dignity, having no contingency plan for plant fights.",
+       "translation": "Он потерял всякое достоинство, не имея плана на случай непредвиденных обстоятельств при драке с растением.",
+       "direction": "Deliver the punchline dryly."
+      },
+      {
+       "kind": "line",
+       "speaker": "guide",
+       "text": "Always have a plant plan.",
+       "translation": "Всегда имейте план на случай растений.",
+       "direction": "Nod wisely."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write a mini-story for an audio vocabulary programme in English, for a learner who speaks\nRussian. The programme drills twelve words one at a time over music. Between the\ndrills, a very short story is told in pieces, each piece using the word or words that have just\nbeen drilled. The story gives the words a place to live. It must never crowd them out: the drills\nare the programme, and the story is the thread between them.\n\nStyle: **a scene between the two presenters**, acted out in English. The `native` presenter drives it; the `guide` is a slightly clueless companion who also speaks English, in even shorter lines. It is a tiny sitcom scene, told live, as if it were happening to them.\n\nHow it fits together:\n- First choose the **order** in which to teach the twelve words, so that the story can use them\n  as they arrive. Every word is used at least once, in its sense and register as given.\n- Write between four and six **beats**. A beat comes straight after the drill of one word (`after`)\n  and uses that word and any words drilled since the last beat (`uses`). The first beat may come\n  after the second or third word.\n- The whole story is at most 120 words of English, so each beat is one to three short lines.\n- Keep it simple and concrete: plain words around the taught ones, one situation, and something\n  that happens. A small twist or joke near the end is welcome.\n- The target words appear exactly as they would in natural speech: conjugated, agreed, with the\n  article where it belongs.\n\nFor each line give `speaker` (`native` or `guide`), `text`, `translation` (into\nRussian), and `direction` (a short English note for the voice actor).\n\nAnswer with a JSON object and nothing else:\n\n{\"title\": \"...\", \"order\": [\"headword\", \"...\"], \"beats\": [{\"after\": \"headword\", \"uses\": [\"headword\"], \"lines\": [{\"speaker\": \"native\", \"text\": \"...\", \"translation\": \"...\", \"direction\": \"...\"}]}]}\n\nThe words:\n\n[\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\"\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\"\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"crusade\",\n  \"primaryGloss\": \"кампания\",\n  \"shortGloss\": \"кампания; борьба; крестовый поход\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"juvenile\",\n  \"primaryGloss\": \"несовершеннолетний\",\n  \"shortGloss\": \"несовершеннолетний; ребяческий, инфантильный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"opportunistic\",\n  \"primaryGloss\": \"оппортунистический\",\n  \"shortGloss\": \"оппортунистический; приспособленческий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Health\"\n  ],\n  \"emotion\": \"cynical and sharp, judging self-serving behavior\"\n },\n {\n  \"headword\": \"dismaying\",\n  \"primaryGloss\": \"тревожащий\",\n  \"shortGloss\": \"тревожащий; удручающий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\"\n },\n {\n  \"headword\": \"furious\",\n  \"primaryGloss\": \"разъярённый\",\n  \"shortGloss\": \"разъярённый; бешеный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"burning with intense and overwhelming anger\"\n },\n {\n  \"headword\": \"contingency\",\n  \"primaryGloss\": \"непредвиденное обстоятельство\",\n  \"shortGloss\": \"непредвиденное обстоятельство; резерв\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"prudent, cautious, and thoroughly prepared for unexpected events\"\n },\n {\n  \"headword\": \"garbled\",\n  \"primaryGloss\": \"искажённый\",\n  \"shortGloss\": \"искажённый; неразборчивый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frustrated and confused by poor communication\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  },
+  {
+   "id": "callbacks",
+   "title": "Callbacks",
+   "intro": "Bringing an earlier word back later so it has to be recalled: reuse, contrast, quiz, chain and twist, rather than “remember the desert?”. Rate each, and each card as a whole.",
+   "cards": [
+    {
+     "id": "D.callback.lesson-es-1",
+     "title": "lesson-es-1, taught in list order",
+     "why": "Order: la frontera, soñar con, el banco, la canela, el suelo, inusual, anhelar, la pelota, la balsa, el cepillo de dientes, la hoguera, el chamuyo. Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "0",
+       "text": "reuse · after soñar con → la frontera",
+       "sub": "native: Voy a soñar con la frontera. (I am going to dream of the border.) · Combines the current verb with the earlier noun 'la frontera' in a short, natural sentence."
+      },
+      {
+       "id": "1",
+       "text": "reuse · after el suelo → la canela",
+       "sub": "native: Hay canela en el suelo. (There is cinnamon on the floor.) · Uses the current word 'el suelo' together with the earlier food item 'la canela'."
+      },
+      {
+       "id": "2",
+       "text": "quiz · after anhelar → soñar con",
+       "sub": "guide: How do you say 'to dream of'? / guide: [gap] / native: Soñar con. (To dream of.) · Quizzes the listener on the earlier verb 'soñar con'."
+      },
+      {
+       "id": "3",
+       "text": "chain · after anhelar → soñar con",
+       "sub": "native: Anhelas lo que sueñas con. (You long for what you dream of.) · Links 'anhelar' to the earlier 'soñar con' because longing and dreaming are closely related emotional states."
+      },
+      {
+       "id": "4",
+       "text": "twist · after la balsa → la pelota",
+       "sub": "earlier: “Busco la pelota.” · native: Busco la balsa. (I am looking for the raft.) · Swaps 'la pelota' for 'la balsa' in the earlier search sentence, turning a game of catch into a raft search."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for an audio vocabulary programme in Spanish for a learner who speaks\nEnglish. The programme drills the twelve words below in this order, over music, with\ntwo presenters: a **native** one who speaks Spanish and a **guide** who speaks\nEnglish.\n\nA **callback** is a moment that brings back a word taught earlier, after a later word's drill, so\nthe earlier word is recalled after a delay rather than only heard once. \"Remember the desert? Here\nit is again\" is the weak version: it announces a callback instead of being one. A good callback\nmakes the listener *use* the earlier word. Write callbacks of these kinds:\n\n- `reuse`: a new short sentence using the current word **and** an earlier one together;\n- `contrast`: the current word set against an earlier one it could be confused with, or its\n  opposite (\"not *sweet*, *bitter*\"), in a line or two;\n- `quiz`: the guide gives an earlier word's meaning in English, a gap follows (write\n  `[gap]` as its own line), and then the native presenter answers with the word, perhaps in a\n  short phrase;\n- `chain`: the current word leads to an earlier one by sound, by a shared root, or because one\n  causes the other, said in one line;\n- `twist`: an example sentence said at an earlier word's drill, repeated with the current word\n  swapped in so that it turns absurd. Write that earlier example as `earlier`, since it has not\n  been written yet.\n\nFor each kind, write up to two callbacks where the words genuinely allow one. Skip a kind rather\nthan force it. Each callback:\n- plays straight after the drill of the word named in `at`, and brings back words from earlier in\n  the order (`refers_to`);\n- is at most two short lines, plus `[gap]` for a quiz;\n- keeps the target words in the sense given.\n\nFor each line give `speaker` (`native` or `guide`), `text`, and `translation` (into\nEnglish, or \"\" when the line is already in it).\n\nAnswer with a JSON object and nothing else:\n\n{\"callbacks\": [{\"kind\": \"...\", \"at\": \"headword\", \"refers_to\": [\"headword\"], \"earlier\": \"\", \"lines\": [{\"speaker\": \"guide\", \"text\": \"...\", \"translation\": \"\"}], \"why\": \"...\"}]}\n\nThe words, in the order they are taught:\n\n[\n {\n  \"headword\": \"la frontera\",\n  \"primaryGloss\": \"border\",\n  \"shortGloss\": \"border; frontier\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\"\n  ]\n },\n {\n  \"headword\": \"soñar con\",\n  \"primaryGloss\": \"to dream of\",\n  \"shortGloss\": \"to dream of; to dream about\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"el banco\",\n  \"primaryGloss\": \"bank\",\n  \"shortGloss\": \"bank; bench\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"la canela\",\n  \"primaryGloss\": \"cinnamon\",\n  \"shortGloss\": \"cinnamon\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ]\n },\n {\n  \"headword\": \"el suelo\",\n  \"primaryGloss\": \"floor\",\n  \"shortGloss\": \"floor; ground; soil\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"anhelar\",\n  \"primaryGloss\": \"long\",\n  \"shortGloss\": \"to long for; to yearn for\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\"\n },\n {\n  \"headword\": \"la balsa\",\n  \"primaryGloss\": \"raft\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Travel\",\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"la hoguera\",\n  \"primaryGloss\": \"bonfire\",\n  \"shortGloss\": \"bonfire; campfire; pyre\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ]\n },\n {\n  \"headword\": \"el chamuyo\",\n  \"primaryGloss\": \"smooth talk\",\n  \"shortGloss\": \"smooth talk; bluff, sweet talk\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.callback.lesson-es-2",
+     "title": "lesson-es-2, taught in list order",
+     "why": "Order: predispuesto, escalofriante, la multa, ir andando, estar con el agua al cuello, tener enamorado/a, el bigote, la villa, esconder, asustar, estar quedando, gastar una broma. Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "0",
+       "text": "quiz · after escalofriante → predispuesto",
+       "sub": "guide: How do you say 'willing'? / native: [gap] / native: Predispuesto. (Willing.) · Tests the first word immediately after the second word's drill."
+      },
+      {
+       "id": "1",
+       "text": "reuse · after la multa → predispuesto, escalofriante",
+       "sub": "native: No estoy predispuesto a pagar esa multa tan escalofriante. (I am not willing to pay that chilling fine.) · Combines the current word with two earlier ones in a natural sentence."
+      },
+      {
+       "id": "2",
+       "text": "quiz · after ir andando → la multa",
+       "sub": "guide: What was the word for 'fine'? / native: [gap] / native: La multa. (Fine.) · Recalls the noun for ticket or penalty."
+      },
+      {
+       "id": "3",
+       "text": "reuse · after estar con el agua al cuello → ir andando",
+       "sub": "native: Prefiero ir andando aunque esté con el agua al cuello. (I prefer to go on foot even though I am up to my neck in trouble.) · Brings back the action of walking within the new idiom."
+      },
+      {
+       "id": "4",
+       "text": "quiz · after tener enamorado/a → escalofriante",
+       "sub": "guide: What was 'chilling'? / native: [gap] / native: Escalofriante. (Chilling.) · Quizzes the emotion word from earlier."
+      },
+      {
+       "id": "5",
+       "text": "reuse · after el bigote → tener enamorado/a",
+       "sub": "native: Su bigote tiene enamorado a todo el pueblo. (His mustache has everyone smitten.) · Uses the new noun with the earlier phrase."
+      },
+      {
+       "id": "6",
+       "text": "contrast · after asustar → escalofriante",
+       "sub": "native: No es solo estar escalofriante, es asustar de verdad. (It is not just being chilling, it is truly scaring.) · Contrasts the adjective with the active verb of frightening."
+      },
+      {
+       "id": "7",
+       "text": "reuse · after gastar una broma → asustar",
+       "sub": "native: Fue solo para gastar una broma y asustar al gato. (It was just to play a prank and scare the cat.) · Combines the final idiom with the previous verb."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for an audio vocabulary programme in Spanish for a learner who speaks\nEnglish. The programme drills the twelve words below in this order, over music, with\ntwo presenters: a **native** one who speaks Spanish and a **guide** who speaks\nEnglish.\n\nA **callback** is a moment that brings back a word taught earlier, after a later word's drill, so\nthe earlier word is recalled after a delay rather than only heard once. \"Remember the desert? Here\nit is again\" is the weak version: it announces a callback instead of being one. A good callback\nmakes the listener *use* the earlier word. Write callbacks of these kinds:\n\n- `reuse`: a new short sentence using the current word **and** an earlier one together;\n- `contrast`: the current word set against an earlier one it could be confused with, or its\n  opposite (\"not *sweet*, *bitter*\"), in a line or two;\n- `quiz`: the guide gives an earlier word's meaning in English, a gap follows (write\n  `[gap]` as its own line), and then the native presenter answers with the word, perhaps in a\n  short phrase;\n- `chain`: the current word leads to an earlier one by sound, by a shared root, or because one\n  causes the other, said in one line;\n- `twist`: an example sentence said at an earlier word's drill, repeated with the current word\n  swapped in so that it turns absurd. Write that earlier example as `earlier`, since it has not\n  been written yet.\n\nFor each kind, write up to two callbacks where the words genuinely allow one. Skip a kind rather\nthan force it. Each callback:\n- plays straight after the drill of the word named in `at`, and brings back words from earlier in\n  the order (`refers_to`);\n- is at most two short lines, plus `[gap]` for a quiz;\n- keeps the target words in the sense given.\n\nFor each line give `speaker` (`native` or `guide`), `text`, and `translation` (into\nEnglish, or \"\" when the line is already in it).\n\nAnswer with a JSON object and nothing else:\n\n{\"callbacks\": [{\"kind\": \"...\", \"at\": \"headword\", \"refers_to\": [\"headword\"], \"earlier\": \"\", \"lines\": [{\"speaker\": \"guide\", \"text\": \"...\", \"translation\": \"\"}], \"why\": \"...\"}]}\n\nThe words, in the order they are taught:\n\n[\n {\n  \"headword\": \"predispuesto\",\n  \"primaryGloss\": \"willing\",\n  \"shortGloss\": \"willing; predisposed; inclined\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"escalofriante\",\n  \"primaryGloss\": \"chilling\",\n  \"shortGloss\": \"chilling; hair-raising; spine-tingling\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"a cold, unsettling whisper of unease and dread\"\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"ir andando\",\n  \"primaryGloss\": \"walk\",\n  \"shortGloss\": \"to walk; to go on foot\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"estar con el agua al cuello\",\n  \"primaryGloss\": \"drowning\",\n  \"shortGloss\": \"to be up to one's neck; to be in deep water\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frantic and overwhelmed, conveying a sense of suffocating stress\"\n },\n {\n  \"headword\": \"tener enamorado/a\",\n  \"primaryGloss\": \"smitten\",\n  \"shortGloss\": \"to have someone smitten; to captivate someone\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"dreamy and affectionate, reflecting the glow of being in love\"\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ]\n },\n {\n  \"headword\": \"la villa\",\n  \"primaryGloss\": \"town\",\n  \"shortGloss\": \"town; villa; shantytown\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Places\"\n  ]\n },\n {\n  \"headword\": \"esconder\",\n  \"primaryGloss\": \"hide\",\n  \"shortGloss\": \"to hide; to conceal\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n },\n {\n  \"headword\": \"asustar\",\n  \"primaryGloss\": \"scare\",\n  \"shortGloss\": \"to scare; to frighten\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"estar quedando\",\n  \"primaryGloss\": \"turning\",\n  \"shortGloss\": \"to turn out; to come along\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ]\n },\n {\n  \"headword\": \"gastar una broma\",\n  \"primaryGloss\": \"prank\",\n  \"shortGloss\": \"to play a joke; to play a prank\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ]\n }\n]\n"
+      }
+     ],
+     "rate": true
+    },
+    {
+     "id": "D.callback.lesson-en-1",
+     "title": "lesson-en-1, taught in list order",
+     "why": "Order: blush, dignity, sloth, crusade, concussion, juvenile, opportunistic, dismaying, infatuation, furious, contingency, garbled. Answered by gemini-3.5-flash-lite.",
+     "items": [
+      {
+       "id": "0",
+       "text": "quiz · after juvenile → concussion",
+       "sub": "guide: Как будет сотрясение мозга? / guide: [gap] / native: Concussion. (Сотрясение мозга.) · Quizzes the user on the earlier medical term 'concussion'."
+      }
+     ],
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write for an audio vocabulary programme in English for a learner who speaks\nRussian. The programme drills the twelve words below in this order, over music, with\ntwo presenters: a **native** one who speaks English and a **guide** who speaks\nRussian.\n\nA **callback** is a moment that brings back a word taught earlier, after a later word's drill, so\nthe earlier word is recalled after a delay rather than only heard once. \"Remember the desert? Here\nit is again\" is the weak version: it announces a callback instead of being one. A good callback\nmakes the listener *use* the earlier word. Write callbacks of these kinds:\n\n- `reuse`: a new short sentence using the current word **and** an earlier one together;\n- `contrast`: the current word set against an earlier one it could be confused with, or its\n  opposite (\"not *sweet*, *bitter*\"), in a line or two;\n- `quiz`: the guide gives an earlier word's meaning in Russian, a gap follows (write\n  `[gap]` as its own line), and then the native presenter answers with the word, perhaps in a\n  short phrase;\n- `chain`: the current word leads to an earlier one by sound, by a shared root, or because one\n  causes the other, said in one line;\n- `twist`: an example sentence said at an earlier word's drill, repeated with the current word\n  swapped in so that it turns absurd. Write that earlier example as `earlier`, since it has not\n  been written yet.\n\nFor each kind, write up to two callbacks where the words genuinely allow one. Skip a kind rather\nthan force it. Each callback:\n- plays straight after the drill of the word named in `at`, and brings back words from earlier in\n  the order (`refers_to`);\n- is at most two short lines, plus `[gap]` for a quiz;\n- keeps the target words in the sense given.\n\nFor each line give `speaker` (`native` or `guide`), `text`, and `translation` (into\nRussian, or \"\" when the line is already in it).\n\nAnswer with a JSON object and nothing else:\n\n{\"callbacks\": [{\"kind\": \"...\", \"at\": \"headword\", \"refers_to\": [\"headword\"], \"earlier\": \"\", \"lines\": [{\"speaker\": \"guide\", \"text\": \"...\", \"translation\": \"\"}], \"why\": \"...\"}]}\n\nThe words, in the order they are taught:\n\n[\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\"\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\"\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ]\n },\n {\n  \"headword\": \"crusade\",\n  \"primaryGloss\": \"кампания\",\n  \"shortGloss\": \"кампания; борьба; крестовый поход\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ]\n },\n {\n  \"headword\": \"juvenile\",\n  \"primaryGloss\": \"несовершеннолетний\",\n  \"shortGloss\": \"несовершеннолетний; ребяческий, инфантильный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ]\n },\n {\n  \"headword\": \"opportunistic\",\n  \"primaryGloss\": \"оппортунистический\",\n  \"shortGloss\": \"оппортунистический; приспособленческий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Health\"\n  ],\n  \"emotion\": \"cynical and sharp, judging self-serving behavior\"\n },\n {\n  \"headword\": \"dismaying\",\n  \"primaryGloss\": \"тревожащий\",\n  \"shortGloss\": \"тревожащий; удручающий\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\"\n },\n {\n  \"headword\": \"furious\",\n  \"primaryGloss\": \"разъярённый\",\n  \"shortGloss\": \"разъярённый; бешеный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"burning with intense and overwhelming anger\"\n },\n {\n  \"headword\": \"contingency\",\n  \"primaryGloss\": \"непредвиденное обстоятельство\",\n  \"shortGloss\": \"непредвиденное обстоятельство; резерв\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"prudent, cautious, and thoroughly prepared for unexpected events\"\n },\n {\n  \"headword\": \"garbled\",\n  \"primaryGloss\": \"искажённый\",\n  \"shortGloss\": \"искажённый; неразборчивый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"frustrated and confused by poor communication\"\n }\n]\n"
+      }
+     ],
+     "rate": true
+    }
+   ]
+  }
+ ],
+ "intro": "Text only. Spanish words are glossed in English and English words in Russian, as in the vocabulary. Every prompt is under its group."
+}

@@ -1,0 +1,839 @@
+{
+ "section": "E",
+ "title": "Commentary",
+ "intro": "One remark per word, in the learner's language, from one call per lesson. The pick (★) is shown first; tap “other candidates” for the rest. Rate the pick, and any candidate you would rather have heard. 50 words, 51 candidates (1.0 a word). Picked two for 0, abstained on 0. 30 candidates flagged as factual. By kind: contrast 26, culture 7, register 6, mnemonic 6, false_friend 5, pronunciation 1",
+ "groups": [
+  {
+   "id": "words",
+   "title": "About fifty words",
+   "cards": [
+    {
+     "id": "E.word.es.meter mano",
+     "title": "meter mano — to step in",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture · ⚠ factual",
+       "sub": "Context is everything here: applied to a project it means getting your hands dirty, but directed at a person, it means to grope them.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.sin embargo",
+     "title": "sin embargo — however",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "More formal than 'pero'. Unlike 'pero', 'sin embargo' is usually isolated by commas or placed after a semicolon or period.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.tener razón",
+     "title": "tener razón — right",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ false_friend",
+       "sub": "Watch out: Spanish uses the verb 'to have' with reason where English uses 'to be right'. Never say *estar correcto* for a person.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.girar en torno a",
+     "title": "girar en torno a — revolve around",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register · ⚠ factual",
+       "sub": "Sounds slightly more formal than 'centrarse en' and is predominantly used for abstract ideas rather than physical rotation.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.meterse en una conversación",
+     "title": "meterse en una conversación — to jump into a conversation",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture",
+       "sub": "Can be used neutrally when politely chiming in, or critically when someone is rudely eavesdropping or intruding without an invitation.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.imprescindible",
+     "title": "imprescindible — essential",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Stronger than 'necesario'. While 'necesario' means something is needed, 'imprescindible' literally means you cannot do without it.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.abundar",
+     "title": "abundar — to abound",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "When followed by 'en', it changes meaning to either be rich in something or to elaborate on and agree with a specific point.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.empapado",
+     "title": "empapado — soaked",
+     "why": "2 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "Describes being thoroughly saturated, unlike the broader 'mojado' which can mean anything from damp to dripping.",
+       "picked": true
+      },
+      {
+       "id": "1",
+       "text": "mnemonic · ⚠ factual",
+       "sub": "Imagine a soggy piece of paper pulp or porridge, which comes from the Latin root behind 'empapar'.",
+       "picked": false
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.inusual",
+     "title": "inusual — unusual",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "Unlike 'raro' or 'extraño', which often imply something is bizarre, 'inusual' is more objective, simply meaning infrequent or out of the ordinary.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.acabar de",
+     "title": "acabar de — to have just done",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "Used with an infinitive in the present tense to mean 'to have just done', but in the preterite, it shifts to 'to finish doing'.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.predecir",
+     "title": "predecir — predict",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ pronunciation · ⚠ factual",
+       "sub": "It conjugates like 'decir' in most tenses, but watch out: the future and conditional are regular, like 'predeciría', not *prediré*.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.el cepillo de dientes",
+     "title": "el cepillo de dientes — toothbrush",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture",
+       "sub": "Often shortened to just 'el cepillo' when the context of brushing teeth is already clear, or 'cepillo dental' on packaging.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.desaprovechar",
+     "title": "desaprovechar — waste",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Used specifically for missing opportunities or time, whereas actively squandering money or physical resources prefers 'malgastar' or 'despilfarrar'.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.aleatorio",
+     "title": "aleatorio — random",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register · ⚠ factual",
+       "sub": "This is the formal or technical word. For everyday speech, people usually say 'al azar'.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.la multa",
+     "title": "la multa — fine",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ mnemonic",
+       "sub": "Imagine multi-tasking while driving and getting a huge fine.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.engañar",
+     "title": "engañar — deceive",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ mnemonic",
+       "sub": "Picture a guy named Gary pulling off a clever trick to deceive everyone.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.zarandear",
+     "title": "zarandear — to shake vigorously",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Unlike 'sacudir', which is a gentle dusting, 'zarandear' implies a rough, violent shake.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.broncearse",
+     "title": "broncearse — to get a tan",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "This is getting a tan; don't confuse it with 'quemarse', which means getting painfully sunburned.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.el discurso",
+     "title": "el discurso — speech",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ false_friend",
+       "sub": "Don't be fooled—this means a speech, not a polite conversation or discussion.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.el perejil",
+     "title": "el perejil — parsley",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture · ⚠ factual",
+       "sub": "In Argentina, calling someone 'un perejil' means they are a scapegoat or a nobody.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.el bigote",
+     "title": "el bigote — mustache",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "That's the mustache on the lip, not the 'barba' on the chin.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.ridículo",
+     "title": "ridículo — ridiculous",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "Notice that 'hacer el ridículo' means to make a fool of yourself.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.conmovedor",
+     "title": "conmovedor — moving",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast",
+       "sub": "Use this for something touching and tear-jerking, unlike 'emocionante', which is thrilling or exciting.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.la pelota",
+     "title": "la pelota — ball",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register · ⚠ factual",
+       "sub": "While 'pelota' works for most balls, many regions prefer 'balón' for big sports balls.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.es.el presupuesto",
+     "title": "el presupuesto — budget",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ false_friend · ⚠ factual",
+       "sub": "In business, asking for 'un presupuesto' usually means asking for a price quote, not a budget.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.riddle",
+     "title": "riddle — загадка",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от mystery или enigma, которые обозначают реальные жизненные загадки, riddle — это именно словесная головоломка.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.congeniality",
+     "title": "congeniality — дружелюбие",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ false_friend · ⚠ factual",
+       "sub": "Не путайте с congenital — «врождённый»! Здесь корень другой, он означает приятное сходство и дружелюбие.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.bellow",
+     "title": "bellow — реветь",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от высокотонного scream, bellow — это всегда раскатистый, утробный рев, как у быка или разъяренного человека.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.blush",
+     "title": "blush — краснеть",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Blush — это краска на лице именно от стыда и смущения, а flush бывает от жары, бега или гнева.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.judgement call",
+     "title": "judgement call — субъективное решение",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register",
+       "sub": "Так называют решение, где нет чётких правил, и всё зависит исключительно от вашей личной интуиции и оценки.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.hollow",
+     "title": "hollow — полый",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ mnemonic",
+       "sub": "Представьте пустой ствол дерева — «гол» внутри, как пустые ворота. Hollow — полый, пустой.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.goner",
+     "title": "goner — обречённый",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register",
+       "sub": "Это разговорный сленг: сказать «I'm a goner» значит признать, что вам конец, спасения больше нет.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.sloth",
+     "title": "sloth — ленивец",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture · ⚠ factual",
+       "sub": "В повседневной речи англоязычные люди скорее скажут laziness, а sloth звучит книжно или означает животное.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.concussion",
+     "title": "concussion — сотрясение мозга",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture · ⚠ factual",
+       "sub": "Это слово постоянно звучит в спортивных новостях. Обычно говорят «to suffer a concussion» — получить сотрясение.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.throng",
+     "title": "throng — толпа",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Это слово чуть более литературное, чем crowd, и подчёркивает, что толпа очень плотная и движется.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.infatuation",
+     "title": "infatuation — слепое увлечение",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от долгой любви, infatuation — это слепая, безумная страсть, которая вспыхивает мгновенно и быстро гаснет.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.frantically",
+     "title": "frantically — лихорадочно",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от простого быстрого движения, frantically всегда несёт оттенок паники, хаоса и отчаяния.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.vicious",
+     "title": "vicious — злобный",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ culture",
+       "sub": "Запомните частую фразу «vicious circle» — порочный круг, из которого невозможно выбраться.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.frantically",
+     "title": "frantically — лихорадочно",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от обычного 'quickly', это слово означает паническую спешку, суету и хаос.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.relinquish",
+     "title": "relinquish — отказываться",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ register · ⚠ factual",
+       "sub": "Это официальное слово. В повседневной речи лучше использовать просто 'give up'.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.hypocrite",
+     "title": "hypocrite — лицемер",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ mnemonic",
+       "sub": "Представьте «гиппопотама», который притворяется вегетарианцем, а сам ест мясо — настоящий лицемер.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.nibble",
+     "title": "nibble — грызть",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от 'bite', когда кусают один раз и уверенно, 'nibble' — это щипать, есть маленькими кусочками.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.virtue",
+     "title": "virtue — добродетель",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Полная противоположность этого слова — 'vice', то есть порок.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.insurmountable",
+     "title": "insurmountable — непреодолимый",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ mnemonic",
+       "sub": "Слово начинается с отрицания 'in-' и похоже на 'mount' — гору, которую невозможно перешагнуть.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.dread",
+     "title": "dread — страх",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Это не просто внезапный 'fear' или 'terror', а долгое, давящее чувство тревоги перед будущим.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.condone",
+     "title": "condone — потворствовать",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Не путайте с 'forgive': простить можно, а вот 'condone' значит молча поощрять или закрывать глаза на плохой поступок.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.faction",
+     "title": "faction — фракция",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ false_friend",
+       "sub": "Не путайте с русской «фракцией» в смысле химического состава — здесь это политическая группировка.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.refute",
+     "title": "refute — опровергать",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "«Deny» — это просто отрицать вину, а «refute» — именно опровергать чужие слова железными доказательствами.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.blush",
+     "title": "blush — краснеть",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "Отличие от «flush»: blush всегда от стыда и смущения, а flush может быть от жары или гнева.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    },
+    {
+     "id": "E.word.en.dignity",
+     "title": "dignity — достоинство",
+     "why": "1 candidates; ★ is the model's pick.",
+     "items": [
+      {
+       "id": "0",
+       "text": "★ contrast · ⚠ factual",
+       "sub": "В отличие от 'pride', которое может означать гордыню, 'dignity' — это всегда внутреннее благородство и самоуважение.",
+       "picked": true
+      }
+     ],
+     "collapse_after": 1,
+     "rate": false
+    }
+   ]
+  },
+  {
+   "id": "prompts",
+   "title": "The prompt and the four calls",
+   "cards": [
+    {
+     "id": "E.prompt.es.1",
+     "title": "Call 1: 13 Spanish words",
+     "why": "Answered by gemini-3.5-flash-lite in 4.0 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the commentary for an audio vocabulary programme. Music plays, a native presenter says\neach Spanish word and its translation, and after some words the **guide** adds one short\nremark in English, the learner's own language. That remark is the only talk in the\nprogramme, so it has to earn its place: it should make the word more memorable, or clearer, in a\nfew seconds. Chatter, filler and praise are worthless here.\n\nThese are the kinds of remark:\n\n- `register`: how blunt, polite, slangy or formal the word is, and what to say instead in the other\n  register. \"The blunt way to say it; in polite company, say…\"\n- `contrast`: how it differs from a word the learner could confuse it with.\n- `false_friend`: it looks or sounds like a English word and means something else.\n- `pronunciation`: one concrete thing to listen for, such as a sound, the stress, or a silent letter.\n- `mnemonic`: a keyword or image that links the sound to the meaning. It must be vivid and\n  concrete, and it may be absurd.\n- `joke`: a pun, an absurd image or a wry observation that makes you smile at the word.\n- `culture`: where, when or by whom it is really said.\n\nFor each word below:\n1. Write **candidates** for every kind that genuinely fits this word, and only those. One or two\n   kinds fit most words, and none fits only a few. Each candidate is **at most 25 words**, spoken\n   by the guide in English, and may quote the Spanish word. It never repeats the\n   translation the listener has just heard.\n2. Mark `factual: true` on any candidate that states a fact that could be wrong: an etymology, a\n   regional claim, a usage statistic. Base facts on the notes given with the word, and do not\n   invent an etymology. A candidate that is only a mnemonic, a joke or an image is never factual.\n3. **Pick** the one candidate that would do the most for this word, by its index. Pick two only\n   when both are strong and of different kinds.\n4. Abstain, with an empty `pick` and a short `abstain` reason in English, only when every candidate\n   would be filler. Try hard first: a good mnemonic or joke can be made for almost any word.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"factual\": false}], \"pick\": [0], \"abstain\": \"\"}]}\n\nThe words, with their notes:\n\n[\n {\n  \"headword\": \"meter mano\",\n  \"primaryGloss\": \"to step in\",\n  \"shortGloss\": \"to step in; to intervene; to grope\",\n  \"pos\": \"idiom\",\n  \"register\": \"colloquial\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"Intervenir en un asunto, proyecto o mecanismo para modificarlo, arreglarlo o resolverlo.\",\n  \"notes\": [\n   \"Context is critical for this idiom: when applied to a task, project, or problem (\\\"meter mano a un asunto\\\"), it means to step in, take action, or get one's hands dirty.\",\n   \"When directed toward a person (\\\"meterle mano a alguien\\\"), it almost always carries a sexual connotation meaning to grope or feel someone up.\"\n  ]\n },\n {\n  \"headword\": \"sin embargo\",\n  \"primaryGloss\": \"however\",\n  \"shortGloss\": \"however; nevertheless\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Locución que se utiliza para introducir una objeción, contraste o límite a lo que se acaba de decir.\",\n  \"notes\": [\n   \"More formal than 'pero'. Unlike 'pero', 'sin embargo' is usually isolated by commas or placed after a semicolon or period.\"\n  ]\n },\n {\n  \"headword\": \"tener razón\",\n  \"primaryGloss\": \"right\",\n  \"shortGloss\": \"to be right; to be correct\",\n  \"pos\": \"idiom\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Estar en lo cierto o sostener una opinión o juicio acertado.\",\n  \"notes\": [\n   \"Spanish uses the verb tener (to have) with razón (reason) where English uses 'to be right'. Do not use *estar correcto* or *ser correcto* for a person—correct or incorrect apply to answers, statements, or objects, while people 'have reason' (tienen razón).\"\n  ]\n },\n {\n  \"headword\": \"girar en torno a\",\n  \"primaryGloss\": \"revolve around\",\n  \"shortGloss\": \"to revolve around; to center on\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Tener como tema principal, eje o motivo central a alguien o algo.\",\n  \"notes\": [\n   \"Used mainly in a figurative sense to indicate the central subject, theme, or focus of a conversation, story, controversy, or system.\",\n   \"Similar to *centrarse en* (to focus on) or *girar alrededor de* (to revolve around), though *en torno a* sounds slightly more formal and is predominantly used for abstract ideas rather than physical rotation.\"\n  ]\n },\n {\n  \"headword\": \"meterse en una conversación\",\n  \"primaryGloss\": \"to jump into a conversation\",\n  \"shortGloss\": \"to jump into a conversation; to butt in\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"definition\": \"Intervenir o participar en una charla entre otras personas, a veces sin haber sido invitado.\",\n  \"notes\": [\n   \"Used both neutrally or politely (when excusing oneself to chime in) and critically (when someone is intruding or eavesdropping without invitation).\"\n  ]\n },\n {\n  \"headword\": \"imprescindible\",\n  \"primaryGloss\": \"essential\",\n  \"shortGloss\": \"essential; indispensable\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Dicho de una persona o cosa: de la que no se puede prescindir; totalmente necesario.\",\n  \"notes\": [\n   \"Stronger than \\\"necesario\\\". While \\\"necesario\\\" means something is needed, \\\"imprescindible\\\" literally means you cannot do without it (from the verb \\\"prescindir\\\").\"\n  ]\n },\n {\n  \"headword\": \"abundar\",\n  \"primaryGloss\": \"to abound\",\n  \"shortGloss\": \"to abound; to be plentiful\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Haber o existir en gran cantidad.\",\n  \"notes\": [\n   \"When followed by 'en', it can mean either 'to be rich in' (e.g. 'un río que abunda en peces') or 'to elaborate on / agree with an idea' (e.g. 'abundar en el mismo punto').\"\n  ]\n },\n {\n  \"headword\": \"empapado\",\n  \"primaryGloss\": \"soaked\",\n  \"shortGloss\": \"soaked; drenched\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"definition\": \"Que está completamente lleno de agua o de otro líquido.\",\n  \"notes\": [\n   \"Comparison: 'empapado' describes being thoroughly saturated. 'Mojado' (wet) is broader and can mean anything from damp to dripping. 'Calado' emphasizes deep penetration, especially in the phrase 'calado hasta los huesos' (soaked to the bone).\",\n   \"Etymology: Comes from the verb «empapar» (to soak), derived from the prefix «en-» (in/into) and the Latin word «papa» (pap/porridge), referencing the soft, thick consistency of soaked food.\"\n  ]\n },\n {\n  \"headword\": \"inusual\",\n  \"primaryGloss\": \"unusual\",\n  \"shortGloss\": \"unusual; uncommon\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Que no es habitual, frecuente o común.\",\n  \"notes\": [\n   \"Unlike 'raro' or 'extraño', which often imply that something is weird or bizarre, 'inusual' is a more objective word meaning simply infrequent, atypical, or out of the ordinary.\"\n  ]\n },\n {\n  \"headword\": \"acabar de\",\n  \"primaryGloss\": \"to have just done\",\n  \"shortGloss\": \"to have just done\",\n  \"pos\": \"phrase\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"Haber realizado una acción muy poco tiempo antes del momento en que se habla.\",\n  \"notes\": [\n   \"Used with an infinitive (acabar de + infinitive) in the present or imperfect indicative to express that an action was completed moments earlier (\\\"to have just done\\\").\",\n   \"In the preterite tense, it shifts meaning to \\\"to finish doing\\\" (e.g. \\\"Acabé de comer a las tres\\\").\"\n  ]\n },\n {\n  \"headword\": \"predecir\",\n  \"primaryGloss\": \"predict\",\n  \"shortGloss\": \"to predict; to foretell\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Decir o anunciar algo que va a suceder antes de que ocurra.\",\n  \"notes\": [\n   \"Conjugated like 'decir' in most tenses (predigo, predices, predijo, predicho), but regular in the future and conditional (predeciré, predeciría, not prediré) and in the singular affirmative imperative (predice, not predí).\"\n  ]\n },\n {\n  \"headword\": \"el cepillo de dientes\",\n  \"primaryGloss\": \"toothbrush\",\n  \"shortGloss\": \"toothbrush\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ],\n  \"definition\": \"Utensilio con cerdas pequeñas que se usa con pasta dental para la higiene de la boca y los dientes.\",\n  \"notes\": [\n   \"Often shortened to just 'el cepillo' when the context of brushing teeth is already clear. You may also see 'cepillo dental', especially on product packaging or in clinical contexts.\"\n  ]\n },\n {\n  \"headword\": \"desaprovechar\",\n  \"primaryGloss\": \"waste\",\n  \"shortGloss\": \"to waste; to miss (an opportunity)\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"No aprovechar algo o no sacar el debido rendimiento o beneficio de una ocasión o recurso.\",\n  \"notes\": [\n   \"Direct antonym of 'aprovechar' (to take advantage of, make the most of).\",\n   \"Used specifically for failing to make good use of opportunities, time, talent, or advantages. To express actively squandering money or resources, 'malgastar' or 'despilfarrar' is often preferred.\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"meter mano\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"Context is everything here: applied to a project it means getting your hands dirty, but directed at a person, it means to grope them.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"sin embargo\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"More formal than 'pero'. Unlike 'pero', 'sin embargo' is usually isolated by commas or placed after a semicolon or period.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"tener razón\",\n      \"candidates\": [\n        {\n          \"kind\": \"false_friend\",\n          \"text\": \"Watch out: Spanish uses the verb 'to have' with reason where English uses 'to be right'. Never say *estar correcto* for a person.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"girar en torno a\",\n      \"candidates\": [\n        {\n          \"kind\": \"register\",\n          \"text\": \"Sounds slightly more formal than 'centrarse en' and is predominantly used for abstract ideas rather than physical rotation.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"meterse en una conversación\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"Can be used neutrally when politely chiming in, or critically when someone is rudely eavesdropping or intruding without an invitation.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"imprescindible\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Stronger than 'necesario'. While 'necesario' means something is needed, 'imprescindible' literally means you cannot do without it.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"abundar\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"When followed by 'en', it changes meaning to either be rich in something or to elaborate on and agree with a specific point.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"empapado\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Describes being thoroughly saturated, unlike the broader 'mojado' which can mean anything from damp to dripping.\",\n          \"factual\": false\n        },\n        {\n          \"kind\": \"mnemonic\",\n          \"text\": \"Imagine a soggy piece of paper pulp or porridge, which comes from the Latin root behind 'empapar'.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"inusual\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Unlike 'raro' or 'extraño', which often imply something is bizarre, 'inusual' is more objective, simply meaning infrequent or out of the ordinary.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"acabar de\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Used with an infinitive in the present tense to mean 'to have just done', but in the preterite, it shifts to 'to finish doing'.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"predecir\",\n      \"candidates\": [\n        {\n          \"kind\": \"pronunciation\",\n          \"text\": \"It conjugates like 'decir' in most tenses, but watch out: the future and conditional are regular, like 'predeciría', not *prediré*.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"el cepillo de dientes\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"Often shortened to just 'el cepillo' when the context of brushing teeth is already clear, or 'cepillo dental' on packaging.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"desaprovechar\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Used specifically for missing opportunities or time, whereas actively squandering money or physical resources prefers 'malgastar' or 'despilfarrar'.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    }\n  ]\n}"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "E.prompt.es.2",
+     "title": "Call 2: 12 Spanish words",
+     "why": "Answered by gemini-3.5-flash-lite in 3.2 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the commentary for an audio vocabulary programme. Music plays, a native presenter says\neach Spanish word and its translation, and after some words the **guide** adds one short\nremark in English, the learner's own language. That remark is the only talk in the\nprogramme, so it has to earn its place: it should make the word more memorable, or clearer, in a\nfew seconds. Chatter, filler and praise are worthless here.\n\nThese are the kinds of remark:\n\n- `register`: how blunt, polite, slangy or formal the word is, and what to say instead in the other\n  register. \"The blunt way to say it; in polite company, say…\"\n- `contrast`: how it differs from a word the learner could confuse it with.\n- `false_friend`: it looks or sounds like a English word and means something else.\n- `pronunciation`: one concrete thing to listen for, such as a sound, the stress, or a silent letter.\n- `mnemonic`: a keyword or image that links the sound to the meaning. It must be vivid and\n  concrete, and it may be absurd.\n- `joke`: a pun, an absurd image or a wry observation that makes you smile at the word.\n- `culture`: where, when or by whom it is really said.\n\nFor each word below:\n1. Write **candidates** for every kind that genuinely fits this word, and only those. One or two\n   kinds fit most words, and none fits only a few. Each candidate is **at most 25 words**, spoken\n   by the guide in English, and may quote the Spanish word. It never repeats the\n   translation the listener has just heard.\n2. Mark `factual: true` on any candidate that states a fact that could be wrong: an etymology, a\n   regional claim, a usage statistic. Base facts on the notes given with the word, and do not\n   invent an etymology. A candidate that is only a mnemonic, a joke or an image is never factual.\n3. **Pick** the one candidate that would do the most for this word, by its index. Pick two only\n   when both are strong and of different kinds.\n4. Abstain, with an empty `pick` and a short `abstain` reason in English, only when every candidate\n   would be filler. Try hard first: a good mnemonic or joke can be made for almost any word.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"factual\": false}], \"pick\": [0], \"abstain\": \"\"}]}\n\nThe words, with their notes:\n\n[\n {\n  \"headword\": \"aleatorio\",\n  \"primaryGloss\": \"random\",\n  \"shortGloss\": \"random; chance\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Que depende del azar o de la suerte y no sigue un orden fijo o previsible.\",\n  \"notes\": [\n   \"\\\"Aleatorio\\\" is the standard adjective for \\\"random\\\" (e.g., in statistics, computing, or formal contexts). For everyday conversational speech, Spanish often uses prepositional phrases like \\\"al azar\\\" instead of the adjective.\"\n  ]\n },\n {\n  \"headword\": \"la multa\",\n  \"primaryGloss\": \"fine\",\n  \"shortGloss\": \"fine; ticket; penalty\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Sanción de dinero que se impone por no respetar una ley o norma.\",\n  \"notes\": [\n   \"Commonly used with the verbs 'poner' (to issue/give a fine: 'poner una multa') and 'pagar' (to pay a fine: 'pagar una multa').\",\n   \"A traffic ticket is specifically called 'una multa de tráfico' or 'una multa de tránsito'.\"\n  ]\n },\n {\n  \"headword\": \"engañar\",\n  \"primaryGloss\": \"deceive\",\n  \"shortGloss\": \"to deceive; to cheat on\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"Hacer creer a alguien algo que no es verdad, o actuar con falsedad para obtener un beneficio.\",\n  \"notes\": [\n   \"Used both for general deception or trickery ('engañar a alguien') and specifically for romantic infidelity ('to cheat on someone').\",\n   \"In the pronominal form 'engañarse', it means 'to deceive oneself' or 'to be mistaken' ('no te engañes' = 'don't kid yourself').\"\n  ]\n },\n {\n  \"headword\": \"zarandear\",\n  \"primaryGloss\": \"to shake vigorously\",\n  \"shortGloss\": \"to shake vigorously; to jostle\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"emotion\": \"rough and abrupt, like a sudden violent movement\",\n  \"definition\": \"Mover a una persona o una cosa de un lado a otro con rapidez y fuerza.\",\n  \"notes\": [\n   \"Unlike 'sacudir' (to shake off dust, to shake gently) or 'agitar' (to shake a liquid or wave a hand), 'zarandear' implies rough, forceful, or chaotic shaking, often by grabbing someone or handling an object roughly.\"\n  ]\n },\n {\n  \"headword\": \"broncearse\",\n  \"primaryGloss\": \"to get a tan\",\n  \"shortGloss\": \"to get a tan; to tan\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ],\n  \"definition\": \"Adquirir la piel un color moreno por la exposición a los rayos del sol.\",\n  \"notes\": [\n   \"Reflexive verb referring to the result of darkening one's skin in the sun. Contrast with \\\"tomar el sol\\\" (to sunbathe, the activity itself) and \\\"quemarse\\\" (to get sunburned).\"\n  ]\n },\n {\n  \"headword\": \"el discurso\",\n  \"primaryGloss\": \"speech\",\n  \"shortGloss\": \"speech; address; discourse\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"definition\": \"Texto o exposición oral sobre un tema que se pronuncia en público.\",\n  \"notes\": [\n   \"Commonly used with verbs like 'dar un discurso' or 'pronunciar un discurso' (to give / deliver a speech).\",\n   \"Beyond a formal speech, it also translates to 'discourse' or 'rhetoric' in political and social contexts (e.g., 'el discurso oficial').\"\n  ]\n },\n {\n  \"headword\": \"el perejil\",\n  \"primaryGloss\": \"parsley\",\n  \"shortGloss\": \"parsley\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\"\n  ],\n  \"definition\": \"Hierba aromática de hojas verdes y divididas, muy utilizada como condimento en la cocina.\",\n  \"notes\": [\n   \"Commonly confused visually with 'cilantro' (coriander), but it has a milder, grassy flavor and pointed leaves rather than rounded ones.\",\n   \"In Argentine slang, 'un perejil' also refers to a nobody, scapegoat, or low-level fool.\"\n  ]\n },\n {\n  \"headword\": \"el bigote\",\n  \"primaryGloss\": \"mustache\",\n  \"shortGloss\": \"mustache; whiskers\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Appearance\"\n  ],\n  \"definition\": \"Pelo que nace sobre el labio superior en los seres humanos.\",\n  \"notes\": [\n   \"Frequently used in the plural (los bigotes) to refer to a person's mustache as well as an animal's whiskers.\",\n   \"Do not confuse with barba (beard) or perilla/chiva (goatee).\"\n  ]\n },\n {\n  \"headword\": \"ridículo\",\n  \"primaryGloss\": \"ridiculous\",\n  \"shortGloss\": \"ridiculous; absurd; paltry\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"mocking and amused at how absurd something appears\",\n  \"definition\": \"Que provoca risa o burla por ser extravagante, grotesco o inadecuado.\",\n  \"notes\": [\n   \"Used both for things that invite mockery or look absurd, and for amounts that are laughably small or insignificant (e.g. un precio ridículo).\",\n   \"To say 'to make a fool of oneself', Spanish uses the fixed verbal phrase hacer el ridículo (where ridículo functions as a masculine noun).\"\n  ]\n },\n {\n  \"headword\": \"conmovedor\",\n  \"primaryGloss\": \"moving\",\n  \"shortGloss\": \"moving; touching; poignant\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"warm, tender, and deeply empathetic\",\n  \"definition\": \"Que produce una emoción intensa o profunda, especialmente de compasión, ternura o tristeza.\",\n  \"notes\": [\n   \"Used for stories, speeches, gestures, or scenes that deeply stir emotions—especially tenderness, sympathy, or tears.\",\n   \"Do not confuse with 'emocionante', which often emphasizes excitement or thrill (like a nail-biting match or a thrilling adventure), whereas 'conmovedor' is strictly about being emotionally touched or moved.\"\n  ]\n },\n {\n  \"headword\": \"la pelota\",\n  \"primaryGloss\": \"ball\",\n  \"shortGloss\": \"ball\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"definition\": \"Objeto esférico que se usa en diversos juegos y deportes para golpear, lanzar o patear.\",\n  \"notes\": [\n   \"Use 'pelota' for round balls used in sports and games. In many Spanish-speaking regions, 'balón' is preferred for larger balls used in football, basketball, or volleyball, while 'pelota' is used for smaller ones like tennis or baseball, though regional usage varies.\"\n  ]\n },\n {\n  \"headword\": \"el presupuesto\",\n  \"primaryGloss\": \"budget\",\n  \"shortGloss\": \"budget; estimate, quote\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"definition\": \"Cálculo anticipado de los ingresos y gastos de una actividad económica o proyecto.\",\n  \"notes\": [\n   \"In business and trade, \\\"pedir un presupuesto\\\" means \\\"to ask for a quote/estimate\\\" from a contractor or vendor, rather than setting a budget.\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"aleatorio\",\n      \"candidates\": [\n        {\n          \"kind\": \"register\",\n          \"text\": \"This is the formal or technical word. For everyday speech, people usually say 'al azar'.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"la multa\",\n      \"candidates\": [\n        {\n          \"kind\": \"mnemonic\",\n          \"text\": \"Imagine multi-tasking while driving and getting a huge fine.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"engañar\",\n      \"candidates\": [\n        {\n          \"kind\": \"mnemonic\",\n          \"text\": \"Picture a guy named Gary pulling off a clever trick to deceive everyone.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"zarandear\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Unlike 'sacudir', which is a gentle dusting, 'zarandear' implies a rough, violent shake.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"broncearse\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"This is getting a tan; don't confuse it with 'quemarse', which means getting painfully sunburned.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"el discurso\",\n      \"candidates\": [\n        {\n          \"kind\": \"false_friend\",\n          \"text\": \"Don't be fooled—this means a speech, not a polite conversation or discussion.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"el perejil\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"In Argentina, calling someone 'un perejil' means they are a scapegoat or a nobody.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"el bigote\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"That's the mustache on the lip, not the 'barba' on the chin.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"ridículo\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Notice that 'hacer el ridículo' means to make a fool of yourself.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"conmovedor\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Use this for something touching and tear-jerking, unlike 'emocionante', which is thrilling or exciting.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"la pelota\",\n      \"candidates\": [\n        {\n          \"kind\": \"register\",\n          \"text\": \"While 'pelota' works for most balls, many regions prefer 'balón' for big sports balls.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"el presupuesto\",\n      \"candidates\": [\n        {\n          \"kind\": \"false_friend\",\n          \"text\": \"In business, asking for 'un presupuesto' usually means asking for a price quote, not a budget.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    }\n  ]\n}"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "E.prompt.en.3",
+     "title": "Call 3: 13 English words",
+     "why": "Answered by gemini-3.5-flash-lite in 3.9 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the commentary for an audio vocabulary programme. Music plays, a native presenter says\neach English word and its translation, and after some words the **guide** adds one short\nremark in Russian, the learner's own language. That remark is the only talk in the\nprogramme, so it has to earn its place: it should make the word more memorable, or clearer, in a\nfew seconds. Chatter, filler and praise are worthless here.\n\nThese are the kinds of remark:\n\n- `register`: how blunt, polite, slangy or formal the word is, and what to say instead in the other\n  register. \"The blunt way to say it; in polite company, say…\"\n- `contrast`: how it differs from a word the learner could confuse it with.\n- `false_friend`: it looks or sounds like a Russian word and means something else.\n- `pronunciation`: one concrete thing to listen for, such as a sound, the stress, or a silent letter.\n- `mnemonic`: a keyword or image that links the sound to the meaning. It must be vivid and\n  concrete, and it may be absurd.\n- `joke`: a pun, an absurd image or a wry observation that makes you smile at the word.\n- `culture`: where, when or by whom it is really said.\n\nFor each word below:\n1. Write **candidates** for every kind that genuinely fits this word, and only those. One or two\n   kinds fit most words, and none fits only a few. Each candidate is **at most 25 words**, spoken\n   by the guide in Russian, and may quote the English word. It never repeats the\n   translation the listener has just heard.\n2. Mark `factual: true` on any candidate that states a fact that could be wrong: an etymology, a\n   regional claim, a usage statistic. Base facts on the notes given with the word, and do not\n   invent an etymology. A candidate that is only a mnemonic, a joke or an image is never factual.\n3. **Pick** the one candidate that would do the most for this word, by its index. Pick two only\n   when both are strong and of different kinds.\n4. Abstain, with an empty `pick` and a short `abstain` reason in English, only when every candidate\n   would be filler. Try hard first: a good mnemonic or joke can be made for almost any word.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"factual\": false}], \"pick\": [0], \"abstain\": \"\"}]}\n\nThe words, with their notes:\n\n[\n {\n  \"headword\": \"riddle\",\n  \"primaryGloss\": \"загадка\",\n  \"shortGloss\": \"загадка; тайна\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Culture\"\n  ],\n  \"definition\": \"A clever question or statement asked as a puzzle to be solved.\",\n  \"notes\": [\n   \"A \\\"riddle\\\" is usually a word puzzle with an ingenious answer, whereas a \\\"mystery\\\" or \\\"enigma\\\" often refers to a real-life puzzling situation, person, or fact that is hard to explain.\"\n  ]\n },\n {\n  \"headword\": \"congeniality\",\n  \"primaryGloss\": \"дружелюбие\",\n  \"shortGloss\": \"дружелюбие; приятность; сходство характеров\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"definition\": \"The quality of being friendly, pleasant, and easy to get along with.\",\n  \"notes\": [\n   \"Do not confuse with 'congenital' (present from birth, e.g. a congenital condition). 'Congeniality' comes from 'congenial' (agreeable, compatible, or pleasant).\",\n   \"Often used to describe a friendly, harmonious atmosphere among colleagues, or the likeability and easygoing nature of a person (as in the title 'Miss Congeniality').\"\n  ]\n },\n {\n  \"headword\": \"bellow\",\n  \"primaryGloss\": \"реветь\",\n  \"shortGloss\": \"реветь; орать; рявкать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"emotion\": \"deep and resonant, demanding absolute attention\",\n  \"definition\": \"To shout in a loud, deep, and resonant voice, typically in anger or pain.\",\n  \"notes\": [\n   \"Unlike scream or shriek, which are high-pitched, bellow specifically describes a deep, loud, booming voice or sound, often associated with rage or large animals like bulls.\"\n  ]\n },\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\",\n  \"definition\": \"To become red in the face because of embarrassment, shyness, or shame.\",\n  \"notes\": [\n   \"Difference from \\\"flush\\\": \\\"blush\\\" is almost always caused by emotional reactions like embarrassment, shyness, or shame, whereas \\\"flush\\\" often refers to becoming red from heat, physical exertion, fever, or anger.\"\n  ]\n },\n {\n  \"headword\": \"judgement call\",\n  \"primaryGloss\": \"субъективное решение\",\n  \"shortGloss\": \"решение, основанное на личном мнении; субъективное решение\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"thoughtful and hesitant, weighing difficult choices\",\n  \"definition\": \"A decision that must be made by an individual based on their own opinion rather than on clear rules or facts.\",\n  \"notes\": [\n   \"A 'judgement call' is a decision that cannot be based on hard facts or rules, but rather on an individual's personal assessment of a situation.\",\n   \"It is often used in professional or competitive contexts where there is no single 'correct' answer.\"\n  ]\n },\n {\n  \"headword\": \"hollow\",\n  \"primaryGloss\": \"полый\",\n  \"shortGloss\": \"полый, пустой; глухой; бессмысленный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\"\n  ],\n  \"emotion\": \"sounding detached and descriptive\",\n  \"definition\": \"Having an empty space or cavity inside; not solid.\",\n  \"notes\": [\n   \"Literally describes objects with an empty space inside (e.g. \\\"a hollow tree\\\", \\\"hollow cheeks\\\").\",\n   \"Frequently used figuratively for promises, apologies, or victories that lack real substance, sincerity, or value (e.g. \\\"a hollow promise\\\", \\\"a hollow victory\\\").\"\n  ]\n },\n {\n  \"headword\": \"goner\",\n  \"primaryGloss\": \"обречённый\",\n  \"shortGloss\": \"обречённый; не жилец\",\n  \"pos\": \"noun\",\n  \"register\": \"slang\",\n  \"topics\": [\n   \"Slang\"\n  ],\n  \"emotion\": \"Fatalistic and resigned to an inevitable tragic end.\",\n  \"definition\": \"A person or thing that is doomed, ruined, or about to die or fail.\",\n  \"notes\": [\n   \"Used informally to describe someone or something that is doomed, beyond saving, or bound to fail or die.\",\n   \"Almost always used with the indefinite article in the predicate: \\\"to be a goner\\\".\"\n  ]\n },\n {\n  \"headword\": \"sloth\",\n  \"primaryGloss\": \"ленивец\",\n  \"shortGloss\": \"ленивец; лень, праздность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Nature\",\n   \"Culture\"\n  ],\n  \"definition\": \"A slow-moving tree-dwelling mammal of tropical Central and South America that hangs upside down from branches.\",\n  \"notes\": [\n   \"As an animal, it is countable. As a sin or personal quality meaning habitual laziness, it is uncountable and formal or literary (traditionally one of the seven deadly sins).\",\n   \"In everyday conversation, English speakers usually say 'laziness' rather than 'sloth' when describing people.\"\n  ]\n },\n {\n  \"headword\": \"concussion\",\n  \"primaryGloss\": \"сотрясение мозга\",\n  \"shortGloss\": \"сотрясение мозга\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Health\"\n  ],\n  \"definition\": \"A temporary injury to the brain caused by a hard hit to the head.\",\n  \"notes\": [\n   \"Most often used in medical or sports contexts. It frequently collocates with verbs like 'suffer', 'sustain', or 'diagnose' (e.g., 'to suffer a concussion').\"\n  ]\n },\n {\n  \"headword\": \"throng\",\n  \"primaryGloss\": \"толпа\",\n  \"shortGloss\": \"толпа; скопление людей\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"definition\": \"A large, densely packed crowd of people or animals.\",\n  \"notes\": [\n   \"Slightly more literary or vivid than *crowd*, usually emphasizing density and movement or pressing closeness.\"\n  ]\n },\n {\n  \"headword\": \"infatuation\",\n  \"primaryGloss\": \"слепое увлечение\",\n  \"shortGloss\": \"слепое увлечение; влюбленность\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"infatuated and slightly dizzy, caught up in intense romance\",\n  \"definition\": \"An intense, strong, and often unreasoning passion or attraction for someone, usually lasting only a short time.\",\n  \"notes\": [\n   \"Differs from 'love' in being intense, short-lived, and often unreasoning. While a 'crush' is informal and can be mild, 'infatuation' carries a stronger implication of foolish or obsessive passion that blinds someone to reality.\"\n  ]\n },\n {\n  \"headword\": \"frantically\",\n  \"primaryGloss\": \"лихорадочно\",\n  \"shortGloss\": \"лихорадочно; отчаянно\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\",\n   \"Emotions\"\n  ],\n  \"emotion\": \"panicked and rushed, feeling the intense pressure of time running out\",\n  \"definition\": \"In a hurried, disorganized, or desperate way, typically out of fear, panic, or extreme urgency.\",\n  \"notes\": [\n   \"Differs from simply 'quickly' or 'hurriedly' by carrying a strong sense of panic, chaos, or anxiety.\",\n   \"Very frequently collocated with verbs of searching, waving, calling, or rushing: 'searched frantically', 'waved frantically'.\"\n  ]\n },\n {\n  \"headword\": \"vicious\",\n  \"primaryGloss\": \"злобный\",\n  \"shortGloss\": \"злобный; жестокий; порочный\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"aggressive and hostile, carrying a threatening edge\",\n  \"definition\": \"Deliberately cruel, violent, or aggressively fierce.\",\n  \"notes\": [\n   \"Often used in the set phrase \\\"vicious circle\\\" (or \\\"vicious cycle\\\"), which describes a bad situation where a problem causes another problem that makes the original one even worse.\",\n   \"Unlike \\\"violent\\\", which simply describes physical force, \\\"vicious\\\" emphasizes cruelty, malicious intent, or fierce hostility.\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\n  \"words\": [\n    {\n      \"headword\": \"riddle\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"В отличие от mystery или enigma, которые обозначают реальные жизненные загадки, riddle — это именно словесная головоломка.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"congeniality\",\n      \"candidates\": [\n        {\n          \"kind\": \"false_friend\",\n          \"text\": \"Не путайте с congenital — «врождённый»! Здесь корень другой, он означает приятное сходство и дружелюбие.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"bellow\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"В отличие от высокотонного scream, bellow — это всегда раскатистый, утробный рев, как у быка или разъяренного человека.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"blush\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Blush — это краска на лице именно от стыда и смущения, а flush бывает от жары, бега или гнева.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"judgement call\",\n      \"candidates\": [\n        {\n          \"kind\": \"register\",\n          \"text\": \"Так называют решение, где нет чётких правил, и всё зависит исключительно от вашей личной интуиции и оценки.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"hollow\",\n      \"candidates\": [\n        {\n          \"kind\": \"mnemonic\",\n          \"text\": \"Представьте пустой ствол дерева — «гол» внутри, как пустые ворота. Hollow — полый, пустой.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"goner\",\n      \"candidates\": [\n        {\n          \"kind\": \"register\",\n          \"text\": \"Это разговорный сленг: сказать «I'm a goner» значит признать, что вам конец, спасения больше нет.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"sloth\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"В повседневной речи англоязычные люди скорее скажут laziness, а sloth звучит книжно или означает животное.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"concussion\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"Это слово постоянно звучит в спортивных новостях. Обычно говорят «to suffer a concussion» — получить сотрясение.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"throng\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"Это слово чуть более литературное, чем crowd, и подчёркивает, что толпа очень плотная и движется.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"infatuation\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"В отличие от долгой любви, infatuation — это слепая, безумная страсть, которая вспыхивает мгновенно и быстро гаснет.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"frantically\",\n      \"candidates\": [\n        {\n          \"kind\": \"contrast\",\n          \"text\": \"В отличие от простого быстрого движения, frantically всегда несёт оттенок паники, хаоса и отчаяния.\",\n          \"factual\": true\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    },\n    {\n      \"headword\": \"vicious\",\n      \"candidates\": [\n        {\n          \"kind\": \"culture\",\n          \"text\": \"Запомните частую фразу «vicious circle» — порочный круг, из которого невозможно выбраться.\",\n          \"factual\": false\n        }\n      ],\n      \"pick\": [\n        0\n      ],\n      \"abstain\": \"\"\n    }\n  ]\n}"
+      }
+     ],
+     "rate": false
+    },
+    {
+     "id": "E.prompt.en.4",
+     "title": "Call 4: 12 English words",
+     "why": "Answered by gemini-3.5-flash-lite in 3.6 s.",
+     "details": [
+      {
+       "summary": "Prompt",
+       "body": "You write the commentary for an audio vocabulary programme. Music plays, a native presenter says\neach English word and its translation, and after some words the **guide** adds one short\nremark in Russian, the learner's own language. That remark is the only talk in the\nprogramme, so it has to earn its place: it should make the word more memorable, or clearer, in a\nfew seconds. Chatter, filler and praise are worthless here.\n\nThese are the kinds of remark:\n\n- `register`: how blunt, polite, slangy or formal the word is, and what to say instead in the other\n  register. \"The blunt way to say it; in polite company, say…\"\n- `contrast`: how it differs from a word the learner could confuse it with.\n- `false_friend`: it looks or sounds like a Russian word and means something else.\n- `pronunciation`: one concrete thing to listen for, such as a sound, the stress, or a silent letter.\n- `mnemonic`: a keyword or image that links the sound to the meaning. It must be vivid and\n  concrete, and it may be absurd.\n- `joke`: a pun, an absurd image or a wry observation that makes you smile at the word.\n- `culture`: where, when or by whom it is really said.\n\nFor each word below:\n1. Write **candidates** for every kind that genuinely fits this word, and only those. One or two\n   kinds fit most words, and none fits only a few. Each candidate is **at most 25 words**, spoken\n   by the guide in Russian, and may quote the English word. It never repeats the\n   translation the listener has just heard.\n2. Mark `factual: true` on any candidate that states a fact that could be wrong: an etymology, a\n   regional claim, a usage statistic. Base facts on the notes given with the word, and do not\n   invent an etymology. A candidate that is only a mnemonic, a joke or an image is never factual.\n3. **Pick** the one candidate that would do the most for this word, by its index. Pick two only\n   when both are strong and of different kinds.\n4. Abstain, with an empty `pick` and a short `abstain` reason in English, only when every candidate\n   would be filler. Try hard first: a good mnemonic or joke can be made for almost any word.\n\nAnswer with a JSON object and nothing else:\n\n{\"words\": [{\"headword\": \"...\", \"candidates\": [{\"kind\": \"...\", \"text\": \"...\", \"factual\": false}], \"pick\": [0], \"abstain\": \"\"}]}\n\nThe words, with their notes:\n\n[\n {\n  \"headword\": \"frantically\",\n  \"primaryGloss\": \"лихорадочно\",\n  \"shortGloss\": \"лихорадочно; отчаянно\",\n  \"pos\": \"adv\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Actions\",\n   \"Emotions\"\n  ],\n  \"emotion\": \"panicked and rushed, feeling the intense pressure of time running out\",\n  \"definition\": \"In a hurried, disorganized, or desperate way, typically out of fear, panic, or extreme urgency.\",\n  \"notes\": [\n   \"Differs from simply 'quickly' or 'hurriedly' by carrying a strong sense of panic, chaos, or anxiety.\",\n   \"Very frequently collocated with verbs of searching, waving, calling, or rushing: 'searched frantically', 'waved frantically'.\"\n  ]\n },\n {\n  \"headword\": \"relinquish\",\n  \"primaryGloss\": \"отказываться\",\n  \"shortGloss\": \"отказываться от; уступать; отпускать\",\n  \"pos\": \"verb\",\n  \"register\": \"formal\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"To voluntarily give up or surrender power, control, a right, or a position, often unwillingly.\",\n  \"notes\": [\n   \"`relinquish` carries a sense of giving up something important (power, control, a right, or custody), often with reluctance or under formal circumstances. Unlike `give up`, which is neutral and everyday, `relinquish` is formal and usually takes an abstract noun as its direct object (*relinquish power*, *relinquish a claim*).\"\n  ]\n },\n {\n  \"headword\": \"hypocrite\",\n  \"primaryGloss\": \"лицемер\",\n  \"shortGloss\": \"лицемер, ханжа\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"scornful and accusing, pointing out shameful double standards\",\n  \"definition\": \"A person who pretends to have certain moral standards or beliefs that their actual behavior contradicts.\",\n  \"notes\": [\n   \"The related adjective is 'hypocritical' and the abstract noun is 'hypocrisy'.\",\n   \"Commonly used in conversational accusations such as 'Don't be such a hypocrite!' when someone's actions contradict their stated principles.\"\n  ]\n },\n {\n  \"headword\": \"nibble\",\n  \"primaryGloss\": \"грызть\",\n  \"shortGloss\": \"грызть; покусывать\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Food\",\n   \"Actions\"\n  ],\n  \"definition\": \"To take small, gentle bites of food.\",\n  \"notes\": [\n   \"Often used with the prepositions 'at' or 'on' when referring to eating casually or in tiny bites (e.g., 'to nibble on some cheese').\",\n   \"Unlike 'bite' (a single, firm action) or 'chew' (grinding food in the mouth), 'nibble' describes taking light, repeated, very small bites.\"\n  ]\n },\n {\n  \"headword\": \"virtue\",\n  \"primaryGloss\": \"добродетель\",\n  \"shortGloss\": \"добродетель; достоинство\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Culture\"\n  ],\n  \"definition\": \"Behavior showing high moral standards, or a specific good moral quality.\",\n  \"notes\": [\n   \"The opposite of a virtue is a \\\"vice\\\".\",\n   \"Commonly used in the formal idiom \\\"by virtue of\\\", which means \\\"because of\\\" or \\\"by reason of\\\" (e.g. \\\"by virtue of her position\\\").\"\n  ]\n },\n {\n  \"headword\": \"insurmountable\",\n  \"primaryGloss\": \"непреодолимый\",\n  \"shortGloss\": \"непреодолимый; неодолимый\",\n  \"pos\": \"adj\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Misc\"\n  ],\n  \"emotion\": \"grim and heavy, acknowledging a massive block in the path\",\n  \"definition\": \"Too great or difficult to be dealt with or overcome.\",\n  \"notes\": [\n   \"Commonly collocates with nouns like 'obstacle', 'challenge', 'difficulty', 'problem', 'barrier', and 'odds'.\"\n  ]\n },\n {\n  \"headword\": \"dread\",\n  \"primaryGloss\": \"страх\",\n  \"shortGloss\": \"страх; ужас; дурное предчувствие\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"heavy and ominous, as if something bad is looming\",\n  \"definition\": \"Great fear or apprehension about something that is going to happen or may happen.\",\n  \"notes\": [\n   \"\\\"Dread\\\" emphasizes persistent, heavy anxiety or fear about something in the future, whereas \\\"fear\\\" is more general and \\\"terror\\\" implies sudden, overwhelming panic.\"\n  ]\n },\n {\n  \"headword\": \"condone\",\n  \"primaryGloss\": \"потворствовать\",\n  \"shortGloss\": \"потворствовать; закрывать глаза на\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\",\n   \"Actions\"\n  ],\n  \"definition\": \"To accept, overlook, or allow bad or offensive behavior to continue.\",\n  \"notes\": [\n   \"Most commonly used in negative constructions, such as \\\"I cannot condone this behavior\\\" or \\\"we do not condone violence\\\".\",\n   \"It differs from \\\"forgive\\\": forgiving is a deliberate emotional release of resentment, whereas condoning means overlooking, tolerating, or implicitly approving of wrongful behavior by failing to object.\"\n  ]\n },\n {\n  \"headword\": \"faction\",\n  \"primaryGloss\": \"фракция\",\n  \"shortGloss\": \"фракция; группировка\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"definition\": \"A small organized group within a larger one, especially in politics, that has different opinions or interests from the rest.\",\n  \"notes\": [\n   \"A \\\"faction\\\" is a sub-group within a larger organization (like a political party, government, or union) that works against other members to promote its own specific interests. It differs from a general \\\"party\\\" or \\\"group\\\" because it implies internal division or conflict.\"\n  ]\n },\n {\n  \"headword\": \"refute\",\n  \"primaryGloss\": \"опровергать\",\n  \"shortGloss\": \"опровергать; доказывать ложность\",\n  \"pos\": \"verb\",\n  \"register\": \"formal\",\n  \"topics\": [\n   \"Actions\"\n  ],\n  \"definition\": \"To prove that a statement, claim, or theory is wrong or false using evidence or logical argument.\",\n  \"notes\": [\n   \"Careful writers distinguish \\\"refute\\\" from \\\"deny\\\": to \\\"deny\\\" is merely to claim something is false, while to \\\"refute\\\" means to successfully prove it wrong with evidence or reasoning.\"\n  ]\n },\n {\n  \"headword\": \"blush\",\n  \"primaryGloss\": \"краснеть\",\n  \"shortGloss\": \"краснеть; смущаться\",\n  \"pos\": \"verb\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Emotions\"\n  ],\n  \"emotion\": \"shy and vulnerable, caught off guard by unexpected warmth\",\n  \"definition\": \"To become red in the face because of embarrassment, shyness, or shame.\",\n  \"notes\": [\n   \"Difference from \\\"flush\\\": \\\"blush\\\" is almost always caused by emotional reactions like embarrassment, shyness, or shame, whereas \\\"flush\\\" often refers to becoming red from heat, physical exertion, fever, or anger.\"\n  ]\n },\n {\n  \"headword\": \"dignity\",\n  \"primaryGloss\": \"достоинство\",\n  \"shortGloss\": \"достоинство; чувство собственного достоинства\",\n  \"pos\": \"noun\",\n  \"register\": \"neutral\",\n  \"topics\": [\n   \"Social\"\n  ],\n  \"emotion\": \"calm, elevated, and deeply respectful\",\n  \"definition\": \"The state or quality of being worthy of honor and respect, or the sense of one's own value.\",\n  \"notes\": [\n   \"\\\"Dignity\\\" refers to quiet self-respect, moral worth, or composed behavior, whereas \\\"pride\\\" often carries a connotation of vanity, arrogance, or satisfaction in an achievement.\"\n  ]\n }\n]\n"
+      },
+      {
+       "summary": "Raw reply",
+       "body": "{\"words\": [\n  {\n    \"headword\": \"frantically\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"В отличие от обычного 'quickly', это слово означает паническую спешку, суету и хаос.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"relinquish\",\n    \"candidates\": [\n      {\n        \"kind\": \"register\",\n        \"text\": \"Это официальное слово. В повседневной речи лучше использовать просто 'give up'.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"hypocrite\",\n    \"candidates\": [\n      {\n        \"kind\": \"mnemonic\",\n        \"text\": \"Представьте «гиппопотама», который притворяется вегетарианцем, а сам ест мясо — настоящий лицемер.\",\n        \"factual\": false\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"nibble\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"В отличие от 'bite', когда кусают один раз и уверенно, 'nibble' — это щипать, есть маленькими кусочками.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"virtue\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"Полная противоположность этого слова — 'vice', то есть порок.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"insurmountable\",\n    \"candidates\": [\n      {\n        \"kind\": \"mnemonic\",\n        \"text\": \"Слово начинается с отрицания 'in-' и похоже на 'mount' — гору, которую невозможно перешагнуть.\",\n        \"factual\": false\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"dread\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"Это не просто внезапный 'fear' или 'terror', а долгое, давящее чувство тревоги перед будущим.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"condone\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"Не путайте с 'forgive': простить можно, а вот 'condone' значит молча поощрять или закрывать глаза на плохой поступок.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"faction\",\n    \"candidates\": [\n      {\n        \"kind\": \"false_friend\",\n        \"text\": \"Не путайте с русской «фракцией» в смысле химического состава — здесь это политическая группировка.\",\n        \"factual\": false\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"refute\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"«Deny» — это просто отрицать вину, а «refute» — именно опровергать чужие слова железными доказательствами.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"blush\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"Отличие от «flush»: blush всегда от стыда и смущения, а flush может быть от жары или гнева.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  },\n  {\n    \"headword\": \"dignity\",\n    \"candidates\": [\n      {\n        \"kind\": \"contrast\",\n        \"text\": \"В отличие от 'pride', которое может означать гордыню, 'dignity' — это всегда внутреннее благородство и самоуважение.\",\n        \"factual\": true\n      }\n    ],\n    \"pick\": [0],\n    \"abstain\": \"\"\n  }\n]}"
+      }
+     ],
+     "rate": false
+    }
+   ]
+  }
+ ]
+}

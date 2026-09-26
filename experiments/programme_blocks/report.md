@@ -1,8 +1,9 @@
 # Programme blocks: what the listening found
 
 The first full run of this experiment, scored on a tablet: 530 labels, 128 of them with a written
-note, plus the listener's overall remarks. The numbers below are read from `out/labels.json`, which
-is not tracked, so they are copied here to outlive it. What each section plays and why is in the
+note, plus the listener's overall remarks. The numbers below are read from `out/labels.json`, and
+every label names a card in that stage's `out/<stage>/report.json`; both are tracked, so any number
+here can be traced to what was scored. What each section plays and why is in the
 [README](README.md); what the blocks are for is `docs/plans/programme-loops.md`.
 
 **Read the text sections with one caveat.** The strong free text models were overloaded for the

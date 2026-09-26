@@ -12,7 +12,7 @@ from html import escape
 
 from common import OUT, read_report
 
-SECTIONS = ["drills", "syllables", "mixed", "context", "commentary", "framing"]
+SECTIONS = ["drills", "syllables", "mixed", "context", "commentary", "framing", "pronounce"]
 
 
 def _rating(rid: str, small: bool = False) -> str:
