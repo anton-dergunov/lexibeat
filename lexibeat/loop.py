@@ -27,7 +27,7 @@ import soundfile as sf
 from .api import MusicRequest, resolve_music
 from .arrange import SOURCE, TARGET, Cancelled, Event, arrange, render_speech
 from .formats import Format, FormatError, missing_requirements, needs_writer, renderable
-from .programme import estimated_bars, needs_phrases, phrases
+from .programme import estimated_bars, phrase_keys, phrases
 from .script import Script, ScriptError, needs as script_needs, parse as parse_script
 from .script import prompt as script_prompt
 from .writer import WriteRequest, Writer
@@ -90,8 +90,7 @@ class LoopRequest:
             raise LoopError(f"Format: {exc}") from exc
         # A writer can supply missing phrases at render time, so only a format with no writer text
         # can be refused for them here.
-        if needs_phrases(fmt) and not needs_writer(fmt) and \
-                phrases(self.target_language.code) is None:
+        if missing_phrases(fmt, self.target_language) and not needs_writer(fmt):
             raise LoopError(f"Format: format '{fmt.id}' needs learner-language phrases, and there "
                             f"are none for {self.target_language.name} "
                             f"({self.target_language.code}) yet")
@@ -351,6 +350,12 @@ def render_loop(
     )
 
 
+def missing_phrases(fmt: Format, language: Language) -> list[str]:
+    """The learner-language phrases a format speaks that no phrase file has for this language."""
+    table = phrases(language.code) or {}
+    return [key for key in phrase_keys(fmt) if not table.get(key)]
+
+
 def write_script(fmt: Format, items: Sequence[Item], *, source_language: Language,
                  target_language: Language, writer: Writer) -> Script:
     """One writer call for the whole programme, read by the script parser.
@@ -358,7 +363,7 @@ def write_script(fmt: Format, items: Sequence[Item], *, source_language: Languag
     A reply that cannot be used raises `LoopError` with the parser's own sentence, which says what
     was wrong; retrying is the host's model chain's business, not this one's.
     """
-    need = script_needs(fmt, phrases_missing=phrases(target_language.code) is None)
+    need = script_needs(fmt, missing_phrases=missing_phrases(fmt, target_language))
     text = writer.write(WriteRequest(script_prompt(
         need, items, source_language=source_language, target_language=target_language)))
     try:

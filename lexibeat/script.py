@@ -26,6 +26,16 @@ from .language import Language
 from .vocab import Item
 
 PROMPTS = Path(__file__).resolve().parent / "prompts"
+# What each phrase is, for a writer asked to supply the ones a learner language has no file for.
+PHRASE_ASKS = {
+    "your_turn": "very short invitations to say the word aloud (\"Your turn.\")",
+    "quiz": "one line announcing a quick check of the words just heard (\"Quick check: do you "
+            "remember these?\")",
+    "review": "one line announcing that every word comes once more (\"Now, all the words "
+              "once more.\")",
+    "intro": "one opening line with `{count_words}` where the number of words goes",
+    "outro": "one closing line (\"That's all for today.\")",
+}
 MAX_LINE = 500
 MAX_DIRECTION = 200
 
@@ -47,7 +57,8 @@ class Needs:
     groups: bool = False
     intro: bool = False
     outro: bool = False
-    phrases: bool = False
+    # Learner-language phrases the format speaks and no phrase file has, by phrase-file key.
+    phrases: tuple[str, ...] = ()
     # An example the format always plays must be written for every word.
     example_required: bool = False
 
@@ -82,20 +93,21 @@ class Script:
     outro: Line | None = None
     title: str = ""
     beats: tuple[tuple[Line, ...], ...] = ()
-    your_turn: tuple[str, ...] = ()
+    phrases: dict[str, tuple[str, ...]] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict, compare=False)
 
 
 # -- what to ask for -----------------------------------------------------------------------------
 
 
-def needs(fmt: Format, *, phrases_missing: bool = False) -> Needs:
+def needs(fmt: Format, *, missing_phrases: Sequence[str] = ()) -> Needs:
+    """What to ask the writer for. `missing_phrases` are the phrase-file keys the format speaks
+    that the learner language has no phrase file for."""
     example = example_required = hard = False
     remarks: list[str] = []
     callbacks: list[str] = []
     chunk = None
     intro = outro = groups = False
-    uses_cue = False
     for section in fmt.sections:
         if section.kind == "intro" and section.params.get("text") == "writer":
             intro = True
@@ -115,17 +127,13 @@ def needs(fmt: Format, *, phrases_missing: bool = False) -> Needs:
                     remarks += [k for k in one.value if k not in remarks]
                 elif one.kind == "callback":
                     callbacks += [k for k in one.value if k not in callbacks]
-                elif one.kind == "cue":
-                    uses_cue = True
                 if one.when == "hard_to_say":
                     hard = True
-    template_text = any(s.kind in ("intro", "outro") and s.params.get("text", "template")
-                        == "template" for s in fmt.sections)
     return Needs(example=example, remark_kinds=tuple(remarks), hard_to_say=hard,
                  callback_kinds=tuple(callbacks), chunk=chunk,
                  order=fmt.order in ("writer", "group_by_topic") or chunk is not None,
                  groups=groups or fmt.order == "group_by_topic", intro=intro, outro=outro,
-                 phrases=phrases_missing and (uses_cue or template_text),
+                 phrases=tuple(missing_phrases),
                  example_required=example_required)
 
 
@@ -181,8 +189,10 @@ def prompt(need: Needs, items: Sequence[Item], *, source_language: Language,
         shape["title"] = '"..."'
         shape["beats"] = '[{"lines": [{"text": "...", "translation": "...", "direction": "..."}]}]'
     if need.phrases:
-        parts.append(_part("part_phrases"))
-        shape["your_turn"] = '["...", "..."]'
+        parts.append(_part("part_phrases") + "\n" + "\n".join(
+            f"- `{key}`: {PHRASE_ASKS[key]}" for key in need.phrases))
+        shape["phrases"] = "{" + ", ".join(f'"{key}": ["...", "..."]'
+                                           for key in need.phrases) + "}"
     if word_shape:
         inner = ", ".join(f'"{k}": {v}' for k, v in {"item": "0", **word_shape}.items())
         shape = {"words": f"[{{{inner}}}]", **shape}
@@ -345,13 +355,18 @@ def parse(text: str, need: Needs, count: int) -> Script:
             beats.append(tuple(_line(line, f"{where}.lines[{n}]", translated=True)
                                for n, line in enumerate(lines_raw)))
 
-    your_turn: tuple[str, ...] = ()
+    phrases: dict[str, tuple[str, ...]] = {}
     if need.phrases:
-        raw = data.get("your_turn")
-        _need(isinstance(raw, list) and len(raw) >= 3, "your_turn", "holds at least three lines")
-        your_turn = tuple(_text(p, "your_turn", "line", limit=60) for p in raw)
+        raw = data.get("phrases")
+        _need(isinstance(raw, dict), "phrases", "is an object of phrase lists")
+        for key in need.phrases:
+            lines = raw.get(key)
+            _need(isinstance(lines, list) and len(lines) >= 3, f"phrases.{key}",
+                  "holds at least three lines")
+            phrases[key] = tuple(_text(line, f"phrases.{key}", "line", limit=120)
+                                 for line in lines)
     return Script(tuple(words), order, tuple(groups), intro, outro, title, tuple(beats),
-                  your_turn, data)
+                  phrases, data)
 
 
 def placeholder(need: Needs, count: int) -> Script:
@@ -368,4 +383,4 @@ def placeholder(need: Needs, count: int) -> Script:
         groups=((("…", tuple(range(count))),) if need.groups and count else ()),
         intro=line if need.intro else None, outro=line if need.outro else None,
         beats=tuple((line,) for _ in range(-(-count // need.chunk))) if need.chunk else (),
-        your_turn=("…",) if need.phrases else ())
+        phrases={key: ("…",) for key in need.phrases})

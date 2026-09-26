@@ -63,12 +63,17 @@ versioned contract, and its mistakes would surface as validation errors in someo
 | `kind` | What it is | Takes |
 |---|---|---|
 | `intro` | The opening line | `text`: `template` (the default) or `writer` |
-| `words` | Each word in turn, through its `block` | `block`; `group_headers` (a line before each topic group); `chunk` (words taken so many at a time) with `after_chunk` (steps after each chunk) |
-| `quiz` | A recall pass over the words | `block`; `at`: `middle` or `end` |
-| `review` | Every word again | `block`; `stretch`; `bed`: `same` or `quicker`; `choice` |
+| `words` | Each word in turn, through its `block` | `block`; `repetitions` (how many times the block's repeated run plays, 1–6); `group_headers` (a line before each topic group); `chunk` (words taken so many at a time) with `after_chunk` (steps after each chunk); `choice` |
+| `quiz` | A recall pass over the words | `block`; `at`: `middle` or `end`; `announce` |
+| `review` | Every word again | `block`; `stretch`; `bed`: `same` or `quicker`; `announce`; `choice` |
 | `outro` | The closing line | `text` |
 
 Any section may carry `switch`, naming a switch that turns it off.
+
+A `quiz` and a `review` **announce themselves**: the guide says what is coming ("Now, all the words
+once more") before the first word, in one of several wordings from the phrase files. `announce:
+false` leaves it out. A word heard again with no warning sounds like a mistake, or like the drill
+starting over.
 
 ### Steps
 
@@ -98,6 +103,10 @@ Every step may also carry:
   a remark. A step with `then` needs a `when` other than `always`, and a `then` step takes no `when`,
   `switch` or `then` of its own.
 - **`switch`**: a switch that turns the step off.
+- **`repeat`**: marks the step as part of the block's **repeated run**, which plays as many times as
+  the words section's `repetitions` says (once by default). The steps marked `repeat` stand
+  together, and there is one run per block. It is how a listener chooses how many times each word
+  is said, through a switch whose `choice` sets `repetitions`.
 
 **Bars.** A step takes one bar, and each line starts on its bar's downbeat. `gap` and `rest` take
 the number of bars they name. A line whose length depends on its text — a remark, a story beat —
@@ -108,8 +117,8 @@ takes as many whole bars as it needs.
 ```json
 {
   "switches": {
-    "remarks": {"label": "Remarks about words", "default": true},
-    "review":  {"label": "Final review", "default": "normal", "choices": ["off", "normal", "fast"]}
+    "remarks":     {"label": "Remarks about words", "default": true},
+    "repetitions": {"label": "Times each word is said", "default": "3", "choices": ["2", "3", "4"]}
   }
 }
 ```
@@ -127,13 +136,19 @@ built into the grammar rather than left to each format:
 - **Pronunciation help is the whole word, said slowly** (`pronounce: "slow_whole"`). Split into
   syllables it was wrong on about half the words tried, on every voice, with or without a written
   pronunciation.
-- **Fast comes from stretching, slow from asking.** `stretch` goes no higher than 1.2: past that, a
-  recording sounds processed. Slowness is asked of the voice (`pace: "slow"`), because a slowed
-  recording sounds metallic.
+- **Slowness is asked for, never made.** `pace: "slow"` goes to the voice, because a slowed recording
+  sounds metallic. `stretch` can speed a line up, to at most 1.2, but **no built-in format uses
+  it**: in a real loop even 1.1× on the Gemini voice was heard as metallic against the rest.
 - **Remarks are about hearing, meaning and use.** There is no grammar kind, and no remark about
   spelling: the programme is listened to.
-- **A remark or a mnemonic is followed by the word**, with `then`.
-- **A story is followed by a review**, so its words are heard plainly once more.
+- **A remark comes before the example**, as something about the word itself, and the word is not
+  said again after it: in a real loop that repetition was heard as a recap starting.
+- **A pair belongs together.** Where a quiz or a review says both sides, it says them back to back
+  and then rests, so the two are heard as one unit; a gap between them splits it.
+- **A word's block ends in a rest**, and so does a story beat, so each is heard as one block rather
+  than running straight into the next.
+- **A quiz and a review announce themselves**, and **a story is followed by a review**, so its words
+  are heard plainly once more.
 
 ## Examples
 
@@ -176,8 +191,9 @@ This is the built-in `classic`.
 
 ### Radio lesson
 
-An intro, each word with an example and, where the writer finds one worth it, a remark; a quiz
-halfway; every word again at the end.
+An intro, then each word said three times with a recall gap after the first (the listener can
+choose two or four), a remark where the writer finds one worth it, an example, and the word said
+slowly if it is one learners say wrong; a quiz halfway; every word again at the end.
 
 ```json
 {
@@ -188,28 +204,28 @@ halfway; every word again at the end.
   "fallback": "classic",
   "order": "group_by_topic",
   "switches": {
+    "repetitions": {"label": "Times each word is said", "default": "3", "choices": ["2", "3", "4"]},
     "remarks": {"label": "Remarks about words", "default": true},
-    "quiz":    {"label": "Quiz halfway", "default": true},
-    "review":  {"label": "Final review", "default": "normal", "choices": ["off", "normal", "fast"]}
+    "quiz": {"label": "Quiz halfway", "default": true},
+    "review": {"label": "Final review", "default": true}
   },
   "sections": [
     {"kind": "intro", "text": "writer"},
-    {"kind": "words", "group_headers": true, "block": [
+    {"kind": "words", "group_headers": true, "switch": "repetitions", "repetitions": 2,
+     "choice": {"2": {"repetitions": 1}, "3": {"repetitions": 2}, "4": {"repetitions": 3}},
+     "block": [
       {"say": "word"}, {"gap": 1}, {"say": "translation"},
-      {"say": "word"}, {"say": "translation"},
-      {"example": "writer", "translate": true},
+      {"say": "word", "repeat": true}, {"say": "translation", "repeat": true},
       {"remark": {"kinds": ["contrast", "register", "false_friend", "mnemonic", "culture"]},
-       "when": "writer_decides", "switch": "remarks",
-       "then": [{"say": "word"}, {"say": "word"}]},
-      {"pronounce": "slow_whole", "when": "hard_to_say",
-       "then": [{"say": "word"}]},
+       "when": "writer_decides", "switch": "remarks"},
+      {"example": "writer", "translate": true},
+      {"pronounce": "slow_whole", "when": "hard_to_say", "then": [{"say": "word"}]},
       {"rest": 1}
     ]},
     {"kind": "quiz", "at": "middle", "switch": "quiz",
-     "block": [{"say": "translation"}, {"gap": 1}, {"say": "word"}]},
+     "block": [{"say": "translation"}, {"say": "word"}, {"rest": 1}]},
     {"kind": "review", "switch": "review",
-     "block": [{"say": "word"}, {"say": "translation"}],
-     "choice": {"fast": {"stretch": 1.2}}},
+     "block": [{"say": "word"}, {"say": "translation"}, {"rest": 1}]},
     {"kind": "outro", "text": "writer"}
   ]
 }
@@ -221,21 +237,22 @@ halfway; every word again at the end.
 {
   "id": "story",
   "label": "Story",
-  "description": "A short story told in pieces between the words, then every word again, briskly.",
+  "description": "A short story told in pieces between the words, then every word again.",
   "requires": ["writer"],
   "order": "writer",
   "sections": [
     {"kind": "intro", "text": "writer"},
     {"kind": "words", "chunk": 2,
-     "block": [{"say": "word"}, {"say": "translation"}, {"say": "word"}],
-     "after_chunk": [{"story_beat": "writer"}]},
-    {"kind": "review", "block": [{"say": "word"}, {"say": "translation"}], "stretch": 1.1},
+     "block": [{"say": "word"}, {"say": "translation"}, {"say": "word"}, {"rest": 1}],
+     "after_chunk": [{"story_beat": "writer"}, {"rest": 1}]},
+    {"kind": "review", "block": [{"say": "word"}, {"say": "translation"}, {"rest": 1}]},
     {"kind": "outro", "text": "writer"}
   ]
 }
 ```
 
-Words come two at a time, and a piece of the story follows each pair. `order: "writer"` lets the
+Words come two at a time, each block ending in a rest, and a piece of the story follows each pair,
+with a rest of its own. `order: "writer"` lets the
 writer arrange the words to fit its plot.
 
 ### Review, for words already known
@@ -244,11 +261,10 @@ writer arrange the words to fit its plot.
 {
   "id": "review",
   "label": "Review",
-  "description": "The meaning first, a pause to find the word, then a quick run through all of them.",
+  "description": "For words you know: the meaning first, a pause to find the word, then all of them once more.",
   "sections": [
-    {"kind": "words", "block": [{"say": "translation"}, {"gap": 1}, {"say": "word"}]},
-    {"kind": "review", "block": [{"say": "word"}, {"say": "translation"}],
-     "stretch": 1.2, "bed": "quicker"}
+    {"kind": "words", "block": [{"say": "translation"}, {"gap": 1}, {"say": "word"}, {"rest": 1}]},
+    {"kind": "review", "block": [{"say": "word"}, {"say": "translation"}, {"rest": 1}]}
   ]
 }
 ```
@@ -288,9 +304,10 @@ point the wanted behaviour becomes a **named capability** instead: a new `when`,
 |---|---|---|
 | A hard word gets two more bars | Yes | `when: "hard_to_say"` with `then` |
 | Repeat the word after a remark | Yes | `then` |
+| Say each word three times, or four, as the listener chooses | Yes, the one counter | A `repeat` run, `repetitions`, and a switch's `choice` |
 | Speed up gradually over the loop | A parameter | A `ramp` on a section, if it is ever wanted |
 | A B A B across two words, not within one | A new section kind | `interleave`, not a construct |
-| Every third word, a quiz on the last three | Borderline | One counter (`every: 3`) is tolerable; two is a language |
+| Every third word, a quiz on the last three | No | `repetitions` is the one counter the grammar has; a second is a language |
 | Extra practice for a verb that is also hard to say | No | Needs `and` and word data from the host: an expression language |
 | A callback to a related earlier word | No, and not needed | A judgement: the writer makes it (`natural_link`) |
 | Under five minutes, dropping remarks first | No | A priority policy, and the planner's |
@@ -309,9 +326,11 @@ render missing a requirement renders the format's `fallback` instead, and says s
 (`format` is the fallback, `fallback_from` the one asked for); without a fallback it is refused,
 naming the requirement.
 
-**Learner-language phrases** — the cues, and the intro and outro when their `text` is `template` —
-come from `lexibeat/formats/phrases/<language>.json`: English, Russian and Spanish for now. A format
-that needs them is refused for a learner language without a phrase file, by name.
+**Learner-language phrases** — the cues, the quiz and review announcements, and the intro and outro
+when their `text` is `template` — come from `lexibeat/formats/phrases/<language>.json`: English,
+Russian and Spanish for now, with several wordings of each, varied from line to line by the seed. For
+a learner language with no phrase file, a writer, when there is one, writes them for that render;
+without a writer the format is refused, naming the language.
 
 ## The timeline
 
@@ -320,7 +339,8 @@ A render's result carries two views of what was said:
 - **`items`**, one row per word, from its block in the words section: `index`, `source`, `target`,
   `direction`, `start`, `end`, and `source_reveal` and `target_reveal` — when each side is first
   heard, which is what a retrieval display turns on. A side the block never says has no reveal.
-- **`cues`**, every line in the order it is heard: `kind` (`say`, `cue`, `intro`, `outro`),
+- **`cues`**, every line in the order it is heard: `kind` (`say`, `cue`, `announce`, `intro`,
+  `outro`, and the written kinds),
   `section`, `item` (none for a line that belongs to no word), `side` (`source` or `target`, for a
   word's own line), `role`, `language`, `text`, `take`, `start`, `end`. A word appears in it as
   often as it is said — twice, in a format with a review.

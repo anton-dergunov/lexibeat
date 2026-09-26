@@ -19,6 +19,20 @@
     "Ahora dilo tú.",
     "Prueba tú."
   ],
+  "quiz": [
+    "¿Te acuerdas de estas?",
+    "Veamos qué recuerdas.",
+    "Un repaso rápido.",
+    "A ver si las recuerdas.",
+    "Ahora, de memoria."
+  ],
+  "review": [
+    "Ahora, todas las palabras otra vez.",
+    "Repasemos todas.",
+    "Una vez más, cada palabra.",
+    "Es hora de repasar.",
+    "Aquí están todas otra vez."
+  ],
   "intro": [
     "Hoy, {count_words}.",
     "Hoy tenemos {count_words}.",

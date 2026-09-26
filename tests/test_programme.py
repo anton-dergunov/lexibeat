@@ -22,7 +22,8 @@ WORDS = [Item("el atasco", "traffic jam"), Item("la cebolla", "onion"),
 
 
 def planned(data_or_id, words=WORDS, seed=0, target=ENGLISH):
-    fmt = formats.renderable(data_or_id)
+    fmt = data_or_id if isinstance(data_or_id, formats.Format) else \
+        formats.renderable(data_or_id)
     return plan(fmt, words, source_language=SPANISH, target_language=target, seed=seed)
 
 
@@ -45,19 +46,26 @@ class PlanTests(unittest.TestCase):
         sections = [s.section for s in programme.lines]
         self.assertEqual(sections[0], "intro")
         self.assertEqual(sections[-1], "outro")
+        # A quiz and a review each open with a line saying what is coming.
+        self.assertEqual([s.section for s in programme.lines if s.kind == "announce"],
+                         ["quiz", "review"])
         # Three words (the first half of five, rounded up), then the quiz over those three.
         quiz_at = sections.index("quiz")
         self.assertEqual([s.item for s in programme.lines[:quiz_at] if s.section == "words"],
                          [0, 0, 1, 1, 2, 2])
-        self.assertEqual(sorted({s.item for s in programme.lines if s.section == "quiz"}),
-                         [0, 1, 2])
-        self.assertEqual(sorted({s.item for s in programme.lines if s.section == "review"}),
+        self.assertEqual(sorted({s.item for s in programme.lines
+                                 if s.section == "quiz" and s.item is not None}), [0, 1, 2])
+        self.assertEqual(sorted({s.item for s in programme.lines
+                                 if s.section == "review" and s.item is not None}),
                          [0, 1, 2, 3, 4])
 
     def test_a_quiz_at_the_end_follows_every_word_and_covers_them_all(self) -> None:
         programme = planned(fmt(WORDS_SECTION, {"kind": "quiz", "block": [{"say": "word"}]}))
         sections = [s.section for s in programme.lines]
-        self.assertEqual(sections, ["words"] * 10 + ["quiz"] * 5)
+        self.assertEqual(sections, ["words"] * 10 + ["quiz"] * 6)
+        quiet = planned(fmt(WORDS_SECTION, {"kind": "quiz", "announce": False,
+                                            "block": [{"say": "word"}]}))
+        self.assertFalse(any(s.kind == "announce" for s in quiet.lines))
 
     def test_take_indices_continue_across_sections(self) -> None:
         programme = planned("review")
@@ -118,19 +126,40 @@ class RenderTests(unittest.TestCase):
                                  output=Path(tmp) / "loop.mp3")
         return result, backend
 
-    def test_a_review_says_every_word_twice_and_its_lines_are_shorter(self) -> None:
+    def test_a_review_announces_itself_and_says_every_word_again(self) -> None:
         result, backend = self.render(format="review")
-        words = [cue for cue in result.cues if cue["section"] == "words"]
         review = [cue for cue in result.cues if cue["section"] == "review"]
-        self.assertEqual(len(review), 2 * len(result.items))
-        for cue in review:
+        self.assertEqual(review[0]["kind"], "announce")
+        self.assertIn(review[0]["text"], phrases("en")["review"])
+        pairs = [cue for cue in review if cue["kind"] == "say"]
+        self.assertEqual(len(pairs), 2 * len(result.items))
+        for cue in pairs:
             self.assertEqual(sum(1 for c in result.cues if c["text"] == cue["text"]), 2)
-        drill = max(cue["end"] - cue["start"] for cue in words)
-        brisk = max(cue["end"] - cue["start"] for cue in review)
-        self.assertAlmostEqual(brisk, drill / 1.2, delta=0.02)
         # The meaning comes first in this format, so it is revealed first.
         row = result.items[0]
         self.assertLess(row["target_reveal"], row["source_reveal"])
+
+    def test_a_stretched_line_is_shorter(self) -> None:
+        stretched = fmt(WORDS_SECTION, {"kind": "review", "announce": False, "stretch": 1.2,
+                                        "block": [{"say": "word"}]})
+        result, _ = self.render(format=stretched)
+        drill = max(c["end"] - c["start"] for c in result.cues if c["section"] == "words")
+        brisk = max(c["end"] - c["start"] for c in result.cues if c["section"] == "review")
+        self.assertAlmostEqual(brisk, drill / 1.2, delta=0.02)
+
+    def test_the_listener_chooses_how_many_times_each_word_is_said(self) -> None:
+        chosen = fmt(
+            {"kind": "words", "switch": "times", "repetitions": 2,
+             "choice": {"2": {"repetitions": 1}, "4": {"repetitions": 3}},
+             "block": [{"say": "word"}, {"gap": 1}, {"say": "translation"},
+                       {"say": "word", "repeat": True}, {"say": "translation", "repeat": True},
+                       {"rest": 1}]},
+            switches={"times": {"label": "Times", "default": "3", "choices": ["2", "3", "4"]}})
+        for times, pairs in (("2", 2), ("3", 3), ("4", 4)):
+            programme = planned(formats.resolve(formats.parse(chosen), {"times": times}))
+            said = [s for s in programme.lines if s.item == 0 and s.side == "source"]
+            self.assertEqual(len(said), pairs, times)
+            self.assertEqual([s.take for s in said], list(range(pairs)))
 
     def test_every_line_tells_the_voice_who_says_it(self) -> None:
         result, backend = self.render(format="echo")

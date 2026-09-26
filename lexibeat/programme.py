@@ -25,7 +25,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Sequence
 
-from .formats import HERE, SAY_ROLES, SOURCE, TARGET, Format, FormatError, Step, needs_writer
+from .formats import (HERE, SAY_ROLES, SOURCE, TARGET, Format, FormatError, Step, expanded,
+                      needs_writer)
 from .language import Language
 from .script import Script, needs as script_needs, placeholder
 from .vocab import Item
@@ -114,10 +115,27 @@ def count_words(code: str, count: int) -> str:
     return f"{count} {forms.get(_plural(code, count), forms.get('other', ''))}".strip()
 
 
+def announced(section) -> bool:
+    """A quiz or a review says what it is before it starts, unless the format says not to."""
+    return section.kind in ("quiz", "review") and section.params.get("announce", True)
+
+
+def phrase_keys(fmt: Format) -> tuple[str, ...]:
+    """Which learner-language phrases a resolved format speaks, as phrase-file keys."""
+    keys: list[str] = []
+    for section in fmt.sections:
+        if any(step.kind == "cue" for step in section.block) and "your_turn" not in keys:
+            keys.append("your_turn")
+        if section.kind in ("intro", "outro") and \
+                section.params.get("text", "template") == "template":
+            keys.append(section.kind)
+        if announced(section) and section.kind not in keys:
+            keys.append(section.kind)
+    return tuple(keys)
+
+
 def needs_phrases(fmt: Format) -> bool:
-    return any(step.kind == "cue" for section in fmt.sections for step in section.block) or \
-        any(section.kind in ("intro", "outro") and section.params.get("text", "template")
-            == "template" for section in fmt.sections)
+    return bool(phrase_keys(fmt))
 
 
 def _pick(options: Sequence[str], seed: int, index: int) -> str:
@@ -151,8 +169,9 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
     if needs_writer(fmt) and script is None:
         raise FormatError(f"format '{fmt.id}' takes text from a writer, and this render has none")
     table = dict(phrases(target_language.code) or {})
-    if script is not None and script.your_turn and "your_turn" not in table:
-        table["your_turn"] = list(script.your_turn)
+    if script is not None:
+        for key, lines in script.phrases.items():
+            table.setdefault(key, list(lines))
     if needs_phrases(fmt) and not _has_phrases(fmt, table):
         raise FormatError(f"format '{fmt.id}' needs learner-language phrases, and there are none "
                           f"for {target_language.name} ({target_language.code}) yet")
@@ -254,6 +273,11 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
 
     def over(section, indices: Sequence[int]) -> None:
         stretch = section.params.get("stretch", 1.0)
+        if announced(section):
+            # Say what is coming: a word heard again without a word of warning sounds like a
+            # mistake, or like the drill starting over.
+            guide(_pick(table[section.kind], seed, len(segments)), section.kind, None,
+                  "announce", TEMPLATE_DIRECTION)
         for index in indices:
             steps(section.kind, section.block, index, items[index], stretch=stretch)
 
@@ -267,6 +291,7 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
             elif step.kind == "rest":
                 segments.append(Segment(kind="rest", section="words", bars=step.value))
 
+    drill = expanded(words)
     headers = {}
     if words.params.get("group_headers") and script is not None:
         headers = {members[0]: title for title, members in script.groups}
@@ -279,7 +304,7 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
             for position, index in enumerate(order):
                 if index in headers:
                     guide(headers[index], "words", None, "header", TEMPLATE_DIRECTION)
-                steps("words", words.block, index, items[index], block_id=block)
+                steps("words", drill, index, items[index], block_id=block)
                 block += 1
                 taught = position + 1
                 if chunk and (taught % chunk == 0 or taught == count):
@@ -299,13 +324,7 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
 
 
 def _has_phrases(fmt: Format, table: dict) -> bool:
-    for section in fmt.sections:
-        if section.kind in ("intro", "outro") and section.params.get("text", "template") \
-                == "template" and section.kind not in table:
-            return False
-        if any(step.kind == "cue" and step.value not in table for step in section.block):
-            return False
-    return True
+    return all(table.get(key) for key in phrase_keys(fmt))
 
 
 # A line whose length depends on its text is estimated at this many bars before it is written.
@@ -319,7 +338,7 @@ def estimated_bars(fmt: Format, count: int) -> int:
     `ESTIMATED_BARS_PER_LINE`, and every optional one as though it happens.
     """
     words = [Item(f"w{i}", f"t{i}") for i in range(max(count, 0))]
-    need = script_needs(fmt, phrases_missing=False)
+    need = script_needs(fmt)
     written = placeholder(need, len(words)) if need.any else None
     programme = plan(fmt, words, source_language=Language("xx", "x"),
                      target_language=Language("en", "English"), script=written)

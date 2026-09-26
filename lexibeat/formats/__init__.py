@@ -53,9 +53,11 @@ _SWITCH = re.compile(r"^[a-z][a-z0-9_]{0,31}$")
 RENDERED_SECTIONS = {"intro", "words", "quiz", "review", "outro"}
 RENDERED_STEPS = {"say", "gap", "rest", "cue", "example", "remark", "pronounce", "story_beat",
                   "callback"}
-RENDERED_SECTION_PARAMS = {"quiz": {"at"}, "review": {"stretch"}, "intro": {"text"},
-                           "outro": {"text"}, "words": {"group_headers", "chunk"}}
-RENDERED_STEP_PARAMS = {"say": {"pace", "stretch"}, "example": {"translate"}}
+RENDERED_SECTION_PARAMS = {"quiz": {"at", "announce"}, "review": {"stretch", "announce"},
+                           "intro": {"text"}, "outro": {"text"},
+                           "words": {"group_headers", "chunk", "repetitions"}}
+RENDERED_STEP_PARAMS = {"say": {"pace", "stretch", "repeat"}, "gap": {"repeat"},
+                        "rest": {"repeat"}, "cue": {"repeat"}, "example": {"translate"}}
 RENDERED_AFTER_CHUNK = {"story_beat", "rest"}
 # Which steps each named check can decide. `hard_to_say` is about the word, so it can gate
 # anything; the others are about what the writer wrote, so they gate only a step it writes.
@@ -185,9 +187,14 @@ def _kinds(value: Any, allowed: tuple[str, ...], where: str) -> tuple[str, ...]:
 
 
 _STEP_PARAMS = {
-    "say": {"pace", "stretch"},
+    "say": {"pace", "stretch", "repeat"},
+    "gap": {"repeat"},
+    "rest": {"repeat"},
+    "cue": {"repeat"},
     "example": {"translate"},
 }
+# How many times a block's repeated run can play: the one counter the grammar allows.
+MAX_REPETITIONS = 6
 _COMMON_STEP_KEYS = {"when", "then", "switch"}
 
 
@@ -224,6 +231,10 @@ def _step(data: Any, where: str, *, nested: bool = False) -> Step:
     if "translate" in data:
         _need(isinstance(data["translate"], bool), where, "'translate' is true or false")
         params["translate"] = data["translate"]
+    if "repeat" in data:
+        _need(data["repeat"] is True, where, "'repeat' is true, or left out")
+        _need(not nested, where, "a 'then' step cannot be repeated")
+        params["repeat"] = True
 
     when = _one_of(data.get("when", "always"), WHEN, where, "'when'")
     then: tuple[Step, ...] = ()
@@ -243,22 +254,30 @@ def _step(data: Any, where: str, *, nested: bool = False) -> Step:
     return Step(kind, value, params, when, then, switch)
 
 
-def _block(data: Any, where: str, allowed: tuple[str, ...]) -> tuple[Step, ...]:
+def _block(data: Any, where: str, allowed: tuple[str, ...], *,
+           repeats: bool = False) -> tuple[Step, ...]:
     _need(isinstance(data, list) and data, where, "a non-empty list of steps")
     steps = tuple(_step(s, f"{where}[{i}]") for i, s in enumerate(data))
     for i, step in enumerate(steps):
         _need(step.kind in allowed, f"{where}[{i}]",
               f"'{step.kind}' is not a step this section takes ({', '.join(allowed)})")
+    marked = [i for i, step in enumerate(steps) if step.params.get("repeat")]
+    if marked:
+        _need(repeats, where, "only a 'words' block has a repeated run")
+        _need(marked == list(range(marked[0], marked[-1] + 1)), where,
+              "the steps marked 'repeat' must stand together: one run, repeated as a whole")
     return steps
 
 
 _SECTION_KEYS = {
     "intro": {"text"},
     "outro": {"text"},
-    "words": {"block", "group_headers", "chunk", "after_chunk"},
-    "quiz": {"block", "at"},
-    "review": {"block", "stretch", "bed", "choice"},
+    "words": {"block", "group_headers", "chunk", "after_chunk", "repetitions", "choice"},
+    "quiz": {"block", "at", "announce"},
+    "review": {"block", "stretch", "bed", "choice", "announce"},
 }
+# Keys a section's `choice` may not override: its steps, and the choice itself.
+_NOT_CHOSEN = {"block", "choice", "after_chunk"}
 _SECTION_STEPS = {
     "words": STEP_KINDS,
     "quiz": ("say", "gap", "rest", "cue"),
@@ -282,6 +301,15 @@ def _section_params(kind: str, data: Mapping[str, Any], where: str) -> dict[str,
         params["stretch"] = _stretch(data["stretch"], where)
     if "bed" in data:
         params["bed"] = _one_of(data["bed"], BEDS, where, "'bed'")
+    if "repetitions" in data:
+        value = data["repetitions"]
+        _need(isinstance(value, int) and not isinstance(value, bool)
+              and 1 <= value <= MAX_REPETITIONS, where,
+              f"'repetitions' is a whole number from 1 to {MAX_REPETITIONS}, not {value!r}")
+        params["repetitions"] = value
+    if "announce" in data:
+        _need(isinstance(data["announce"], bool), where, "'announce' is true or false")
+        params["announce"] = data["announce"]
     return params
 
 
@@ -292,7 +320,8 @@ def _section(data: Any, where: str) -> Section:
     block: tuple[Step, ...] = ()
     if kind in _SECTION_STEPS:
         _need("block" in data, where, f"a '{kind}' section needs a 'block'")
-        block = _block(data["block"], f"{where}.block", _SECTION_STEPS[kind])
+        block = _block(data["block"], f"{where}.block", _SECTION_STEPS[kind],
+                       repeats=kind == "words")
     after: tuple[Step, ...] = ()
     if "after_chunk" in data:
         _need("chunk" in data, where, "'after_chunk' runs after each 'chunk', so it needs one")
@@ -305,12 +334,16 @@ def _section(data: Any, where: str) -> Section:
         for name, overrides in raw.items():
             at = f"{where}.choice.{name}"
             _need(isinstance(overrides, dict) and overrides, at, "an object of overrides")
-            _keys(overrides, _SECTION_KEYS[kind] - {"block", "choice"}, at)
+            _keys(overrides, _SECTION_KEYS[kind] - _NOT_CHOSEN, at)
             choice[name] = _section_params(kind, overrides, at)
     switch = data.get("switch")
     if switch is not None:
         _need(isinstance(switch, str), where, "'switch' names a switch")
-    return Section(kind, block, _section_params(kind, data, where), after, choice, switch)
+    params = _section_params(kind, data, where)
+    if "repetitions" in params or any("repetitions" in c for c in choice.values()):
+        _need(any(step.params.get("repeat") for step in block), where,
+              "'repetitions' counts the block's repeated run, and no step is marked 'repeat'")
+    return Section(kind, block, params, after, choice, switch)
 
 
 def _switch(name: str, data: Any, where: str) -> Switch:
@@ -534,10 +567,21 @@ def renderable(format: str | Mapping[str, Any],
 # -- expansion ---------------------------------------------------------------------------------
 
 
+def expanded(section: Section) -> tuple[Step, ...]:
+    """A section's block with its repeated run played `repetitions` times (once by default)."""
+    marked = [i for i, step in enumerate(section.block) if step.params.get("repeat")]
+    if not marked:
+        return section.block
+    first, last = marked[0], marked[-1] + 1
+    times = section.params.get("repetitions", 1)
+    return (*section.block[:first], *section.block[first:last] * times,
+            *section.block[last:])
+
+
 def _section_slots(section: Section) -> list[tuple[str, int]]:
     slots: list[tuple[str, int]] = []
     said = {SOURCE: 0, TARGET: 0}
-    for step in section.block:
+    for step in expanded(section):
         if step.kind == "say":
             role = SAY_ROLES[step.value]
             slots.append((role, said[role]))

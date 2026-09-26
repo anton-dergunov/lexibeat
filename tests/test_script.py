@@ -156,14 +156,17 @@ class PlanTests(unittest.TestCase):
 
     def test_then_follows_only_a_step_that_happened(self) -> None:
         lines = self.plan("radio-lesson").lines
-        # Word 1 has a remark, so it is heard twice more after it; word 0 is hard to say, so it
-        # is said slowly and then once more; word 2 has neither.
+        # Word 1 has a remark, which comes before its example and is not followed by the word;
+        # word 0 is hard to say, so it is said slowly and then once more; word 2 has neither.
         def after(item, kind):
             mine = [s for s in lines if s.item == item and s.section == "words"]
             at = next(i for i, s in enumerate(mine) if s.kind == kind)
             return [(s.kind, s.side) for s in mine[at + 1:]]
-        self.assertEqual(after(1, "remark"), [("say", "source"), ("say", "source")])
+        self.assertEqual(after(1, "remark")[:2], [("example", None), ("translation", None)])
         self.assertEqual(after(0, "pronounce"), [("say", "source")])
+        # Three pairs by default, before anything the writer wrote.
+        self.assertEqual(sum(1 for s in lines if s.item == 2 and s.section == "words"
+                             and s.side == "source"), 3)
         self.assertFalse(any(s.kind in ("remark", "pronounce") for s in lines if s.item == 2))
         slow = next(s for s in lines if s.kind == "pronounce")
         self.assertEqual((slow.pace, slow.bars, slow.role), ("slow", None, "native"))
@@ -174,8 +177,12 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(list(dict.fromkeys(taught)), [2, 0, 1, 3])
         headers = [(s.text, lines[i + 1].item) for i, s in enumerate(lines) if s.kind == "header"]
         self.assertEqual(headers, [("Around town", 2), ("Food and fines", 1)])
-        # The midpoint quiz covers the first half as taught: words 2 and 0.
-        self.assertEqual(sorted({s.item for s in lines if s.section == "quiz"}), [0, 2])
+        # The midpoint quiz covers the first half as taught: words 2 and 0, each pair back to
+        # back after the quiz is announced.
+        quiz = [s for s in lines if s.section == "quiz"]
+        self.assertEqual(quiz[0].kind, "announce")
+        self.assertEqual([(s.item, s.side) for s in quiz[1:]],
+                         [(2, "target"), (2, "source"), (0, "target"), (0, "source")])
 
     def test_a_story_beat_follows_each_group_of_words(self) -> None:
         lines = self.plan("story").lines
@@ -235,7 +242,7 @@ class RenderTests(unittest.TestCase):
                        "sections": [{"kind": "words", "block": [
                            {"say": "word"}, {"cue": "your_turn"}, {"say": "translation"},
                            {"example": "writer"}]}]}
-        answer = reply(your_turn=["Sua vez.", "Agora você.", "Diga."])
+        answer = reply(phrases={"your_turn": ["Sua vez.", "Agora você.", "Diga."]})
         result, _ = render(echo_writer, FakeWriter(answer),
                            target_language=Language("pt", "Portuguese"))
         cues = [cue["text"] for cue in result.cues if cue["kind"] == "cue"]

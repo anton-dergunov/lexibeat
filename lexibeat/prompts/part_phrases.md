@@ -1,3 +1,3 @@
-**Prompts to speak.** Write eight different very short lines (one to four words) in
-{{learner_language}} with which the guide invites the listener to say the word aloud ("Your
-turn.", "Now you."). Give them as `your_turn`.
+**Phrases.** The guide says a few fixed lines in {{learner_language}} around the words. Write five
+different ones of each kind below, short, warm and natural in {{learner_language}}, and give them
+under `phrases`, keyed by kind:

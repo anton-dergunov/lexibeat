@@ -68,7 +68,9 @@ class SchemaTests(unittest.TestCase):
                                  "story"})
         radio = next(row for row in schema["formats"] if row["id"] == "radio-lesson")
         self.assertEqual(radio["requires"], ["writer", "multilingual_voice"])
-        self.assertEqual(radio["switches"]["review"]["choices"], ["off", "normal", "fast"])
+        self.assertEqual(radio["switches"]["repetitions"],
+                         {"label": "Times each word is said", "default": "3",
+                          "choices": ["2", "3", "4"]})
         classic = next(row for row in schema["formats"] if row["id"] == "classic")
         self.assertTrue(classic["has_recall_gap"])
         self.assertEqual(classic["utterances_per_item"], 6)

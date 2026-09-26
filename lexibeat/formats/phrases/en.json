@@ -20,6 +20,20 @@
     "Say it with me.",
     "Now, you say it."
   ],
+  "quiz": [
+    "Quick check: do you remember these?",
+    "Let's see what stuck.",
+    "Pause here: can you recall these?",
+    "A quick test of the words so far.",
+    "Now, from memory."
+  ],
+  "review": [
+    "Now, all the words once more.",
+    "Let's go over them again.",
+    "One more time, every word.",
+    "Time to review everything.",
+    "Here they all are again."
+  ],
   "intro": [
     "Today: {count_words}.",
     "{count_words} today.",
