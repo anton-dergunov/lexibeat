@@ -163,4 +163,5 @@ cards say so instead. A later run fills them in from where it stopped.
 
 ## Verdicts
 
-To be written from `out/labels.json` once the page has been scored.
+The first run has been scored; what the listening found, section by section, is in
+[report.md](report.md).
