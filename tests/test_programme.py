@@ -161,6 +161,10 @@ class RenderTests(unittest.TestCase):
             self.assertEqual(len(said), pairs, times)
             self.assertEqual([s.take for s in said], list(range(pairs)))
 
+    def test_a_classic_word_s_drill_is_one_group(self) -> None:
+        result, _ = self.render(format="classic")
+        self.assertEqual([cue["group"] for cue in result.cues], [0] * 6 + [1] * 6)
+
     def test_every_line_tells_the_voice_who_says_it(self) -> None:
         result, backend = self.render(format="echo")
         roles = {(seen.language.code, seen.role) for seen in backend.seen}

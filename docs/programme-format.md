@@ -344,6 +344,12 @@ A render's result carries two views of what was said:
   `section`, `item` (none for a line that belongs to no word), `side` (`source` or `target`, for a
   word's own line), `role`, `language`, `text`, `take`, `start`, `end`. A word appears in it as
   often as it is said — twice, in a format with a review.
+- **`group`**, on every cue, says which lines are **shown together**: a word's own lines for one
+  word in one section (its drill, a quiz or review pair), a line and its `translation`. Every other
+  line — an example, a remark, a story line, a header, an announcement — is a group of its own.
+  Groups rise in the order heard, and a player shows a group from its first line's start until the
+  next group starts, revealing each line as it is first heard. One function assigns them
+  (`programme.group_lines`), so a player never has to guess which line translates which.
 
 ## Written lines
 

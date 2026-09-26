@@ -201,6 +201,42 @@ class PlanTests(unittest.TestCase):
                                                                               "guide"))
 
 
+class GroupTests(unittest.TestCase):
+    def groups(self, format_id: str):
+        result, _ = render(format_id, FakeWriter())
+        by_group: dict[int, list[dict]] = {}
+        for cue in result.cues:
+            by_group.setdefault(cue["group"], []).append(cue)
+        return result, by_group
+
+    def test_groups_rise_in_the_order_heard(self) -> None:
+        result, _ = self.groups("radio-lesson")
+        groups = [cue["group"] for cue in result.cues]
+        self.assertEqual(groups, sorted(groups))
+        self.assertEqual(groups[0], 0)
+
+    def test_a_drill_a_remark_and_an_example_are_three_groups(self) -> None:
+        _, by_group = self.groups("radio-lesson")
+        word1 = [[c["kind"] for c in cues] for cues in by_group.values()
+                 if cues[0]["item"] == 1 and cues[0]["section"] == "words"]
+        self.assertEqual(word1, [["say"] * 6, ["remark"], ["example", "translation"]])
+
+    def test_a_quiz_pair_is_one_group_and_its_announcement_another(self) -> None:
+        _, by_group = self.groups("radio-lesson")
+        quiz = [[(c["kind"], c["side"]) for c in cues] for cues in by_group.values()
+                if cues[0]["section"] == "quiz"]
+        self.assertEqual(quiz[0], [("announce", None)])
+        self.assertTrue(all(pair == [("say", "target"), ("say", "source")] for pair in quiz[1:]))
+        review = [cues for cues in by_group.values() if cues[0]["section"] == "review"]
+        self.assertEqual(len(review), 1 + len(WORDS))
+
+    def test_a_story_line_and_its_translation_are_one_group(self) -> None:
+        _, by_group = self.groups("story")
+        story = [[c["kind"] for c in cues] for cues in by_group.values()
+                 if cues[0]["kind"] == "story"]
+        self.assertTrue(story and all(kinds == ["story", "translation"] for kinds in story))
+
+
 class RenderTests(unittest.TestCase):
     def test_a_writer_format_renders_its_written_lines(self) -> None:
         writer = FakeWriter()

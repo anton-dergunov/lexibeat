@@ -82,6 +82,35 @@ class Programme:
         return sum(segment.bars or 0 for segment in self.segments)
 
 
+# -- groups ------------------------------------------------------------------------------------
+
+# A word's own lines: one after another for the same word in the same section, they are one group.
+WORD_LINES = ("say", "pronounce", "cue")
+
+
+def group_lines(lines: Sequence) -> list[int]:
+    """Which lines are shown together, as one rising group number per line.
+
+    Takes anything with `kind`, `item` and `section`, in the order heard. A word's own lines for the
+    same word in the same section form one group: its drill, one quiz or review pair, the word said
+    slowly and then again. A `translation` joins the line before it. Every other kind — an example,
+    a remark, a story line, a header, an announcement — starts a group of its own.
+    """
+    groups: list[int] = []
+    current = -1
+    previous = None
+    for line in lines:
+        joins = previous is not None and (
+            line.kind == "translation"
+            or (line.kind in WORD_LINES and previous.kind in WORD_LINES
+                and line.item == previous.item and line.section == previous.section))
+        if not joins:
+            current += 1
+        groups.append(current)
+        previous = line
+    return groups
+
+
 # -- phrases -----------------------------------------------------------------------------------
 
 

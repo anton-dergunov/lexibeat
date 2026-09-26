@@ -349,6 +349,34 @@ def _argentina_flag(draw: Any, x: int, y: int, w: int, h: int) -> None:
                   x + w // 2 + r, y + h // 2 + r), fill=(246, 183, 54))
 
 
+def _spain_flag(draw: Any, x: int, y: int, w: int, h: int) -> None:
+    draw.rounded_rectangle((x, y, x + w, y + h), radius=8, fill=(198, 11, 30))
+    draw.rectangle((x, y + h // 4, x + w, y + h - h // 4), fill=(255, 196, 0))
+
+
+def _language_badge(draw: Any, x: int, y: int, w: int, h: int, code: str,
+                    font_path: Path | None) -> None:
+    draw.rounded_rectangle((x, y, x + w, y + h), radius=8, fill=(86, 104, 140))
+    font = _load_font(font_path, max(12, h // 2))
+    label = code.split("-")[0].upper()[:3]
+    box = draw.textbbox((0, 0), label, font=font)
+    draw.text((x + (w - (box[2] - box[0])) / 2, y + (h - (box[3] - box[1])) / 2 - box[1]),
+              label, font=font, fill=(240, 244, 255))
+
+
+def _flag(draw: Any, code: str, x: int, y: int, w: int, h: int,
+          font_path: Path | None) -> None:
+    """A flag for a language as the voices here speak it: Spain's for Spanish (the voices are from
+    mainland Spain), Britain's for English, and a badge with the code for anything else."""
+    base = code.split("-")[0].lower()
+    if base == "es":
+        _spain_flag(draw, x, y, w, h)
+    elif base == "en":
+        _british_flag(draw, x, y, w, h)
+    else:
+        _language_badge(draw, x, y, w, h, code, font_path)
+
+
 def _british_flag(draw: Any, x: int, y: int, w: int, h: int) -> None:
     draw.rounded_rectangle((x, y, x + w, y + h), radius=8, fill=(35, 55, 116))
     thick = max(4, h // 7)
@@ -415,17 +443,7 @@ def frame_bytes(title: str, timeline: Sequence[dict[str, Any]], duration: float,
     body_font_path = resolve_font(font_path)
     small = _load_font(body_font_path, 24)
     medium = _load_font(body_font_path, 31)
-    brand = _load_font(body_font_path, 30)
-    draw.text((56, 39), title, font=brand, fill=(238, 242, 255, 235))
-    draw.text((DEMO_WIDTH - 274, 45), "SPANISH  /  ENGLISH", font=small,
-              fill=(185, 205, 225, 195))
-
-    beat_phase = (at % grid.bar) / grid.bar
-    pulse = max(0.0, 1.0 - beat_phase * 5.5)
-    radius = int(5 + pulse * 7)
-    draw.ellipse((DEMO_WIDTH // 2 - radius, 72 - radius,
-                  DEMO_WIDTH // 2 + radius, 72 + radius),
-                 fill=(77, 222, 181, int(90 + 120 * pulse)))
+    _chrome(draw, title, "SPANISH  /  ENGLISH", at, grid, body_font_path)
 
     row = _active_item(timeline, at)
     if row is None:
@@ -471,12 +489,182 @@ def frame_bytes(title: str, timeline: Sequence[dict[str, Any]], duration: float,
             label += f"    ·    {str(row['direction']).upper()}"
         _centered_text(draw, label, 619, small, (155, 187, 204, 190))
 
+    _progress(draw, at, duration)
+    return image.tobytes()
+
+
+def _chrome(draw: Any, title: str, languages: str, at: float, grid: Grid,
+            font_path: Path | None) -> None:
+    """What every frame carries: the title, the language pair, and a pulse on each downbeat."""
+    small = _load_font(font_path, 24)
+    brand = _load_font(font_path, 30)
+    draw.text((56, 39), title, font=brand, fill=(238, 242, 255, 235))
+    box = draw.textbbox((0, 0), languages, font=small)
+    draw.text((DEMO_WIDTH - 56 - (box[2] - box[0]), 45), languages, font=small,
+              fill=(185, 205, 225, 195))
+    beat_phase = (at % grid.bar) / grid.bar
+    pulse = max(0.0, 1.0 - beat_phase * 5.5)
+    radius = int(5 + pulse * 7)
+    draw.ellipse((DEMO_WIDTH // 2 - radius, 72 - radius,
+                  DEMO_WIDTH // 2 + radius, 72 + radius),
+                 fill=(77, 222, 181, int(90 + 120 * pulse)))
+
+
+def _progress(draw: Any, at: float, duration: float) -> None:
     progress = min(max(at / max(duration, 0.001), 0.0), 1.0)
     draw.rounded_rectangle((56, 678, DEMO_WIDTH - 56, 685), radius=4,
                            fill=(104, 126, 156, 70))
     draw.rounded_rectangle((56, 678, 56 + int((DEMO_WIDTH - 112) * progress), 685),
                            radius=4, fill=(77, 222, 181, 205))
-    return image.tobytes()
+
+
+# -- a finished loop's own cues ------------------------------------------------------------------
+
+LANGUAGE_NAMES = {"es": "SPANISH", "en": "ENGLISH", "ru": "RUSSIAN", "fr": "FRENCH",
+                  "de": "GERMAN", "it": "ITALIAN", "pt": "PORTUGUESE", "zh": "CHINESE"}
+# What a group is, under the card, when it is not simply a word's own lines.
+KIND_LABELS = {"example": "EXAMPLE", "remark": "REMARK", "story": "STORY", "header": "TOPIC",
+               "callback": "CALLBACK", "pronounce": "SAY IT SLOWLY", "intro": "", "outro": ""}
+SECTION_LABELS = {"quiz": "QUIZ", "review": "REVIEW"}
+WORD_KINDS = ("say", "pronounce", "cue")
+CARD = (105, 145, DEMO_WIDTH - 105, 592)
+
+
+def cue_groups(cues: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The loop's cues as the cards a viewer sees: one per `group`, each with its distinct lines.
+
+    A line said several times in a drill is one row, with every time it is heard. A card is shown
+    from its first line's start until the next card's first line starts.
+    """
+    groups: dict[int, dict[str, Any]] = {}
+    for cue in cues:
+        group = groups.setdefault(int(cue["group"]), {
+            "start": float(cue["start"]), "kind": cue["kind"], "section": cue["section"],
+            "item": cue["item"], "rows": {}})
+        row = group["rows"].setdefault((cue["text"], cue["language"]), {
+            "text": cue["text"], "language": cue["language"], "kind": cue["kind"],
+            "side": cue["side"], "heard": []})
+        row["heard"].append((float(cue["start"]), float(cue["end"])))
+    ordered = [groups[key] for key in sorted(groups)]
+    for index, group in enumerate(ordered):
+        group["end"] = ordered[index + 1]["start"] if index + 1 < len(ordered) else math.inf
+        group["rows"] = list(group["rows"].values())
+    return ordered
+
+
+def _wrap(draw: Any, text: str, font_path: Path | None, maximum: int, minimum: int,
+          width: int, lines: int) -> tuple[Any, list[str]]:
+    """The largest font from `maximum` down at which `text` wraps into at most `lines` lines."""
+    words = text.split()
+    for size in range(maximum, minimum - 1, -2):
+        font = _load_font(font_path, size)
+        wrapped: list[str] = []
+        current = ""
+        for word in words:
+            trial = f"{current} {word}".strip()
+            if draw.textbbox((0, 0), trial, font=font)[2] <= width or not current:
+                current = trial
+            else:
+                wrapped.append(current)
+                current = word
+        wrapped.append(current)
+        if len(wrapped) <= lines and all(draw.textbbox((0, 0), line, font=font)[2] <= width
+                                         for line in wrapped):
+            return font, wrapped
+    return _load_font(font_path, minimum), wrapped
+
+
+def _card_layout(draw: Any, group: dict[str, Any], font_path: Path | None) -> list[dict]:
+    """Where each row of a card goes, and at what size: worked out once per card, not per frame."""
+    rows = group["rows"]
+    height = (CARD[3] - CARD[1] - 40) / len(rows)
+    layout = []
+    for index, row in enumerate(rows):
+        word = row["kind"] in WORD_KINDS
+        biggest = (70 if row["side"] == "source" else 58) if word else 46
+        font, lines = _wrap(draw, row["text"], font_path, biggest, 26, 820,
+                            1 if word else (3 if len(rows) == 1 else 2))
+        line_height = font.size * 1.22
+        top = CARD[1] + 20 + index * height
+        text_top = top + (height - line_height * len(lines)) / 2
+        layout.append({"row": row, "font": font, "lines": lines, "top": top, "height": height,
+                       "text_top": text_top, "line_height": line_height})
+    return layout
+
+
+def _card_label(group: dict[str, Any], count: int) -> str:
+    parts = [SECTION_LABELS.get(group["section"], "")]
+    if group["kind"] not in WORD_KINDS or group["section"] not in SECTION_LABELS:
+        parts.append(KIND_LABELS.get(group["kind"], ""))
+    if group["item"] is not None:
+        parts.append(f"{int(group['item']) + 1:02d}  /  {count:02d}")
+    return "    ·    ".join(part for part in parts if part)
+
+
+def cue_frames(title: str, cues: Sequence[dict[str, Any]], items: Sequence[dict[str, Any]],
+               duration: float, grid: Grid, *, font_path: Path | None = None):
+    """A frame function for a finished loop: `frame(index, background) -> RGB bytes`.
+
+    Every spoken line is shown, card by card (`cue_groups`): a word with its translation, an example
+    with its translation, a remark, a line of the story. A row appears when it is first heard and
+    is lit while it is heard; each carries the flag of its language.
+    """
+    from PIL import Image, ImageDraw
+
+    groups = cue_groups(cues)
+    body_font_path = resolve_font(font_path)
+    native = next((c["language"] for c in cues if c.get("role") == "native"), "")
+    guide = next((c["language"] for c in cues if c.get("role") == "guide"), "")
+    languages = "  /  ".join(LANGUAGE_NAMES.get(code.split("-")[0], code.upper())
+                             for code in (native, guide) if code)
+    layouts: dict[int, list[dict]] = {}
+    small = _load_font(body_font_path, 24)
+    headline = _load_font(body_font_path, 72)
+    medium = _load_font(body_font_path, 31)
+
+    def frame(index: int, background: np.ndarray | None = None) -> bytes:
+        at = index / DEMO_FPS
+        image = Image.fromarray((background if background is not None
+                                 else _background()).copy())
+        draw = ImageDraw.Draw(image, "RGBA")
+        _chrome(draw, title, languages, at, grid, body_font_path)
+        current = next((n for n, g in enumerate(groups) if g["start"] <= at < g["end"]), None)
+        if current is None:
+            _centered_text(draw, "Vocabulary, set to a beat.", 252, headline,
+                           (244, 246, 255, 245))
+            _centered_text(draw, "Expressive Gemini voices · deterministic procedural music",
+                           355, medium, (174, 204, 216, 220))
+        else:
+            group = groups[current]
+            if current not in layouts:
+                layouts[current] = _card_layout(draw, group, body_font_path)
+            _rounded_rectangle(draw, CARD, 34, (14, 21, 47, 206), (126, 155, 186, 50), 2)
+            for slot in layouts[current]:
+                row = slot["row"]
+                if at < row["heard"][0][0]:
+                    continue
+                lit = any(start <= at < end for start, end in row["heard"])
+                top, height = slot["top"], slot["height"]
+                if lit:
+                    native_row = row["language"] == native
+                    _rounded_rectangle(
+                        draw, (132, int(top + 6), DEMO_WIDTH - 132, int(top + height - 6)), 25,
+                        (45, 94, 124, 125) if native_row else (72, 61, 118, 125),
+                        (102, 220, 194, 125) if native_row else (170, 139, 242, 125), 2)
+                _flag(draw, row["language"], 164, int(top + height / 2 - 22), 67, 44,
+                      body_font_path)
+                fill = (247, 250, 255, 255 if lit else 222)
+                for n, line in enumerate(slot["lines"]):
+                    box = draw.textbbox((0, 0), line, font=slot["font"])
+                    x = 250 + (DEMO_WIDTH - 250 - 164 - (box[2] - box[0])) / 2
+                    draw.text((x, slot["text_top"] + n * slot["line_height"]), line,
+                              font=slot["font"], fill=fill)
+            _centered_text(draw, _card_label(group, len(items)), 619, small,
+                           (155, 187, 204, 190))
+        _progress(draw, at, duration)
+        return image.tobytes()
+
+    return frame
 
 
 def _ffmpeg() -> str:
@@ -486,17 +674,13 @@ def _ffmpeg() -> str:
     return command
 
 
-def _write_frames(process: subprocess.Popen[bytes], title: str,
-                  timeline: Sequence[dict[str, Any]], duration: float,
-                  grid: Grid, font_path: Path | None) -> None:
+def _write_frames(process: subprocess.Popen[bytes], frame, duration: float) -> None:
     assert process.stdin is not None
     background = _background()
     total = math.ceil(duration * DEMO_FPS)
     try:
         for index in range(total):
-            process.stdin.write(frame_bytes(
-                title, timeline, duration, grid, index,
-                font_path=font_path, background=background))
+            process.stdin.write(frame(index, background))
         process.stdin.close()
         process.stdin = None
         _, stderr = process.communicate()
@@ -510,8 +694,16 @@ def _write_frames(process: subprocess.Popen[bytes], title: str,
 
 def encode_visual_track(title: str, timeline: Sequence[dict[str, Any]],
                         duration: float, grid: Grid, output: Path, *,
-                        font_path: Path | None = None) -> None:
-    """Quality-encode the shared silent H.264 visual stream."""
+                        font_path: Path | None = None, frame=None,
+                        crf: int = DEMO_VIDEO_CRF) -> None:
+    """Quality-encode the shared silent H.264 visual stream.
+
+    `frame(index, background)` draws each frame; without one it is the README demo's word card.
+    """
+    if frame is None:
+        def frame(index, background):
+            return frame_bytes(title, timeline, duration, grid, index,
+                               font_path=font_path, background=background)
     ffmpeg = _ffmpeg()
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(f".{os.getpid()}.partial.mp4")
@@ -521,16 +713,17 @@ def encode_visual_track(title: str, timeline: Sequence[dict[str, Any]],
              "-f", "rawvideo", "-pix_fmt", "rgb24",
              "-s:v", f"{DEMO_WIDTH}x{DEMO_HEIGHT}",
              "-r", str(DEMO_FPS), "-i", "-", "-an", "-c:v", "libx264",
-             "-preset", "slow", "-crf", str(DEMO_VIDEO_CRF),
+             "-preset", "slow", "-crf", str(crf),
              "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(temporary)],
             stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-        _write_frames(process, title, timeline, duration, grid, font_path)
+        _write_frames(process, frame, duration)
         os.replace(temporary, output)
     finally:
         temporary.unlink(missing_ok=True)
 
 
-def mux_audio(visual: Path, audio: Path, output: Path) -> None:
+def mux_audio(visual: Path, audio: Path, output: Path, *,
+              bitrate: int = DEMO_AUDIO_BITRATE) -> None:
     """Copy the shared H.264 stream and add one AAC music variant."""
     ffmpeg = _ffmpeg()
     temporary = output.with_suffix(f".{os.getpid()}.partial.mp4")
@@ -539,7 +732,7 @@ def mux_audio(visual: Path, audio: Path, output: Path) -> None:
             ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
             "-i", str(visual), "-i", str(audio), "-map", "0:v:0",
             "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac",
-            "-b:a", str(DEMO_AUDIO_BITRATE), "-pix_fmt", "yuv420p",
+            "-b:a", str(bitrate), "-pix_fmt", "yuv420p",
             "-movflags", "+faststart", "-shortest", str(temporary),
         ], capture_output=True, text=True)
         if result.returncode:

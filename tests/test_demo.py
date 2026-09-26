@@ -17,6 +17,8 @@ from lexibeat.demo import (
     PersistentSpeaker,
     arrange_demo,
     cache_key,
+    cue_frames,
+    cue_groups,
     demo_timeline,
     encode_visual_track,
     load_demo_config,
@@ -195,6 +197,40 @@ class DemoVideoIntegrationTests(unittest.TestCase):
                              (DEMO_WIDTH, DEMO_HEIGHT))
             self.assertEqual(video["pix_fmt"], "yuv420p")
             self.assertEqual(audio_stream["codec_name"], "aac")
+
+
+    def test_a_finished_loop_s_cues_become_cards_with_their_translations(self) -> None:
+        cues = [
+            {"kind": "say", "section": "words", "group": 0, "item": 0, "side": "source",
+             "role": "native", "language": "es", "text": "hola", "start": 0.0, "end": 0.1},
+            {"kind": "say", "section": "words", "group": 0, "item": 0, "side": "target",
+             "role": "guide", "language": "en", "text": "hello", "start": 0.12, "end": 0.2},
+            {"kind": "say", "section": "words", "group": 0, "item": 0, "side": "source",
+             "role": "native", "language": "es", "text": "hola", "start": 0.24, "end": 0.3},
+            {"kind": "example", "section": "words", "group": 1, "item": 0, "side": None,
+             "role": "native", "language": "es", "text": "Hola, ¿qué tal?", "start": 0.3,
+             "end": 0.4},
+            {"kind": "translation", "section": "words", "group": 1, "item": 0, "side": None,
+             "role": "guide", "language": "en", "text": "Hi, how are you?", "start": 0.4,
+             "end": 0.5},
+        ]
+        cards = cue_groups(cues)
+        self.assertEqual([[row["text"] for row in card["rows"]] for card in cards],
+                         [["hola", "hello"], ["Hola, ¿qué tal?", "Hi, how are you?"]])
+        self.assertEqual(len(cards[0]["rows"][0]["heard"]), 2)
+        self.assertEqual(cards[0]["end"], 0.3)
+        grid = Grid(bpm=84, beats_per_bar=4, beat_unit=4)
+        frame = cue_frames("LexiBeat", cues, [{"index": 0}], 0.5, grid)
+        self.assertEqual(len(frame(3)), DEMO_WIDTH * DEMO_HEIGHT * 3)
+        with tempfile.TemporaryDirectory() as temporary:
+            visual = Path(temporary) / "visual.mp4"
+            encode_visual_track("LexiBeat", [], 0.5, grid, visual, frame=frame)
+            probe = subprocess.run([
+                "ffprobe", "-v", "error", "-show_streams", "-of", "json",
+                str(visual)], capture_output=True, text=True, check=True)
+            video = json.loads(probe.stdout)["streams"][0]
+            self.assertEqual((video["codec_name"], video["width"], video["height"]),
+                             ("h264", DEMO_WIDTH, DEMO_HEIGHT))
 
 
 if __name__ == "__main__":

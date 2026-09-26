@@ -169,12 +169,16 @@ for the last, where whatever follows the words begins, so items never overlap.
 
 ```json
 {
-  "kind": "say", "section": "words", "item": 0, "side": "source", "role": "native",
-  "language": "es", "text": "asco", "take": 0, "start": 8.82, "end": 10.1
+  "kind": "say", "section": "words", "group": 0, "item": 0, "side": "source",
+  "role": "native", "language": "es", "text": "asco", "take": 0, "start": 8.82, "end": 10.1
 }
 ```
 
-`kind` is `say` for a word's own line, `cue` for a prompt to speak, and `intro` or `outro`. `section`
+`kind` is `say` for a word's own line, `cue` for a prompt to speak, `announce` for a quiz or
+review's opening line, `intro` or `outro`, and the written kinds (`example`, `translation`,
+`remark`, `story`, `header`, `callback`, `pronounce`). **Lines sharing a `group` are shown together**
+— a word and its translation, an example and its translation — from the group's first line until the
+next group starts. `section`
 is the format's section the line belongs to, so a word said again in a `review` appears twice, once
 per section. `item` and `side` are `null` for a line that belongs to no word. `role` is `native` for
 a line in the language being learned and `guide` for one in the learner's own. A cue's `end` is

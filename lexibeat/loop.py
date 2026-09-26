@@ -27,7 +27,7 @@ import soundfile as sf
 from .api import MusicRequest, resolve_music
 from .arrange import SOURCE, TARGET, Cancelled, Event, arrange, render_speech
 from .formats import Format, FormatError, missing_requirements, needs_writer, renderable
-from .programme import estimated_bars, phrase_keys, phrases
+from .programme import estimated_bars, group_lines, phrase_keys, phrases
 from .script import Script, ScriptError, needs as script_needs, parse as parse_script
 from .script import prompt as script_prompt
 from .writer import WriteRequest, Writer
@@ -177,13 +177,15 @@ def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
     quiz, a piece of the story — or at the end of the loop.
 
     **`cues`** is every line in the order it is heard: a word may appear in it more than once, and
-    a line may belong to no word at all (an intro, a cue).
+    a line may belong to no word at all (an intro, a cue). Lines sharing a `group` are shown
+    together — a word and its translation, an example and its translation (`group_lines`).
     """
     cues: list[dict[str, Any]] = []
-    for event in events:
+    if any(event.segment is None for event in events):
+        raise LoopError("An arranged line has lost the segment it was planned from.")
+    groups = group_lines([event.segment for event in events])
+    for event, group in zip(events, groups):
         segment = event.segment
-        if segment is None:
-            raise LoopError("An arranged line has lost the segment it was planned from.")
         if segment.kind == "say":
             item = items[segment.item]
             if segment.text != (item.source if segment.side == SOURCE else item.target):
@@ -191,6 +193,7 @@ def build_timeline(items: Sequence[Item], events: Sequence[Event], grid: Grid,
         cues.append({
             "kind": segment.kind,
             "section": segment.section,
+            "group": group,
             "item": segment.item,
             "side": segment.side,
             "role": segment.role,
