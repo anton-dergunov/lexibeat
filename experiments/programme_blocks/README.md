@@ -37,6 +37,13 @@ Scores are saved to `out/labels.json`, with a draft kept in the browser. `out/la
 stage's `out/<stage>/report.json` are tracked, since they are the result; the audio, the cache and
 `out/index.html`, which `page` rebuilds from the reports, are not.
 
+**Open the page through `serve`, never as a file.** Opened from disk, the page cannot reach the
+server, and its scores stay only in that browser's storage for that file's address, where a page
+served on a port cannot see them. **Download scores**, at the top of the page, saves whatever the
+page holds as a file to merge into `out/labels.json`: that is how G's scores were recovered. A page
+that finds scores the server lacks, such as ones kept while the server was down, sends them as soon
+as it loads.
+
 ## The example vocabulary
 
 `words.json` is a sample of the owner's own vocabulary, taken from an Acervo export: 226 words,
@@ -157,10 +164,13 @@ Sources: [Cloud TTS: Gemini-TTS](https://docs.cloud.google.com/text-to-speech/do
 
 ## Measured so far
 
-**Which voices honour a written pronunciation** (G's probe, first checked by transcribing the
-decoy clips with a Gemini model; the listening confirms or corrects it):
+**Which voices honour a written pronunciation** (G's probe, checked by transcribing the decoy
+clips with a Gemini model, then confirmed by ear; the scored findings are in
+[report.md](report.md), section G):
 - Chirp 3 HD `customPronunciations`, Chirp 3 HD `<phoneme>` and WaveNet `<phoneme>` said the
   target, not the decoy, in English, Spanish and French.
+- Gemini 3.1 said the target when the IPA was named in the prompt and the decoy was in the text, in
+  English, Spanish and Russian, but not in French.
 - **Russian has no working route on Google's voices.** `<phoneme>` is silently ignored by both
   Chirp and WaveNet, whatever the IPA is written with, and a Russian custom pronunciation is refused
   as IPA. As X-SAMPA it is accepted only without soft consonants, which Russian cannot do without.

@@ -2246,5 +2246,633 @@
  "F.plan.lesson-en-1#order": {
   "score": 5,
   "updatedAt": 1790417324563
+ },
+ "G.probe.en@chirp-custom": {
+  "score": 4,
+  "updatedAt": 1790425800764
+ },
+ "G.probe.en@chirp-ssml": {
+  "score": 4,
+  "updatedAt": 1790425804447
+ },
+ "G.probe.en@wavenet-ssml": {
+  "score": 5,
+  "updatedAt": 1790425810496
+ },
+ "G.probe.en@g31-prompt": {
+  "score": 5,
+  "updatedAt": 1790425815411
+ },
+ "G.probe.es@chirp-custom": {
+  "score": 5,
+  "updatedAt": 1790425837728
+ },
+ "G.probe.es@chirp-ssml": {
+  "score": 5,
+  "updatedAt": 1790425840644
+ },
+ "G.probe.es@wavenet-ssml": {
+  "score": 5,
+  "updatedAt": 1790425843726
+ },
+ "G.probe.es@g31-prompt": {
+  "score": 5,
+  "updatedAt": 1790425846160
+ },
+ "G.probe.ru@chirp-ssml": {
+  "score": 1,
+  "updatedAt": 1790425854844
+ },
+ "G.probe.ru@wavenet-ssml": {
+  "score": 1,
+  "updatedAt": 1790425866275
+ },
+ "G.probe.ru@g31-prompt": {
+  "score": 5,
+  "updatedAt": 1790425870977
+ },
+ "G.probe.fr@chirp-custom": {
+  "score": 5,
+  "updatedAt": 1790425882909
+ },
+ "G.probe.fr@chirp-ssml": {
+  "score": 5,
+  "updatedAt": 1790425885892
+ },
+ "G.probe.fr@wavenet-ssml": {
+  "score": 5,
+  "updatedAt": 1790425887707
+ },
+ "G.probe.fr@g31-prompt": {
+  "score": 1,
+  "updatedAt": 1790425893308
+ },
+ "G.word.congeniality@human": {
+  "score": 5,
+  "updatedAt": 1790425920074
+ },
+ "G.word.congeniality@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790425929490
+ },
+ "G.word.congeniality@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790425933940
+ },
+ "G.word.congeniality@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790425938373
+ },
+ "G.word.congeniality@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790425963821
+ },
+ "G.word.congeniality@g38-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790425966383
+ },
+ "G.word.congeniality@g38-ipa": {
+  "score": 5,
+  "updatedAt": 1790425970371
+ },
+ "G.word.congeniality@g38-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790425983522
+ },
+ "G.word.congeniality@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790425989037
+ },
+ "G.word.congeniality@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790425992804
+ },
+ "G.word.congeniality@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426004834
+ },
+ "G.word.congeniality@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426010603
+ },
+ "G.word.lethargy@human": {
+  "score": 5,
+  "updatedAt": 1790426034869
+ },
+ "G.word.lethargy@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426039216
+ },
+ "G.word.lethargy@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426042586
+ },
+ "G.word.lethargy@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426047284
+ },
+ "G.word.lethargy@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426065000
+ },
+ "G.word.lethargy@g38-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426068932
+ },
+ "G.word.lethargy@g38-ipa": {
+  "score": 5,
+  "updatedAt": 1790426086881
+ },
+ "G.word.lethargy@g38-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426105730
+ },
+ "G.word.lethargy@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426111495
+ },
+ "G.word.lethargy@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426115648
+ },
+ "G.word.lethargy@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426123881
+ },
+ "G.word.lethargy@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426127544
+ },
+ "G.word.perseverance@human": {
+  "score": 5,
+  "updatedAt": 1790426143111
+ },
+ "G.word.perseverance@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426147578
+ },
+ "G.word.perseverance@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426151662
+ },
+ "G.word.perseverance@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426154961
+ },
+ "G.word.perseverance@g31-ipa-syll": {
+  "score": 3,
+  "updatedAt": 1790426167826
+ },
+ "G.word.perseverance@g38-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426172494
+ },
+ "G.word.perseverance@g38-ipa-syll": {
+  "score": 3,
+  "updatedAt": 1790426181979
+ },
+ "G.word.perseverance@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426185508
+ },
+ "G.word.perseverance@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426189544
+ },
+ "G.word.perseverance@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426195576
+ },
+ "G.word.perseverance@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426200657
+ },
+ "G.word.worcestershire@human": {
+  "score": 5,
+  "updatedAt": 1790426207457
+ },
+ "G.word.worcestershire@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426216093
+ },
+ "G.word.worcestershire@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426225357
+ },
+ "G.word.worcestershire@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426228324
+ },
+ "G.word.worcestershire@g31-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426238772
+ },
+ "G.word.worcestershire@g38-ipa": {
+  "score": 5,
+  "updatedAt": 1790426244323
+ },
+ "G.word.worcestershire@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426248307
+ },
+ "G.word.worcestershire@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426251889
+ },
+ "G.word.worcestershire@chirp-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426258876
+ },
+ "G.word.worcestershire@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426261572
+ },
+ "G.word.insurmountable@human": {
+  "score": 5,
+  "updatedAt": 1790426267471
+ },
+ "G.word.insurmountable@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426270805
+ },
+ "G.word.insurmountable@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426275106
+ },
+ "G.word.insurmountable@g31-ipa-prompt": {
+  "score": 4,
+  "updatedAt": 1790426282404
+ },
+ "G.word.insurmountable@g31-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426295769
+ },
+ "G.word.insurmountable@g38-ipa": {
+  "score": 5,
+  "updatedAt": 1790426300703
+ },
+ "G.word.insurmountable@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426305535
+ },
+ "G.word.insurmountable@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426309219
+ },
+ "G.word.insurmountable@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426321051
+ },
+ "G.word.insurmountable@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426328068
+ },
+ "G.word.thoroughly@human": {
+  "score": 5,
+  "updatedAt": 1790426341418
+ },
+ "G.word.thoroughly@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426344567
+ },
+ "G.word.thoroughly@g31-ipa-text": {
+  "score": 1,
+  "updatedAt": 1790426350885
+ },
+ "G.word.thoroughly@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426355085
+ },
+ "G.word.thoroughly@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426360384
+ },
+ "G.word.thoroughly@g38-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426366401
+ },
+ "G.word.thoroughly@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426373782
+ },
+ "G.word.thoroughly@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426376432
+ },
+ "G.word.thoroughly@chirp-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426385600
+ },
+ "G.word.thoroughly@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426421346
+ },
+ "G.word.vituperative@human": {
+  "score": 5,
+  "updatedAt": 1790426426846
+ },
+ "G.word.vituperative@g31-plain-slow": {
+  "score": 1,
+  "updatedAt": 1790426441663
+ },
+ "G.word.vituperative@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426445178
+ },
+ "G.word.vituperative@g31-ipa-prompt": {
+  "score": 1,
+  "updatedAt": 1790426451561
+ },
+ "G.word.vituperative@g31-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426470910
+ },
+ "G.word.vituperative@g38-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426482296
+ },
+ "G.word.vituperative@chirp-plain-slow": {
+  "score": 1,
+  "updatedAt": 1790426487109
+ },
+ "G.word.vituperative@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426490961
+ },
+ "G.word.vituperative@chirp-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426505842
+ },
+ "G.word.vituperative@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426509843
+ },
+ "G.word.unreciprocated@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426517864
+ },
+ "G.word.unreciprocated@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426525492
+ },
+ "G.word.unreciprocated@g31-ipa-prompt": {
+  "score": 4,
+  "updatedAt": 1790426529341
+ },
+ "G.word.unreciprocated@g31-ipa-syll": {
+  "score": 3,
+  "updatedAt": 1790426537711
+ },
+ "G.word.unreciprocated@g38-ipa-syll": {
+  "score": 4,
+  "updatedAt": 1790426546340
+ },
+ "G.word.unreciprocated@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426550173
+ },
+ "G.word.unreciprocated@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426553673
+ },
+ "G.word.unreciprocated@chirp-ipa-syll": {
+  "score": 4,
+  "updatedAt": 1790426564324
+ },
+ "G.word.unreciprocated@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426567605
+ },
+ "G.word.hypocrite@human": {
+  "score": 5,
+  "updatedAt": 1790426572671
+ },
+ "G.word.hypocrite@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426575705
+ },
+ "G.word.hypocrite@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426582428
+ },
+ "G.word.hypocrite@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426583184
+ },
+ "G.word.hypocrite@g31-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426589454
+ },
+ "G.word.hypocrite@chirp-plain-slow": {
+  "score": 4,
+  "updatedAt": 1790426596404
+ },
+ "G.word.hypocrite@chirp-ipa": {
+  "score": 4,
+  "updatedAt": 1790426598450
+ },
+ "G.word.hypocrite@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426601741
+ },
+ "G.word.hypocrite@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426608503
+ },
+ "G.word.imprescindible@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426621853
+ },
+ "G.word.imprescindible@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426630021
+ },
+ "G.word.imprescindible@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426638618
+ },
+ "G.word.imprescindible@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426645951
+ },
+ "G.word.imprescindible@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426653753
+ },
+ "G.word.imprescindible@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426658534
+ },
+ "G.word.imprescindible@chirp-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426667819
+ },
+ "G.word.imprescindible@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426672483
+ },
+ "G.word.elpresupuesto@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426684533
+ },
+ "G.word.elpresupuesto@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426691029
+ },
+ "G.word.elpresupuesto@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426694983
+ },
+ "G.word.elpresupuesto@g31-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426701964
+ },
+ "G.word.elpresupuesto@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426706416
+ },
+ "G.word.elpresupuesto@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426712114
+ },
+ "G.word.elpresupuesto@chirp-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426719631
+ },
+ "G.word.elpresupuesto@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426723047
+ },
+ "G.word.несовершеннолетний@human": {
+  "score": 5,
+  "updatedAt": 1790426727110
+ },
+ "G.word.несовершеннолетний@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426733864
+ },
+ "G.word.несовершеннолетний@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426738198
+ },
+ "G.word.несовершеннолетний@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426743929
+ },
+ "G.word.несовершеннолетний@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426753212
+ },
+ "G.word.несовершеннолетний@g38-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426759364
+ },
+ "G.word.несовершеннолетний@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426769195
+ },
+ "G.word.достопримечательность@human": {
+  "score": 5,
+  "updatedAt": 1790426782798
+ },
+ "G.word.достопримечательность@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426786211
+ },
+ "G.word.достопримечательность@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426789195
+ },
+ "G.word.достопримечательность@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426792032
+ },
+ "G.word.достопримечательность@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426806256
+ },
+ "G.word.достопримечательность@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426811726
+ },
+ "G.word.écureuil@human": {
+  "score": 1,
+  "updatedAt": 1790426822793
+ },
+ "G.word.écureuil@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426826758
+ },
+ "G.word.écureuil@g31-ipa-text": {
+  "score": 5,
+  "updatedAt": 1790426829492
+ },
+ "G.word.écureuil@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426833021
+ },
+ "G.word.écureuil@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426839357
+ },
+ "G.word.écureuil@g38-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426842892
+ },
+ "G.word.écureuil@g38-ipa": {
+  "score": 5,
+  "updatedAt": 1790426845691
+ },
+ "G.word.écureuil@g38-ipa-syll": {
+  "score": 5,
+  "updatedAt": 1790426851125
+ },
+ "G.word.écureuil@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426855642
+ },
+ "G.word.écureuil@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426858307
+ },
+ "G.word.écureuil@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426863309
+ },
+ "G.word.écureuil@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426866791
+ },
+ "G.word.elayuntamiento@g31-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426871757
+ },
+ "G.word.elayuntamiento@g31-ipa-text": {
+  "score": 1,
+  "updatedAt": 1790426877474
+ },
+ "G.word.elayuntamiento@g31-ipa-prompt": {
+  "score": 5,
+  "updatedAt": 1790426884974
+ },
+ "G.word.elayuntamiento@g31-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426919688
+ },
+ "G.word.elayuntamiento@chirp-plain-slow": {
+  "score": 5,
+  "updatedAt": 1790426928220
+ },
+ "G.word.elayuntamiento@chirp-ipa": {
+  "score": 5,
+  "updatedAt": 1790426930970
+ },
+ "G.word.elayuntamiento@chirp-ipa-syll": {
+  "score": 1,
+  "updatedAt": 1790426941605
+ },
+ "G.word.elayuntamiento@wavenet-ipa": {
+  "score": 5,
+  "updatedAt": 1790426950602
  }
 }

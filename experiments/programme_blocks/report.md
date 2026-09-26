@@ -1,7 +1,8 @@
 # Programme blocks: what the listening found
 
 The first full run of this experiment, scored on a tablet: 530 labels, 128 of them with a written
-note, plus the listener's overall remarks. The numbers below are read from `out/labels.json`, and
+note, plus the listener's overall remarks; and a follow-up, section G, 157 labels and the
+listener's remarks. The numbers below are read from `out/labels.json`, and
 every label names a card in that stage's `out/<stage>/report.json`; both are tracked, so any number
 here can be traced to what was scored. What each section plays and why is in the
 [README](README.md); what the blocks are for is `docs/plans/programme-loops.md`.
@@ -20,8 +21,10 @@ about what the lite model wrote. The audio sections do not depend on it.
 | D. Context | 148 | 4.31 | Stories were the surprise; example prompt v1 beats v2 |
 | E. Commentary | 49 | 4.59 | Good, apart from grammar and spelling remarks |
 | F. Framing | 24 | 4.83 | Good; titles are the one weak spot |
+| G. Pronunciation hints | 157 | — | A whole word said slowly is almost always right; syllables are wrong half the time, IPA or not |
 
-Nine labels are left out of these means because they do not score what they appear to (see
+G's labels are nearly all 1 or 5, so it is read as right or wrong rather than as a mean. Nine
+labels are left out of these means because they do not score what they appear to (see
 [The labels themselves](#the-labels-themselves)).
 
 ## A. Drills over music
@@ -244,6 +247,93 @@ Three planned episodes, scored 4–5 throughout: order, section headers, intro a
 - The intro should be written fresh each time, so that it is not the same every episode.
 - One section header put *el bigote* where it did not quite fit.
 
+## G. Pronunciation hints
+
+The follow-up to B: the words B said wrong, plus one control, spoken with the dictionary's
+pronunciation (Wiktionary's IPA) instead of their spelling. Scoring was strict: 1 if any sound is
+wrong. In practice every label is right (4–5) or wrong (1), with a handful of 3s. The 28 Gemini 3.8
+clips its free key has not yet allowed are missing, and nothing below waits for them.
+
+### Is a written pronunciation honoured at all?
+
+Each mechanism was given a decoy word with another word's IPA. 5 means the target was heard, 1
+means the decoy was, so the pronunciation was ignored.
+
+| Mechanism | English | Spanish | Russian | French |
+|---|---|---|---|---|
+| Chirp 3 HD `customPronunciations` | 4 | 5 | refused | 5 |
+| Chirp 3 HD SSML `<phoneme>` | 4 | 5 | **1** | 5 |
+| WaveNet SSML `<phoneme>` | 5 | 5 | **1** | 5 |
+| Gemini 3.1, the IPA named in the prompt | 5 | 5 | **5** | **1** |
+
+- **Google's phoneme route does not exist for Russian.** `<phoneme>` is ignored, and a custom
+  pronunciation is refused.
+- **Gemini 3.1 follows a pronunciation in its prompt over the words in its text**, in three
+  languages of four: asked for *lethargy* with "banana" written, it said *lethargy*. That makes the
+  prompt a lever for correcting one known word. It also means a wrong IPA would be spoken just as
+  confidently.
+
+### Right or wrong, per setup
+
+| Setup | Right | Wrong | Wrong on | Length against the human recording |
+|---|---|---|---|---|
+| Gemini 3.1, plain word, slowly | 14 / 15 | 1 | *vituperative* | ×1.6 |
+| Gemini 3.1, IPA in the text, slowly | 13 / 15 | 2 | *thoroughly*, *el ayuntamiento* | ×1.9 |
+| Gemini 3.1, IPA in the prompt, slowly | 14 / 15 | 1 | *vituperative* | ×1.8 |
+| Gemini 3.8, plain word, slowly | 5 / 5 | 0 | | ×1.6 |
+| Gemini 3.8, IPA in the text, slowly | 5 / 5 | 0 | | ×2.0 |
+| Chirp 3 HD, plain word, rate 0.7 | 14 / 15 | 1 | *несовершеннолетний* | ×1.3 |
+| Chirp 3 HD, custom pronunciation, rate 0.7 | 13 / 13 | 0 | | ×1.3 |
+| WaveNet, SSML `<phoneme>`, slow | 13 / 13 | 0 | | ×1.2 |
+| **Syllables:** Gemini 3.1, IPA syllables | 7 / 15 | **8** | 8 of 15 words | |
+| **Syllables:** Chirp 3 HD, `<phoneme>` per syllable | 6 / 13 | **7** | 7 of 13 words | |
+| **Syllables:** Gemini 3.8, IPA syllables | 6 / 7 | 1 | *несовершеннолетний* | |
+| A person: the Commons recording | 10 / 11 | 1 | *écureuil* | ×1.0 |
+
+Chirp and WaveNet have no Russian rows: the probe showed the pronunciation would be ignored there,
+so they cover 13 words, not 15. The length column is the median ratio of the trimmed clip to the
+human recording of the same word.
+
+### What it shows
+
+- **The whole word was never the main problem; splitting it is.** Said whole and slowly, every
+  voice got 13–15 of 15 right, with or without a pronunciation. Split into syllables, Gemini 3.1
+  and Chirp were wrong on about half the words. That is *more* often than B's split by spelling on
+  the same words, which scored 2 or less on 4 of 14, though B was not scored as strictly. The IPA
+  did not rescue the split. Only Gemini 3.8 read IPA syllables well (6 of 7), on too few words to
+  lean on.
+- **For Gemini 3.1, a written pronunciation buys nothing.** In the text it fixed one word and broke
+  two. In the prompt it failed on the same word as the plain one, *vituperative*, which has several
+  accepted pronunciations, so the plain "wrong" may be a variant the listener doesn't use.
+- **The error-free setups are the hard overrides, and they are the ones the listener liked least.**
+  Chirp's custom pronunciation and WaveNet's `<phoneme>` made no mistakes on 13 words, which is
+  what the phoneme-override practice in the literature predicts. But they barely slow down: at
+  most ×1.3 the human length, even when asked for 0.7× or "slow", against ×1.6–2.0 for Gemini.
+  The listener also heard their audio as clearly worse. They offer no route for Russian at all.
+- **No setup is proven error-free.** Fifteen words cannot show it: 0 wrong of 13 is still
+  consistent with about one word in four going wrong. The words were also chosen as B's failures
+  in *splitting*, not as words voices mispronounce whole, so this is not a clean test of whole-word
+  accuracy. The listener's impression was the same: fewer failures than before, but none of the
+  voices was faultless.
+- **A human recording is not the gold standard it looks like.** The recordings vary in register
+  and delivery, as people do, and one (*écureuil*) was not quite right. A generated voice sounds
+  consistent and is usually clearer.
+
+### Decision
+
+- **Pronunciation help is the whole word, said slowly, by the production Gemini voice, from the
+  plain text.** It was right on 14 of 15 words, it is the slowest and best-sounding option, and it
+  needs nothing looked up.
+- **Syllable by syllable is dropped**, on every voice tried here.
+- **No IPA by default.** A pronunciation named in the Gemini prompt is kept as a per-word
+  correction for a word known to come out wrong, since the probe shows it overrides the text. It
+  is not a default: it needs a trustworthy IPA, and a wrong one is spoken just as surely.
+- **Chirp and WaveNet overrides are not used.** They are correct but fast and poorer in sound, and
+  they have no Russian.
+- **Still open: catching the wrong whole word automatically.** A transcription of the take,
+  compared with the word, caught the garbled syllables in the smoke test. Whether it would catch a
+  whole word said wrong is not measured.
+
 ## The labels themselves
 
 - **Left out of the means above, nine labels that score something else:**
@@ -273,14 +363,12 @@ For `docs/plans/programme-loops.md`:
   - a speed round as a recap only: stretched to at most 1.2×, or directed "fast".
 
   Leave out two pairs a bar, the chant on eighths and the chant from separate takes.
-- **Syllables become pronunciation help:**
+- **Syllables become pronunciation help, and the help is the whole word said slowly** (section G):
   - only for words a learner is likely to say wrong;
   - picked by a detector rewritten around that rule, with no linguistic terms in its output;
-  - spoken by the directed voice only, never cut.
-  - Extra bars of the plain word may serve better than a split.
-- **Before building it, one more experiment on correctness:** a written pronunciation, against the
-  whole word said slowly, on the words that failed here: *congeniality*, *lethargy*,
-  *perseverance*, *Worcestershire*, *imprescindible*.
+  - spoken whole and slowly by the production Gemini voice, from the plain text, never split;
+  - extra bars of the plain word, rather than a split;
+  - a pronunciation in the prompt only as a correction for one known word.
 - **P2 and P3:**
   - examples from prompt v1, without slips or retorts;
   - mini-stories promoted, each followed by a quick recap drill;

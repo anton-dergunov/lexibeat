@@ -166,6 +166,8 @@ TEMPLATE = """<!doctype html>
   .bar { display: flex; gap: 12px; align-items: baseline; }
   .bar b { font-size: 17px; flex: 1; }
   #status, #progress { font-size: 13px; color: var(--muted); }
+  #export { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 8px;
+            border: 1px solid var(--line, #ccc); background: none; color: inherit; }
   nav { display: flex; gap: 6px; overflow-x: auto; padding-top: 8px; scrollbar-width: none; }
   nav a { flex: none; font-size: 14px; color: var(--ink); text-decoration: none;
           background: var(--chip); border: 1px solid var(--line); border-radius: 16px;
@@ -235,7 +237,7 @@ TEMPLATE = """<!doctype html>
 </style>
 </head>
 <body>
-<header><div class="bar"><b>Programme blocks</b><span id="progress"></span><span id="status"></span></div>
+<header><div class="bar"><b>Programme blocks</b><span id="progress"></span><span id="status"></span><button type="button" id="export">Download scores</button></div>
 <nav>{{nav}}</nav></header>
 <main>{{body}}</main>
 <script>
@@ -328,11 +330,33 @@ function play(button) {
 }
 shared.addEventListener("ended", () => playingButton && playingButton.classList.remove("playing"));
 
+// The scores as a file: the way out when they could not reach the server, since what is kept on
+// the device belongs to the exact address the page was opened at.
+document.getElementById("export").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(labels, null, 1)], { type: "application/json" }));
+  a.download = `programme-blocks-labels-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
 (async () => {
   labels = draft();
+  if (location.protocol === "file:") {
+    status.textContent = "opened as a file: scores stay on this device — use run.py serve";
+    paint();
+    return;
+  }
   try {
     const r = await fetch("labels.json", { cache: "no-store" });
-    if (r.ok) { labels = merge(await r.json(), labels); status.textContent = "loaded"; }
+    if (r.ok) {
+      const stored = await r.json();
+      labels = merge(stored, labels);
+      status.textContent = "loaded";
+      // Scores kept on this device while the server was away are sent now, not at the next tap.
+      if (Object.entries(labels).some(([id, v]) => (v.updatedAt || 0) > ((stored[id] || {}).updatedAt || 0)))
+        save();
+    }
   } catch { status.textContent = "offline, drafts only"; }
   paint();
 })();
