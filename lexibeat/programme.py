@@ -21,13 +21,14 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Sequence
 
 from .formats import (HERE, SAY_ROLES, SOURCE, TARGET, Format, FormatError, Step, expanded,
                       needs_writer)
-from .language import Language
+from .language import Language, Quotes
 from .script import Script, needs as script_needs, placeholder
 from .vocab import Item
 
@@ -45,7 +46,8 @@ class Segment:
     `bars` is a fixed count, or None for a line that takes as many bars as it needs — anything a
     writer wrote, and a word said slowly. `side` is which half of the pair a word's own line says
     (`source` or `target`); `role` is who says it; `block` numbers a word's own block in the words
-    section, which is what the long-take retry compares repetitions within.
+    section, which is what the long-take retry compares repetitions within. `quotes` names what a
+    guide line quotes in the language being learned.
     """
 
     kind: str
@@ -61,6 +63,7 @@ class Segment:
     stretch: float = 1.0
     direction: str = ""
     block: int | None = None
+    quotes: Quotes | None = None
 
     @property
     def spoken(self) -> bool:
@@ -109,6 +112,39 @@ def group_lines(lines: Sequence) -> list[int]:
         groups.append(current)
         previous = line
     return groups
+
+
+# -- quotes ------------------------------------------------------------------------------------
+
+# The guide lines that may quote the language being learned: what a writer wrote in the guide's
+# voice, and a topic header. A translation, a cue, an announcement or the learner's own word does not.
+QUOTING_KINDS = ("remark", "callback", "intro", "outro", "header")
+
+
+def quoted_spans(text: str, spans: Sequence[str]) -> tuple[str, ...]:
+    """The spans `text` contains, whole and as it writes them, in the order they are heard.
+
+    A span inside a longer one is left to the longer one: "atasco" in "el atasco" is not named twice.
+    """
+    found: dict[tuple[int, int], str] = {}
+    for span in spans:
+        if not span.strip():
+            continue
+        for match in re.finditer(rf"(?<!\w){re.escape(span.strip())}(?!\w)", text, re.I):
+            found[match.span()] = match.group(0)
+    outer = [(start, end) for start, end in found
+             if not any(s <= start and end <= e and (s, e) != (start, end) for s, e in found)]
+    return tuple(dict.fromkeys(found[at] for at in sorted(outer)))
+
+
+def quotes_for(text: str, written: Sequence[str], items: Sequence[Item], *,
+               source_language: Language, target_language: Language) -> Quotes | None:
+    """What a guide line quotes: what the writer said it quotes, and any of the loop's own words it
+    contains, which are found whether or not the writer listed them."""
+    if _base(source_language.code) == _base(target_language.code):
+        return None
+    spans = quoted_spans(text, [*written, *(item.source for item in items)])
+    return Quotes(spans, source_language, target_language) if spans else None
 
 
 # -- phrases -----------------------------------------------------------------------------------
@@ -221,10 +257,12 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
                                 direction=direction, block=block_id))
 
     def guide(text: str, section: str, index: int | None, kind: str, direction: str = "",
-              block_id: int | None = None) -> None:
+              block_id: int | None = None, quoted: Sequence[str] = ()) -> None:
+        quotes = quotes_for(text, quoted, items, source_language=source_language,
+                            target_language=target_language) if kind in QUOTING_KINDS else None
         segments.append(Segment(kind=kind, section=section, bars=None, item=index,
                                 role="guide", language=target_language, text=text,
-                                direction=direction, block=block_id))
+                                direction=direction, block=block_id, quotes=quotes))
 
     def happened(step: Step, index: int) -> bool:
         written = script.words[index] if script is not None else None
@@ -274,7 +312,8 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
                 guide(line.translation, section_kind, index, "translation", "", block_id)
         elif step.kind == "remark":
             _, line = written.remark
-            guide(line.text, section_kind, index, "remark", line.direction, block_id)
+            guide(line.text, section_kind, index, "remark", line.direction, block_id,
+                  line.quoted)
         elif step.kind == "callback":
             _, lines = written.callback
             for line in lines:
@@ -284,7 +323,8 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
                         guide(line.translation, section_kind, index, "translation", "",
                               block_id)
                 else:
-                    guide(line.text, section_kind, index, "callback", line.direction, block_id)
+                    guide(line.text, section_kind, index, "callback", line.direction, block_id,
+                          line.quoted)
         else:  # story_beat runs after a chunk; unsupported() refuses anything else
             raise FormatError(f"'{step.kind}' cannot be planned in a block")
 
@@ -292,7 +332,7 @@ def plan(fmt: Format, items: Sequence[Item], *, source_language: Language,
         kind = section.kind
         if section.params.get("text") == "writer":
             line = script.intro if kind == "intro" else script.outro
-            guide(line.text, kind, None, kind, line.direction)
+            guide(line.text, kind, None, kind, line.direction, quoted=line.quoted)
             return
         line = _pick(table[kind], seed, len(segments)).format(
             count_words=count_words(target_language.code, count))

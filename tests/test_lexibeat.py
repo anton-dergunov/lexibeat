@@ -1551,7 +1551,7 @@ class RenderAndMixTests(unittest.TestCase):
             capabilities = CAPABILITIES["gemini"]
             targets: list[float] = []
 
-            def take(self, index, direction="", *, pace=""):
+            def take(self, index, direction="", *, pace="", quotes=None):
                 return Delivery.for_take(index, direction, pace=pace)
 
             def say(self, text, language, delivery, target_seconds=None, slot_seconds=None,
@@ -1577,7 +1577,7 @@ class RenderAndMixTests(unittest.TestCase):
             def __init__(self):
                 self.calls = []
 
-            def take(self, index, direction="", *, pace=""):
+            def take(self, index, direction="", *, pace="", quotes=None):
                 return Delivery.for_take(index, direction,
                                          capabilities=self.capabilities, pace=pace)
 

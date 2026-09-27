@@ -33,7 +33,8 @@ missing, expanded}` — so a host can require the version it pinned: a deploymen
 
 **The catalogues are LexiBeat's.** `/schema` reports the formats, the families, the limits and the
 audio format. Each format has an `id` to send, a `label` and a one-sentence `description` to choose
-it by, and the `switches` it offers; what a format is made of is `docs/programme-format.md`.
+it by, the `switches` it offers, what it `requires`, and the `fallback` a render makes instead when
+a requirement is missing; what a format is made of is `docs/programme-format.md`.
 `family_details` gives each production family a `label` and a one-sentence `description` to
 choose it by; `auto` is not among them, because it is the absence of a choice rather than a kind of
 music. A host reads them rather than copying them, so a format or a family added in a later version
@@ -67,6 +68,10 @@ appears in its dialog with nothing changing there.
   "speech": {"token": "…", "delivery": "directed"}
 }
 ```
+
+`script` is optional: a previous render's `script`, sent back to render the same written lines
+again — new music for a radio lesson, say — with no writer call. It is read exactly as a writer's
+reply is, and refused if it does not fit the format.
 
 `format` is a format's `id` from `/schema`, and defaults to `classic`. `switches` sets the switches
 that format declares and nothing else; one left out takes its default. An unknown format, an unknown
@@ -130,6 +135,7 @@ The completed `result`:
   "total_bars": 68,
   "bpm": 80.0,
   "fallback_from": null,
+  "script": { … },
   "items": [ … ],
   "cues": [ … ]
 }
@@ -137,7 +143,8 @@ The completed `result`:
 
 `format` is the format that was rendered. When the format asked for requires something this render
 lacks — a writer, or a voice that mixes languages — and names a `fallback`, the fallback is rendered
-instead: `format` is then the fallback and `fallback_from` the format asked for.
+instead: `format` is then the fallback and `fallback_from` the format asked for. `script` is what
+the writer wrote, as read, or `null` for a format with no writer; a host keeps it to send back.
 
 `seed` is the one the request carried, or the one minted for it when it carried none — never the
 seed of the candidate that won, which is not something a request can be given. The same request

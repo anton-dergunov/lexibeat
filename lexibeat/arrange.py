@@ -131,7 +131,8 @@ def _bars_for(audio: np.ndarray, grid: Grid) -> int:
 
 
 def _say(speaker: Speaker, segment: Segment, grid: Grid, *, retry: bool = False) -> np.ndarray:
-    delivery = speaker.take(segment.take, segment.direction, pace=segment.pace)
+    delivery = speaker.take(segment.take, segment.direction, pace=segment.pace,
+                            quotes=segment.quotes)
     fixed = segment.bars is not None
     # A fixed line aims to leave a little of its bar clear so the next downbeat stays audible. A
     # line of its own length is spoken as it comes and given the bars it needs.
@@ -172,7 +173,8 @@ def _retry_long_takes(events: list[Event], speaker: Speaker, grid: Grid, complet
         else:
             remember = getattr(speaker, "remember_take", None)
             if remember:
-                delivery = speaker.take(segment.take, segment.direction, pace=segment.pace)
+                delivery = speaker.take(segment.take, segment.direction, pace=segment.pace,
+                            quotes=segment.quotes)
                 remember(segment.text, segment.language, delivery,
                          grid.bar * 0.92 * segment.bars, event.audio,
                          slot_seconds=grid.bar * segment.bars, role=segment.role)

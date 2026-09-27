@@ -74,6 +74,8 @@ class Line:
     translation: str = ""
     direction: str = ""
     speaker: str = "native"
+    # What a guide line quotes in the language being learned, exactly as it stands in `text`.
+    quoted: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -167,23 +169,25 @@ def prompt(need: Needs, items: Sequence[Item], *, source_language: Language,
         shape["groups"] = '[{"title": "...", "items": [2, 0]}]'
     if need.intro:
         parts.append(_part("part_intro"))
-        shape["intro"] = '{"text": "...", "direction": "..."}'
+        shape["intro"] = '{"text": "...", "quoted": [], "direction": "..."}'
     if need.outro:
         parts.append(_part("part_outro"))
-        shape["outro"] = '{"text": "...", "direction": "..."}'
+        shape["outro"] = '{"text": "...", "quoted": [], "direction": "..."}'
     if need.example:
         parts.append(_part("part_example"))
         word_shape["example"] = '{"text": "...", "translation": "...", "direction": "..."}'
     if need.remark_kinds:
         parts.append(_part("part_remark"))
-        word_shape["remark"] = '{"kind": "...", "text": "...", "direction": "..."} or null'
+        word_shape["remark"] = ('{"kind": "...", "text": "...", "quoted": ["..."], '
+                                '"direction": "..."} or null')
     if need.hard_to_say:
         parts.append(_part("part_hard_to_say"))
         word_shape["hard_to_say"] = "false"
     if need.callback_kinds:
         parts.append(_part("part_callback"))
         word_shape["callback"] = ('{"kind": "...", "refers_to": 0, "lines": [{"speaker": '
-                                  '"native", "text": "...", "translation": "..."}]} or null')
+                                  '"native", "text": "...", "translation": "...", '
+                                  '"quoted": []}]} or null')
     if need.chunk:
         parts.append(_part("part_story"))
         shape["title"] = '"..."'
@@ -241,14 +245,34 @@ def _text(value: Any, where: str, what: str, *, limit: int = MAX_LINE,
     return value
 
 
+def found_in(text: str, span: str) -> str | None:
+    """`span` as it stands in `text`, matched whole and ignoring case, or None when it is not."""
+    match = re.search(rf"(?<!\w){re.escape(span.strip())}(?!\w)", text, re.I) if span.strip() \
+        else None
+    return match.group(0) if match else None
+
+
+def _quoted(value: Any, text: str, where: str) -> tuple[str, ...]:
+    """A guide line's quoted spans. One the line does not contain is dropped rather than refused:
+    it would name a word the voice never meets, and the line is still good without it."""
+    if value is None:
+        return ()
+    _need(isinstance(value, list) and all(isinstance(span, str) for span in value), where,
+          "'quoted' is a list of the words the line quotes")
+    kept = [found_in(text, span) for span in value]
+    return tuple(dict.fromkeys(span for span in kept if span))
+
+
 def _line(data: Any, where: str, *, translated: bool, speaker: str = "native") -> Line:
     _need(isinstance(data, dict), where, "a line is an object")
-    return Line(text=_text(data.get("text"), where, "text"),
+    text = _text(data.get("text"), where, "text")
+    return Line(text=text,
                 translation=_text(data.get("translation"), where, "translation",
                                   empty=not translated),
                 direction=_text(data.get("direction"), where, "direction",
                                 limit=MAX_DIRECTION, empty=True),
-                speaker=speaker)
+                speaker=speaker,
+                quoted=_quoted(data.get("quoted"), text, where) if speaker == "guide" else ())
 
 
 def _indices(value: Any, where: str, count: int, *, every: bool) -> tuple[int, ...]:

@@ -14,6 +14,9 @@ Rules for every line:
   conjugated, agreed, with the article where it belongs.
 - No real people, brands or places that date; nothing cruel.
 - A `direction` is a short English note for the voice actor ("deadpan, mock tragic").
+- A guide line that quotes {{language}} — a word, a phrase, a whole expression — lists what it quotes
+  in `quoted`, each exactly as it is written in `text`, so the guide can say it with a native
+  {{language}} pronunciation. A guide line that quotes nothing gives `"quoted": []`.
 
 The words, each with its number and what it means:
 

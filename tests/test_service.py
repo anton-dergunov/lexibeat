@@ -68,6 +68,7 @@ class SchemaTests(unittest.TestCase):
                                  "story"})
         radio = next(row for row in schema["formats"] if row["id"] == "radio-lesson")
         self.assertEqual(radio["requires"], ["writer", "multilingual_voice"])
+        self.assertEqual(radio["fallback"], "classic")
         self.assertEqual(radio["switches"]["repetitions"],
                          {"label": "Times each word is said", "default": "3",
                           "choices": ["2", "3", "4"]})

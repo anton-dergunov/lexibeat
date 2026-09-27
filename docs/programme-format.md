@@ -326,6 +326,23 @@ render missing a requirement renders the format's `fallback` instead, and says s
 (`format` is the fallback, `fallback_from` the one asked for); without a fallback it is refused,
 naming the requirement.
 
+**A guide line that quotes the language being learned names what it quotes**, and the voice is told
+how to say it. A remark in English that quotes *tener ganas de* is read by an English voice, which
+gives the Spanish an English accent unless told otherwise. What works is a sentence in the line's
+director note — "Say “Anhelar” and “tener ganas de” in Spanish, with a native Spanish pronunciation,
+and everything else in English." Markup inside the text does not work: a voice reads `<lang>` tags
+aloud. Setting the whole line's language code to Spanish helped too, but it is one setting for the
+line, says nothing about which words are Spanish, and not every voice takes one; a sentence in the
+note reaches any voice that takes a direction.
+
+What a line quotes comes from two places. The writer lists it on every guide line it writes, in
+`quoted`, exactly as it stands in the text; a span the text does not contain is dropped. And the
+loop's own words are found in the line whether the writer listed them or not, whole and ignoring
+case. Only the guide lines that can quote are read — a remark, a callback, a written intro or outro,
+a topic header — and a span inside a longer one is left to it. Only a voice that
+`mixes_languages` is told: to any other the sentence is noise, and a format that needs quoting
+requires `multilingual_voice` anyway.
+
 **Learner-language phrases** — the cues, the quiz and review announcements, and the intro and outro
 when their `text` is `template` — come from `lexibeat/formats/phrases/<language>.json`: English,
 Russian and Spanish for now, with several wordings of each, varied from line to line by the seed. For
@@ -367,6 +384,12 @@ The reply is plain text, read by `script.parse`: no JSON mode, no schema. The pa
 part it relies on and refuses the reply naming the first thing wrong — "beats: needs one beat per
 group of 2 words: 4" — and a missing optional part means it did not happen. A reply that cannot be
 used fails the render; retrying belongs to the host's model chain.
+
+**A render returns its script** (`script` in the result: the reply as read), and a request may send
+it back (`script` in the request). A script sent back is read exactly as a fresh reply is, against
+what *this* format needs, and no writer is called — so new music for a radio lesson keeps its lines,
+and a host that caches takes pays for none of them again. A script that does not fit is refused,
+naming the first fault.
 
 How the named checks read the script:
 

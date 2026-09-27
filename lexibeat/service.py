@@ -334,6 +334,8 @@ class LoopBody(StrictModel):
     # host sends an id. `switches` sets the ones the format declares, and nothing else.
     format: str | dict[str, Any] = "classic"
     switches: dict[str, bool | str] = Field(default_factory=dict)
+    # A previous render's `script`, to render the same lines again (new music, say).
+    script: dict[str, Any] | None = None
     family: str = "auto"
     energy: str = "balanced"
     rhythm: str = "steady"
@@ -349,7 +351,7 @@ class LoopBody(StrictModel):
             items=tuple(Item(row.source, row.target, row.direction) for row in self.items),
             source_language=Language(self.source_language.code, self.source_language.name),
             target_language=Language(self.target_language.code, self.target_language.name),
-            format=self.format, switches=dict(self.switches),
+            format=self.format, switches=dict(self.switches), script=self.script,
             family=self.family, energy=self.energy,
             rhythm=self.rhythm, palette=self.palette, seed=self.seed,
             profile=self.profile, prosody_strength=self.prosody_strength,

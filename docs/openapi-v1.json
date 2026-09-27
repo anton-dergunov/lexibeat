@@ -314,6 +314,18 @@
             "type": "object",
             "title": "Switches"
           },
+          "script": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Script"
+          },
           "family": {
             "type": "string",
             "title": "Family",

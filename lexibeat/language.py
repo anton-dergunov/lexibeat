@@ -47,3 +47,27 @@ class Language:
 
 SPANISH = Language("es", "Spanish")
 ENGLISH = Language("en", "English")
+
+
+def _listed(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
+@dataclass(frozen=True)
+class Quotes:
+    """Words a line quotes from the language being learned, named so the voice says them natively.
+
+    A guide's remark in English that quotes "tener ganas de" is read by an English voice, which says
+    the Spanish with an English accent unless it is told otherwise. Tags inside the text are read out
+    loud; naming the spans in the director note works, and reaches any voice that takes a direction
+    (`docs/programme-format.md`, "Voices and roles").
+    """
+
+    spans: tuple[str, ...]
+    language: Language
+    around: Language
+
+    def sentence(self) -> str:
+        named = _listed([f"“{span}”" for span in self.spans])
+        return (f"Say {named} in {self.language.name}, with a native {self.language.name} "
+                f"pronunciation, and everything else in {self.around.name}.")

@@ -177,17 +177,11 @@ speed round can lean on that.
 
 ## What changes for the host
 
-The loop timeline Acervo stores is four times per word plus a cadence (`repeats`, `repeat_seconds`).
-The player assumes one row per word, starts that only increase, and strict source/target
-alternation. A programme breaks all three: an intro has no word, an example interrupts the
-alternation, and a final review says every word a second time.
-
-**The replacement is a cue list:** `(kind, item?, text, lang, start, end, role)`. It touches:
-- **Acervo:** `loops/client.py` (`_timeline`, `_cadence`), `services/loops.store`;
-- **the player:** `loopMomentAt`, the lyric rows and their reveal rule, the seek ticks, `stepWord`,
-  and the bar's current word.
-
-A classic drill is expressible as a cue list too, so there is one timeline shape, not two.
+A host stores the cue list — `(kind, section, group, item?, side?, role, language, text, take, start,
+end)` — and draws a player from it; a classic drill is a cue list too, so there is one timeline shape,
+not two. Acervo does this: every line is a replicated record, the player draws one card per `group`,
+and within a card nothing after its first line is drawn before it is said. The writer calls home to
+the host's own text model, and the host keeps the render's `script` and sends it back with new music.
 
 Richer word data from Acervo — stored examples, notes, register, emoji — is a later option (P2's
 fallback), not a starting point. Limits to design to: a take is at most 500 characters, and a
@@ -259,7 +253,7 @@ Each full URL is written out, so it can be copied.
 | **1** | The format in the API: `format` and `switches` replace `pattern`, `/schema` lists formats, and `classic` and `alternating` render exactly as the two drills did | Built |
 | **2a** | Template formats with no writer: `echo`, `review`, the quiz and review sections, roles and phrase files, stretch. The timeline becomes `items` and `cues` | Built |
 | **2b** | Writer formats: `radio-lesson` and `story`, the injected writer, the programme script and its parser, the named `when` checks | Built |
-| **3** | Acervo: the format dropdown and switches, the cue-list player, the writer call home, the stored record's `format` | Next |
+| **3** | Acervo: the format cards and switches, the cue-list player, the writer call home, the guide voice, the kept script, the stored record's `format` | Built |
 | **Later** | Sound effects | The label vocabulary and a first CC0 pack; tagging in the writer's call |
 
 Each stage updates the spec's "What renders today" table in the same change as its code.

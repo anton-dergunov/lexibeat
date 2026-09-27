@@ -38,7 +38,7 @@ from typing import Any, Protocol
 import numpy as np
 
 from .dsp import fit, resample, time_stretch, trim
-from .language import ENGLISH, SPANISH, Language
+from .language import ENGLISH, SPANISH, Language, Quotes
 from .music import SR
 
 KOKORO_SR = 24000
@@ -238,19 +238,24 @@ class Delivery:
     ``pace`` is a format's ask — ``slow``, ``natural`` or ``fast`` — and when it is set it replaces
     the pace word the prosody would otherwise give the director note. Slowness is asked for rather
     than made by stretching, because a slowed recording sounds metallic.
+
+    ``quotes`` names the words a line quotes from another language, and the director note then says
+    how to pronounce them. Only a backend that `mixes_languages` is given them.
     """
 
     take: int = 0
     direction: str = ""
     prosody: Prosody = Prosody()
     pace: str = ""
+    quotes: Quotes | None = None
 
     @classmethod
     def for_take(cls, index: int, direction: str = "", *, strength: float = 1.0,
                  capabilities: BackendCapabilities | None = None,
-                 pace: str = "") -> "Delivery":
+                 pace: str = "", quotes: Quotes | None = None) -> "Delivery":
         return cls(take=index, direction=(direction or "").strip(),
-                   prosody=Prosody.for_take(index, strength, capabilities), pace=pace)
+                   prosody=Prosody.for_take(index, strength, capabilities), pace=pace,
+                   quotes=quotes)
 
 
 @dataclass(frozen=True)
@@ -497,7 +502,8 @@ def delivery_instruction(delivery: Delivery) -> str:
             else _band(prosody.speed, _PACE_BANDS, _PACE_FASTEST))
     pitch = _band(prosody.semitones, _PITCH_BANDS, _PITCH_HIGHEST)
     direction = delivery.direction.strip().rstrip(".,;") if delivery.direction else _NO_DIRECTION
-    return f"Speak {direction}, but clearly, {pace}, {pitch}."
+    note = f"Speak {direction}, but clearly, {pace}, {pitch}."
+    return f"{note} {delivery.quotes.sentence()}" if delivery.quotes else note
 
 
 def director_prompt(request: SpeechRequest) -> str:
@@ -1309,9 +1315,13 @@ class Speaker:
         self.stats: list[dict[str, Any]] = []
         self._call_index = 0
 
-    def take(self, index: int, direction: str = "", *, pace: str = "") -> Delivery:
+    def take(self, index: int, direction: str = "", *, pace: str = "",
+             quotes: Quotes | None = None) -> Delivery:
+        # A voice that cannot mix languages is not told how to: the note would be noise to it, and
+        # would split its cache over lines it says the same way.
         return Delivery.for_take(index, direction, strength=self.prosody_strength,
-                                 capabilities=self.capabilities, pace=pace)
+                                 capabilities=self.capabilities, pace=pace,
+                                 quotes=quotes if self.capabilities.mixes_languages else None)
 
     def say(self, text: str, language: Language, delivery: Delivery = Delivery(),
             target_seconds: float | None = None, *,

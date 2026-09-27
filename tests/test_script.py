@@ -201,6 +201,38 @@ class PlanTests(unittest.TestCase):
                                                                               "guide"))
 
 
+class ScriptRoundTripTests(unittest.TestCase):
+    def test_a_render_returns_its_script_and_it_renders_the_same_lines_again(self) -> None:
+        first, _ = render("radio-lesson", FakeWriter())
+        self.assertIsNotNone(first.script)
+        backend = mixing()
+        with tempfile.TemporaryDirectory() as tmp:
+            again = render_loop(request(items=WORDS, format="radio-lesson", script=first.script),
+                                backend=backend, writer=None, output=Path(tmp) / "loop.mp3")
+        self.assertEqual((again.format, again.fallback_from), ("radio-lesson", None))
+        self.assertEqual([c["text"] for c in again.cues], [c["text"] for c in first.cues])
+        self.assertEqual(again.script, first.script)
+
+    def test_a_given_script_calls_no_writer(self) -> None:
+        first, _ = render("story", FakeWriter())
+        writer = FakeWriter()
+        render("story", writer, script=first.script)
+        self.assertEqual(writer.prompts, [])
+
+    def test_a_script_that_does_not_fit_the_format_is_refused_naming_why(self) -> None:
+        # A story's script, as a real writer would answer it: no examples, no groups.
+        story_only = {key: value for key, value in reply().items()
+                      if key in ("order", "title", "beats", "intro", "outro")}
+        story, _ = render("story", FakeWriter(story_only))
+        with self.assertRaisesRegex(LoopError, r"The script sent with this render cannot be "
+                                               r"used: groups: is a non-empty list"):
+            render("radio-lesson", script=story.script)
+
+    def test_a_format_with_no_writer_returns_no_script(self) -> None:
+        result, _ = render("classic")
+        self.assertIsNone(result.script)
+
+
 class GroupTests(unittest.TestCase):
     def groups(self, format_id: str):
         result, _ = render(format_id, FakeWriter())
@@ -285,6 +317,75 @@ class RenderTests(unittest.TestCase):
         self.assertTrue(cues and set(cues) <= {"Sua vez.", "Agora você.", "Diga."})
 
 
+class QuoteTests(unittest.TestCase):
+    """A guide line that quotes Spanish names what it quotes, so the voice says it natively."""
+
+    REMARK = {"kind": "mnemonic", "direction": "",
+              "text": "Say cebolla, not Onion: la Cebolla makes you cry, tener ganas de does not.",
+              "quoted": ["la cebolla", "tener ganas de", "nothing like this", "cebolla"]}
+
+    def written(self, answer: dict | None = None):
+        answer = answer or reply(words=[{"item": i, "example": {"text": "E.", "translation": "E."},
+                                         "remark": self.REMARK if i == 1 else None}
+                                        for i in range(len(WORDS))])
+        fmt = formats.resolve(formats.load("radio-lesson"))
+        return script.parse(json.dumps(answer), script.needs(fmt), len(WORDS)), fmt
+
+    def test_the_parser_keeps_what_the_line_says_as_the_line_says_it(self) -> None:
+        written, _ = self.written()
+        _, remark = written.words[1].remark
+        # A span the line does not contain is dropped; casing is the line's own.
+        self.assertEqual(remark.quoted, ("la Cebolla", "tener ganas de", "cebolla"))
+
+    def test_quoted_that_is_not_a_list_is_refused_by_name(self) -> None:
+        answer = reply(intro={"text": "Four words.", "quoted": "atasco"})
+        with self.assertRaisesRegex(ScriptError, r"intro: 'quoted' is a list"):
+            self.written(answer)
+
+    def test_the_guide_is_told_which_words_to_say_in_spanish(self) -> None:
+        written, fmt = self.written()
+        lines = plan(fmt, WORDS, source_language=SPANISH, target_language=ENGLISH,
+                     script=written).lines
+        remark = next(s for s in lines if s.kind == "remark")
+        # In the order heard; "cebolla" inside "la Cebolla" is the longer span's, and the loop's own
+        # word is found whether or not the writer listed it.
+        self.assertEqual(remark.quotes.spans, ("cebolla", "la Cebolla", "tener ganas de"))
+        self.assertEqual(remark.quotes.sentence(),
+                         "Say “cebolla”, “la Cebolla” and “tener ganas de” in Spanish, with a "
+                         "native Spanish pronunciation, and everything else in English.")
+        # A header names a word the writer never listed; a translation or a cue quotes nothing.
+        header = plan(fmt, WORDS, source_language=SPANISH, target_language=ENGLISH,
+                      script=self.written(reply(groups=[
+                          {"title": "El banco and el atasco", "items": [2, 0]},
+                          {"title": "Food", "items": [1, 3]}]))[0]).lines
+        self.assertEqual(next(s for s in header if s.kind == "header").quotes.spans,
+                         ("El banco", "el atasco"))
+        self.assertTrue(all(s.quotes is None for s in lines
+                            if s.kind in ("translation", "cue", "announce", "say")))
+
+    def test_the_note_reaches_a_voice_that_mixes_languages_and_no_other(self) -> None:
+        answer = reply(words=[{"item": i, "example": {"text": "E.", "translation": "E."},
+                               "remark": self.REMARK if i == 1 else None}
+                              for i in range(len(WORDS))])
+        _, backend = render("radio-lesson", FakeWriter(answer))
+        from lexibeat.voice import delivery_instruction
+
+        told = [delivery_instruction(seen.delivery) for seen in backend.seen
+                if seen.text == self.REMARK["text"]]
+        self.assertTrue(told)
+        self.assertTrue(all(note.endswith("and everything else in English.") for note in told))
+        # A plain voice is not told: the radio lesson falls back, and a classic drill quotes nothing.
+        _, plain = render("radio-lesson", FakeWriter(answer), backend=RecordingBackend())
+        self.assertTrue(all(seen.delivery.quotes is None for seen in plain.seen))
+
+    def test_the_prompt_asks_for_quoted_on_guide_lines(self) -> None:
+        fmt = formats.resolve(formats.load("radio-lesson"))
+        text = script.prompt(script.needs(fmt), WORDS, source_language=SPANISH,
+                             target_language=ENGLISH)
+        self.assertIn('"quoted": ["..."]', text)
+        self.assertIn("with a native Spanish pronunciation", " ".join(text.split()))
+
+
 class GeminiWriterTests(unittest.TestCase):
     def test_a_busy_model_is_waited_out_and_one_out_of_quota_passed_over(self) -> None:
         try:
@@ -345,7 +446,7 @@ class ServiceTests(unittest.TestCase):
                     "target_language": {"code": "en", "name": "English"},
                     "format": "radio-lesson", "seed": 5}
             operation = client.post(f"{API_PREFIX}/loops", json=body).json()
-            for _ in range(600):
+            for _ in range(3000):  # five minutes: a loaded machine renders slowly
                 state = client.get(f"{API_PREFIX}/operations/{operation['operation_id']}").json()
                 if state["status"] in ("completed", "failed"):
                     break

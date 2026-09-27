@@ -130,6 +130,9 @@ class Format:
                                 **({"choices": list(s.choices)} if s.choices else {})}
                          for name, s in self.switches.items()},
             "requires": list(self.requires),
+            # What a render makes instead when a requirement is missing, so a host can say so
+            # before anything is made rather than after.
+            "fallback": self.fallback,
             "bars_per_item": len(slots_),
             "utterances_per_item": sum(1 for kind, _ in slots_ if kind in (SOURCE, TARGET)),
             "has_recall_gap": any(kind == "gap" for kind, _ in slots_),

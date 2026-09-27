@@ -69,6 +69,10 @@ class LoopRequest:
     # the switches that format declares.
     format: str | Mapping[str, Any] = "classic"
     switches: Mapping[str, Any] = field(default_factory=dict)
+    # A script a previous render of these words returned (`LoopResult.script`). Given one, the
+    # render reads it exactly as it would a writer's reply and calls no writer: new music for a
+    # radio lesson keeps its lines, and its takes come from the host's cache.
+    script: Mapping[str, Any] | None = None
     family: str = "auto"
     energy: str = "balanced"
     rhythm: str = "steady"
@@ -147,6 +151,9 @@ class LoopResult:
     items: list[dict[str, Any]] = field(default_factory=list)
     cues: list[dict[str, Any]] = field(default_factory=list)
     fallback_from: str | None = None
+    # What the writer wrote for this render, as read, or None for a format with no writer. Sent
+    # back as `LoopRequest.script`, it renders the same lines again.
+    script: dict[str, Any] | None = None
     bed_spec: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -267,7 +274,8 @@ def render_loop(
     """Write the lines if the format asks for it, speak them, render the bed, duck it under the
     speech, and write the MP3."""
     request = request.validated()
-    fmt, fallback_from = _format_for(request, backend, has_writer=writer is not None)
+    fmt, fallback_from = _format_for(request, backend,
+                                     has_writer=writer is not None or request.script is not None)
     output = Path(output)
 
     def report(fraction: float, message: str) -> None:
@@ -279,7 +287,10 @@ def render_loop(
             raise Cancelled("The render was cancelled.")
 
     script = None
-    if needs_writer(fmt):
+    if needs_writer(fmt) and request.script is not None:
+        script = read_script(fmt, request.items, request.script,
+                             target_language=request.target_language)
+    elif needs_writer(fmt):
         report(0.01, "Writing the programme")
         script = write_script(fmt, request.items, source_language=request.source_language,
                               target_language=request.target_language, writer=writer)
@@ -349,8 +360,23 @@ def render_loop(
         items=items,
         cues=cues,
         fallback_from=fallback_from,
+        script=dict(script.raw) if script is not None else None,
         bed_spec=asdict(spec),
     )
+
+
+def read_script(fmt: Format, items: Sequence[Item], script: Mapping[str, Any], *,
+                target_language: Language) -> Script:
+    """A script a previous render returned, read as a fresh reply would be.
+
+    It is checked against what *this* format needs, so a script from another format, or for other
+    words, is refused naming the first fault rather than half used.
+    """
+    need = script_needs(fmt, missing_phrases=missing_phrases(fmt, target_language))
+    try:
+        return parse_script(json.dumps(dict(script), ensure_ascii=False), need, len(items))
+    except ScriptError as exc:
+        raise LoopError(f"The script sent with this render cannot be used: {exc}") from exc
 
 
 def missing_phrases(fmt: Format, language: Language) -> list[str]:
