@@ -26,6 +26,14 @@ languages are easy to distinguish. Kokoro remains available as a faster fallback
 
 ## Demo
 
+Radio:
+
+https://github.com/user-attachments/assets/d8c08bb1-e300-4c18-8ec9-1c0053a5f790
+
+Story:
+
+https://github.com/user-attachments/assets/cb72cf63-2582-4521-846b-b3942fc83a10
+
 A short example using **Spanish 🇦🇷 → English 🇬🇧**:
 12 words and phrases set to a generated rhythmic backing track.
 
