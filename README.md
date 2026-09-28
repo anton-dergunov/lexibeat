@@ -26,19 +26,19 @@ languages are easy to distinguish. Kokoro remains available as a faster fallback
 
 ## Demo
 
-Radio:
+> [!TIP]
+> 🔊 Turn on your sound to hear the generated speech and music.
 
-https://github.com/user-attachments/assets/d8c08bb1-e300-4c18-8ec9-1c0053a5f790
-
-Story:
+**Radio format** — news-style retrieval practice with shorter segments:
 
 https://github.com/user-attachments/assets/cb72cf63-2582-4521-846b-b3942fc83a10
 
-A short example using **Spanish 🇦🇷 → English 🇬🇧**:
-12 words and phrases set to a generated rhythmic backing track.
+**Story format** — narrative-driven learning with longer connected phrases:
 
-> [!TIP]
-> 🔊 Turn on your sound to hear the generated speech and music.
+https://github.com/user-attachments/assets/d8c08bb1-e300-4c18-8ec9-1c0053a5f790
+
+A short example using **Spanish 🇪🇸 → English 🇬🇧**:
+12 words and phrases set to a generated rhythmic backing track.
 
 https://github.com/user-attachments/assets/46a03899-5088-402c-afdc-73bd68ce1b27
 
