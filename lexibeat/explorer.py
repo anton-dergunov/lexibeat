@@ -25,7 +25,7 @@ import numpy as np
 import pyloudnorm as pyln
 import soundfile as sf
 
-from .api import MusicGenerationResult, MusicRequest, resolve_music
+from .api import DEFAULT_SEED_BITS, MusicGenerationResult, MusicRequest, resolve_music
 from .bedspec import (BASS_GRAMMARS, TIMBRE_PALETTES, BedSpec, SCALES,
                       STYLES)
 from .generator import ENGINE_VERSION
@@ -679,7 +679,7 @@ def randomize_unlocked(base: dict | BedSpec, locked_paths: list[str], *,
     if base_spec is None or base_report.state == "invalid":
         raise ValueError("The base BedSpec must be structurally valid before randomization.")
     validate_lock_paths(locked_paths, base_data)
-    chosen_seed = secrets.randbits(64) if seed is None else seed
+    chosen_seed = secrets.randbits(DEFAULT_SEED_BITS) if seed is None else seed
     if not 0 <= chosen_seed < 2 ** 64:
         raise ValueError("seed must be an unsigned 64-bit integer")
     family = base_spec.phrase.family

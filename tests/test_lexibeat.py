@@ -16,7 +16,7 @@ from unittest import mock
 import numpy as np
 import soundfile as sf
 
-from lexibeat.api import MusicRequest, render_music, resolve_music
+from lexibeat.api import DEFAULT_SEED_BITS, MusicRequest, render_music, resolve_music
 from lexibeat.bedspec import TIMBRE_PALETTES, BedSpec
 from lexibeat.arrange import arrange
 from lexibeat.formats import renderable
@@ -754,6 +754,21 @@ class PublicGenerationApiTests(unittest.TestCase):
         self.assertEqual(audio.shape[1], 2)
         self.assertTrue(np.isfinite(audio).all())
         self.assertLessEqual(float(np.abs(audio).max()), 0.700001)
+
+    def test_a_seed_nobody_chose_survives_json_and_so_does_every_bed_drawn_from_it(self) -> None:
+        # The largest seed a default request can draw. A browser holds integers exactly only below
+        # 2**53, and the seed and the bed's own seed both travel to one as JSON.
+        largest = (1 << DEFAULT_SEED_BITS) - 1
+        with mock.patch("lexibeat.generator.secrets.randbits",
+                        side_effect=lambda bits: (1 << bits) - 1) as drawn:
+            result = resolve_music(MusicRequest(
+                family="playful-minimal", palette="electronic"))
+        drawn.assert_called_once_with(DEFAULT_SEED_BITS)
+        self.assertEqual(result.request.seed, largest)
+        self.assertGreaterEqual(result.bed_spec.seed, largest)
+        for seed in (result.request.seed, result.bed_spec.seed):
+            self.assertLess(seed, 2 ** 53)
+            self.assertEqual(json.loads(json.dumps(float(seed))), seed)
 
     def test_resolution_does_not_use_network(self) -> None:
         with mock.patch("urllib.request.urlopen") as network:

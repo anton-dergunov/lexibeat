@@ -17,6 +17,7 @@ import numpy as np
 from . import samples as sample_packs
 from .api import (
     BedFingerprint,
+    DEFAULT_SEED_BITS,
     MusicGenerationResult,
     MusicRequest,
     SampleUsage,
@@ -789,7 +790,7 @@ def resolve_request(
     """`listener` overrides the profile's policy; the listening tools use it to A/B a switch."""
     request.validated()
     profile = get_profile(request.profile)
-    seed = request.seed if request.seed is not None else secrets.randbits(64)
+    seed = request.seed if request.seed is not None else secrets.randbits(DEFAULT_SEED_BITS)
     resolved_request = replace(request, seed=seed)
     family_rng = random.Random(seed ^ 0x4C45584942454154)
     family = request.family if request.family != "auto" else family_rng.choice(

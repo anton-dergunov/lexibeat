@@ -14,6 +14,13 @@ import numpy as np
 
 from .bedspec import BedSpec, TIMBRE_PALETTES
 
+# How many random bits a seed nobody chose is drawn from. A seed is a replay token, not a key, and it
+# travels as JSON into a browser, which holds integers exactly only below 2**53. One bit fewer leaves
+# room for the candidate seeds `generator.resolve_request` derives from it, `seed + index * SEED_STEP`,
+# so every seed a default request produces survives the trip. A seed the caller supplies is still any
+# unsigned 64-bit integer: a larger one replays exactly as before; it just cannot be sent to a page.
+DEFAULT_SEED_BITS = 52
+
 Energy = Literal["calm", "balanced", "bright"]
 Rhythm = Literal["sparse", "steady", "groovy"]
 Palette = Literal["acoustic", "hybrid", "electronic"]

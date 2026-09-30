@@ -9,7 +9,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Callable
 
-from .api import MusicRequest, resolve_music
+from .api import DEFAULT_SEED_BITS, MusicRequest, resolve_music
 from .bedspec import BedSpec
 from .explorer import (
     CONTROL_FIELDS,
@@ -525,7 +525,7 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             progress(0.01, desc="Preparing variations")
             request = MusicRequest(family=family_value, energy=energy_value,
                                    rhythm=rhythm_value, palette=palette_value,
-                                   seed=secrets.randbits(64))
+                                   seed=secrets.randbits(DEFAULT_SEED_BITS))
             result = resolve_music(
                 request,
                 progress_callback=lambda value, message:
@@ -582,7 +582,7 @@ def build_demo(config: ExplorerConfig, *, artifacts: ArtifactStore,
             progress(0.02, desc="Generating unlocked fields")
             request = MusicRequest.from_dict(state["music_request"])
             result = randomize_unlocked(state["bed_spec"], locks,
-                                        seed=secrets.randbits(64), request=request,
+                                        seed=secrets.randbits(DEFAULT_SEED_BITS), request=request,
                                         progress_callback=lambda value, message:
                                             progress(value, desc=message))
             state.update(bed_spec=_json_data(result.bed_spec),
