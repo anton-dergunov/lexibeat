@@ -245,6 +245,47 @@ class ServiceTests(unittest.TestCase):
         self.assertIn("synthetic failure", operation["error"])
         self.assertEqual(client.get(f"{API_PREFIX}/health").json()["status"], "ok")
 
+    def test_music_alone_is_an_operation_and_replays_the_bed_a_loop_was_made_over(self) -> None:
+        """The host keeps a loop's family and seed; asking for them alone must give that bed."""
+        loop = self.follow(self.client.post(
+            f"{API_PREFIX}/loops", json=body(family="organic")).json()["operation_id"])
+        created = self.client.post(f"{API_PREFIX}/music",
+                                   json={"family": "organic", "seed": 5, "seconds": 8})
+        self.assertEqual(created.status_code, 202)
+        music = self.follow(created.json()["operation_id"])
+        self.assertEqual(music["status"], "completed", music["error"])
+        self.assertEqual(music["progress"]["message"], "Music ready")
+        result = music["result"]
+        self.assertEqual(result["bed_fingerprint"], loop["result"]["bed_fingerprint"])
+        self.assertEqual((result["style_id"], result["seed"]), ("organic", 5))
+        self.assertEqual(result["engine_version"], loop["result"]["engine_version"])
+        self.assertNotIn("audio_path", result)
+        self.assertTrue(result["audio_url"].startswith(f"{API_PREFIX}/music/"))
+        audio = self.client.get(result["audio_url"])
+        self.assertEqual(audio.status_code, 200)
+        self.assertEqual(audio.headers["content-type"], "audio/mpeg")
+        self.assertGreater(len(audio.content), 1000)
+        # Nothing is spoken, so no backend was built for it: the one in `seen` is the loop's.
+        self.assertEqual(len(self.seen), 1)
+
+    def test_a_music_track_is_not_a_loop_track_and_the_other_way_round(self) -> None:
+        music = self.follow(self.client.post(
+            f"{API_PREFIX}/music",
+            json={"family": "organic", "seed": 5, "seconds": 4}).json()["operation_id"])
+        self.assertEqual(self.client.get(
+            f"{API_PREFIX}/loops/{music['operation_id']}/audio").status_code, 404)
+        self.assertEqual(self.client.get(f"{API_PREFIX}/music/missing/audio").status_code, 404)
+
+    def test_music_alone_that_cannot_be_rendered_is_refused_before_the_queue(self) -> None:
+        for wrong in ({"family": "auto", "seed": 5, "seconds": 8},
+                      {"family": "waltz", "seed": 5, "seconds": 8},
+                      {"family": "organic", "seed": 5, "seconds": 0},
+                      {"family": "organic", "seed": 5, "seconds": 3600},
+                      {"family": "organic", "seconds": 8},
+                      {"family": "organic", "seed": 5, "seconds": 8, "items": []}):
+            self.assertEqual(self.client.post(f"{API_PREFIX}/music", json=wrong).status_code,
+                             422, wrong)
+
     def test_the_committed_openapi_snapshot_matches_the_running_application(self) -> None:
         """A wire change that nobody meant to make shows up as a diff in this file."""
         self.assertEqual(json.loads(SNAPSHOT.read_text(encoding="utf-8")),

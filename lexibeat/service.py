@@ -7,7 +7,8 @@ rows. This is the surface a host integrates against, and three things about it a
 **A render is an operation, not a request.** Seventy-odd speech calls plus a bed and a mix is
 minutes, not seconds. ``POST /api/v1/loops`` answers an operation id and the caller follows it, so
 progress is watchable, cancellation lands between utterances, and nothing holds a connection open
-for four minutes. The vocabulary — ``operation_id``, ``status``, ``successful``, ``error`` — is the
+for four minutes. ``POST /api/v1/music`` — a bed alone, for choosing music by ear — is an
+operation too, on the same queue, because it is the same renderer on the same CPU. The vocabulary — ``operation_id``, ``status``, ``successful``, ``error`` — is the
 one the host already follows for its other companion service, so following this one is a second
 instance of a pattern rather than a second pattern.
 
@@ -52,6 +53,7 @@ from .loop import (
     render_loop,
 )
 from .bundle import status as bundle_status
+from .listen import MAX_MUSIC_SECONDS, MusicOnlyRequest, MusicResult, render_music_alone
 from .profiles import FAMILY_DESCRIPTIONS, PROFILES, family_label, get_profile
 from .vocab import Item
 from .voice import Backend, register_secret
@@ -59,7 +61,7 @@ from .writer import Writer
 
 # The contract's version. It moves with the wire, not the path: `/api/v1` has one host, which pins a
 # package version and moves in step with it.
-API_VERSION = "2.0.0"
+API_VERSION = "2.1.0"
 API_PREFIX = "/api/v1"
 MAX_REQUEST_BYTES = 1_000_000
 
@@ -90,6 +92,10 @@ class ServiceConfig:
     @property
     def loops_root(self) -> Path:
         return self.output_root / "loops"
+
+    @property
+    def music_root(self) -> Path:
+        return self.output_root / "music"
 
 
 @dataclass(frozen=True)
@@ -124,7 +130,7 @@ class Operation:
     fraction: float = 0.0
     message: str = "Queued"
     error: str | None = None
-    result: LoopResult | None = None
+    result: LoopResult | MusicResult | None = None
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     cancel: threading.Event = field(default_factory=threading.Event)
@@ -156,7 +162,8 @@ class Operation:
             # replay produced the same one. Sending the whole resolved BedSpec on every poll would
             # be kilobytes of JSON a host is told not to store.
             result.pop("bed_spec", None)
-            result["audio_url"] = f"{API_PREFIX}/loops/{self.id}/audio"
+            route = "music" if isinstance(self.result, MusicResult) else "loops"
+            result["audio_url"] = f"{API_PREFIX}/{route}/{self.id}/audio"
             result["bitrate_kbps"] = MP3_BITRATE_KBPS
             body["result"] = result
         return body
@@ -177,7 +184,7 @@ class Operations:
         self._worker: threading.Thread | None = None
         # The request and its credential live here and nowhere else, and are popped the moment the
         # worker picks the render up: an operation a caller can read must not carry a token.
-        self._pending: dict[str, tuple[LoopRequest, str, str]] = {}
+        self._pending: dict[str, tuple[LoopRequest | MusicOnlyRequest, str, str]] = {}
 
     # -- lifecycle -------------------------------------------------------
 
@@ -187,7 +194,8 @@ class Operations:
                                             daemon=True)
             self._worker.start()
 
-    def submit(self, request: LoopRequest, credentials: str = "", delivery: str = "") -> Operation:
+    def submit(self, request: LoopRequest | MusicOnlyRequest, credentials: str = "",
+               delivery: str = "") -> Operation:
         with self._lock:
             pending = sum(1 for row in self._operations.values() if not row.finished)
             if pending >= self.config.max_pending:
@@ -215,9 +223,9 @@ class Operations:
                 self._finish(operation, CANCELLED, "The render was cancelled.")
         return operation
 
-    def path_for(self, operation_id: str) -> Path:
+    def path_for(self, operation_id: str, kind: type = LoopResult) -> Path:
         operation = self.get(operation_id)
-        if operation.status != COMPLETED or operation.result is None:
+        if operation.status != COMPLETED or not isinstance(operation.result, kind):
             raise FileNotFoundError(f"Operation {operation_id} has no track.")
         path = Path(operation.result.audio_path)
         if not path.is_file():
@@ -232,14 +240,14 @@ class Operations:
         operation.updated_at = time.time()
 
     def _finish(self, operation: Operation, status: str, error: str | None = None,
-                result: LoopResult | None = None) -> None:
+                result: LoopResult | MusicResult | None = None) -> None:
         operation.status = status
         operation.error = error
         operation.result = result
         operation.updated_at = time.time()
         if status == COMPLETED:
             operation.fraction = 1.0
-            operation.message = "Loop ready"
+            operation.message = "Music ready" if isinstance(result, MusicResult) else "Loop ready"
         elif status == CANCELLED:
             operation.message = "Cancelled"
         else:
@@ -263,22 +271,31 @@ class Operations:
         request, credentials, delivery = pending
         operation.status = RUNNING
         self._note(operation, 0.01, "Starting")
-        output = self.config.loops_root / f"{operation_id}.mp3"
+        progress = lambda fraction, message: self._note(operation, fraction, message)  # noqa: E731
         try:
-            context = RenderContext(operation_id=operation_id, request=request,
-                                    credentials=credentials, delivery=delivery)
-            backend = self.backend_factory(context)
-            writer = self.writer_factory(context) if self.writer_factory else None
-            result = render_loop(
-                request, backend=backend, output=output, writer=writer,
-                progress=lambda fraction, message: self._note(operation, fraction, message),
-                cancel_check=operation.cancel.is_set)
+            if isinstance(request, MusicOnlyRequest):
+                # Nothing is spoken, so no backend is built and no credential is involved.
+                result: LoopResult | MusicResult = render_music_alone(
+                    request, output=self.config.music_root / f"{operation_id}.mp3",
+                    progress=progress, cancel_check=operation.cancel.is_set)
+            else:
+                result = self._loop(operation, request, credentials, delivery, progress)
         except Cancelled:
             self._finish(operation, CANCELLED, "The render was cancelled.")
         except Exception as exc:  # the operation carries the failure; the process carries on
             self._finish(operation, FAILED, f"{type(exc).__name__}: {exc}")
         else:
             self._finish(operation, COMPLETED, result=result)
+
+    def _loop(self, operation: Operation, request: LoopRequest, credentials: str,
+              delivery: str, progress: Callable[[float, str], None]) -> LoopResult:
+        context = RenderContext(operation_id=operation.id, request=request,
+                                credentials=credentials, delivery=delivery)
+        backend = self.backend_factory(context)
+        writer = self.writer_factory(context) if self.writer_factory else None
+        return render_loop(
+            request, backend=backend, output=self.config.loops_root / f"{operation.id}.mp3",
+            writer=writer, progress=progress, cancel_check=operation.cancel.is_set)
 
     def _prune(self) -> None:
         """Keep the most recent finished renders and drop the rest, file and record together."""
@@ -359,6 +376,24 @@ class LoopBody(StrictModel):
         )
 
 
+class MusicBody(StrictModel):
+    """A bed alone. The same fields choose it as choose a loop's, so the same family and seed
+    replay the bed a loop was made over, and `bed_fingerprint` says so."""
+
+    family: str = Field(min_length=1, max_length=64)
+    seed: int = Field(ge=0, lt=2 ** 64)
+    seconds: float = Field(gt=0, le=MAX_MUSIC_SECONDS)
+    energy: str = "balanced"
+    rhythm: str = "steady"
+    palette: str = "hybrid"
+    profile: str = "production-v1"
+
+    def to_request(self) -> MusicOnlyRequest:
+        return MusicOnlyRequest(family=self.family, seed=self.seed, seconds=self.seconds,
+                                energy=self.energy, rhythm=self.rhythm, palette=self.palette,
+                                profile=self.profile)
+
+
 def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
     """What this deployment can be asked for. The host reads its catalogues from here.
 
@@ -401,6 +436,7 @@ def service_schema(config: ServiceConfig | None = None) -> dict[str, Any]:
             "max_text_characters": MAX_TEXT_CHARACTERS,
             "max_direction_characters": MAX_DIRECTION_CHARACTERS,
             "request_bytes": MAX_REQUEST_BYTES,
+            "max_music_seconds": MAX_MUSIC_SECONDS,
         },
         "audio": {"mime": MP3_MIME, "bitrate_kbps": MP3_BITRATE_KBPS},
     }
@@ -498,6 +534,10 @@ def create_service(*, config: ServiceConfig | None = None,
             register_secret(token)
         return operations.submit(request, token, delivery).to_dict()
 
+    @app.post(f"{API_PREFIX}/music", status_code=202)
+    def create_music(body: MusicBody) -> dict:
+        return operations.submit(body.to_request().validated()).to_dict()
+
     @app.get(f"{API_PREFIX}/operations/{{operation_id}}")
     def read_operation(operation_id: str) -> dict:
         try:
@@ -528,6 +568,17 @@ def create_service(*, config: ServiceConfig | None = None,
                 detail={"code": "unknown_track", "message": str(exc)}) from exc
         return FileResponse(path, media_type=MP3_MIME,
                             filename=f"lexibeat-{operation_id[:12]}.mp3")
+
+    @app.get(f"{API_PREFIX}/music/{{operation_id}}/audio")
+    def read_music(operation_id: str):
+        try:
+            path = operations.path_for(operation_id, MusicResult)
+        except (KeyError, FileNotFoundError) as exc:
+            raise HTTPException(
+                status_code=404,
+                detail={"code": "unknown_track", "message": str(exc)}) from exc
+        return FileResponse(path, media_type=MP3_MIME,
+                            filename=f"lexibeat-music-{operation_id[:12]}.mp3")
 
     return app
 

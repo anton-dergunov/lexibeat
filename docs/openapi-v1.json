@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "LexiBeat",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "paths": {
     "/api/v1/health": {
@@ -69,6 +69,46 @@
                   "additionalProperties": true,
                   "type": "object",
                   "title": "Response Create Loop Api V1 Loops Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music": {
+      "post": {
+        "summary": "Create Music",
+        "operationId": "create_music_api_v1_music_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Music Api V1 Music Post"
                 }
               }
             }
@@ -170,6 +210,43 @@
       "get": {
         "summary": "Read Audio",
         "operationId": "read_audio_api_v1_loops__operation_id__audio_get",
+        "parameters": [
+          {
+            "name": "operation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Operation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/music/{operation_id}/audio": {
+      "get": {
+        "summary": "Read Music",
+        "operationId": "read_music_api_v1_music__operation_id__audio_get",
         "parameters": [
           {
             "name": "operation_id",
@@ -399,6 +476,57 @@
           "target_language"
         ],
         "title": "LoopBody"
+      },
+      "MusicBody": {
+        "properties": {
+          "family": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Family"
+          },
+          "seed": {
+            "type": "integer",
+            "exclusiveMaximum": 1.8446744073709552e+19,
+            "minimum": 0.0,
+            "title": "Seed"
+          },
+          "seconds": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Seconds"
+          },
+          "energy": {
+            "type": "string",
+            "title": "Energy",
+            "default": "balanced"
+          },
+          "rhythm": {
+            "type": "string",
+            "title": "Rhythm",
+            "default": "steady"
+          },
+          "palette": {
+            "type": "string",
+            "title": "Palette",
+            "default": "hybrid"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile",
+            "default": "production-v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "family",
+          "seed",
+          "seconds"
+        ],
+        "title": "MusicBody",
+        "description": "A bed alone. The same fields choose it as choose a loop's, so the same family and seed\nreplay the bed a loop was made over, and `bed_fingerprint` says so."
       },
       "SpeechBody": {
         "properties": {

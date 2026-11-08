@@ -50,6 +50,8 @@ appears in its dialog with nothing changing there.
 | `GET /api/v1/operations/{id}` | the operation, with `result` once it has completed |
 | `DELETE /api/v1/operations/{id}` | cancels between utterances |
 | `GET /api/v1/loops/{id}/audio` | the finished track, `audio/mpeg` |
+| `POST /api/v1/music` | `202` with an operation: a bed alone |
+| `GET /api/v1/music/{id}/audio` | the finished bed, `audio/mpeg` |
 
 ### `POST /api/v1/loops`
 
@@ -191,6 +193,30 @@ per section. `item` and `side` are `null` for a line that belongs to no word. `r
 a line in the language being learned and `guide` for one in the learner's own. A cue's `end` is
 where its audio ends, and a long one may run a little past the next cue's `start`: a take that
 overflows its bar fades under the next voice rather than being cut.
+
+
+### `POST /api/v1/music`
+
+```json
+{"family": "organic", "seed": 4711, "seconds": 24}
+```
+
+The bed a loop with this family and seed is made over, with nothing spoken over it: what a host plays
+to let a listener choose a style by ear, or hear again the music they kept from a loop. `energy`,
+`rhythm`, `palette` and `profile` are optional and mean what they mean on a loop, so the same values
+replay the same bed, and the result's `bed_fingerprint` is the loop's. `family` must be a family:
+`auto` is refused, since a sample of "any style" would be a sample of one chosen at random.
+`seconds` is bounded by `limits.max_music_seconds`, and the track comes out a little longer, on whole
+bars. It is the same renderer on the same CPU as a loop, so it is an operation on the same queue and
+followed the same way; no backend is built and no credential is involved.
+
+Two things differ from a loop's bed, because the music is heard alone. It starts at full level
+rather than fading in over two bars (the lead-in is rendered and dropped), and keeps its fade out.
+And it is loudness-normalised on its own, to -18 LUFS, so styles are compared by ear rather than by
+how loud each comes out, under the same 0.97 peak.
+
+The completed `result` carries `audio_url`, `audio_mime`, `duration_seconds`, `style_id`, `seed`,
+`engine_version`, `profile_version`, `bed_fingerprint`, `total_bars`, `bpm` and `bitrate_kbps`.
 
 ## Audio
 
