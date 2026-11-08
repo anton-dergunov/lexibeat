@@ -261,6 +261,7 @@ and make the repetition sound *more* mechanical.
 | `voice` | documentation only |
 | `languages` | a declaration; **empty means any**, and a language not named is refused by name |
 | `mixes_languages` | the voice can say words of two languages in one line; a format that `requires` `multilingual_voice` falls back without it |
+| `in_flight` | how many takes may be asked for at once (default 1). Above 1 the arranger asks for the next takes while it places this one, in programme order and with the same seeds, so time a host spends after its provider answers — checking a take, say — hides behind the next call. `synth` is then called from several threads and must be safe to |
 
 ## Running it
 

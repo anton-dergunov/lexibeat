@@ -7,6 +7,8 @@ import json
 import os
 import sys
 import tempfile
+import threading
+import time
 import types
 import unittest
 from dataclasses import asdict
@@ -1618,6 +1620,158 @@ class RenderAndMixTests(unittest.TestCase):
             [0.0, 0.04, -0.04])
         self.assertEqual(len(spanish[-1].audio), 100)
         self.assertEqual(sum(retry for _, _, retry in speaker.calls), 1)
+
+
+class InFlightTests(unittest.TestCase):
+    """A backend that declares two takes in flight is asked for the next while this one is placed.
+
+    That is how a host hides time it spends after the provider answers (Acervo listens to each
+    directed take) behind the next take's call, and it must change nothing about the loop: the same
+    audio on the same downbeats, the same seeds, errors at the same line.
+    """
+
+    class Voice:
+        name = "a-host-voice"
+        model_id = "fake"
+        sample_rate = SR
+        load_seconds = 0.0
+
+        def __init__(self, capabilities, *, fails_on="", long_when=None, hold=None):
+            self.capabilities = capabilities
+            self.fails_on = fails_on
+            self.long_when = long_when or (lambda request: False)
+            self.hold = hold
+            self.lock = threading.Lock()
+            self.open = 0
+            self.most_open = 0
+            self.calls = []
+
+        def synth(self, request):
+            with self.lock:
+                self.open += 1
+                self.most_open = max(self.most_open, self.open)
+                self.calls.append((request.text, request.delivery.take, request.seed))
+            try:
+                if self.hold is not None:
+                    self.hold.wait(5)
+                time.sleep(0.02)
+                if request.text == self.fails_on:
+                    raise RuntimeError(f"refused {request.text}")
+                # The take depends on what was asked, never on when, so two orders can be compared.
+                length = 2_000 + 300 * (len(request.text) + request.delivery.take)
+                if self.long_when(request):
+                    length = 3 * SR
+                return SynthesisResult(np.full(length, 0.5, dtype=np.float32), SR, 0.02, {})
+            finally:
+                with self.lock:
+                    self.open -= 1
+
+    @staticmethod
+    def directed(in_flight):
+        return BackendCapabilities("instruction", "instruction", "preset", languages=(),
+                                   in_flight=in_flight)
+
+    def render(self, voice, words=("hola", "gracias")):
+        speaker = Speaker(backend_instance=voice, voice_seed=11)
+        try:
+            events, bars = arrange([Item(word, word + "-en") for word in words], speaker,
+                                   Grid(bpm=90, beats_per_bar=4, beat_unit=4),
+                                   source_language=SPANISH, target_language=ENGLISH,
+                                   format=renderable("classic"), progress=False)
+        finally:
+            speaker.close()
+        seeds = [(row["text"], row["take"], row["seed"]) for row in speaker.stats]
+        return events, bars, seeds
+
+    def test_two_in_flight_render_the_same_loop_with_the_same_seeds(self) -> None:
+        one, two = self.Voice(self.directed(1)), self.Voice(self.directed(2))
+        events_one, bars_one, seeds_one = self.render(one)
+        events_two, bars_two, seeds_two = self.render(two)
+        self.assertEqual(one.most_open, 1)
+        self.assertEqual(two.most_open, 2)
+        self.assertEqual(bars_one, bars_two)
+        self.assertEqual(seeds_one, seeds_two)
+        self.assertEqual(sorted(one.calls), sorted(two.calls))
+        self.assertEqual([(e.start, e.label) for e in events_one],
+                         [(e.start, e.label) for e in events_two])
+        for first, second in zip(events_one, events_two):
+            np.testing.assert_array_equal(first.audio, second.audio)
+
+    def test_never_more_than_declared(self) -> None:
+        voice = self.Voice(self.directed(3))
+        self.render(voice, words=("hola", "gracias", "perro"))
+        self.assertEqual(voice.most_open, 3)
+
+    def test_a_refused_take_fails_at_its_own_line(self) -> None:
+        voice = self.Voice(self.directed(2), fails_on="malo")
+        speaker = Speaker(backend_instance=voice)
+        try:
+            with self.assertRaisesRegex(RuntimeError, "refused malo"):
+                arrange([Item("hola", "hello"), Item("malo", "bad")], speaker,
+                        Grid(bpm=90, beats_per_bar=4, beat_unit=4),
+                        source_language=SPANISH, target_language=ENGLISH,
+                        format=renderable("classic"), progress=False)
+        finally:
+            speaker.close()
+        # Every line before it was placed; the refusal was not raised early by the ask ahead.
+        self.assertEqual([row["text"] for row in speaker.stats].count("hola"), 3)
+        self.assertNotIn("malo", [row["text"] for row in speaker.stats])
+
+    def test_the_long_take_retry_keeps_its_seed(self) -> None:
+        """A backend that cannot fit a bar may record a take of a block again once the block is
+        placed, so the window stops at the block's end and the retry's seed does not move."""
+        def capabilities(in_flight):
+            return BackendCapabilities("exaggeration", "unsupported", "clone", languages=(),
+                                       in_flight=in_flight)
+
+        def long(request):
+            return request.text == "hola" and request.delivery.take == 2 and request.seed < 20
+
+        one = self.Voice(capabilities(1), long_when=long)
+        two = self.Voice(capabilities(2), long_when=long)
+        _, _, seeds_one = self.render(one)
+        _, _, seeds_two = self.render(two)
+        self.assertEqual(len(one.calls), len(two.calls))
+        self.assertEqual(one.calls, sorted(two.calls, key=lambda call: call[2]))
+        self.assertEqual(seeds_one, seeds_two)
+        self.assertEqual(len(seeds_one), len({(t, k) for t, k, _ in seeds_one}) + 1)
+
+    def test_the_same_take_is_asked_for_once(self) -> None:
+        voice = self.Voice(self.directed(2))
+        speaker = Speaker(backend_instance=voice)
+        try:
+            speaker.prepare("hola", SPANISH, Delivery(), 1.0, slot_seconds=1.2)
+            speaker.prepare("hola", SPANISH, Delivery(), 1.0, slot_seconds=1.2)
+            first = speaker.say("hola", SPANISH, Delivery(), 1.0, slot_seconds=1.2)
+            again = speaker.say("hola", SPANISH, Delivery(), 1.0, slot_seconds=1.2)
+        finally:
+            speaker.close()
+        self.assertEqual(len(voice.calls), 1)
+        self.assertIs(first, again)
+
+    def test_closing_does_not_wait_on_a_take_nobody_will_place(self) -> None:
+        hold = threading.Event()
+        voice = self.Voice(self.directed(2), hold=hold)
+        speaker = Speaker(backend_instance=voice)
+        try:
+            speaker.prepare("hola", SPANISH)
+            speaker.prepare("adios", SPANISH)
+            started = time.perf_counter()
+            speaker.close()
+            self.assertLess(time.perf_counter() - started, 1.0)
+        finally:
+            hold.set()
+
+    def test_one_in_flight_asks_for_nothing_ahead(self) -> None:
+        voice = self.Voice(self.directed(1))
+        speaker = Speaker(backend_instance=voice)
+        speaker.prepare("hola", SPANISH)
+        self.assertEqual(voice.calls, [])
+        speaker.close()
+
+    def test_in_flight_is_at_least_one(self) -> None:
+        with self.assertRaises(ValueError):
+            self.directed(0)
 
 
 class BundlePresenceTests(unittest.TestCase):

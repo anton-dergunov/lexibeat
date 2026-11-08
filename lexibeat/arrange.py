@@ -85,6 +85,8 @@ def arrange_programme(
     total = len(programme.lines)
     open_block: int | None = None
     block_events: list[Event] = []
+    spoken = [segment for segment in programme.segments if segment.spoken]
+    turn = 0
 
     def settle() -> None:
         nonlocal completed
@@ -108,6 +110,8 @@ def arrange_programme(
             progress_callback(completed, total,
                               f"Synthesizing {completed + 1} of {total}: "
                               f"{segment.language.name} — {segment.text}")
+        _ask_ahead(speaker, spoken, turn, grid)
+        turn += 1
         audio = _say(speaker, segment, grid)
         label = f"{segment.side}:{segment.text}" if segment.side else \
             f"{segment.kind}:{segment.text}"
@@ -130,16 +134,43 @@ def _bars_for(audio: np.ndarray, grid: Grid) -> int:
     return max(1, math.ceil((len(audio) / grid.sr + LINE_TAIL_SECONDS) / grid.bar))
 
 
-def _say(speaker: Speaker, segment: Segment, grid: Grid, *, retry: bool = False) -> np.ndarray:
+def _ask_ahead(speaker: Speaker, spoken: list[Segment], turn: int, grid: Grid) -> None:
+    """Keep as many takes asked for as the backend can have in flight, from this turn on.
+
+    What a take is asked for depends on its segment and the grid, never on the bar it lands on, so
+    a take can be requested before the one before it has been placed. A backend that cannot be
+    asked to fit a bar may have a take of this block recorded again once the block is placed, so
+    the window stops at the block's end and that retry keeps the seed it would have had.
+    """
+    prepare = getattr(speaker, "prepare", None)
+    window = speaker.capabilities.in_flight
+    if prepare is None or window <= 1:
+        return
+    block = spoken[turn].block
+    for segment in spoken[turn:turn + window]:
+        if segment.block != block and not speaker.capabilities.schedulable:
+            break
+        text, language, delivery, target, slot, role = _request(speaker, segment, grid)
+        prepare(text, language, delivery, target, slot_seconds=slot, role=role)
+
+
+def _request(speaker: Speaker, segment: Segment, grid: Grid):
+    """`say`'s arguments for a segment, shared by `_say` and `_ask_ahead` so the keys agree."""
     delivery = speaker.take(segment.take, segment.direction, pace=segment.pace,
                             quotes=segment.quotes)
     fixed = segment.bars is not None
     # A fixed line aims to leave a little of its bar clear so the next downbeat stays audible. A
     # line of its own length is spoken as it comes and given the bars it needs.
-    audio = speaker.say(segment.text, segment.language, delivery,
-                        target_seconds=grid.bar * 0.92 * segment.bars if fixed else None,
-                        slot_seconds=grid.bar * segment.bars if fixed else None,
-                        retry=retry, role=segment.role)
+    return (segment.text, segment.language, delivery,
+            grid.bar * 0.92 * segment.bars if fixed else None,
+            grid.bar * segment.bars if fixed else None,
+            segment.role)
+
+
+def _say(speaker: Speaker, segment: Segment, grid: Grid, *, retry: bool = False) -> np.ndarray:
+    text, language, delivery, target, slot, role = _request(speaker, segment, grid)
+    audio = speaker.say(text, language, delivery, target_seconds=target, slot_seconds=slot,
+                        retry=retry, role=role)
     if segment.stretch > 1.0 + 1e-6 and len(audio) > grid.sr // 10:
         # Faster by stretching, never slower: a slowed recording sounds metallic, and slowness
         # is asked of the voice instead.

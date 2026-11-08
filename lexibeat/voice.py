@@ -31,6 +31,7 @@ import sys
 import tempfile
 import time
 import warnings
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Protocol
@@ -115,6 +116,15 @@ class BackendCapabilities:
     experimental: bool = False
     license: str = ""
     warnings: tuple[str, ...] = ()
+    # How many takes this backend may be asked for at once. Above one, the arranger asks for the
+    # next takes while it waits on this one, from as many threads, so ``synth`` must be safe to call
+    # concurrently. A host whose voice spends time after the provider answers — checking the take,
+    # say — hides that time behind the next take's call. Every backend shipped here says one.
+    in_flight: int = 1
+
+    def __post_init__(self) -> None:
+        if self.in_flight < 1:
+            raise ValueError(f"in_flight must be at least 1, not {self.in_flight}.")
 
     @property
     def post_process_pitch(self) -> bool:
@@ -1314,6 +1324,12 @@ class Speaker:
         self._cache: dict[tuple, np.ndarray] = {}
         self.stats: list[dict[str, Any]] = []
         self._call_index = 0
+        # Takes asked for ahead of their turn, by `say`'s key, with the seed each was given. Only a
+        # backend that declares more than one in flight gets the threads to ask on.
+        self._pending: dict[tuple, tuple[Future, int]] = {}
+        in_flight = self.capabilities.in_flight
+        self._executor = (ThreadPoolExecutor(max_workers=in_flight, thread_name_prefix="lexibeat-take")
+                          if in_flight > 1 else None)
 
     def take(self, index: int, direction: str = "", *, pace: str = "",
              quotes: Quotes | None = None) -> Delivery:
@@ -1339,11 +1355,46 @@ class Speaker:
         key = (text, language, delivery, target_seconds, slot_seconds, role)
         if not retry and key in self._cache:
             return self._cache[key]
+        if not retry and key in self._pending:
+            future, seed = self._pending.pop(key)
+            # A provider's refusal surfaces here, at this line's turn, not when it was asked for.
+            result = future.result()
+        else:
+            seed = self._next_seed()
+            request = SpeechRequest(text=text, language=language, delivery=delivery,
+                                    target_seconds=target_seconds, seed=seed, role=role)
+            result = (self._executor.submit(self.backend.synth, request).result()
+                      if self._executor else self.backend.synth(request))
+        return self._finish(key, result, seed)
+
+    def prepare(self, text: str, language: Language, delivery: Delivery = Delivery(),
+                target_seconds: float | None = None, *,
+                slot_seconds: float | None = None, role: str = "native") -> None:
+        """Ask for a take now that `say` will want later, with exactly `say`'s arguments.
+
+        Does nothing unless the backend declared more than one take in flight. A take is given its
+        seed when it is asked for, and the arranger asks in programme order, so the seeds are the
+        ones a render that waited on every take would have used. Nothing is raised here: a language
+        the backend does not speak, or a take the provider refuses, is `say`'s to report, in order.
+        """
+        if self._executor is None or not self.capabilities.speaks(language):
+            return
+        key = (text, language, delivery, target_seconds, slot_seconds, role)
+        if key in self._cache or key in self._pending:
+            return
+        seed = self._next_seed()
+        self._pending[key] = (self._executor.submit(self.backend.synth, SpeechRequest(
+            text=text, language=language, delivery=delivery,
+            target_seconds=target_seconds, seed=seed, role=role)), seed)
+
+    def _next_seed(self) -> int:
         seed = self.voice_seed + self._call_index
         self._call_index += 1
-        result = self.backend.synth(SpeechRequest(
-            text=text, language=language, delivery=delivery,
-            target_seconds=target_seconds, seed=seed, role=role))
+        return seed
+
+    def _finish(self, key: tuple, result: SynthesisResult, seed: int) -> np.ndarray:
+        """Everything after the backend answers, on the caller's thread and in programme order."""
+        text, language, delivery, target_seconds, slot_seconds, _role = key
         prosody = delivery.prosody
         audio = trim(result.audio)
         rate = result.sample_rate
@@ -1400,6 +1451,11 @@ class Speaker:
         self._cache[(text, language, delivery, target_seconds, slot_seconds, role)] = audio
 
     def close(self) -> None:
+        if self._executor is not None:
+            # A render that stopped early does not wait out the takes it asked for ahead and will
+            # never place; one already on the wire ends against the closed backend, unread.
+            self._executor.shutdown(wait=False, cancel_futures=True)
+            self._pending.clear()
         close = getattr(self.backend, "close", None)
         if close:
             close()
